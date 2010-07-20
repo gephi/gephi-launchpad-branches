@@ -111,9 +111,9 @@ public final class DynamicControllerImpl implements DynamicController {
 		if (workspace != null) {
 			DynamicModel model = workspace.getLookup().lookup(DynamicModel.class);
 			if (model != null)
-				model.setVisibleInterval(low, high);
+				model.getDynamicGraph().setInterval(low, high);
 			model = new DynamicModelImpl(workspace);
-			model.setVisibleInterval(low, high);
+			model.getDynamicGraph().setInterval(low, high);
 			workspace.add(model);
 		}
 	}

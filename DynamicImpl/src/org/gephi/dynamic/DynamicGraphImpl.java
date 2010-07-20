@@ -24,6 +24,7 @@ import org.gephi.data.attributes.api.Estimator;
 import org.gephi.data.attributes.type.DynamicType;
 import org.gephi.data.attributes.type.TimeInterval;
 import org.gephi.dynamic.api.DynamicGraph;
+import org.gephi.dynamic.api.DynamicModel;
 import org.gephi.graph.api.Attributes;
 import org.gephi.graph.api.Edge;
 import org.gephi.graph.api.Graph;
@@ -37,8 +38,6 @@ import org.gephi.graph.api.Node;
  * @author Cezary Bartosiak
  */
 public final class DynamicGraphImpl implements DynamicGraph {
-	private static final String DYNAMIC_RANGE = "dynamicrange";
-
 	private GraphModel model;
 	private GraphView  view;
 	private double     low;
@@ -81,12 +80,12 @@ public final class DynamicGraphImpl implements DynamicGraph {
 
 		Graph vgraph = model.getGraph(view);
 		for (Node n : vgraph.getNodes()) {
-			TimeInterval ti = (TimeInterval)n.getNodeData().getAttributes().getValue(DYNAMIC_RANGE);
+			TimeInterval ti = (TimeInterval)n.getNodeData().getAttributes().getValue(DynamicModel.TIMEINTERVAL_COLUMN);
 			if (!ti.isInRange(low, high))
 				vgraph.removeNode(n);
 		}
 		for (Edge e : vgraph.getEdges()) {
-			TimeInterval ti = (TimeInterval)e.getEdgeData().getAttributes().getValue(DYNAMIC_RANGE);
+			TimeInterval ti = (TimeInterval)e.getEdgeData().getAttributes().getValue(DynamicModel.TIMEINTERVAL_COLUMN);
 			if (!ti.isInRange(low, high))
 				vgraph.removeEdge(e);
 		}
@@ -206,45 +205,17 @@ public final class DynamicGraphImpl implements DynamicGraph {
 		Graph graph  = model.getGraph();
 		Graph vgraph = model.getGraph(view);
 		for (Node n : graph.getNodes()) {
-			TimeInterval ti = (TimeInterval)n.getNodeData().getAttributes().getValue(DYNAMIC_RANGE);
+			TimeInterval ti = (TimeInterval)n.getNodeData().getAttributes().getValue(DynamicModel.TIMEINTERVAL_COLUMN);
 			if (ti.getValue(low, high, estimator) == null && vgraph.contains(n))
 				vgraph.removeNode(n);
 			else if (ti.getValue(low, high, estimator) != null && !vgraph.contains(n))
 				vgraph.addNode(n);
 		}
 		for (Edge e : graph.getEdges()) {
-			TimeInterval ti = (TimeInterval)e.getEdgeData().getAttributes().getValue(DYNAMIC_RANGE);
+			TimeInterval ti = (TimeInterval)e.getEdgeData().getAttributes().getValue(DynamicModel.TIMEINTERVAL_COLUMN);
 			if (ti.getValue(low, high, estimator) == null && vgraph.contains(e))
 				vgraph.removeEdge(e);
 			else if (ti.getValue(low, high, estimator) != null && !vgraph.contains(e))
-				vgraph.addEdge(e);
-		}
-		return vgraph;
-	}
-
-	@Override
-	public Graph getWeakSnapshotGraph(double point) {
-		checkPoint(point);
-		return getWeakSnapshotGraph(point, point);
-	}
-
-	@Override
-	public Graph getWeakSnapshotGraph(double low, double high) {
-		checkLowHigh(low, high);
-		Graph graph  = model.getGraph();
-		Graph vgraph = model.getGraph(view);
-		for (Node n : graph.getNodes()) {
-			TimeInterval ti = (TimeInterval)n.getNodeData().getAttributes().getValue(DYNAMIC_RANGE);
-			if (ti.getValues(low, high).isEmpty() && vgraph.contains(n))
-				vgraph.removeNode(n);
-			else if (!ti.getValues(low, high).isEmpty() && !vgraph.contains(n))
-				vgraph.addNode(n);
-		}
-		for (Edge e : graph.getEdges()) {
-			TimeInterval ti = (TimeInterval)e.getEdgeData().getAttributes().getValue(DYNAMIC_RANGE);
-			if (ti.getValues(low, high).isEmpty() && vgraph.contains(e))
-				vgraph.removeEdge(e);
-			else if (!ti.getValues(low, high).isEmpty() && !vgraph.contains(e))
 				vgraph.addEdge(e);
 		}
 		return vgraph;
@@ -262,14 +233,14 @@ public final class DynamicGraphImpl implements DynamicGraph {
 		Graph graph  = model.getGraph();
 		Graph vgraph = model.getGraph(view);
 		for (Node n : graph.getNodes()) {
-			TimeInterval ti = (TimeInterval)n.getNodeData().getAttributes().getValue(DYNAMIC_RANGE);
+			TimeInterval ti = (TimeInterval)n.getNodeData().getAttributes().getValue(DynamicModel.TIMEINTERVAL_COLUMN);
 			if (ti.getValues(low, high).size() < ti.getValues().size() && vgraph.contains(n))
 				vgraph.removeNode(n);
 			else if (ti.getValues(low, high).size() == ti.getValues().size() && !vgraph.contains(n))
 				vgraph.addNode(n);
 		}
 		for (Edge e : graph.getEdges()) {
-			TimeInterval ti = (TimeInterval)e.getEdgeData().getAttributes().getValue(DYNAMIC_RANGE);
+			TimeInterval ti = (TimeInterval)e.getEdgeData().getAttributes().getValue(DynamicModel.TIMEINTERVAL_COLUMN);
 			if (ti.getValues(low, high).size() < ti.getValues().size() && vgraph.contains(e))
 				vgraph.removeEdge(e);
 			else if (ti.getValues(low, high).size() == ti.getValues().size() && !vgraph.contains(e))

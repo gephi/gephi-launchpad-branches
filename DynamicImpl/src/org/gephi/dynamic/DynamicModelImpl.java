@@ -32,10 +32,7 @@ import org.gephi.project.api.Workspace;
  * @author Cezary Bartosiak
  */
 public final class DynamicModelImpl implements DynamicModel {
-	private Workspace    workspace;
 	private DynamicGraph dynamicGraph;
-	private double       low;
-	private double       high;
 
 	/**
 	 * The default constructor.
@@ -55,48 +52,26 @@ public final class DynamicModelImpl implements DynamicModel {
 	 * @param low        the left endpoint of the visible time interval
 	 * @param high       the right endpoint of the visible time interval
 	 *
-	 * @throws NullPointerException if {@code workspace} is null.
+	 * @throws NullPointerException if {@code workspace} is null or the graph model
+	 *                              and/or its underlying graph are nulls.
 	 */
 	public DynamicModelImpl(Workspace workspace, double low, double high) {
 		if (workspace == null)
 			throw new NullPointerException("The workspace cannot be null.");
 
-		this.workspace = workspace;
-		this.low       = low;
-		this.high      = high;
-
 		GraphModel gm = (GraphModel)workspace.getLookup().lookup(GraphModel.class);
-		if (gm != null && gm.getGraph() != null)
-			dynamicGraph = new DynamicGraphImpl(gm.getGraph(), low, high);
+		if (gm == null || gm.getGraph() == null)
+			throw new NullPointerException("The graph model and its underlying graph cannot be nulls.");
+		dynamicGraph = new DynamicGraphImpl(gm.getGraph(), low, high);
 	}
 
 	@Override
 	public DynamicGraph getDynamicGraph() {
-		if (dynamicGraph == null) {
-			GraphModel gm = (GraphModel)workspace.getLookup().lookup(GraphModel.class);
-			if (gm != null && gm.getGraph() != null)
-				dynamicGraph = new DynamicGraphImpl(gm.getGraph(), low, high);
-		}
 		return dynamicGraph;
 	}
 
 	@Override
 	public TimeInterval getVisibleInterval() {
-		if (dynamicGraph != null)
-			return dynamicGraph.getInterval();
-		return null;
-	}
-
-	@Override
-	public void setVisibleInterval(TimeInterval interval) {
-		setVisibleInterval(interval.getLow(), interval.getHigh());
-	}
-
-	@Override
-	public void setVisibleInterval(double low, double high) {
-		this.low  = low;
-		this.high = high;
-		if (dynamicGraph != null)
-			dynamicGraph.setInterval(low, high);
+		return dynamicGraph.getInterval();
 	}
 }
