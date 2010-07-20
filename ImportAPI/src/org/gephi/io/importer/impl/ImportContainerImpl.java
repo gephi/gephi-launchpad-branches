@@ -27,9 +27,15 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import org.gephi.data.attributes.api.AttributeColumn;
 import org.gephi.data.attributes.api.AttributeController;
 import org.gephi.data.attributes.api.AttributeModel;
+import org.gephi.data.attributes.api.AttributeType;
+import org.gephi.data.attributes.api.AttributeValue;
 import org.gephi.data.attributes.api.AttributeValueFactory;
+import org.gephi.data.attributes.type.DynamicType;
+import org.gephi.data.attributes.type.TimeInterval;
+import org.gephi.dynamic.DynamicUtilities;
 import org.gephi.io.importer.api.EdgeDefault;
 import org.gephi.io.importer.api.EdgeDraft;
 import org.gephi.io.importer.api.Container;
@@ -70,8 +76,8 @@ public class ImportContainerImpl implements Container, ContainerLoader, Containe
     private int directedEdgesCount = 0;
     private int undirectedEdgesCount = 0;
     //Dynamic
-    private String timeIntervalMin;
-    private String timeIntervalMax;
+    private Double timeIntervalMin;
+    private Double timeIntervalMax;
 
     public ImportContainerImpl() {
         parameters = new ImportContainerParameters();
@@ -111,12 +117,8 @@ public class ImportContainerImpl implements Container, ContainerLoader, Containe
         if (nodeMap.containsKey(nodeDraftImpl.getId())) {
             String message = NbBundle.getMessage(ImportContainerImpl.class, "ImportContainerException_nodeExist", nodeDraftImpl.getId());
             report.logIssue(new Issue(message, Level.WARNING));
-            report.log("Duplicated node id=" + nodeDraftImpl.getId() + "label=" + nodeDraftImpl.getLabel() + " is ignored");
+            report.log("Duplicated node id='" + nodeDraftImpl.getId() + "' label='" + nodeDraftImpl.getLabel() + "' is ignored");
             return;
-        }
-
-        if (nodeDraftImpl.getSlices() != null) {
-            dynamicGraph = true;
         }
 
         nodeMap.put(nodeDraftImpl.getId(), nodeDraftImpl);
@@ -134,8 +136,7 @@ public class ImportContainerImpl implements Container, ContainerLoader, Containe
                 node.setId(id);
                 addNode(node);
                 node.setCreatedAuto(true);
-                report.logIssue(new Issue("Unknow Node id", Level.WARNING));
-                report.log("Automatic node creation from id=" + id);
+                report.logIssue(new Issue("Unknown node id, creates node from id='" + id+"'", Level.INFO));
             } else {
                 String message = NbBundle.getMessage(ImportContainerImpl.class, "ImportContainerException_UnknowNodeId", id);
                 report.logIssue(new Issue(message, Level.SEVERE));
@@ -333,20 +334,40 @@ public class ImportContainerImpl implements Container, ContainerLoader, Containe
         return attributeModel.valueFactory();
     }
 
-    public String getTimeIntervalMin() {
+    public Double getTimeIntervalMin() {
         return timeIntervalMin;
     }
 
-    public String getTimeIntervalMax() {
+    public Double getTimeIntervalMax() {
         return timeIntervalMax;
     }
 
     public void setTimeIntervalMax(String timeIntervalMax) {
-        this.timeIntervalMax = timeIntervalMax;
+        try {
+            this.timeIntervalMax = DynamicUtilities.getDoubleFromXMLDateString(timeIntervalMax);
+        } catch (Exception ex) {
+            try {
+                this.timeIntervalMax = Double.parseDouble(timeIntervalMax);
+            } catch (Exception ex2) {
+            }
+        }
+        if (this.timeIntervalMax == null) {
+            report.logIssue(new Issue(NbBundle.getMessage(ImportContainerImpl.class, "ImportContainerException_TimeInterval_ParseError", timeIntervalMax), Level.SEVERE));
+        }
     }
 
     public void setTimeIntervalMin(String timeIntervalMin) {
-        this.timeIntervalMin = timeIntervalMin;
+        try {
+            this.timeIntervalMin = DynamicUtilities.getDoubleFromXMLDateString(timeIntervalMin);
+        } catch (Exception ex) {
+            try {
+                this.timeIntervalMin = Double.parseDouble(timeIntervalMin);
+            } catch (Exception ex2) {
+            }
+        }
+        if (this.timeIntervalMin == null) {
+            report.logIssue(new Issue(NbBundle.getMessage(ImportContainerImpl.class, "ImportContainerException_TimeInterval_ParseError", timeIntervalMin), Level.SEVERE));
+        }
     }
 
     public boolean verify() {
@@ -374,6 +395,107 @@ public class ImportContainerImpl implements Container, ContainerLoader, Containe
         } else if (directedEdgesCount > 0 && undirectedEdgesCount > 0) {
             parameters.setEdgeDefault(EdgeDefault.MIXED);
         }
+
+        //Is dynamic graph
+        for (NodeDraftImpl node : nodeMap.values()) {
+            dynamicGraph = node.getTimeInterval() != null;
+            if (dynamicGraph) {
+                break;
+            }
+        }
+        if (!dynamicGraph) {
+            for (EdgeDraftImpl edge : edgeMap.values()) {
+                dynamicGraph = edge.getTimeInterval() != null;
+                if (dynamicGraph) {
+                    break;
+                }
+            }
+        }
+        if (!dynamicGraph) {
+            for (AttributeColumn col : attributeModel.getNodeTable().getColumns()) {
+                dynamicGraph = col.getType().isDynamicType();
+                if (dynamicGraph) {
+                    break;
+                }
+            }
+            for (AttributeColumn col : attributeModel.getEdgeTable().getColumns()) {
+                dynamicGraph = col.getType().isDynamicType();
+                if (dynamicGraph) {
+                    break;
+                }
+            }
+        }
+
+        if (timeIntervalMin != null || timeIntervalMax != null) {
+            //Print values to report
+        }
+
+        //Dynamic attributes bounds
+        if (dynamicGraph && (timeIntervalMin != null || timeIntervalMax != null)) {
+            for (NodeDraftImpl node : nodeMap.values()) {
+                boolean issue = false;
+
+                if (timeIntervalMin != null && node.getTimeInterval().getLow() < timeIntervalMin) {
+                    node.setTimeInterval((TimeInterval) DynamicUtilities.fitToInterval(node.getTimeInterval(), timeIntervalMin, node.getTimeInterval().getHigh()));
+                    issue = true;
+                }
+                if (timeIntervalMax != null && node.getTimeInterval().getHigh() > timeIntervalMax) {
+                    node.setTimeInterval((TimeInterval) DynamicUtilities.fitToInterval(node.getTimeInterval(), node.getTimeInterval().getLow(), timeIntervalMax));
+                    issue = true;
+                }
+
+                AttributeValue[] values = node.getAttributeRow().getValues();
+                for (int i = 0; i < values.length; i++) {
+                    AttributeValue val = values[i];
+                    if (val.getValue() != null && DynamicType.class.isAssignableFrom(val.getColumn().getType().getType())) {   //is Dynamic type
+                        DynamicType type = (DynamicType) val.getValue();
+                        if (timeIntervalMin != null && type.getLow() < timeIntervalMin) {
+                            issue = true;
+                            node.getAttributeRow().setValue(val.getColumn(), DynamicUtilities.fitToInterval(type, timeIntervalMin, type.getHigh()));
+                        }
+                        if (timeIntervalMax != null && type.getHigh() > timeIntervalMax) {
+                            issue = true;
+                            node.getAttributeRow().setValue(val.getColumn(), DynamicUtilities.fitToInterval(type, type.getLow(), timeIntervalMax));
+                        }
+                    }
+                }
+                if (issue) {
+                    report.logIssue(new Issue(NbBundle.getMessage(ImportContainerImpl.class, "ImportContainerException_TimeIntervalVerify_Node_OutOfBound", node.getId()), Level.WARNING));
+                }
+            }
+            for (EdgeDraftImpl edge : edgeMap.values()) {
+                boolean issue = false;
+
+                if (timeIntervalMin != null && edge.getTimeInterval().getLow() < timeIntervalMin) {
+                    edge.setTimeInterval((TimeInterval) DynamicUtilities.fitToInterval(edge.getTimeInterval(), timeIntervalMin, edge.getTimeInterval().getHigh()));
+                    issue = true;
+                }
+                if (timeIntervalMax != null && edge.getTimeInterval().getHigh() > timeIntervalMax) {
+                    edge.setTimeInterval((TimeInterval) DynamicUtilities.fitToInterval(edge.getTimeInterval(), edge.getTimeInterval().getLow(), timeIntervalMax));
+                    issue = true;
+                }
+
+                AttributeValue[] values = edge.getAttributeRow().getValues();
+                for (int i = 0; i < values.length; i++) {
+                    AttributeValue val = values[i];
+                    if (val.getValue() != null && DynamicType.class.isAssignableFrom(val.getColumn().getType().getType())) {   //is Dynamic type
+                        DynamicType type = (DynamicType) val.getValue();
+                        if (timeIntervalMin != null && type.getLow() < timeIntervalMin) {
+                            issue = true;
+                            edge.getAttributeRow().setValue(val.getColumn(), DynamicUtilities.fitToInterval(type, timeIntervalMin, type.getHigh()));
+                        }
+                        if (timeIntervalMax != null && type.getHigh() > timeIntervalMax) {
+                            issue = true;
+                            edge.getAttributeRow().setValue(val.getColumn(), DynamicUtilities.fitToInterval(type, type.getLow(), timeIntervalMax));
+                        }
+                    }
+                }
+                if (issue) {
+                    report.logIssue(new Issue(NbBundle.getMessage(ImportContainerImpl.class, "ImportContainerException_TimeIntervalVerify_Edge_OutOfBound", edge.getId()), Level.WARNING));
+                }
+            }
+        }
+
         return true;
     }
 
