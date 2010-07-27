@@ -21,6 +21,7 @@
 package org.gephi.dynamic.api;
 
 import org.gephi.data.attributes.type.TimeInterval;
+import org.gephi.graph.api.Graph;
 
 /**
  * Root interface that contains the complete dynamic graph structure and build
@@ -31,17 +32,15 @@ import org.gephi.data.attributes.type.TimeInterval;
  * @see DynamicController
  */
 public interface DynamicModel {
-	/**
-	 * The name of a column containing time intervals.
-	 */
-    public static final String TIMEINTERVAL_COLUMN = "time_interval";
 
     /**
-     * Returns the {@code DynamicGraph} of the current workspace.
-     *
-     * @return the {@code DynamicGraph} of the current workspace.
+     * The name of a column containing time intervals.
      */
-    public DynamicGraph getDynamicGraph();
+    public static final String TIMEINTERVAL_COLUMN = "time_interval";
+
+    public DynamicGraph createDynamicGraph(Graph graph);
+
+    public DynamicGraph createDynamicGraph(Graph graph, TimeInterval interval);
 
     /**
      * Returns the time interval wrapped by the {@code DynamicGraph} of
