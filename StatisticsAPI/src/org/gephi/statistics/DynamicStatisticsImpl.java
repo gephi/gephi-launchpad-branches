@@ -20,6 +20,7 @@
  */
 package org.gephi.statistics;
 
+import org.gephi.data.attributes.api.Estimator;
 import org.gephi.data.attributes.type.TimeInterval;
 import org.gephi.statistics.spi.DynamicStatistics;
 
@@ -29,8 +30,9 @@ import org.gephi.statistics.spi.DynamicStatistics;
  * @author Cezary Bartosiak
  */
 public class DynamicStatisticsImpl implements DynamicStatistics {
-	private TimeInterval timeInterval = new TimeInterval(Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
-	private double       window       = Double.POSITIVE_INFINITY - Double.NEGATIVE_INFINITY;
+	protected TimeInterval timeInterval = new TimeInterval(Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
+	protected double       window       = Double.POSITIVE_INFINITY - Double.NEGATIVE_INFINITY;
+	protected Estimator    estimator    = Estimator.FIRST;
 
 	public TimeInterval getTimeInterval() {
 		return timeInterval;
@@ -40,19 +42,30 @@ public class DynamicStatisticsImpl implements DynamicStatistics {
 		return window;
 	}
 
-	public void setTimeInterval(double low, double high) {
-		if (low > high)
-			throw new IllegalArgumentException(
-						"The left endpoint of the interval must be less than " +
-						"the right endpoint.");
+	public Estimator getEstimator() {
+		return estimator;
+	}
 
-		timeInterval = new TimeInterval(low, high);
+	public void setTimeInterval(TimeInterval timeInterval) {
+		this.timeInterval = timeInterval;
 	}
 
 	public void setWindow(double window) {
-		if (window < 0)
-			throw new IllegalArgumentException("The window must be greater than 0.");
+		if (window < 0 || window > timeInterval.getHigh() - timeInterval.getLow())
+			throw new IllegalArgumentException(
+						"The window must be greater than 0 " +
+						"and less or equal to (high - low).");
 
 		this.window = window;
+	}
+
+	public void setEstimator(Estimator estimator) {
+		if (estimator != Estimator.MEDIAN && estimator != Estimator.MODE &&
+				estimator != Estimator.FIRST && estimator != Estimator.LAST)
+			throw new IllegalArgumentException(
+					"The given estimator must be one of the following: " +
+					"MEDIAN, MODE, FIRST, LAST.");
+
+		this.estimator = estimator;
 	}
 }

@@ -20,6 +20,7 @@
  */
 package org.gephi.statistics.spi;
 
+import org.gephi.data.attributes.api.Estimator;
 import org.gephi.data.attributes.type.TimeInterval;
 
 /**
@@ -31,12 +32,9 @@ public interface DynamicStatistics {
 	/**
 	 * Sets a time interval for which the statistics is executed.
 	 *
-	 * @param low  the left endpoint
-	 * @param high the right endpoint
-	 *
-	 * @throws IllegalArgumentException if {@code low} > {@code high}.
+	 * @param timeInterval the {@code TimeInterval} to set
 	 */
-	public void setTimeInterval(double low, double high);
+	public void setTimeInterval(TimeInterval timeInterval);
 
 	/**
 	 * Sets the window - duration of one slice. It can be for instance
@@ -44,9 +42,21 @@ public interface DynamicStatistics {
 	 *
 	 * @param window duration of one slice
 	 *
-	 * @throws IllegalArgumentException if {@code window} <= {@code 0}.
+	 * @throws IllegalArgumentException if {@code window} <= {@code 0} or
+	 *                                  {@code window} > {@code high} - {@code low}.
 	 */
 	public void setWindow(double window);
+
+	/**
+	 * Sets the {@code Estimator} used to estimate snapshot graphs.
+	 *
+	 * @param estimator the {@code Estimator} used to estimate snapshot graphs
+	 *
+	 * @throws IllegalArgumentException if the given {@code Estimator} is other than
+	 *                                  {@code MEDIAN}, {@code MODE}, {@code FIRST} or
+	 *                                  {@code LAST}.
+	 */
+	public void setEstimator(Estimator estimator);
 
 	/**
 	 * Returns the time interval for which the statistics is executed.
@@ -61,4 +71,11 @@ public interface DynamicStatistics {
 	 * @return the duration of one slice.
 	 */
 	public double getWindow();
+
+	/**
+	 * Returns the {@code Estimator} used to estimate snapshot graphs.
+	 *
+	 * @return the {@code Estimator} used to estimate snapshot graphs.
+	 */
+	public Estimator getEstimator();
 }

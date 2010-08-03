@@ -74,6 +74,7 @@ public final class DynamicGraphImpl implements DynamicGraph {
 					"The left endpoint of the interval must be less than "
 					+ "the right endpoint.");
 
+		model       = graph.getGraphModel();
 		sourceView  = graph.getView();
 		currentView = graph.getView().getGraphModel().copyView(sourceView);
 
@@ -82,14 +83,14 @@ public final class DynamicGraphImpl implements DynamicGraph {
 
 		if (low != Double.NEGATIVE_INFINITY || high != Double.POSITIVE_INFINITY) {
 			Graph vgraph = model.getGraph(currentView);
-			for (Node n : vgraph.getNodes().toArray()) {
-				TimeInterval ti = (TimeInterval) n.getNodeData().getAttributes().getValue(
+			for (Node n : vgraph.getNodes()) {
+				TimeInterval ti = (TimeInterval)n.getNodeData().getAttributes().getValue(
 						DynamicModel.TIMEINTERVAL_COLUMN);
 				if (!ti.isInRange(low, high))
-					graph.removeNode(n);
+					vgraph.removeNode(n);
 			}
-			for (Edge e : vgraph.getEdges().toArray()) {
-				TimeInterval ti = (TimeInterval) e.getEdgeData().getAttributes().getValue(
+			for (Edge e : vgraph.getEdges()) {
+				TimeInterval ti = (TimeInterval)e.getEdgeData().getAttributes().getValue(
 						DynamicModel.TIMEINTERVAL_COLUMN);
 				if (!ti.isInRange(low, high))
 					vgraph.removeEdge(e);

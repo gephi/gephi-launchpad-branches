@@ -20,12 +20,19 @@
  */
 package org.gephi.statistics.plugin;
 
+import java.util.ArrayList;
 import org.gephi.data.attributes.api.AttributeModel;
+import org.gephi.dynamic.api.DynamicController;
+import org.gephi.dynamic.api.DynamicGraph;
+import org.gephi.dynamic.api.DynamicModel;
+import org.gephi.graph.api.Graph;
 import org.gephi.graph.api.GraphModel;
 import org.gephi.statistics.DynamicStatisticsImpl;
 import org.gephi.statistics.spi.Statistics;
 import org.gephi.utils.longtask.spi.LongTask;
+import org.gephi.utils.progress.Progress;
 import org.gephi.utils.progress.ProgressTicket;
+import org.openide.util.Lookup;
 
 /**
  * This class measures how closely the degree distribution of a
@@ -37,8 +44,32 @@ import org.gephi.utils.progress.ProgressTicket;
  * @author Cezary Bartosiak
  */
 public class DynamicDegreeDistribution extends DynamicStatisticsImpl implements Statistics, LongTask {
+	private String         report = "";
 	private boolean        cancel;
 	private ProgressTicket progressTicket;
+
+	private boolean           directed;
+	private ArrayList<String> reports;
+
+	/**
+	 * Indicates if this network should be directed or undirected.
+	 *
+	 * @param directed indicates the metric's interpretation of this network
+	 */
+	public void setDirected(boolean directed) {
+		this.directed = directed;
+	}
+
+	/**
+	 * Returns {@code true} if this network should be directed,
+	 * otherwise {@code false}.
+	 *
+	 * @return {@code true} if this network should be directed,
+	 *         otherwise {@code false}.
+	 */
+	public boolean isDirected() {
+		return directed;
+	}
 
 	/**
 	 * Executes the metric.
@@ -47,7 +78,37 @@ public class DynamicDegreeDistribution extends DynamicStatisticsImpl implements 
 	 * @param attributeModel attributes' model to work on
 	 */
 	public void execute(GraphModel graphModel, AttributeModel attributeModel) {
-		throw new UnsupportedOperationException("Not supported yet.");
+		Graph graph = graphModel.getGraph();
+
+		DynamicController dynamicController = Lookup.getDefault().lookup(DynamicController.class);
+		DynamicModel      dynamicModel      = dynamicController.getModel();
+		DynamicGraph      dynamicGraph      = dynamicModel.createDynamicGraph(graph, timeInterval);
+
+		report = "";
+		cancel = false;
+		graph.readLock();
+		
+		int progress = 0;
+		Progress.start(progressTicket, progress);
+
+		reports = new ArrayList<String>();
+		for (double low = timeInterval.getLow(); low < timeInterval.getHigh(); low += window) {
+			double high = low + window;
+
+			Graph              g  = dynamicGraph.getSnapshotGraph(low, high, estimator);
+			DegreeDistribution dd = new DegreeDistribution();
+			dd.setDirected(directed);
+			dd.execute(g, attributeModel);
+			reports.add(dd.getReport());
+
+			Progress.progress(progressTicket, ++progress);
+			if (cancel) {
+				graph.readUnlockAll();
+				return;
+			}
+		}
+
+		graph.readUnlock();
 	}
 
 	/**
@@ -56,7 +117,7 @@ public class DynamicDegreeDistribution extends DynamicStatisticsImpl implements 
 	 * @return the report based on the interpretation of the network.
 	 */
 	public String getReport() {
-		throw new UnsupportedOperationException("Not supported yet.");
+		return report;
 	}
 
 	/**

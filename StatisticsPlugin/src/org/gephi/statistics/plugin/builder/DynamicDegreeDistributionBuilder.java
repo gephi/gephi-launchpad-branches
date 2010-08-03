@@ -36,7 +36,8 @@ import org.openide.util.lookup.ServiceProvider;
 public class DynamicDegreeDistributionBuilder implements StatisticsBuilder {
 	@Override
 	public String getName() {
-		return NbBundle.getMessage(DynamicDegreeDistributionBuilder.class, "DynamicDegreeDistribution.name");
+		// return NbBundle.getMessage(DynamicDegreeDistributionBuilder.class, "DynamicDegreeDistribution.name");
+		return "DynamicDegreeDistribution builder";
 	}
 
 	@Override
