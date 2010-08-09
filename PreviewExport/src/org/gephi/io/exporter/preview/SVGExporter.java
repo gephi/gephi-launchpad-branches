@@ -113,8 +113,7 @@ public class SVGExporter implements GraphRenderer, CharacterExporter, VectorExpo
 
         // creates SVG-to-SVG transcoder
         SVGTranscoder t = new SVGTranscoder();
-        t.addTranscodingHint(SVGTranscoder.KEY_XML_DECLARATION,
-                new String("<?xml version=\"1.0\" encoding=\"utf-8\"?>"));
+        t.addTranscodingHint(SVGTranscoder.KEY_XML_DECLARATION, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
 
         // sets transcoder input and output
         TranscoderInput input = new TranscoderInput(doc);
