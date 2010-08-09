@@ -37,7 +37,7 @@ public class DynamicDegreeDistributionBuilder implements StatisticsBuilder {
 	@Override
 	public String getName() {
 		// return NbBundle.getMessage(DynamicDegreeDistributionBuilder.class, "DynamicDegreeDistribution.name");
-		return "DynamicDegreeDistribution builder";
+		return "Dynamic Degree Distribution";
 	}
 
 	@Override

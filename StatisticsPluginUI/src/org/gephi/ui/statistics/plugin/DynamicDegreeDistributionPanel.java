@@ -26,5 +26,17 @@ package org.gephi.ui.statistics.plugin;
  * @author Cezary Bartosiak
  */
 public class DynamicDegreeDistributionPanel extends DynamicPanel {
+	private DegreeDistributionPanel panel = new DegreeDistributionPanel();
 
+	public DynamicDegreeDistributionPanel() {
+		setContent(panel, 150);
+	}
+
+	public boolean isDirected() {
+		return panel.isDirected();
+	}
+
+	public void setDirected(boolean directed) {
+		panel.setDirected(directed);
+	}
 }

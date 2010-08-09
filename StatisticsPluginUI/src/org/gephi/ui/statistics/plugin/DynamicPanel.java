@@ -20,7 +20,9 @@
  */
 package org.gephi.ui.statistics.plugin;
 
+import java.awt.Dimension;
 import java.util.Date;
+import javax.swing.JPanel;
 import javax.xml.datatype.DatatypeConfigurationException;
 import org.gephi.data.attributes.api.Estimator;
 import org.gephi.data.attributes.type.TimeInterval;
@@ -115,6 +117,20 @@ public class DynamicPanel extends javax.swing.JPanel {
 		}
 	}
 
+	protected void setContent(JPanel panel, int height) {
+		javax.swing.GroupLayout contentLayout = new javax.swing.GroupLayout(content);
+		content.setLayout(contentLayout);
+		contentLayout.setHorizontalGroup(
+			contentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+			.addComponent(panel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE,
+				Short.MAX_VALUE)
+		);
+		contentLayout.setVerticalGroup(
+			contentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+			.addComponent(panel, height, height, height)
+		);
+	}
+
 	/** This method is called from within the constructor to
 	 * initialize the form.
 	 * WARNING: Do NOT modify this code. The content of this method is
@@ -124,6 +140,7 @@ public class DynamicPanel extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jPanel1 = new javax.swing.JPanel();
         timeIntervalLabel = new javax.swing.JLabel();
         windowLabel = new javax.swing.JLabel();
         beginTimeInterval = new javax.swing.JFormattedTextField();
@@ -133,8 +150,20 @@ public class DynamicPanel extends javax.swing.JPanel {
         estimatorComboBox = new javax.swing.JComboBox();
         estimatorLabel = new javax.swing.JLabel();
         jSeparator1 = new javax.swing.JSeparator();
+        content = new javax.swing.JPanel();
 
-        setPreferredSize(new java.awt.Dimension(419, 240));
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 100, Short.MAX_VALUE)
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 100, Short.MAX_VALUE)
+        );
+
+        setPreferredSize(new java.awt.Dimension(419, 300));
 
         timeIntervalLabel.setText(org.openide.util.NbBundle.getMessage(DynamicPanel.class, "DynamicPanel.timeIntervalLabel.text")); // NOI18N
 
@@ -153,6 +182,17 @@ public class DynamicPanel extends javax.swing.JPanel {
         estimatorComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "FIRST", "LAST", "MEDIAN", "MODE", " " }));
 
         estimatorLabel.setText(org.openide.util.NbBundle.getMessage(DynamicPanel.class, "DynamicPanel.estimatorLabel.text")); // NOI18N
+
+        javax.swing.GroupLayout contentLayout = new javax.swing.GroupLayout(content);
+        content.setLayout(contentLayout);
+        contentLayout.setHorizontalGroup(
+            contentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 429, Short.MAX_VALUE)
+        );
+        contentLayout.setVerticalGroup(
+            contentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 143, Short.MAX_VALUE)
+        );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -173,18 +213,20 @@ public class DynamicPanel extends javax.swing.JPanel {
                                 .addComponent(separatorTimeInterval)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(endTimeInterval, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addContainerGap(197, Short.MAX_VALUE))
+                        .addContainerGap(207, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(estimatorLabel)
-                            .addComponent(estimatorComboBox, 0, 100, Short.MAX_VALUE))
+                            .addComponent(estimatorComboBox, 0, 110, Short.MAX_VALUE))
                         .addGap(309, 309, 309))))
-            .addComponent(jSeparator1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 419, Short.MAX_VALUE)
+            .addComponent(jSeparator1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 429, Short.MAX_VALUE)
+            .addComponent(content, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(171, Short.MAX_VALUE)
+                .addComponent(content, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(timeIntervalLabel)
@@ -211,9 +253,11 @@ public class DynamicPanel extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JFormattedTextField beginTimeInterval;
+    protected javax.swing.JPanel content;
     private javax.swing.JFormattedTextField endTimeInterval;
     private javax.swing.JComboBox estimatorComboBox;
     private javax.swing.JLabel estimatorLabel;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JLabel separatorTimeInterval;
     private javax.swing.JLabel timeIntervalLabel;

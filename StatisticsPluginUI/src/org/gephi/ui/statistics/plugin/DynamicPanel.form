@@ -1,9 +1,26 @@
 <?xml version="1.1" encoding="UTF-8" ?>
 
 <Form version="1.5" maxVersion="1.7" type="org.netbeans.modules.form.forminfo.JPanelFormInfo">
+  <NonVisualComponents>
+    <Container class="javax.swing.JPanel" name="jPanel1">
+
+      <Layout>
+        <DimensionLayout dim="0">
+          <Group type="103" groupAlignment="0" attributes="0">
+              <EmptySpace min="0" pref="100" max="32767" attributes="0"/>
+          </Group>
+        </DimensionLayout>
+        <DimensionLayout dim="1">
+          <Group type="103" groupAlignment="0" attributes="0">
+              <EmptySpace min="0" pref="100" max="32767" attributes="0"/>
+          </Group>
+        </DimensionLayout>
+      </Layout>
+    </Container>
+  </NonVisualComponents>
   <Properties>
     <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-      <Dimension value="[419, 240]"/>
+      <Dimension value="[419, 300]"/>
     </Property>
   </Properties>
   <AuxValues>
@@ -39,24 +56,26 @@
                               <Component id="endTimeInterval" min="-2" pref="100" max="-2" attributes="0"/>
                           </Group>
                       </Group>
-                      <EmptySpace pref="197" max="32767" attributes="0"/>
+                      <EmptySpace pref="207" max="32767" attributes="0"/>
                   </Group>
                   <Group type="102" alignment="0" attributes="0">
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="estimatorLabel" alignment="0" min="-2" max="-2" attributes="0"/>
-                          <Component id="estimatorComboBox" alignment="0" pref="100" max="32767" attributes="1"/>
+                          <Component id="estimatorComboBox" alignment="0" pref="110" max="32767" attributes="1"/>
                       </Group>
                       <EmptySpace min="-2" pref="309" max="-2" attributes="0"/>
                   </Group>
               </Group>
           </Group>
-          <Component id="jSeparator1" alignment="1" pref="419" max="32767" attributes="0"/>
+          <Component id="jSeparator1" alignment="1" pref="429" max="32767" attributes="0"/>
+          <Component id="content" alignment="0" max="32767" attributes="0"/>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="1" attributes="0">
-              <EmptySpace pref="89" max="32767" attributes="0"/>
+              <Component id="content" max="32767" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
               <Component id="jSeparator1" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="timeIntervalLabel" min="-2" max="-2" attributes="0"/>
@@ -172,5 +191,23 @@
     </Component>
     <Component class="javax.swing.JSeparator" name="jSeparator1">
     </Component>
+    <Container class="javax.swing.JPanel" name="content">
+      <AuxValues>
+        <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="4"/>
+      </AuxValues>
+
+      <Layout>
+        <DimensionLayout dim="0">
+          <Group type="103" groupAlignment="0" attributes="0">
+              <EmptySpace min="0" pref="429" max="32767" attributes="0"/>
+          </Group>
+        </DimensionLayout>
+        <DimensionLayout dim="1">
+          <Group type="103" groupAlignment="0" attributes="0">
+              <EmptySpace min="0" pref="143" max="32767" attributes="0"/>
+          </Group>
+        </DimensionLayout>
+      </Layout>
+    </Container>
   </SubComponents>
 </Form>
