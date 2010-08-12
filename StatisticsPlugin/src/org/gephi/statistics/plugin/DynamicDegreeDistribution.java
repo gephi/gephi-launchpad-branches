@@ -78,15 +78,15 @@ public class DynamicDegreeDistribution extends DynamicStatisticsImpl implements 
 	 * @param attributeModel attributes' model to work on
 	 */
 	public void execute(GraphModel graphModel, AttributeModel attributeModel) {
-		Graph graph = graphModel.getGraph();
+		Graph graph = graphModel.getGraphVisible();
 
 		DynamicController dynamicController = Lookup.getDefault().lookup(DynamicController.class);
 		DynamicModel      dynamicModel      = dynamicController.getModel();
 		DynamicGraph      dynamicGraph      = dynamicModel.createDynamicGraph(graph, timeInterval);
 
-		report = "";
+		report = "TEST";
 		cancel = false;
-		graph.readLock();
+		graph.writeLock();
 		
 		int progress = 0;
 		Progress.start(progressTicket, progress);
@@ -103,12 +103,12 @@ public class DynamicDegreeDistribution extends DynamicStatisticsImpl implements 
 
 			Progress.progress(progressTicket, ++progress);
 			if (cancel) {
-				graph.readUnlockAll();
+				graph.writeUnlock();
 				return;
 			}
 		}
 
-		graph.readUnlock();
+		graph.writeUnlock();
 	}
 
 	/**
