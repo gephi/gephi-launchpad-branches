@@ -23,7 +23,6 @@ package org.gephi.statistics.plugin.builder;
 import org.gephi.statistics.plugin.DynamicDegreeDistribution;
 import org.gephi.statistics.spi.Statistics;
 import org.gephi.statistics.spi.StatisticsBuilder;
-import org.openide.util.NbBundle;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -36,7 +35,6 @@ import org.openide.util.lookup.ServiceProvider;
 public class DynamicDegreeDistributionBuilder implements StatisticsBuilder {
 	@Override
 	public String getName() {
-		// return NbBundle.getMessage(DynamicDegreeDistributionBuilder.class, "DynamicDegreeDistribution.name");
 		return "Dynamic Degree Distribution";
 	}
 

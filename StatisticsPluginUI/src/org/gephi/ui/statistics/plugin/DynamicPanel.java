@@ -20,14 +20,12 @@
  */
 package org.gephi.ui.statistics.plugin;
 
-import java.awt.Dimension;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import javax.swing.JPanel;
-import javax.xml.datatype.DatatypeConfigurationException;
 import org.gephi.data.attributes.api.Estimator;
 import org.gephi.data.attributes.type.TimeInterval;
 import org.gephi.dynamic.DynamicUtilities;
-import org.openide.util.Exceptions;
 
 /**
  * A base class for all dynamic panels.
@@ -41,25 +39,31 @@ public class DynamicPanel extends javax.swing.JPanel {
 	}
 
 	public TimeInterval getTimeInterval() {
-		try {
-			return new TimeInterval(
-				DynamicUtilities.getDoubleFromXMLDateString(beginTimeInterval.getText()),
-				DynamicUtilities.getDoubleFromXMLDateString(endTimeInterval.getText())
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		String begin = sdf.format(beginDatePicker.getDate());
+		String end   = sdf.format(endDatePicker.getDate());
+		int beginHour   = (Integer)beginHourSpinner.getValue();
+		int beginMinute = (Integer)beginMinuteSpinner.getValue();
+		int beginSecond = (Integer)beginSecondSpinner.getValue();
+		int endHour     = (Integer)endHourSpinner.getValue();
+		int endMinute   = (Integer)endMinuteSpinner.getValue();
+		int endSecond   = (Integer)endSecondSpinner.getValue();
+		begin += "T" + (beginHour < 10 ? "0" + beginHour : beginHour);
+		begin += ":" + (beginMinute < 10 ? "0" + beginMinute : beginMinute);
+		begin += ":" + (beginSecond < 10 ? "0" + beginSecond : beginSecond);
+		end   += "T" + (endHour < 10 ? "0" + endHour : endHour);
+		end   += ":" + (endMinute < 10 ? "0" + endMinute : endMinute);
+		end   += ":" + (endSecond < 10 ? "0" + endSecond : endSecond);
+		
+		return new TimeInterval(
+				DynamicUtilities.getDoubleFromXMLDateString(begin),
+				DynamicUtilities.getDoubleFromXMLDateString(end)
 			);
-		}
-		catch (DatatypeConfigurationException ex) {
-			Exceptions.printStackTrace(ex);
-			return new TimeInterval(Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
-		}
 	}
 
 	public double getWindow() {
-		switch (windowComboBox.getSelectedIndex()) {
-			case 0: // Years
-				return 365.0 * 24.0 * 60.0 * 60.0 * 1000.0;
-			default:
-				return 365.0 * 24.0 * 60.0 * 60.0 * 1000.0;
-		}
+		TimeInterval timeInterval = getTimeInterval();
+		return windowSlider.getValue() / 100.0 * (timeInterval.getHigh() - timeInterval.getLow());
 	}
 
 	public Estimator getEstimator() {
@@ -79,41 +83,61 @@ public class DynamicPanel extends javax.swing.JPanel {
 
 	public void setTimeInterval(TimeInterval timeInterval) {
 		try {
-			beginTimeInterval.setValue(DynamicUtilities.getXMLDateStringFromDouble(timeInterval.getLow()).
-					substring(0, 10));
-			endTimeInterval.setValue(DynamicUtilities.getXMLDateStringFromDouble(timeInterval.getHigh()).
-					substring(0, 10));
+			String begin     = DynamicUtilities.getXMLDateStringFromDouble(timeInterval.getLow()).replace('T', ' ').
+								substring(0, 19);
+			String beginDate = begin.split(" ")[0];
+			String beginTime = begin.split(" ")[1];
+			String end       = DynamicUtilities.getXMLDateStringFromDouble(timeInterval.getHigh()).replace('T', ' ').
+								substring(0, 19);
+			String endDate   = end.split(" ")[0];
+			String endTime   = end.split(" ")[1];
+
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+			beginDatePicker.setDate(sdf.parse(beginDate));
+			beginHourSpinner.setValue(Integer.parseInt(beginTime.split(":")[0]));
+			beginMinuteSpinner.setValue(Integer.parseInt(beginTime.split(":")[1]));
+			beginSecondSpinner.setValue(Integer.parseInt(beginTime.split(":")[2]));
+			endDatePicker.setDate(sdf.parse(endDate));
+			endHourSpinner.setValue(Integer.parseInt(endTime.split(":")[0]));
+			endMinuteSpinner.setValue(Integer.parseInt(endTime.split(":")[1]));
+			endSecondSpinner.setValue(Integer.parseInt(endTime.split(":")[2]));
 		}
-		catch (DatatypeConfigurationException ex) {
-			Exceptions.printStackTrace(ex);
-		}
-		catch (IllegalArgumentException ex) {
-			Date date = new Date();
-			beginTimeInterval.setValue(date);
-			endTimeInterval.setValue(date);
+		catch (Exception ex) {
+			beginDatePicker.setDate(new Date());
+			beginHourSpinner.setValue(0);
+			beginMinuteSpinner.setValue(0);
+			beginSecondSpinner.setValue(0);
+			endDatePicker.setDate(new Date());
+			endHourSpinner.setValue(23);
+			endMinuteSpinner.setValue(59);
+			endSecondSpinner.setValue(59);
 		}
 	}
 
 	public void setWindow(double window) {
-		double yearLow  = 365.0 * 24.0 * 60.0 * 60.0 * 1000.0 - 0.001;
-		double yearHigh = 365.0 * 24.0 * 60.0 * 60.0 * 1000.0 + 0.001;
-		if (window >= yearLow && window <= yearHigh)
-			windowComboBox.setSelectedIndex(0);
-		else windowComboBox.setSelectedIndex(0);
+		TimeInterval timeInterval = getTimeInterval();
+		if (window > timeInterval.getHigh() - timeInterval.getLow() || Double.compare(window, 0.0) == 0)
+			windowSlider.setValue(100);
+		else windowSlider.setValue((int)Math.round(window / (timeInterval.getHigh() - timeInterval.getLow()) * 100));
 	}
 
 	public void setEstimator(Estimator estimator) {
 		switch (estimator) {
 			case FIRST:
 				estimatorComboBox.setSelectedIndex(0);
+				break;
 			case LAST:
 				estimatorComboBox.setSelectedIndex(1);
+				break;
 			case MEDIAN:
 				estimatorComboBox.setSelectedIndex(2);
+				break;
 			case MODE:
 				estimatorComboBox.setSelectedIndex(3);
+				break;
 			default:
 				estimatorComboBox.setSelectedIndex(0);
+				break;
 		}
 	}
 
@@ -139,45 +163,31 @@ public class DynamicPanel extends javax.swing.JPanel {
 	@SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
-
-        jPanel1 = new javax.swing.JPanel();
         timeIntervalLabel = new javax.swing.JLabel();
         windowLabel = new javax.swing.JLabel();
-        beginTimeInterval = new javax.swing.JFormattedTextField();
-        separatorTimeInterval = new javax.swing.JLabel();
-        endTimeInterval = new javax.swing.JFormattedTextField();
-        windowComboBox = new javax.swing.JComboBox();
+        separatorTimeInterval1 = new javax.swing.JLabel();
         estimatorComboBox = new javax.swing.JComboBox();
         estimatorLabel = new javax.swing.JLabel();
-        jSeparator1 = new javax.swing.JSeparator();
         content = new javax.swing.JPanel();
+        windowSlider = new javax.swing.JSlider();
+        separator = new javax.swing.JSeparator();
+        beginDatePicker = new org.jdesktop.swingx.JXDatePicker();
+        endDatePicker = new org.jdesktop.swingx.JXDatePicker();
+        beginHourSpinner = new javax.swing.JSpinner();
+        beginMinuteSpinner = new javax.swing.JSpinner();
+        beginSecondSpinner = new javax.swing.JSpinner();
+        separatorTimeInterval2 = new javax.swing.JLabel();
+        endHourSpinner = new javax.swing.JSpinner();
+        endMinuteSpinner = new javax.swing.JSpinner();
+        endSecondSpinner = new javax.swing.JSpinner();
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 100, Short.MAX_VALUE)
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 100, Short.MAX_VALUE)
-        );
-
-        setPreferredSize(new java.awt.Dimension(419, 300));
+        setPreferredSize(new java.awt.Dimension(419, 381));
 
         timeIntervalLabel.setText(org.openide.util.NbBundle.getMessage(DynamicPanel.class, "DynamicPanel.timeIntervalLabel.text")); // NOI18N
 
         windowLabel.setText(org.openide.util.NbBundle.getMessage(DynamicPanel.class, "DynamicPanel.windowLabel.text")); // NOI18N
 
-        beginTimeInterval.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.DateFormatter()));
-        beginTimeInterval.setText(org.openide.util.NbBundle.getMessage(DynamicPanel.class, "DynamicPanel.beginTimeInterval.text")); // NOI18N
-
-        separatorTimeInterval.setText(org.openide.util.NbBundle.getMessage(DynamicPanel.class, "DynamicPanel.separatorTimeInterval.text")); // NOI18N
-
-        endTimeInterval.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.DateFormatter()));
-        endTimeInterval.setText(org.openide.util.NbBundle.getMessage(DynamicPanel.class, "DynamicPanel.endTimeInterval.text")); // NOI18N
-
-        windowComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Years" }));
+        separatorTimeInterval1.setText(org.openide.util.NbBundle.getMessage(DynamicPanel.class, "DynamicPanel.separatorTimeInterval1.text")); // NOI18N
 
         estimatorComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "FIRST", "LAST", "MEDIAN", "MODE", " " }));
 
@@ -187,12 +197,41 @@ public class DynamicPanel extends javax.swing.JPanel {
         content.setLayout(contentLayout);
         contentLayout.setHorizontalGroup(
             contentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 429, Short.MAX_VALUE)
+            .addGap(0, 419, Short.MAX_VALUE)
         );
         contentLayout.setVerticalGroup(
             contentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 143, Short.MAX_VALUE)
+            .addGap(0, 161, Short.MAX_VALUE)
         );
+
+        windowSlider.setMajorTickSpacing(10);
+        windowSlider.setMinorTickSpacing(1);
+        windowSlider.setPaintLabels(true);
+        windowSlider.setPaintTicks(true);
+        windowSlider.setSnapToTicks(true);
+        windowSlider.setValue(100);
+
+        beginDatePicker.setMaximumSize(new java.awt.Dimension(150, 22));
+        beginDatePicker.setMinimumSize(new java.awt.Dimension(150, 22));
+        beginDatePicker.setPreferredSize(new java.awt.Dimension(150, 22));
+
+        endDatePicker.setMaximumSize(new java.awt.Dimension(150, 22));
+        endDatePicker.setMinimumSize(new java.awt.Dimension(150, 22));
+        endDatePicker.setPreferredSize(new java.awt.Dimension(150, 22));
+
+        beginHourSpinner.setModel(new javax.swing.SpinnerNumberModel(0, 0, 23, 1));
+
+        beginMinuteSpinner.setModel(new javax.swing.SpinnerNumberModel(0, 0, 59, 1));
+
+        beginSecondSpinner.setModel(new javax.swing.SpinnerNumberModel(0, 0, 59, 1));
+
+        separatorTimeInterval2.setText(org.openide.util.NbBundle.getMessage(DynamicPanel.class, "DynamicPanel.separatorTimeInterval2.text")); // NOI18N
+
+        endHourSpinner.setModel(new javax.swing.SpinnerNumberModel(0, 0, 23, 1));
+
+        endMinuteSpinner.setModel(new javax.swing.SpinnerNumberModel(0, 0, 59, 1));
+
+        endSecondSpinner.setModel(new javax.swing.SpinnerNumberModel(0, 0, 59, 1));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -200,26 +239,49 @@ public class DynamicPanel extends javax.swing.JPanel {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
+                .addComponent(windowSlider, javax.swing.GroupLayout.DEFAULT_SIZE, 399, Short.MAX_VALUE)
+                .addContainerGap())
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(estimatorLabel)
+                .addContainerGap(326, Short.MAX_VALUE))
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(estimatorComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(309, 309, 309))
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(windowLabel)
+                .addContainerGap(168, Short.MAX_VALUE))
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(timeIntervalLabel, javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                .addComponent(beginHourSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(beginMinuteSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(beginSecondSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(separatorTimeInterval2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                .addComponent(beginDatePicker, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(separatorTimeInterval1)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(timeIntervalLabel)
-                            .addComponent(windowLabel)
                             .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                    .addComponent(windowComboBox, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(beginTimeInterval, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 100, Short.MAX_VALUE))
+                                .addComponent(endHourSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(separatorTimeInterval)
+                                .addComponent(endMinuteSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(endTimeInterval, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addContainerGap(207, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(estimatorLabel)
-                            .addComponent(estimatorComboBox, 0, 110, Short.MAX_VALUE))
-                        .addGap(309, 309, 309))))
-            .addComponent(jSeparator1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 429, Short.MAX_VALUE)
+                                .addComponent(endSecondSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(endDatePicker, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addContainerGap(119, Short.MAX_VALUE))
+            .addComponent(separator, javax.swing.GroupLayout.DEFAULT_SIZE, 419, Short.MAX_VALUE)
             .addComponent(content, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
@@ -227,19 +289,28 @@ public class DynamicPanel extends javax.swing.JPanel {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addComponent(content, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(separator, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(timeIntervalLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(beginTimeInterval, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(separatorTimeInterval)
-                    .addComponent(endTimeInterval, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(beginDatePicker, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(separatorTimeInterval1)
+                    .addComponent(endDatePicker, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(beginHourSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(beginMinuteSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(beginSecondSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(separatorTimeInterval2)
+                    .addComponent(endHourSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(endMinuteSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(endSecondSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(windowLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(windowComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(windowSlider, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(estimatorLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(estimatorComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -248,20 +319,27 @@ public class DynamicPanel extends javax.swing.JPanel {
 
         timeIntervalLabel.getAccessibleContext().setAccessibleName(org.openide.util.NbBundle.getMessage(DynamicPanel.class, "DynamicPanel.timeIntervalLabel.AccessibleContext.accessibleName")); // NOI18N
         windowLabel.getAccessibleContext().setAccessibleName(org.openide.util.NbBundle.getMessage(DynamicPanel.class, "DynamicPanel.windowLabel.AccessibleContext.accessibleName")); // NOI18N
-        separatorTimeInterval.getAccessibleContext().setAccessibleName(org.openide.util.NbBundle.getMessage(DynamicPanel.class, "DynamicPanel.jLabel1.AccessibleContext.accessibleName")); // NOI18N
+        separatorTimeInterval1.getAccessibleContext().setAccessibleName(org.openide.util.NbBundle.getMessage(DynamicPanel.class, "DynamicPanel.jLabel1.AccessibleContext.accessibleName")); // NOI18N
         estimatorLabel.getAccessibleContext().setAccessibleName(org.openide.util.NbBundle.getMessage(DynamicPanel.class, "DynamicPanel.estimatorLabel.AccessibleContext.accessibleName")); // NOI18N
     }// </editor-fold>//GEN-END:initComponents
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JFormattedTextField beginTimeInterval;
-    protected javax.swing.JPanel content;
-    private javax.swing.JFormattedTextField endTimeInterval;
+    private org.jdesktop.swingx.JXDatePicker beginDatePicker;
+    private javax.swing.JSpinner beginHourSpinner;
+    private javax.swing.JSpinner beginMinuteSpinner;
+    private javax.swing.JSpinner beginSecondSpinner;
+    private javax.swing.JPanel content;
+    private org.jdesktop.swingx.JXDatePicker endDatePicker;
+    private javax.swing.JSpinner endHourSpinner;
+    private javax.swing.JSpinner endMinuteSpinner;
+    private javax.swing.JSpinner endSecondSpinner;
     private javax.swing.JComboBox estimatorComboBox;
     private javax.swing.JLabel estimatorLabel;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JSeparator jSeparator1;
-    private javax.swing.JLabel separatorTimeInterval;
+    private javax.swing.JSeparator separator;
+    private javax.swing.JLabel separatorTimeInterval1;
+    private javax.swing.JLabel separatorTimeInterval2;
     private javax.swing.JLabel timeIntervalLabel;
-    private javax.swing.JComboBox windowComboBox;
     private javax.swing.JLabel windowLabel;
+    private javax.swing.JSlider windowSlider;
     // End of variables declaration//GEN-END:variables
 }
