@@ -440,14 +440,18 @@ public final class DynamicUtilities {
 		if (source == null)
 			throw new NullPointerException("The source cannot be null.");
 		
-		List<Interval> intervals = source.getIntervals(low, high);
-		for (Interval interval : intervals) {
+		List<Interval> sIntervals = source.getIntervals(low, high);
+		List<Interval> tIntervals = new ArrayList<Interval>();
+		for (Interval interval : sIntervals) {
+			double iLow  = interval.getLow();
+			double iHigh = interval.getHigh();
 			if (interval.getLow() < low)
-				interval.setLow(low);
+				iLow = low;
 			if (interval.getHigh() > high)
-				interval.setHigh(high);
+				iHigh = high;
+			tIntervals.add(new Interval(iLow, iHigh, interval.getValue()));
 		}
 
-		return createDynamicObject(AttributeType.parse(source), intervals);
+		return createDynamicObject(AttributeType.parse(source), tIntervals);
 	}
 }
