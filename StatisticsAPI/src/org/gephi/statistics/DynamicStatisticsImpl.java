@@ -20,19 +20,35 @@
  */
 package org.gephi.statistics;
 
+import org.gephi.data.attributes.api.AttributeModel;
 import org.gephi.data.attributes.api.Estimator;
 import org.gephi.data.attributes.type.TimeInterval;
+import org.gephi.dynamic.DynamicUtilities;
+import org.gephi.dynamic.api.DynamicController;
+import org.gephi.dynamic.api.DynamicGraph;
+import org.gephi.dynamic.api.DynamicModel;
+import org.gephi.graph.api.Graph;
+import org.gephi.graph.api.GraphModel;
 import org.gephi.statistics.spi.DynamicStatistics;
+import org.gephi.statistics.spi.Statistics;
+import org.gephi.utils.longtask.spi.LongTask;
+import org.gephi.utils.progress.Progress;
+import org.gephi.utils.progress.ProgressTicket;
+import org.openide.util.Lookup;
 
 /**
  * The default implementation of {@link DynamicStatistics}.
  *
  * @author Cezary Bartosiak
  */
-public class DynamicStatisticsImpl implements DynamicStatistics {
+public abstract class DynamicStatisticsImpl implements DynamicStatistics, Statistics, LongTask {
 	protected TimeInterval timeInterval = new TimeInterval(Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
 	protected double       window       = Double.POSITIVE_INFINITY - Double.NEGATIVE_INFINITY;
 	protected Estimator    estimator    = Estimator.FIRST;
+
+	private boolean        cancel;
+	private ProgressTicket progressTicket;
+	private String         graphRevision;
 
 	public TimeInterval getTimeInterval() {
 		return timeInterval;
@@ -67,5 +83,117 @@ public class DynamicStatisticsImpl implements DynamicStatistics {
 					"MEDIAN, MODE, FIRST, LAST.");
 
 		this.estimator = estimator;
+	}
+
+	public void execute(GraphModel graphModel, AttributeModel attributeModel) {
+		Graph graph = graphModel.getGraphVisible();
+
+		DynamicController dynamicController = Lookup.getDefault().lookup(DynamicController.class);
+		DynamicModel      dynamicModel      = dynamicController.getModel();
+		DynamicGraph      dynamicGraph      = dynamicModel.createDynamicGraph(graph, timeInterval);
+
+		cancel = false;
+		graph.writeLock();
+
+		graphRevision = "(" + graph.getNodeVersion() + ", " + graph.getEdgeVersion() + ")";
+
+		// fire abstract preloop method
+		preloop();
+
+		int progress = 0;
+		Progress.start(progressTicket, progress);
+
+		for (double low = timeInterval.getLow(); low <= timeInterval.getHigh() - window;
+				low += (window < 1.0 ? 1.0 : window)) {
+			double high = low + window;
+
+			Graph g = dynamicGraph.getSnapshotGraph(low, high, estimator);
+
+			// fire abstract inloop method
+			inloop(low, high, g, attributeModel);
+
+			Progress.progress(progressTicket, ++progress);
+			if (cancel) {
+				graph.writeUnlock();
+				return;
+			}
+		}
+
+		graph.writeUnlock();
+	}
+
+	/**
+	 * Fires before the loop on all time intervals.
+	 */
+	protected abstract void preloop();
+
+	/**
+	 * Fires during the loop on all time intervals.
+	 *
+	 * @param low            the left endpoint of the current interval
+	 * @param high           the right endpoint of the current interval
+	 * @param g              the snapshot graph
+	 * @param attributeModel the attributes model to write results to
+	 */
+	protected abstract void inloop(double low, double high, Graph g, AttributeModel attributeModel);
+
+	public String getReport() {
+		String start = "-inf";
+		String end   = "+inf";
+		if (!Double.isInfinite(timeInterval.getLow()))
+			start = DynamicUtilities.getXMLDateStringFromDouble(timeInterval.getLow()).replace('T', ' ').
+					substring(0, 19);
+		if (!Double.isInfinite(timeInterval.getHigh()))
+			end = DynamicUtilities.getXMLDateStringFromDouble(timeInterval.getHigh()).replace('T', ' ').
+					substring(0, 19);
+
+		String windowString = (int)Math.round(window / (timeInterval.getHigh() - timeInterval.getLow()) * 100) + "";
+
+		String report = new String(
+				"<html><body><h1>" + getReportName() + "</h1>" +
+				"<hr><br><h2>Network Revision Number:</h2>" +
+				graphRevision +
+				"<br>" +
+				"<h2>Parameters:</h2>" +
+				"Time interval: " + "[" + start + ", " + end + "]<br>" +
+				"Window: " + windowString + " %<br>" +
+				"Estimator: " + estimator + "<br>" +
+				getAdditionalParameters() +
+				"<h2>Results:</h2>" +
+				getResults() +
+				"</body></html>"
+			);
+
+		return report;
+	}
+	
+	/**
+	 * Returns the name of the report.
+	 * 
+	 * @return the name of the report.
+	 */
+	protected abstract String getReportName();
+	
+	/**
+	 * Returns html with additional parameters.
+	 * 
+	 * @return html with additional parameters.
+	 */
+	protected abstract String getAdditionalParameters();
+	
+	/**
+	 * Returns html with results of firing this dynamic metric.
+	 *
+	 * @return html with results of firing this dynamic metric.
+	 */
+	protected abstract String getResults();
+
+	public boolean cancel() {
+		cancel = true;
+		return true;
+	}
+
+	public void setProgressTicket(ProgressTicket progressTicket) {
+		this.progressTicket = progressTicket;
 	}
 }

@@ -34,20 +34,13 @@ import org.gephi.data.attributes.api.AttributeType;
 import org.gephi.data.attributes.type.DynamicInteger;
 import org.gephi.data.attributes.type.Interval;
 import org.gephi.dynamic.DynamicUtilities;
-import org.gephi.dynamic.api.DynamicController;
-import org.gephi.dynamic.api.DynamicGraph;
-import org.gephi.dynamic.api.DynamicModel;
 import org.gephi.graph.api.DirectedGraph;
 import org.gephi.graph.api.Graph;
-import org.gephi.graph.api.GraphModel;
 import org.gephi.graph.api.Node;
 import org.gephi.graph.api.UndirectedGraph;
 import org.gephi.statistics.DynamicStatisticsImpl;
-import org.gephi.statistics.spi.Statistics;
 import org.gephi.utils.TempDirUtils;
 import org.gephi.utils.TempDirUtils.TempDir;
-import org.gephi.utils.longtask.spi.LongTask;
-import org.gephi.utils.progress.Progress;
 import org.gephi.utils.progress.ProgressTicket;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartRenderingInfo;
@@ -63,7 +56,6 @@ import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.ui.RectangleInsets;
 import org.openide.util.Exceptions;
-import org.openide.util.Lookup;
 
 /**
  * This class measures how closely the degree distribution of a
@@ -74,11 +66,7 @@ import org.openide.util.Lookup;
  *
  * @author Cezary Bartosiak
  */
-public class DynamicDegreeDistribution extends DynamicStatisticsImpl implements Statistics, LongTask {
-	private boolean        cancel;
-	private ProgressTicket progressTicket;
-
-	private String  graphRevision;
+public class DynamicDegreeDistribution extends DynamicStatisticsImpl {
 	private boolean directed;
 
 	private List<Interval<Double>> inDegrees       = new ArrayList<Interval<Double>>();
@@ -105,103 +93,68 @@ public class DynamicDegreeDistribution extends DynamicStatisticsImpl implements 
 		return directed;
 	}
 
-	/**
-	 * Executes the metric.
-	 * 
-	 * @param graphModel     graph's model to work on
-	 * @param attributeModel attributes model to work on
-	 */
-	public void execute(GraphModel graphModel, AttributeModel attributeModel) {
-		Graph graph = graphModel.getGraphVisible();
-
-		DynamicController dynamicController = Lookup.getDefault().lookup(DynamicController.class);
-		DynamicModel      dynamicModel      = dynamicController.getModel();
-		DynamicGraph      dynamicGraph      = dynamicModel.createDynamicGraph(graph, timeInterval);
-
-		cancel = false;
-		graph.writeLock();
-
-		graphRevision = "(" + graph.getNodeVersion() + ", " + graph.getEdgeVersion() + ")";
-
+	@Override
+	protected void preloop() {
 		inDegrees.clear();
 		outDegrees.clear();
 		combinedDegrees.clear();
-
-		int progress = 0;
-		Progress.start(progressTicket, progress);
-
-		for (double low = timeInterval.getLow(); low <= timeInterval.getHigh() - window;
-				low += (window < 1.0 ? 1.0 : window)) {
-			double high = low + window;
-
-			Graph              g  = dynamicGraph.getSnapshotGraph(low, high, estimator);
-			DegreeDistribution dd = new DegreeDistribution();
-			dd.setDirected(directed);
-			dd.execute(g, attributeModel);
-
-			AttributeTable  nodeTable        = attributeModel.getNodeTable();
-			AttributeColumn dynamicInDegree  = nodeTable.getColumn("dynamicInDegree");
-			AttributeColumn dynamicOutDegree = nodeTable.getColumn("dynamicOutDegree");
-			AttributeColumn dynamicDegree    = nodeTable.getColumn("dynamicDegree");
-			if (dynamicInDegree == null)
-				dynamicInDegree = nodeTable.addColumn("dynamicInDegree", "Dynamic In Degree",
-						AttributeType.DYNAMIC_INT, AttributeOrigin.COMPUTED, new DynamicInteger());
-			if (dynamicOutDegree == null)
-				dynamicOutDegree = nodeTable.addColumn("dynamicOutDegree", "Dynamic Out Degree",
-						AttributeType.DYNAMIC_INT, AttributeOrigin.COMPUTED, new DynamicInteger());
-			if (dynamicDegree == null)
-				dynamicDegree = nodeTable.addColumn("dynamicDegree", "Dynamic Degree",
-						AttributeType.DYNAMIC_INT, AttributeOrigin.COMPUTED, new DynamicInteger());
-
-			for (Node node : g.getNodes()) {
-				AttributeRow row = (AttributeRow)node.getNodeData().getAttributes();
-				if (directed) {
-					row.setValue(dynamicInDegree, new DynamicInteger((DynamicInteger)row.getValue(dynamicInDegree),
-							new Interval<Integer>(low, high, ((DirectedGraph)g).getInDegree(node))));
-					row.setValue(dynamicOutDegree, new DynamicInteger((DynamicInteger)row.getValue(dynamicOutDegree),
-							new Interval<Integer>(low, high, ((DirectedGraph)g).getOutDegree(node))));
-				}
-				else row.setValue(dynamicDegree, new DynamicInteger((DynamicInteger)row.getValue(dynamicDegree),
-							new Interval<Integer>(low, high, ((UndirectedGraph)g).getDegree(node))));
-			}
-
-			inDegrees.add(new Interval<Double>(low, high, dd.getInPowerLaw()));
-			outDegrees.add(new Interval<Double>(low, high, dd.getOutPowerLaw()));
-			combinedDegrees.add(new Interval<Double>(low, high, dd.getCombinedPowerLaw()));
-
-			Progress.progress(progressTicket, ++progress);
-			if (cancel) {
-				graph.writeUnlock();
-				return;
-			}
-		}
-
-		graph.writeUnlock();
 	}
 
-	/**
-	 * Returns the report based on the interpretation of the network.
-	 * 
-	 * @return the report based on the interpretation of the network.
-	 */
-	public String getReport() {
+	@Override
+	protected void inloop(double low, double high, Graph g, AttributeModel attributeModel) {
+		DegreeDistribution dd = new DegreeDistribution();
+		dd.setDirected(directed);
+		dd.execute(g, attributeModel);
+
+		AttributeTable  nodeTable        = attributeModel.getNodeTable();
+		AttributeColumn dynamicInDegree  = nodeTable.getColumn("dynamicInDegree");
+		AttributeColumn dynamicOutDegree = nodeTable.getColumn("dynamicOutDegree");
+		AttributeColumn dynamicDegree    = nodeTable.getColumn("dynamicDegree");
+		if (dynamicInDegree == null)
+			dynamicInDegree = nodeTable.addColumn("dynamicInDegree", "Dynamic In Degree",
+					AttributeType.DYNAMIC_INT, AttributeOrigin.COMPUTED, new DynamicInteger());
+		if (dynamicOutDegree == null)
+			dynamicOutDegree = nodeTable.addColumn("dynamicOutDegree", "Dynamic Out Degree",
+					AttributeType.DYNAMIC_INT, AttributeOrigin.COMPUTED, new DynamicInteger());
+		if (dynamicDegree == null)
+			dynamicDegree = nodeTable.addColumn("dynamicDegree", "Dynamic Degree",
+					AttributeType.DYNAMIC_INT, AttributeOrigin.COMPUTED, new DynamicInteger());
+
+		for (Node node : g.getNodes()) {
+			AttributeRow row = (AttributeRow)node.getNodeData().getAttributes();
+			if (directed) {
+				row.setValue(dynamicInDegree, new DynamicInteger((DynamicInteger)row.getValue(dynamicInDegree),
+						new Interval<Integer>(low, high, ((DirectedGraph)g).getInDegree(node))));
+				row.setValue(dynamicOutDegree, new DynamicInteger((DynamicInteger)row.getValue(dynamicOutDegree),
+						new Interval<Integer>(low, high, ((DirectedGraph)g).getOutDegree(node))));
+			}
+			else row.setValue(dynamicDegree, new DynamicInteger((DynamicInteger)row.getValue(dynamicDegree),
+						new Interval<Integer>(low, high, ((UndirectedGraph)g).getDegree(node))));
+		}
+
+		inDegrees.add(new Interval<Double>(low, high, dd.getInPowerLaw()));
+		outDegrees.add(new Interval<Double>(low, high, dd.getOutPowerLaw()));
+		combinedDegrees.add(new Interval<Double>(low, high, dd.getCombinedPowerLaw()));
+	}
+
+	@Override
+	protected String getReportName() {
+		return "Dynamic Degree Distribution Metric Report";
+	}
+
+	@Override
+	protected String getAdditionalParameters() {
+		return "Network Interpretation: " + (directed ? "directed" : "undirected");
+	}
+
+	@Override
+	protected String getResults() {
 		if (directed)
 			return getDirectedReport();
 		else return getUndirectedReport();
 	}
 
 	private String getDirectedReport() {
-		String start = "-inf";
-		String end   = "+inf";
-		if (!Double.isInfinite(timeInterval.getLow()))
-			start = DynamicUtilities.getXMLDateStringFromDouble(timeInterval.getLow()).replace('T', ' ').
-					substring(0, 19);
-		if (!Double.isInfinite(timeInterval.getHigh()))
-			end = DynamicUtilities.getXMLDateStringFromDouble(timeInterval.getHigh()).replace('T', ' ').
-					substring(0, 19);
-
-		String windowString = (int)Math.round(window / (timeInterval.getHigh() - timeInterval.getLow()) * 100) + "";
-
 		String tableContent = "";
 		for (int i = 0; i < inDegrees.size(); ++i) {
 			String interval = "[";
@@ -342,37 +295,15 @@ public class DynamicDegreeDistribution extends DynamicStatisticsImpl implements 
 		}
 
 		String report = new String(
-				"<html><body><h1>Dynamic Degree Distribution Metric Report</h1>" +
-				"<hr><br><h2>Network Revision Number:</h2>" +
-				graphRevision +
-				"<br>" +
-				"<h2>Parameters:</h2>" +
-				"Network Interpretation: " + (directed ? "directed" : "undirected") + "<br>" +
-				"Time interval: " + "[" + start + ", " + end + "]<br>" +
-				"Window: " + windowString + " %<br>" +
-				"Estimator: " + estimator +
-				"<h2>Results:</h2>" +
 				table + "<br>" +
 				inImage + "<br>" +
-				outImage + "<br>" +
-				"</body></html>"
+				outImage + "<br>"
 			);
 
 		return report;
 	}
 
 	private String getUndirectedReport() {
-		String start = "-inf";
-		String end   = "+inf";
-		if (!Double.isInfinite(timeInterval.getLow()))
-			start = DynamicUtilities.getXMLDateStringFromDouble(timeInterval.getLow()).replace('T', ' ').
-					substring(0, 19);
-		if (!Double.isInfinite(timeInterval.getHigh()))
-			end = DynamicUtilities.getXMLDateStringFromDouble(timeInterval.getHigh()).replace('T', ' ').
-					substring(0, 19);
-
-		String windowString = (int)Math.round(window / (timeInterval.getHigh() - timeInterval.getLow()) * 100) + "";
-
 		String tableContent = "";
 		for (int i = 0; i < combinedDegrees.size(); ++i) {
 			String interval = "[";
@@ -455,40 +386,10 @@ public class DynamicDegreeDistribution extends DynamicStatisticsImpl implements 
 		}
 
 		String report = new String(
-				"<html><body><h1>Dynamic Degree Distribution Metric Report</h1>" +
-				"<hr><br><h2>Network Revision Number:</h2>" +
-				graphRevision +
-				"<br>" +
-				"<h2>Parameters:</h2>" +
-				"Network Interpretation: " + (directed ? "directed" : "undirected") + "<br>" +
-				"Time interval: " + "[" + start + ", " + end + "]<br>" +
-				"Window: " + windowString + " %<br>" +
-				"Estimator: " + estimator +
-				"<h2>Results:</h2>" +
 				table + "<br>" +
-				image + "<br>" +
-				"</body></html>"
+				image + "<br>"
 			);
 
 		return report;
-	}
-
-	/**
-	 * Stops the execution of this metric.
-	 *
-	 * @return true if the execution was stopped, otherwise false.
-	 */
-	public boolean cancel() {
-		cancel = true;
-		return true;
-	}
-
-	/**
-	 * Sets the progress ticket for the metric.
-	 *
-	 * @param progressTicket progress ticket to set
-	 */
-	public void setProgressTicket(ProgressTicket progressTicket) {
-		this.progressTicket = progressTicket;
 	}
 }
