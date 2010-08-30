@@ -22,7 +22,7 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 package org.gephi.ui.filters.plugin.operator;
 
 import javax.swing.JPanel;
-import org.gephi.filters.plugin.operator.MASKBuilderEdge.MaskEdgesOperator;
+import org.gephi.filters.plugin.operator.MASKBuilderEdge.MaskEdgeOperator;
 import org.gephi.filters.plugin.operator.MASKEdgeUI;
 import org.openide.util.lookup.ServiceProvider;
 
@@ -33,7 +33,7 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = MASKEdgeUI.class)
 public class MASKEdgeUIImpl implements MASKEdgeUI {
 
-    public JPanel getPanel(MaskEdgesOperator filter) {
+    public JPanel getPanel(MaskEdgeOperator filter) {
         MASKEdgePanel panel = new MASKEdgePanel();
         panel.setup(filter);
         return panel;
