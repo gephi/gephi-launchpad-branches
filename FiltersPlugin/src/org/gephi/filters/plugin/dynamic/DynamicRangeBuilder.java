@@ -33,6 +33,8 @@ import org.gephi.data.attributes.api.AttributeModel;
 import org.gephi.data.attributes.type.TimeInterval;
 import org.gephi.dynamic.api.DynamicController;
 import org.gephi.dynamic.api.DynamicModel;
+import org.gephi.dynamic.api.DynamicModelEvent;
+import org.gephi.dynamic.api.DynamicModelListener;
 import org.gephi.filters.api.Range;
 import org.gephi.filters.spi.Category;
 import org.gephi.filters.spi.CategoryBuilder;
@@ -115,10 +117,6 @@ public class DynamicRangeBuilder implements CategoryBuilder {
             JPanel panel = new JPanel();
             final TopComponent topComponent = WindowManager.getDefault().findTopComponent("TimelineTopComponent");
             final JButton button = new JButton(topComponent.isOpened() ? "Close Timeline" : "Open Timeline");
-            if (topComponent.isOpened()) {
-                TimelineController timelineController = Lookup.getDefault().lookup(TimelineController.class);
-                timelineController.getModel().setFilterProperty(dynamicRangeFilter.getRangeProperty());
-            }
             button.addActionListener(new ActionListener() {
 
                 public void actionPerformed(ActionEvent e) {
@@ -127,9 +125,6 @@ public class DynamicRangeBuilder implements CategoryBuilder {
                         topComponent.open();
                         topComponent.requestActive();
                         button.setText("Close Timeline");
-                        //topComponent.close();
-                        TimelineController timelineController = Lookup.getDefault().lookup(TimelineController.class);
-                        timelineController.getModel().setFilterProperty(dynamicRangeFilter.getRangeProperty());
                     } else {
                         topComponent.close();
                         button.setText("Open Timeline");
@@ -139,9 +134,13 @@ public class DynamicRangeBuilder implements CategoryBuilder {
             panel.add(button);
             return panel;
         }
+
+        public void destroy(Filter filter) {
+            ((DynamicRangeFilter) filter).destroy();
+        }
     }
 
-    public static class DynamicRangeFilter implements NodeFilter, EdgeFilter {
+    public static class DynamicRangeFilter implements NodeFilter, EdgeFilter, DynamicModelListener {
 
         private AttributeColumn nodeColumn;
         private AttributeColumn edgeColumn;
@@ -152,6 +151,7 @@ public class DynamicRangeBuilder implements CategoryBuilder {
         private FilterProperty[] filterProperties;
         private Double min;
         private Double max;
+        private boolean keepNonDynamic = true;
 
         public DynamicRangeFilter(TimelineController timelineController, DynamicController dynamicController, AttributeColumn nodeColumn, AttributeColumn edgeColumn) {
             this.nodeColumn = nodeColumn;
@@ -167,6 +167,7 @@ public class DynamicRangeBuilder implements CategoryBuilder {
         }
 
         public boolean init(Graph graph) {
+            dynamicController.addModelListener(this);
             visibleInterval = dynamicModel.getVisibleInterval();
             min = Double.POSITIVE_INFINITY;
             max = Double.NEGATIVE_INFINITY;
@@ -183,7 +184,7 @@ public class DynamicRangeBuilder implements CategoryBuilder {
                     return timeInterval.isInRange(visibleInterval.getLow(), visibleInterval.getHigh());
                 }
             }
-            return true;
+            return keepNonDynamic;
         }
 
         public boolean evaluate(Graph graph, Edge edge) {
@@ -196,7 +197,7 @@ public class DynamicRangeBuilder implements CategoryBuilder {
                     return timeInterval.isInRange(visibleInterval.getLow(), visibleInterval.getHigh());
                 }
             }
-            return true;
+            return keepNonDynamic;
         }
 
         public void finish() {
@@ -225,6 +226,15 @@ public class DynamicRangeBuilder implements CategoryBuilder {
             return filterProperties;
         }
 
+        public void dynamicModelChanged(DynamicModelEvent event) {
+            switch (event.getEventType()) {
+                case VISIBLE_INTERVAL:
+                    TimeInterval interval = (TimeInterval) event.getData();
+                    getProperties()[0].setValue(new Range(interval.getLow(), interval.getHigh()));
+                    break;
+            }
+        }
+
         public FilterProperty getRangeProperty() {
             return getProperties()[0];
         }
@@ -243,6 +253,10 @@ public class DynamicRangeBuilder implements CategoryBuilder {
 
         public void setRange(Range range) {
             dynamicController.setVisibleInterval(range.getLowerDouble(), range.getUpperDouble());
+        }
+
+        public void destroy() {
+            dynamicController.removeModelListener(this);
         }
     }
 }

@@ -17,72 +17,82 @@ GNU Affero General Public License for more details.
 
 You should have received a copy of the GNU Affero General Public License
 along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 package org.gephi.desktop.timeline;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.swing.event.ChangeEvent;
-import org.gephi.data.attributes.type.TimeInterval;
+import org.gephi.dynamic.api.DynamicController;
+import org.gephi.dynamic.api.DynamicModel;
+import org.gephi.dynamic.api.DynamicModelEvent;
+import org.gephi.dynamic.api.DynamicModelListener;
 import org.gephi.filters.api.Range;
-import org.gephi.filters.spi.FilterProperty;
 
 import org.gephi.timeline.api.TimelineModel;
-import org.gephi.timeline.api.TimelineModelListener;
-
-import org.openide.util.lookup.ServiceProvider;
+import org.gephi.timeline.api.TimelineModelEvent;
+import org.openide.util.Lookup;
 
 /**
  *
  * @author Julian Bilcke
  */
-@ServiceProvider(service = TimelineModel.class)
-public class TimelineModelImpl
-        implements
-        TimelineModel {
+public class TimelineModelImpl implements TimelineModel, DynamicModelListener {
 
-    private List<TimelineModelListener> listeners;
-    private FilterProperty filter;
+    //Variable
     private double fromFloat = 0.0f;
     private double toFloat = 1.0f;
     private double fromValue = 0.0f;
     private double toValue = 0.0f;
-
+    //Architecture
+    private final TimelineControllerImpl controller;
+    private final DynamicController dynamicController;
     private double minValue = Double.POSITIVE_INFINITY;
-
-
     private double maxValue = Double.NEGATIVE_INFINITY;
-
+    private DynamicModel dynamicModel;
     private Class unit = null;
 
-    public TimelineModelImpl() {
-        listeners = new ArrayList<TimelineModelListener>();
+    public TimelineModelImpl(TimelineControllerImpl controller) {
+        this.controller = controller;
+        dynamicController = Lookup.getDefault().lookup(DynamicController.class);
     }
 
-    public void fireChangeEvent() {
-        ChangeEvent evt = new ChangeEvent(this);
-        for (TimelineModelListener listener : listeners) {
-            listener.timelineModelChanged(evt);
+    public void setup(DynamicModel dynamicModel) {
+        this.dynamicModel = dynamicModel;
+        dynamicController.addModelListener(this);
+        fireTimelineModelEvent(new TimelineModelEvent(TimelineModelEvent.EventType.INIT, this, this));
+    }
+
+    public void unsetup() {
+        dynamicModel = null;
+        dynamicController.removeModelListener(this);
+    }
+
+    public void dynamicModelChanged(DynamicModelEvent event) {
+        System.out.println("Dynamic model changed"+event.getEventType());
+        if (event.getSource() == dynamicModel) {
+            switch (event.getEventType()) {
+                case IS_DYNAMIC:
+                    Boolean isDynamic = (Boolean) event.getData();
+                    
+                    break;
+                case VISIBLE_INTERVAL:
+                    System.out.println("get back visible interval " + event.getData());
+                    fireTimelineModelEvent(new TimelineModelEvent(TimelineModelEvent.EventType.VISIBLE_INTERVAL, this, event.getData()));
+                    break;
+                case MIN_CHANGED:
+                    setMinValue((Double)event.getData());
+                    fireTimelineModelEvent(new TimelineModelEvent(TimelineModelEvent.EventType.MIN_CHANGED, this, event.getData()));
+                    break;
+                case MAX_CHANGED:
+                    setMaxValue((Double)event.getData());
+                    fireTimelineModelEvent(new TimelineModelEvent(TimelineModelEvent.EventType.MAX_CHANGED, this, event.getData()));
+                    break;
+            }
         }
     }
 
-    public void addListener(TimelineModelListener listener) {
-        if (!listeners.contains(listener)) {
-            listeners.add(listener);
+    private void setRange(Range range) {
+        if (dynamicModel != null) {
+            dynamicController.setVisibleInterval(range.getLowerDouble(), range.getUpperDouble());
         }
-    }
-
-    public void removeListener(TimelineModelListener listener) {
-        listeners.remove(listener);
-    }
-
-    public synchronized void setFilterProperty(FilterProperty filter) {
-        this.filter = filter;
-    }
-
-    public synchronized FilterProperty getFilterProperty() {
-        return filter;
     }
 
     // Not used for the moment (will be used to generate charts)
@@ -118,13 +128,16 @@ public class TimelineModelImpl
     public synchronized double getTotalSize() {
         return getMaxValue() - getMinValue();
     }
+
     public synchronized double getRangeSizeValue() {
         return getToValue() - getFromValue();
     }
+
     public synchronized double getRangeSizeFloat() {
         return getToFloat() - getFromFloat();
     }
     // set the range using real values
+
     public synchronized double getMinValue() {
         return minValue;
     }
@@ -149,7 +162,9 @@ public class TimelineModelImpl
     }
 
     public synchronized void setMinMax(double min, double max) {
-        if (min >= max) return;
+        if (min >= max) {
+            return;
+        }
         this.minValue = min;
         setFromValue(getMinValue() + getFromFloat() * getTotalSize());
         this.maxValue = max;
@@ -158,33 +173,37 @@ public class TimelineModelImpl
 
     // set the range using real values
     public synchronized void setRangeFromRealValues(double from, double to) {
-        if (from >= to) return;
+        if (from >= to) {
+            return;
+        }
         fromValue = from;
         toValue = to;
-        if (filter != null) filter.setValue(new Range(from, to));
+        setRange(new Range(from, to));
     }
 
     public synchronized void setRangeFromFloat(double from, double to) {
-        if (from >= to) return;
+        if (from >= to) {
+            return;
+        }
         fromFloat = from;
         fromValue = getMinValue() + from * getTotalSize();
         toFloat = to;
         toValue = getMinValue() + to * getTotalSize();
-        if (filter != null) filter.setValue(new Range(getFromValue(), getToValue()));
+        setRange(new Range(getFromValue(), getToValue()));
     }
 
     public synchronized void setFromFloat(double from) {
         //if (from >= toFloat) return;
         fromFloat = from;
         setFromValue(getMinValue() + getFromFloat() * getTotalSize());
-        if (filter != null) filter.setValue(new Range(getFromValue(), getToValue()));
+        setRange(new Range(getFromValue(), getToValue()));
     }
 
     public synchronized void setToFloat(double to) {
         //if (to <= toFloat) return;
         toFloat = to;
         setToValue(getMinValue() + getFromFloat() * getTotalSize());
-        if (filter != null) filter.setValue(new Range(getFromValue(), getToValue()));
+        setRange(new Range(getFromValue(), getToValue()));
     }
 
     public synchronized double getFromFloat() {
@@ -213,10 +232,6 @@ public class TimelineModelImpl
         return toValue;
     }
 
-    public synchronized TimeInterval getTimeInterval() {
-       return new TimeInterval(getFromValue(), getToValue());
-    }
-
     public synchronized double getValueFromFloat(double position) {
         return position * getTotalSize();
     }
@@ -227,5 +242,9 @@ public class TimelineModelImpl
 
     public Class getUnit() {
         return unit;
+    }
+
+    private void fireTimelineModelEvent(TimelineModelEvent event) {
+        controller.fireTimelineModelEvent(event);
     }
 }
