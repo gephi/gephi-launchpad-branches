@@ -23,7 +23,6 @@ package org.gephi.io.importer.plugin.file;
 import java.io.File;
 import java.io.FileReader;
 import java.net.URL;
-import javax.xml.datatype.DatatypeConfigurationException;
 import org.gephi.data.attributes.api.AttributeColumn;
 import org.gephi.data.attributes.api.AttributeType;
 import org.gephi.data.attributes.api.AttributeValue;
@@ -79,7 +78,7 @@ public class ImporterGEXF2Test {
 
     @Test
     public void testCalendar() {
-        String date = "2000-01-01";
+        String date = "2000-01-01T00:00:00.000";
 		double d = DynamicUtilities.getDoubleFromXMLDateString(date);
 		String date2 = DynamicUtilities.getXMLDateStringFromDouble(d);
 		assertEquals(date, date2);

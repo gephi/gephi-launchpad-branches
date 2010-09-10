@@ -27,7 +27,7 @@ package org.gephi.data.attributes.type;
  * 
  * @param <T> type of data
  */
-public final class Interval<T> implements Comparable<Interval<T>> {
+public final class Interval<T> implements Comparable<Interval> {
 	private double  low;   // the left endpoint
 	private double  high;  // the right endpoint
 	private boolean lopen; // indicates if the left endpoint is excluded
@@ -138,7 +138,7 @@ public final class Interval<T> implements Comparable<Interval<T>> {
 	 *
 	 * @throws NullPointerException if {@code interval} is null.
 	 */
-	public int compareTo(Interval<T> interval) {
+	public int compareTo(Interval interval) {
 		if (interval == null)
 			throw new NullPointerException("Interval cannot be null.");
 

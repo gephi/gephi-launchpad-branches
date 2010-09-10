@@ -68,7 +68,7 @@ public abstract class DynamicType<T> {
 	}
 
 	/**
-	 * Constructs a shallow copy of {@code source}.
+	 * Constructs a deep copy of {@code source}.
 	 *
 	 * @param source an object to copy from (could be null, then completely new
 	 *               instance is created)
@@ -80,7 +80,7 @@ public abstract class DynamicType<T> {
 	}
 
 	/**
-	 * Constructs a shallow copy of {@code source} that contains a given
+	 * Constructs a deep copy of {@code source} that contains a given
 	 * {@code Interval<T>} in.
 	 *
 	 * @param source an object to copy from (could be null, then completely new
@@ -94,7 +94,7 @@ public abstract class DynamicType<T> {
 	}
 
 	/**
-	 * Constructs a shallow copy of {@code source} that contains a given
+	 * Constructs a deep copy of {@code source} that contains a given
 	 * {@code Interval<T>} in. Before add it removes from the newly created
 	 * object all intervals that overlap with a given {@code Interval<T>} out.
 	 *
@@ -112,7 +112,7 @@ public abstract class DynamicType<T> {
 	}
 
 	/**
-	 * Constructs a shallow copy of {@code source} with additional intervals
+	 * Constructs a deep copy of {@code source} with additional intervals
 	 * given by {@code List<Interval<T>>} in.
 	 *
 	 * @param source an object to copy from (could be null, then completely new
@@ -127,7 +127,7 @@ public abstract class DynamicType<T> {
 	}
 
 	/**
-	 * Constructs a shallow copy of {@code source} with additional intervals
+	 * Constructs a deep copy of {@code source} with additional intervals
 	 * given by {@code List<Interval<T>>} in. Before add it removes from the
 	 * newly created object all intervals that overlap with intervals given by
 	 * {@code List<Interval<T>>} out.
@@ -195,7 +195,7 @@ public abstract class DynamicType<T> {
 	 * @return {@code true} a given time interval overlaps with any interval of this
 	 *         instance, otherwise {@code false}.
 	 */
-	public boolean isInRange(Interval<T> interval) {
+	public boolean isInRange(Interval interval) {
 		return intervalTree.overlapsWith(interval);
 	}
 
@@ -216,7 +216,7 @@ public abstract class DynamicType<T> {
 						"The left endpoint of the interval must be less than " +
 						"the right endpoint.");
 
-		return intervalTree.overlapsWith(new Interval<T>(low, high));
+		return intervalTree.overlapsWith(new Interval(low, high));
 	}
 
 	/**
@@ -247,8 +247,8 @@ public abstract class DynamicType<T> {
 	 * 
 	 * @see Estimator
 	 */
-	public T getValue(double low, double high) {
-		return getValue(low, high, Estimator.FIRST);
+	public T getValue(Interval interval) {
+		return getValue(interval, Estimator.FIRST);
 	}
 
 	/**
@@ -267,8 +267,8 @@ public abstract class DynamicType<T> {
 	 *
 	 * @see Estimator
 	 */
-	public T getValue(Interval<T> interval) {
-		return getValue(interval, Estimator.FIRST);
+	public T getValue(double low, double high) {
+		return getValue(low, high, Estimator.FIRST);
 	}
 
 	/**
@@ -308,7 +308,7 @@ public abstract class DynamicType<T> {
 	 *
 	 * @see Estimator
 	 */
-	public abstract T getValue(Interval<T> interval, Estimator estimator);
+	public abstract T getValue(Interval interval, Estimator estimator);
 
 	/**
 	 * Returns the estimated value of a set of values whose time intervals
@@ -328,7 +328,14 @@ public abstract class DynamicType<T> {
 	 *
 	 * @see Estimator
 	 */
-	public abstract T getValue(double low, double high, Estimator estimator);
+	public T getValue(double low, double high, Estimator estimator) {
+		if (low > high)
+			throw new IllegalArgumentException(
+						"The left endpoint of the interval must be less than " +
+						"the right endpoint.");
+
+		return getValue(new Interval(low, high, false, false), estimator);
+	}
 
 	/**
 	 * Returns a list of all values stored in this instance.
@@ -337,22 +344,6 @@ public abstract class DynamicType<T> {
 	 */
 	public List<T> getValues() {
 		return getValues(Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
-	}
-
-	/**
-	 * Returns a list of values whose time intervals overlap with a
-	 * given time interval.
-	 *
-	 * @param interval a given time interval
-	 *
-	 * @return a list of values whose time intervals overlap with a
-	 *         given time interval.
-	 */
-	public List<T> getValues(Interval<T> interval) {
-		List<T> result = new ArrayList<T>();
-		for (Interval<T> i : intervalTree.search(interval))
-			result.add(i.getValue());
-		return result;
 	}
 
 	/**
@@ -368,8 +359,21 @@ public abstract class DynamicType<T> {
 	 * @throws IllegalArgumentException if {@code low} > {@code high}.
 	 */
 	public List<T> getValues(double low, double high) {
+		return getValues(new Interval(low, high));
+	}
+
+	/**
+	 * Returns a list of values whose time intervals overlap with a
+	 * given time interval.
+	 *
+	 * @param interval a given time interval
+	 *
+	 * @return a list of values whose time intervals overlap with a
+	 *         given time interval.
+	 */
+	public List<T> getValues(Interval interval) {
 		List<T> result = new ArrayList<T>();
-		for (Interval<T> i : intervalTree.search(low, high))
+		for (Interval<T> i : intervalTree.search(interval))
 			result.add(i.getValue());
 		return result;
 	}
@@ -381,7 +385,7 @@ public abstract class DynamicType<T> {
 	 *
 	 * @return a list of intervals which overlap with a given time interval.
 	 */
-	public List<Interval<T>> getIntervals(Interval<T> interval) {
+	public List<Interval<T>> getIntervals(Interval interval) {
 		return intervalTree.search(interval);
 	}
 

@@ -171,7 +171,7 @@ public final class IntervalTree<T> {
 	 * 
 	 * @throws NullPointerException if {@code interval} is null.
 	 */
-	public void delete(Interval<T> interval) {
+	public void delete(Interval interval) {
 		if (interval == null)
 			throw new NullPointerException("Interval cannot be null.");
 
@@ -427,7 +427,7 @@ public final class IntervalTree<T> {
 	 *
 	 * @throws NullPointerException if {@code interval} is null.
 	 */
-	public List<Interval<T>> search(Interval<T> interval) {
+	public List<Interval<T>> search(Interval interval) {
 		if (interval == null)
 			throw new NullPointerException("Interval cannot be null.");
 
@@ -456,18 +456,18 @@ public final class IntervalTree<T> {
 						"the right endpoint.");
 
 		List<Interval<T>> overlaps = new ArrayList<Interval<T>>();
-		for (Node n : searchNodes(new Interval<T>(low, high)))
+		for (Node n : searchNodes(new Interval(low, high)))
 			overlaps.add(n.i);
 		return overlaps;
 	}
 
-	private List<Node> searchNodes(Interval<T> interval) {
+	private List<Node> searchNodes(Interval interval) {
 		List<Node> result = new ArrayList<Node>();
 		searchNodes(root.left, interval, result);
 		return result;
 	}
 
-	private void searchNodes(Node n, Interval<T> interval, List<Node> result) {
+	private void searchNodes(Node n, Interval interval, List<Node> result) {
 		// Don't search nodes that don't exist.
 		if (n == nil)
 			return;
@@ -503,11 +503,11 @@ public final class IntervalTree<T> {
 	 * @return {@code true} if this {@code IntervalTree} overlaps with {@code interval},
 	 *         {@code false} otherwise.
 	 */
-	public boolean overlapsWith(Interval<T> interval) {
+	public boolean overlapsWith(Interval interval) {
 		return overlapsWith(root.left, interval);
 	}
 
-	private boolean overlapsWith(Node n, Interval<T> interval) {
+	private boolean overlapsWith(Node n, Interval interval) {
 		// Don't search nodes that don't exist.
 		if (n == nil)
 			return false;
@@ -607,11 +607,11 @@ public final class IntervalTree<T> {
 			StringBuilder sb = new StringBuilder("<");
 			sb.append(list.get(0).toString());
 			for (int i = 1; i < list.size(); ++i)
-				sb.append(", ").append(list.get(i).toString());
+				sb.append("; ").append(list.get(i).toString());
 			sb.append(">");
 			return sb.toString();
 		}
-		return "<empty>]";
+		return "<empty>";
 	}
 
 	private class Node {
