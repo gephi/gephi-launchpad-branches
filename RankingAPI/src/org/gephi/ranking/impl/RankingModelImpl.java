@@ -20,13 +20,18 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.gephi.ranking.impl;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import org.gephi.data.attributes.api.AttributeEvent;
 import org.gephi.ranking.api.RankingModel;
 import org.gephi.ranking.api.NodeRanking;
 import org.gephi.ranking.api.EdgeRanking;
 import org.gephi.ranking.api.Ranking;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
+import javax.swing.Timer;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import org.gephi.data.attributes.api.AttributeColumn;
@@ -90,10 +95,22 @@ public class RankingModelImpl implements RankingModel, AttributeListener {
 
         defaultEstimator = Estimator.AVERAGE;
     }
+    private Timer refreshTimer; //hack
 
     public void attributesChanged(AttributeEvent event) {
         if (event.getEventType().equals(AttributeEvent.EventType.ADD_COLUMN) || event.getEventType().equals(AttributeEvent.EventType.REMOVE_COLUMN)) {
-            fireChangeEvent();
+            if (refreshTimer != null) {
+                refreshTimer.restart();
+            } else {
+                refreshTimer = new Timer(1000, new ActionListener() {
+
+                    public void actionPerformed(ActionEvent e) {
+                        fireChangeEvent();
+                    }
+                });
+                refreshTimer.setRepeats(false);
+                refreshTimer.start();
+            }
         }
     }
 
@@ -196,6 +213,7 @@ public class RankingModelImpl implements RankingModel, AttributeListener {
         }
 
         //Attributes
+        int nativeCount = rankingList.size();
         for (AttributeColumn column : attributeController.getModel().getNodeTable().getColumns()) {
             if (RankingFactory.isNumberColumn(column)) {
                 NodeRanking r = RankingFactory.getNodeAttributeRanking(column, graph);
@@ -210,7 +228,16 @@ public class RankingModelImpl implements RankingModel, AttributeListener {
                 }
             }
         }
-        return rankingList.toArray(new NodeRanking[0]);
+
+        NodeRanking[] rankingArray = rankingList.toArray(new NodeRanking[0]);
+        Arrays.sort(rankingArray, nativeCount, rankingArray.length, new Comparator<NodeRanking>() {
+
+            public int compare(NodeRanking a, NodeRanking b) {
+                return (a.toString().compareTo(b.toString()));
+            }
+        });
+
+        return rankingArray;
     }
 
     public EdgeRanking[] getEdgeRanking() {

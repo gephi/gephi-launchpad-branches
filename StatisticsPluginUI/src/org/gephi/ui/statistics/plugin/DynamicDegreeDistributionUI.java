@@ -52,11 +52,14 @@ public class DynamicDegreeDistributionUI implements StatisticsUI {
 	}
 
 	public void unsetup() {
-		metric.setDirected(panel.isDirected());
-		metric.setTimeInterval(panel.getTimeInterval());
-		metric.setWindow(panel.getWindow());
-		metric.setEstimator(panel.getEstimator());
-		panel = null;
+		if (panel != null) {
+			metric.setDirected(panel.isDirected());
+			metric.setTimeInterval(panel.getTimeInterval());
+			metric.setWindow(panel.getWindow());
+			metric.setEstimator(panel.getEstimator());
+		}
+		metric = null;
+		panel  = null;
 	}
 
 	public Class<? extends Statistics> getStatisticsClass() {
