@@ -35,7 +35,7 @@ import java.util.List;
  * deletion can be performed in this time.
  *
  * <p>The space consumption is <i>O</i>(<i>n</i>).
- * 
+ *
  * <p>Note that this implementation doesn't allow intervals to be duplicated.
  *
  * <p>References:
@@ -45,7 +45,7 @@ import java.util.List;
  * </ul>
  *
  * @author Cezary Bartosiak
- * 
+ *
  * @param <T> type of data
  */
 public final class IntervalTree<T> {
@@ -361,26 +361,26 @@ public final class IntervalTree<T> {
 	}
 
 	/**
-	 * Returns the leftmost point or {@code Double.POSITIVE_INFINITY} in case
+	 * Returns the leftmost point or {@code Double.NEGATIVE_INFINITY} in case
 	 * of no intervals.
 	 *
 	 * @return the leftmost point.
 	 */
 	public double getLow() {
 		if (isEmpty())
-			return Double.POSITIVE_INFINITY;
+			return Double.NEGATIVE_INFINITY;
 		return minimum().getLow();
 	}
 
 	/**
-	 * Returns the rightmost point or {@code Double.NEGATIVE_INFINITY} in case
+	 * Returns the rightmost point or {@code Double.POSITIVE_INFINITY} in case
 	 * of no intervals.
 	 *
 	 * @return the rightmost point.
 	 */
 	public double getHigh() {
 		if (isEmpty())
-			return Double.NEGATIVE_INFINITY;
+			return Double.POSITIVE_INFINITY;
 		return root.left.max;
 	}
 
@@ -558,9 +558,9 @@ public final class IntervalTree<T> {
 	 *
 	 * @return {@code true} if and only if the specified {@code Object} is a
 	 *         {@code IntervalTree} which contain the same intervals as this
-     *         {@code IntervalTree's}.
+	 *         {@code IntervalTree's}.
 	 * 
-     * @see #hashCode
+	 * @see #hashCode
 	 */
 	@Override
 	public boolean equals(Object obj) {
@@ -593,25 +593,38 @@ public final class IntervalTree<T> {
 	}
 
 	/**
+	 * Creates a string representation of all the intervals with their values.
+	 *
+	 * @param timesAsDoubles indicates if times should be shown as doubles or dates
+	 *
+	 * @return a string representation with times as doubles or dates.
+	 */
+	public String toString(boolean timesAsDoubles) {
+		List<Interval<T>> list = new ArrayList<Interval<T>>();
+		inorderTreeWalk(root.left, list);
+		if (!list.isEmpty()) {
+			StringBuilder sb = new StringBuilder("<");
+			sb.append(list.get(0).toString(timesAsDoubles));
+			for (int i = 1; i < list.size(); ++i)
+				sb.append("; ").append(list.get(i).toString(timesAsDoubles));
+			sb.append(">");
+			return sb.toString();
+		}
+		return "<empty>";
+	}
+
+	/**
 	 * Returns a string representation of this interval tree in a format
 	 * {@code <[low, high, value], ..., [low, high, value]>}. Nodes are visited
 	 * in {@code inorder}.
+	 *
+	 * <p>Times are always shown as doubles.</p>
 	 *
 	 * @return a string representation of this interval tree.
 	 */
 	@Override
 	public String toString() {
-		List<Interval<T>> list = new ArrayList<Interval<T>>();
-		inorderTreeWalk(root.left, list);
-		if (!list.isEmpty()) {
-			StringBuilder sb = new StringBuilder("<");
-			sb.append(list.get(0).toString());
-			for (int i = 1; i < list.size(); ++i)
-				sb.append("; ").append(list.get(i).toString());
-			sb.append(">");
-			return sb.toString();
-		}
-		return "<empty>";
+		return toString(true);
 	}
 
 	private class Node {

@@ -148,7 +148,7 @@ public abstract class DynamicType<T> {
 	}
 
 	/**
-	 * Returns the leftmost point or {@code Double.POSITIVE_INFINITY} in case
+	 * Returns the leftmost point or {@code Double.NEGATIVE_INFINITY} in case
 	 * of no intervals.
 	 *
 	 * @return the leftmost point.
@@ -158,7 +158,7 @@ public abstract class DynamicType<T> {
 	}
 
 	/**
-	 * Returns the rightmost point or {@code Double.NEGATIVE_INFINITY} in case
+	 * Returns the rightmost point or {@code Double.POSITIVE_INFINITY} in case
 	 * of no intervals.
 	 *
 	 * @return the rightmost point.
@@ -424,7 +424,7 @@ public abstract class DynamicType<T> {
 	 *         {@code DynamicType} which has the same type {@code T} and an
 	 *         equal interval tree.
 	 * 
-     * @see #hashCode
+	 * @see #hashCode
 	 */
 	@Override
 	public boolean equals(Object obj) {
@@ -445,10 +445,21 @@ public abstract class DynamicType<T> {
 	}
 
 	/**
+	 * Creates a string representation of all the intervals with their values.
+	 *
+	 * @param timesAsDoubles indicates if times should be shown as doubles or dates
+	 *
+	 * @return a string representation with times as doubles or dates.
+	 */
+	public String toString(boolean timesAsDoubles) {
+		return intervalTree.toString(timesAsDoubles);
+	}
+
+	/**
 	 * Returns a string representation of this instance in a format
 	 * {@code <[low, high, value], ..., [low, high, value]>}. Intervals are
 	 * ordered by its left endpoint.
-	 * 
+	 *
 	 * @return a string representation of this instance.
 	 */
 	@Override

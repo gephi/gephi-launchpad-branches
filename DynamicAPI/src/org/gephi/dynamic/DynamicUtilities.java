@@ -23,11 +23,14 @@ package org.gephi.dynamic;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.GregorianCalendar;
 import java.util.List;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import org.gephi.data.attributes.api.AttributeType;
+import org.gephi.data.attributes.api.Estimator;
 import org.gephi.data.attributes.type.DynamicBigDecimal;
 import org.gephi.data.attributes.type.DynamicBigInteger;
 import org.gephi.data.attributes.type.DynamicBoolean;
@@ -42,6 +45,7 @@ import org.gephi.data.attributes.type.DynamicString;
 import org.gephi.data.attributes.type.DynamicType;
 import org.gephi.data.attributes.type.Interval;
 import org.gephi.data.attributes.type.TimeInterval;
+import org.gephi.dynamic.api.DynamicModel;
 import org.openide.util.Exceptions;
 
 /**
@@ -75,7 +79,7 @@ public final class DynamicUtilities {
 	
 	/**
 	 * Used for export (writes XML date strings).
-	 * 
+	 *
 	 * @param d a double to convert from
 	 *
 	 * @return an XML date string.
@@ -479,8 +483,127 @@ public final class DynamicUtilities {
 	 *
 	 * @throws NullPointerException     if {@code source} is null.
 	 * @throws IllegalArgumentException if {@code low} > {@code high}.
-	 */
+	*/
 	public static DynamicType fitToInterval(DynamicType source, double low, double high) {
 		return fitToInterval(source, new Interval(low, high));
+	}
+
+	/**
+	 * Returns the visible time interval of <code>dynamicModel</code> if it is not
+	 * [-inf, +inf]. Returns <code>null</null> in other cases.
+	 *
+	 * @param dynamicModel the dynamic model
+	 *
+	 * @return the valid visible interval, or <code>null</code>.
+	 */
+	public static TimeInterval getVisibleInterval(DynamicModel dynamicModel) {
+		if (dynamicModel != null) {
+			TimeInterval ti = dynamicModel.getVisibleInterval();
+			if (ti != null && !(Double.isInfinite(ti.getLow()) && Double.isInfinite(ti.getHigh())))
+				return ti;
+		}
+		return null;
+	}
+
+	public static Object getDynamicValue(Object value, double low, double high) {
+		if (value != null && value instanceof DynamicType) {
+			DynamicType dynamicType = (DynamicType) value;
+			Estimator   estimator   = Estimator.FIRST;
+			if (Number.class.isAssignableFrom(dynamicType.getUnderlyingType()))
+				estimator = Estimator.AVERAGE;
+			return dynamicType.getValue(low, high, estimator);
+		}
+		return value;
+	}
+
+	public static DynamicType removeOverlapping(DynamicType dynamicType) {
+		Comparator<Interval> comparator = new Comparator<Interval>() {
+			@Override
+			public int compare(Interval o1, Interval o2) {
+				if (o1.getLow() < o2.getLow())
+					return -1;
+				if (o2.getLow() < o1.getLow())
+					return 1;
+				if (o1.getHigh() < o2.getHigh())
+					return -1;
+				if (o2.getHigh() < o1.getHigh())
+					return 1;
+				return 0;
+			}
+		};
+
+		List<Interval> intervals = dynamicType.getIntervals(Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
+		Collections.sort(intervals, comparator);
+		boolean overlap = true;
+		while (overlap) {
+			overlap = false;
+			for (int i = 0; i < intervals.size() - 1; i++) {
+				Interval interval = intervals.get(i);
+				Interval next     = intervals.get(i + 1);
+				if (interval.getLow() == next.getLow()) {
+					intervals.set(i + 1, createInterval(dynamicType, interval.getHigh(), next.getHigh(), true,
+							next.isHighExcluded(), next.getValue()));
+					overlap = true;
+					break;
+				}
+				if (interval.getHigh() == next.getHigh()) {
+					intervals.set(i, createInterval(dynamicType, interval.getLow(), next.getLow(),
+							interval.isLowExcluded(), true, interval.getValue()));
+					overlap = true;
+					break;
+				}
+				if (next.getLow() < interval.getLow() && next.getHigh() > interval.getHigh()) {
+					intervals.set(i + 1, createInterval(dynamicType, interval.getHigh(), next.getHigh(), true,
+							next.isHighExcluded(), interval.getValue()));
+					overlap = true;
+					break;
+				}
+				if ((next.getLow() < interval.getHigh() || (next.getLow() == interval.getHigh() &&
+						!interval.isHighExcluded())) && next.getHigh() < interval.getHigh()) {
+					intervals.set(i, createInterval(dynamicType, interval.getLow(), next.getLow(),
+							interval.isLowExcluded(), true, interval.getValue()));
+					intervals.add(i + 2, createInterval(dynamicType, next.getHigh(), interval.getHigh(), true,
+							interval.isHighExcluded(), interval.getValue()));
+					overlap = true;
+					break;
+				}
+				if (next.getLow() < interval.getHigh() || (next.getLow() == interval.getHigh() && !interval.isHighExcluded() && !next.isLowExcluded())) {
+					intervals.set(i, createInterval(dynamicType, interval.getLow(), next.getHigh(),
+							interval.isLowExcluded(), true, interval.getValue()));
+					overlap = true;
+					break;
+				}
+			}
+		}
+		return createDynamicObject(AttributeType.parse(dynamicType), intervals);
+	}
+
+	public static Interval createInterval(DynamicType dynamicType, double low, double high, boolean lopen,
+			boolean ropen, Object value) {
+		if (dynamicType instanceof TimeInterval)
+			return new Interval<Double[]>(low, high, lopen, ropen, new Double[]{low, high});
+		if (dynamicType instanceof DynamicBigDecimal)
+			return new Interval<BigDecimal>(low, high, lopen, ropen, (BigDecimal) value);
+		if (dynamicType instanceof DynamicBigInteger)
+			return new Interval<BigInteger>(low, high, lopen, ropen, (BigInteger) value);
+		if (dynamicType instanceof DynamicBoolean)
+			return new Interval<Boolean>(low, high, lopen, ropen, (Boolean) value);
+		if (dynamicType instanceof DynamicByte)
+			return new Interval<Byte>(low, high, lopen, ropen, (Byte) value);
+		if (dynamicType instanceof DynamicCharacter)
+			return new Interval<Character>(low, high, lopen, ropen, (Character) value);
+		if (dynamicType instanceof DynamicDouble)
+			return new Interval<Double>(low, high, lopen, ropen, (Double) value);
+		if (dynamicType instanceof DynamicFloat)
+			return new Interval<Float>(low, high, lopen, ropen, (Float) value);
+		if (dynamicType instanceof DynamicInteger)
+			return new Interval<Integer>(low, high, lopen, ropen, (Integer) value);
+		if (dynamicType instanceof DynamicLong)
+			return new Interval<Long>(low, high, lopen, ropen, (Long) value);
+		if (dynamicType instanceof DynamicShort)
+			return new Interval<Short>(low, high, lopen, ropen, (Short) value);
+		if (dynamicType instanceof DynamicString)
+			return new Interval<String>(low, high, lopen, ropen, (String) value);
+		return null;
 	}
 }

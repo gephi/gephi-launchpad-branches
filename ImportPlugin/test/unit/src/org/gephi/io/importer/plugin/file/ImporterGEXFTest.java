@@ -47,9 +47,9 @@ import org.openide.util.Lookup;
  *
  * @author Mathieu Bastian
  */
-public class ImporterGEXF2Test {
+public class ImporterGEXFTest {
 
-    private ImporterGEXF2 importer;
+    private ImporterGEXF importer;
 
     @BeforeClass
     public static void setUpClass() throws Exception {
@@ -61,7 +61,7 @@ public class ImporterGEXF2Test {
 
     @Before
     public void setUp() {
-        importer = new ImporterGEXF2();
+        importer = new ImporterGEXF();
         try {
             URL url = getClass().getResource("/org/gephi/io/importer/plugin/file/testparser.gexf");
             File file = new File(url.toURI());
@@ -78,7 +78,7 @@ public class ImporterGEXF2Test {
 
     @Test
     public void testCalendar() {
-        String date = "2000-01-01T00:00:00.000";
+        String date = "2000-01-01";
 		double d = DynamicUtilities.getDoubleFromXMLDateString(date);
 		String date2 = DynamicUtilities.getXMLDateStringFromDouble(d);
 		assertEquals(date, date2);

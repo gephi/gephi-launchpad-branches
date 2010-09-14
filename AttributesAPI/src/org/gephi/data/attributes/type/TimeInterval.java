@@ -23,6 +23,7 @@ package org.gephi.data.attributes.type;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
+import org.gephi.data.attributes.api.AttributeUtils;
 import org.gephi.data.attributes.api.Estimator;
 
 /**
@@ -255,6 +256,39 @@ public final class TimeInterval extends DynamicType<Double[]> {
 		return Double[].class;
 	}
 
+	@Override
+	public String toString(boolean timesAsDoubles) {
+		if (timesAsDoubles)
+			return toString();
+		return toStringTimesAsDates();
+	}
+
+	/**
+	 * Returns a string representation of this instance in a format
+	 * {@code <[low, high], ..., [low, high]>}. Intervals are
+	 * ordered by its left endpoint.
+	 *
+	 * <p>Times are always shown as dates.</p>
+	 *
+	 * @return a string representation of this instance.
+	 */
+	public String toStringTimesAsDates() {
+		List<Interval<Double[]>> list = getIntervals(Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
+		if (!list.isEmpty()) {
+			StringBuilder sb = new StringBuilder("<");
+			sb.append(list.get(0).isLowExcluded() ? "(" : "[").append(AttributeUtils.getXMLDateStringFromDouble(
+				list.get(0).getLow())).append(", ").append(AttributeUtils.getXMLDateStringFromDouble(
+				list.get(0).getHigh())).append(list.get(0).isHighExcluded() ? ")" : "]");
+			for (int i = 1; i < list.size(); ++i)
+				sb.append("; ").append(list.get(i).isLowExcluded() ? "(" : "[").append(AttributeUtils.
+					getXMLDateStringFromDouble(list.get(i).getLow())).append(", ").append(AttributeUtils.
+					getXMLDateStringFromDouble(list.get(i).getHigh())).append(list.get(i).isHighExcluded() ? ")" : "]");
+			sb.append(">");
+			return sb.toString();
+		}
+		return "<empty>";
+	}
+
 	/**
 	 * Returns a string representation of this instance in a format
 	 * {@code <[low, high], ..., [low, high]>}. Intervals are
@@ -268,10 +302,10 @@ public final class TimeInterval extends DynamicType<Double[]> {
 		if (!list.isEmpty()) {
 			StringBuilder sb = new StringBuilder("<");
 			sb.append(list.get(0).isLowExcluded() ? "(" : "[").append(list.get(0).getLow()).append(", ").
-					append(list.get(0).getHigh()).append(list.get(0).isHighExcluded() ? ")" : "]");
+				append(list.get(0).getHigh()).append(list.get(0).isHighExcluded() ? ")" : "]");
 			for (int i = 1; i < list.size(); ++i)
-				sb.append("; ").append(list.get(i).isLowExcluded()? "(" :"[").append(list.get(i).getLow()).append(", ").
-						append(list.get(i).getHigh()).append(list.get(i).isHighExcluded() ? ")" : "]");
+				sb.append("; ").append(list.get(i).isLowExcluded() ? "(" : "[").append(list.get(i).getLow()).
+				append(", ").append(list.get(i).getHigh()).append(list.get(i).isHighExcluded() ? ")" : "]");
 			sb.append(">");
 			return sb.toString();
 		}

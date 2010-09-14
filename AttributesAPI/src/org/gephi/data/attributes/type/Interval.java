@@ -20,11 +20,13 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 */
 package org.gephi.data.attributes.type;
 
+import org.gephi.data.attributes.api.AttributeUtils;
+
 /**
  * This class represents an interval with some value.
  *
  * @author Cezary Bartosiak
- * 
+ *
  * @param <T> type of data
  */
 public final class Interval<T> implements Comparable<Interval> {
@@ -198,7 +200,7 @@ public final class Interval<T> implements Comparable<Interval> {
 
 	/**
 	 * Compares this interval with the specified object for equality.
-	 * 
+	 *
 	 * <p>Note that two intervals are equal if {@code i.low = i'.low} and
 	 * {@code i.high = i'.high} and they have got the bounds excluded/included.
 	 *
@@ -206,10 +208,10 @@ public final class Interval<T> implements Comparable<Interval> {
 	 *
 	 * @return {@code true} if and only if the specified {@code Object} is a
 	 *         {@code Interval} whose low and high are equal to this
-     *         {@code Interval's}.
+	 *         {@code Interval's}.
 	 *
 	 * @see #compareTo(org.gephi.data.attributes.type.Interval)
-     * @see #hashCode
+	 * @see #hashCode
 	 */
 	@Override
 	public boolean equals(Object obj) {
@@ -222,15 +224,29 @@ public final class Interval<T> implements Comparable<Interval> {
 		return false;
 	}
 
+    /**
+     * Return a hashcode of this interval.
+     *
+     * @return a hashcode of this interval.
+     */
+    @Override
+    public int hashCode() {
+        return (int) (Double.doubleToLongBits(low)
+                ^ Double.doubleToLongBits(high));
+    }
+
 	/**
-	 * Return a hashcode of this interval.
-	 * 
-	 * @return a hashcode of this interval.
+	 * Creates a string representation of the interval with its value.
+	 *
+	 * @param timesAsDoubles indicates if times should be shown as doubles or dates
+	 *
+	 * @return a string representation with times as doubles or dates.
 	 */
-	@Override
-	public int hashCode() {
-		return (int)(Double.doubleToLongBits(low) ^
-					 Double.doubleToLongBits(high));
+	public String toString(boolean timesAsDoubles) {
+		if (timesAsDoubles)
+			return (lopen ? "(" : "[") + low + ", " + high + ", " + value + (ropen ? ")" : "]");
+		else return (lopen ? "(" : "[") + AttributeUtils.getXMLDateStringFromDouble(low) + ", " +
+				AttributeUtils.getXMLDateStringFromDouble(high) + ", " + value + (ropen ? ")" : "]");
 	}
 
 	/**
@@ -245,11 +261,13 @@ public final class Interval<T> implements Comparable<Interval> {
 	 * <li>
 	 * {@code (low, high, value)}
 	 * </ol>
-	 * 
+	 *
+	 * <p>Times are always shown as doubles</p>
+	 *
 	 * @return a string representation of this interval.
-	 */
+	*/
 	@Override
 	public String toString() {
-		return (lopen ? "(" : "[") + low + ", " + high + ", " + value + (ropen ? ")" : "]");
+		return toString(true);
 	}
 }

@@ -152,7 +152,7 @@ public class MinimalDrawer extends JPanel
         addMouseMotionListener(this);
         addMouseListener(this);
         // setEnabled(true);
-        viewToModelSync = new Timer(300, updateModelAction);
+        viewToModelSync = new Timer(150, updateModelAction);
         viewToModelSync.setRepeats(true);
         viewToModelSync.start();
 
@@ -215,16 +215,9 @@ public class MinimalDrawer extends JPanel
                 st = 1.0 * (double) width;
                 newfrom = sf * (1.0 / width);
                 newto = st * (1.0 / width);
-            } /*else {
-            sf = 0.0;
-            st = 1.0 * (double) getWidth();
-            newfrom = sf * (1.0 / width);
-            newto = st * (1.0 / width);
-            }*/
+            } 
         }
 
-        int tmMarginTop = 2;
-        int tmMarginBottom = 4;
 
 
         settings.update(width, height);
@@ -232,7 +225,7 @@ public class MinimalDrawer extends JPanel
 
         g2d.setBackground(settings.background.top);
         g2d.setPaint(settings.background.paint);
-        g2d.fillRect(0, tmMarginTop + 1, width, height - tmMarginBottom - 2);
+        g2d.fillRect(0, settings.tmMarginTop + 1, width, height - settings.tmMarginBottom - 2);
 
         if (!this.isEnabled()) {
             return;
@@ -243,7 +236,6 @@ public class MinimalDrawer extends JPanel
 
         long min = (long) model.getMinValue();
         long max = (long) model.getMaxValue();
-
         /*
         System.out.println("\nall min: " + min);
         System.out.println("all max: " + max);
@@ -256,7 +248,13 @@ public class MinimalDrawer extends JPanel
                 || max == Double.POSITIVE_INFINITY
                 || max == Double.NEGATIVE_INFINITY
                 || min == Double.POSITIVE_INFINITY) {
+            System.out.println("cannot show a model with negative values");
             return;
+        }
+        if (model.getFromFloat() == Double.NEGATIVE_INFINITY
+                || model.getToFloat() == Double.POSITIVE_INFINITY) {
+            System.out.println("cannot show a selection with negative values");
+                    return;
         }
 
         /*
@@ -281,54 +279,54 @@ public class MinimalDrawer extends JPanel
                 case LEFT_HOOK:
                     g2d.fillRect(
                             (int) sf,
-                            tmMarginTop,
+                            settings.tmMarginTop,
                             vhw,
-                            height - tmMarginBottom - 1);
+                            height - settings.tmMarginBottom - 1);
                     g2d.setPaint(settings.selection.paint);
                     g2d.fillRect(
                             (int) sf + vhw,
-                            tmMarginTop,
+                            settings.tmMarginTop,
                             sw - vhw,
-                            height - tmMarginBottom - 1);
+                            height - settings.tmMarginBottom - 1);
                     break;
                 case CENTER_HOOK:
                     g2d.setPaint(settings.selection.paint);
                     g2d.fillRect(
                             (int) sf,
-                            tmMarginTop,
+                            settings.tmMarginTop,
                             vhw,
-                            height - tmMarginBottom - 1);
+                            height - settings.tmMarginBottom - 1);
                     g2d.setPaint(settings.selection.mouseOverPaint);
                     g2d.fillRect(
                             (int) sf + vhw,
-                            tmMarginTop,
+                            settings.tmMarginTop,
                             sw - vhw * 2,
-                            height - tmMarginBottom - 1);
+                            height - settings.tmMarginBottom - 1);
                     g2d.setPaint(settings.selection.paint);
                     g2d.fillRect(
                             (int) st - vhw,
-                            tmMarginTop,
+                            settings.tmMarginTop,
                             vhw,
-                            height - tmMarginBottom - 1);
+                            height - settings.tmMarginBottom - 1);
                     break;
                 case RIGHT_HOOK:
                     g2d.setPaint(settings.selection.paint);
                     g2d.fillRect(
                             (int) sf,
-                            tmMarginTop,
+                            settings.tmMarginTop,
                             sw - vhw,
-                            height - tmMarginBottom - 1);
+                            height - settings.tmMarginBottom - 1);
                     g2d.setPaint(settings.selection.mouseOverPaint);
                     g2d.fillRect(
                             (int) st - vhw,
-                            tmMarginTop,
+                            settings.tmMarginTop,
                             vhw,
-                            height - tmMarginBottom - 1);
+                            height - settings.tmMarginBottom - 1);
                     break;
             }
         } else {
             g2d.setPaint(settings.selection.paint);
-            g2d.fillRect((int) sf, tmMarginTop, sw, height - tmMarginBottom - 1);
+            g2d.fillRect((int) sf, settings.tmMarginTop, sw, height - settings.tmMarginBottom - 1);
         }
 
         //DateTime dtFrom = new DateTime(1455, 1, 1, 1, 1, 1, 1);
@@ -340,7 +338,7 @@ public class MinimalDrawer extends JPanel
         }
 
         g2d.setColor(settings.defaultStrokeColor);
-        g2d.drawRect((int) sf, tmMarginTop, sw, height - tmMarginBottom - 1);
+        g2d.drawRect((int) sf, settings.tmMarginTop, sw, height - settings.tmMarginBottom - 1);
 
         double v = model.getValueFromFloat(currentMousePositionX * (1.0 / width));
 
@@ -726,7 +724,7 @@ public class MinimalDrawer extends JPanel
         int x = currentMousePositionX;
 
 
-        int r = settings.selection.visibleHookWidth;//skin.getSelectionHookSideLength();
+        int r = settings.selection.visibleHookWidth;
 
         // SELECTED ZONE BEGIN POSITION, IN PIXELS
         // sf = (model.getFromFloat() * w);
@@ -754,7 +752,6 @@ public class MinimalDrawer extends JPanel
 
         switch (currentState) {
             case RESIZE_FROM:
-                // TODO
                 if ((sf + delta <= 0)) {
                     sf = 0;
                 } else if (Math.abs(st - sf + delta) > settings.selection.minimalWidth) {
@@ -763,7 +760,6 @@ public class MinimalDrawer extends JPanel
                 }
                 break;
             case RESIZE_TO:
-                // TODO
                 if ((st + delta >= w)) {
                     st = w;
                 } else if (Math.abs((st + delta) - sf) > settings.selection.minimalWidth) {
@@ -780,7 +776,6 @@ public class MinimalDrawer extends JPanel
                     st += delta;
                 }
                 break;
-
         }
 
         if (w != 0) {

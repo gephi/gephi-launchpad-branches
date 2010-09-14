@@ -27,13 +27,14 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import org.gephi.data.attributes.api.AttributeColumn;
 import org.gephi.data.attributes.api.AttributeController;
 import org.gephi.data.attributes.api.AttributeModel;
-import org.gephi.data.attributes.api.AttributeType;
 import org.gephi.data.attributes.api.AttributeValue;
 import org.gephi.data.attributes.api.AttributeValueFactory;
 import org.gephi.data.attributes.type.DynamicType;
+import org.gephi.data.attributes.type.Interval;
 import org.gephi.data.attributes.type.TimeInterval;
 import org.gephi.dynamic.DynamicUtilities;
 import org.gephi.dynamic.api.DynamicModel.TimeFormat;
@@ -458,6 +459,32 @@ public class ImportContainerImpl implements Container, ContainerLoader, Containe
             report.log(NbBundle.getMessage(ImportContainerImpl.class, "ImportContainerLog.TimeFormat", timeFormat.toString()));
         }
 
+        //Remove overlapping
+        if (dynamicGraph && parameters.isRemoveIntervalsOverlapping()) {
+            for (NodeDraftImpl node : nodeMap.values()) {
+                AttributeValue[] values = node.getAttributeRow().getValues();
+                for (int i = 0; i < values.length; i++) {
+                    AttributeValue val = values[i];
+                    if (val.getValue() != null && val.getValue() instanceof DynamicType) {   //is Dynamic type
+                        DynamicType type = (DynamicType) val.getValue();
+                        type = DynamicUtilities.removeOverlapping(type);
+                        node.getAttributeRow().setValue(val.getColumn(), type);
+                    }
+                }
+            }
+            for (EdgeDraftImpl edge : edgeMap.values()) {
+                AttributeValue[] values = edge.getAttributeRow().getValues();
+                for (int i = 0; i < values.length; i++) {
+                    AttributeValue val = values[i];
+                    if (val.getValue() != null && val.getValue() instanceof DynamicType) {   //is Dynamic type
+                        DynamicType type = (DynamicType) val.getValue();
+                        type = DynamicUtilities.removeOverlapping(type);
+                        edge.getAttributeRow().setValue(val.getColumn(), type);
+                    }
+                }
+            }
+        }
+
         //Dynamic attributes bounds
         if (dynamicGraph && (timeIntervalMin != null || timeIntervalMax != null)) {
             for (NodeDraftImpl node : nodeMap.values()) {
@@ -479,7 +506,7 @@ public class ImportContainerImpl implements Container, ContainerLoader, Containe
                 AttributeValue[] values = node.getAttributeRow().getValues();
                 for (int i = 0; i < values.length; i++) {
                     AttributeValue val = values[i];
-                    if (val.getValue() != null && DynamicType.class.isAssignableFrom(val.getColumn().getType().getType())) {   //is Dynamic type
+                    if (val.getValue() != null && val.getValue() instanceof DynamicType) {   //is Dynamic type
                         DynamicType type = (DynamicType) val.getValue();
                         if (timeIntervalMin != null && type.getLow() < timeIntervalMin) {
                             if (!Double.isInfinite(type.getLow())) {
@@ -518,7 +545,7 @@ public class ImportContainerImpl implements Container, ContainerLoader, Containe
                 AttributeValue[] values = edge.getAttributeRow().getValues();
                 for (int i = 0; i < values.length; i++) {
                     AttributeValue val = values[i];
-                    if (val.getValue() != null && DynamicType.class.isAssignableFrom(val.getColumn().getType().getType())) {   //is Dynamic type
+                    if (val.getValue() != null && val.getValue() instanceof DynamicType) {   //is Dynamic type
                         DynamicType type = (DynamicType) val.getValue();
                         if (timeIntervalMin != null && type.getLow() < timeIntervalMin) {
                             if (!Double.isInfinite(type.getLow())) {
@@ -651,15 +678,13 @@ public class ImportContainerImpl implements Container, ContainerLoader, Containe
         private int edgeIDgen = 0;
 
         public NodeDraftImpl newNodeDraft() {
-            NodeDraftImpl node = new NodeDraftImpl(ImportContainerImpl.this, source);
-            node.setId("n" + nodeIDgen);
+            NodeDraftImpl node = new NodeDraftImpl(ImportContainerImpl.this, "n" + nodeIDgen);
             nodeIDgen++;
             return node;
         }
 
         public EdgeDraftImpl newEdgeDraft() {
-            EdgeDraftImpl edge = new EdgeDraftImpl(ImportContainerImpl.this, source);
-            edge.setId("e" + edgeIDgen);
+            EdgeDraftImpl edge = new EdgeDraftImpl(ImportContainerImpl.this, "e" + edgeIDgen);
             edgeIDgen++;
             return edge;
         }
