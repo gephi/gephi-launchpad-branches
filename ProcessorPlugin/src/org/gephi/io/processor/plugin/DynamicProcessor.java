@@ -56,7 +56,10 @@ import org.openide.util.NbBundle;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
- *
+ * Processor 'Time Frame' that uses its 'date' parameter to associate the content
+ * of the container to a particular point in time. It locates and modify existing
+ * elements by appending new time intervals. It also create dynamic attribute
+ * values, as well as a dynamic weight.
  * @author Mathieu Bastian
  */
 @ServiceProvider(service = Processor.class)
@@ -133,7 +136,7 @@ public class DynamicProcessor extends AbstractProcessor implements Processor {
                         attributeModel.getEdgeTable().addColumn(column.getId(), column.getTitle(), column.getType(), column.getOrigin(), column.getDefaultValue());
                     }
                 }
-            } else if (PropertiesColumn.EDGE_WEIGHT.getId().equals(column.getId())) {
+            } else if (PropertiesColumn.EDGE_WEIGHT.getId().equals(column.getId()) && !existingCol.getType().isDynamicType()) {
                 attributeModel.getEdgeTable().replaceColumn(attributeModel.getEdgeTable().getColumn(PropertiesColumn.EDGE_WEIGHT.getIndex()), PropertiesColumn.EDGE_WEIGHT.getId(), PropertiesColumn.EDGE_WEIGHT.getTitle(), AttributeType.DYNAMIC_FLOAT, AttributeOrigin.PROPERTY, null);
             }
         }

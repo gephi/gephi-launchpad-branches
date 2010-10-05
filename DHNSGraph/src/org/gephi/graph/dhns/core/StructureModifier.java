@@ -131,25 +131,45 @@ public class StructureModifier {
 
     public void clear() {
         dhns.writeLock();
-        business.clearAllEdges();
-        business.clearAllNodes();
+        AbstractEdge[] clearedEdges = business.clearAllEdges();
+        AbstractNode[] clearedNodes = business.clearAllNodes();
         graphVersion.incNodeAndEdgeVersion();
         dhns.writeUnlock();
-        dhns.getEventManager().fireEvent(new GeneralEvent(EventType.CLEAR_EDGES, view));
-        dhns.getEventManager().fireEvent(new GeneralEvent(EventType.CLEAR_NODES, view));
+        if (clearedEdges != null) {
+            for (int i = 0; i < clearedEdges.length; i++) {
+                if (clearedEdges[i] != null) {
+                    dhns.getEventManager().fireEvent(new EdgeEvent(EventType.REMOVE_EDGES, clearedEdges[i], view));
+                }
+            }
+        }
+        if (clearedNodes != null) {
+            for (int i = 0; i < clearedNodes.length; i++) {
+                if (clearedNodes[i] != null) {
+                    dhns.getEventManager().fireEvent(new NodeEvent(EventType.REMOVE_NODES, clearedNodes[i], view));
+                }
+            }
+        }
     }
 
     public void clearEdges() {
         dhns.writeLock();
-        business.clearAllEdges();
+        AbstractEdge[] clearedEdges = business.clearAllEdges();
         graphVersion.incEdgeVersion();
         dhns.writeUnlock();
-        dhns.getEventManager().fireEvent(new GeneralEvent(EventType.CLEAR_EDGES, view));
+        if (clearedEdges != null) {
+            for (int i = 0; i < clearedEdges.length; i++) {
+                if (clearedEdges[i] != null) {
+                    dhns.getEventManager().fireEvent(new EdgeEvent(EventType.REMOVE_EDGES, clearedEdges[i], view));
+                }
+            }
+        }
     }
 
     public void clearEdges(AbstractNode node) {
         dhns.writeLock();
         AbstractEdge[] clearedEdges = business.clearEdges(node);
+        graphVersion.incEdgeVersion();
+        dhns.writeUnlock();
         if (clearedEdges != null) {
             for (int i = 0; i < clearedEdges.length; i++) {
                 if (clearedEdges[i] != null) {
@@ -158,8 +178,6 @@ public class StructureModifier {
                 }
             }
         }
-        graphVersion.incEdgeVersion();
-        dhns.writeUnlock();
     }
 
     public void clearMetaEdges(AbstractNode node) {
@@ -315,9 +333,9 @@ public class StructureModifier {
                         }
                     }
                 }
-                if (node.countInViews() == 1) {
-                    dhns.getGraphStructure().removeFromDictionnary(node);
-                }
+
+                dhns.getGraphStructure().removeFromDictionnary(node);
+
 
                 treeStructure.deleteOnlySelf(node);
                 dhns.getEventManager().fireEvent(new NodeEvent(EventType.REMOVE_NODES, node, view));
@@ -453,9 +471,8 @@ public class StructureModifier {
                         }
                     }
                 }
-                if (node.countInViews() == 1) {
-                    dhns.getGraphStructure().removeFromDictionnary(descendant);
-                }
+                dhns.getGraphStructure().removeFromDictionnary(descendant);
+
                 i++;
             }
 
@@ -497,14 +514,22 @@ public class StructureModifier {
             return res;
         }
 
-        private void clearAllEdges() {
-            edgeProcessor.clearAllEdges();
+        private AbstractEdge[] clearAllEdges() {
+            return edgeProcessor.clearAllEdges();
         }
 
-        private void clearAllNodes() {
+        private AbstractNode[] clearAllNodes() {
+            AbstractNode[] deletedNodes = new AbstractNode[treeStructure.getTreeSize() - 1];
+            int n = 0;
+            for (TreeListIterator itr = new TreeListIterator(treeStructure.getTree(), 1); itr.hasNext();) {
+                AbstractNode node = itr.next();
+                node.getNodeData().getNodes().remove(view.getViewId());
+                dhns.getGraphStructure().removeFromDictionnary(node);
+                deletedNodes[n++] = node;
+            }
             treeStructure.clear();
             view.setNodesEnabled(0);
-            dhns.getGraphStructure().clearNodeDictionnary();
+            return deletedNodes;
         }
 
         private AbstractEdge[] clearEdges(AbstractNode node) {
