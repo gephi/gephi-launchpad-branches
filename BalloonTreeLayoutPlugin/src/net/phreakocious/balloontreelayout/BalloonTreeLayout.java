@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import org.gephi.graph.api.DirectedGraph;
 import org.gephi.graph.api.Node;
+import org.gephi.graph.api.NodeData;
+import org.gephi.graph.api.NodeIterable;
 import org.gephi.graph.api.NodeIterator;
 import org.gephi.layout.plugin.AbstractLayout;
 // import org.gephi.layout.plugin.tree.GraphUtils;
@@ -16,8 +18,7 @@ import org.openide.util.NbBundle;
 /**
  * @author phreakocious
  * (Adapted from the prefuse library, original copyright and quote below)
-*/
-/*
+
 
 <p>Copyright (c) 2004-2006 Regents of the University of California.
 All rights reserved.
@@ -46,8 +47,7 @@ HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
 LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
 OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 SUCH DAMAGE.</p>
- */
-/**
+
  * <p>Layout that computes a circular "balloon-tree" layout of a tree.
  * This layout places children nodes radially around their parents, and is
  * equivalent to a top-down flattened view of a ConeTree.</p>
@@ -60,9 +60,6 @@ SUCH DAMAGE.</p>
  */
 public class BalloonTreeLayout extends AbstractLayout {
 
-    private Map<Integer, List<Node>> depthMapper;
-    private Map<Node, Double> nodeToRadiusMapper;
-    private int maxShortestPath;
     private int nodeId;
     private DirectedGraph graph;
     private int minRadius;
@@ -73,9 +70,6 @@ public class BalloonTreeLayout extends AbstractLayout {
 
     public void initAlgo() {
         graph = graphModel.getHierarchicalDirectedGraphVisible();
-        depthMapper = new HashMap<Integer, List<Node>>();
-        nodeToRadiusMapper = new HashMap<Node, Double>();
-        maxShortestPath = 0;
         setConverged(false);
     }
 
@@ -85,15 +79,18 @@ public class BalloonTreeLayout extends AbstractLayout {
     }
 
     private void firstWalk(Node n) {
-        BalloonTreeNodeLayoutData nLayoutData = n.getNodeData().getLayoutData();
-        nLayoutData.d = 0;
+        NodeData nnd = n.getNodeData();
+        BalloonTreeNodeLayoutData nld = nnd.getLayoutData();
+
+        nld.d = 0;
         NodeIterator childIter = graph.getSuccessors(n).iterator();
         while (childIter.hasNext()) {
             Node c = (Node) childIter.next();
-            BalloonTreeNodeLayoutData cLayoutData = c.getNodeData().getLayoutData();
+            NodeData cnd = c.getNodeData();
+            BalloonTreeNodeLayoutData cld = cnd.getLayoutData();
             firstWalk(c);            
-            nLayoutData.d = Math.max(nLayoutData.d, cLayoutData.r);
-            cLayoutData.a = (Math.atan(cLayoutData.r) / (nLayoutData.d + cLayoutData.r));
+            nld.d = Math.max(nld.d, cld.r);
+            cld.a = (Math.atan(cld.r) / (nld.d + cld.r));
             
         }
         adjustChildren(n);
@@ -102,25 +99,28 @@ public class BalloonTreeLayout extends AbstractLayout {
 
     private void adjustChildren(Node n) {
         double s = 0;
-        BalloonTreeNodeLayoutData nLayoutData = n.getNodeData().getLayoutData();
+        NodeData nnd = n.getNodeData();
+        BalloonTreeNodeLayoutData nld = nnd.getLayoutData();
         NodeIterator childIter = graph.getSuccessors(n).iterator();
         while (childIter.hasNext()) {
             Node c = (Node) childIter.next();
-            BalloonTreeNodeLayoutData cLayoutData = c.getNodeData().getLayoutData();
-            s += cLayoutData.a;
+            NodeData cnd = c.getNodeData();
+            BalloonTreeNodeLayoutData cld = cnd.getLayoutData();
+            s += cld.a;
         }
 
         if (s > Math.PI) {
-            nLayoutData.c = Math.PI / s;
-            nLayoutData.f = 0;
+            nld.c = Math.PI / s;
+            nld.f = 0;
         } else {
-            nLayoutData.c = 1;
-            nLayoutData.f = Math.PI - s;
+            nld.c = 1;
+            nld.f = Math.PI - s;
         }
     }
 
     private void setRadius(Node n) {
-        BalloonTreeNodeLayoutData layoutData = n.getNodeData().getLayoutData();
+        NodeData nnd = n.getNodeData();
+        BalloonTreeNodeLayoutData nld = nnd.getLayoutData();
         double bx = 0.0, by = 0.0;
 
         Node children[] = graph.getSuccessors(n).toArray();
@@ -147,41 +147,44 @@ public class BalloonTreeLayout extends AbstractLayout {
             }
         }
 
-        layoutData.rx = bx * -1;
-        layoutData.ry = by * -1;
+        nld.rx = bx * -1;
+        nld.ry = by * -1;
         
-        layoutData.r = Math.max((int) maxVal, minRadius) + 2 * layoutData.d;
+        nld.r = Math.max((int) maxVal, minRadius) + 2 * nld.d;
     }
 
     private void secondWalk(Node n,
             double bx, double by, double l, double t) {
-        BalloonTreeNodeLayoutData nLayoutData = n.getNodeData().getLayoutData();
+        NodeData nnd = n.getNodeData();
+        BalloonTreeNodeLayoutData nld = nnd.getLayoutData();
 
         // Store x and y values for node
 
-        n.getNodeData().setX((float) (bx + l * (nLayoutData.rx * Math.cos(t) - nLayoutData.ry * Math.sin(t))));
-        n.getNodeData().setY((float) (by + l * (nLayoutData.rx * Math.sin(t) + nLayoutData.ry * Math.cos(t))));
+        n.getNodeData().setX((float) (bx + l * (nld.rx * Math.cos(t) - nld.ry * Math.sin(t))));
+        n.getNodeData().setY((float) (by + l * (nld.rx * Math.sin(t) + nld.ry * Math.cos(t))));
 
         int numChildren = 0;
-        numChildren = graph.getSuccessors(n).toArray().length;
+        NodeIterable children = graph.getSuccessors(n);
+        numChildren = children.toArray().length;
 
-        double dd = l * nLayoutData.d;
+        double dd = l * nld.d;
         double p = Math.PI;
-        double fs = (numChildren == 0 ? 0 : nLayoutData.f / numChildren + 1);
+        double fs = (numChildren == 0 ? 0 : nld.f / numChildren + 1);
         double pr = 0;
-        NodeIterator childIter = graph.getSuccessors(n).iterator();
+        NodeIterator childIter = children.iterator();
         while (childIter.hasNext()) {
             Node c = (Node) childIter.next();
-            BalloonTreeNodeLayoutData cLayoutData = c.getNodeData().getLayoutData();
-            double aa = nLayoutData.c * cLayoutData.a;
-            double rr = nLayoutData.d * Math.tan(aa) / (1 - Math.tan(aa));
-            p += pr + cLayoutData.a + fs;
+            NodeData cnd = c.getNodeData();
+            BalloonTreeNodeLayoutData cld = cnd.getLayoutData();
+            double aa = nld.c * cld.a;
+            double rr = nld.d * Math.tan(aa) / (1 - Math.tan(aa));
+            p += pr + cld.a + fs;
 
             double xx = (l * rr + dd) * Math.cos(p);
             double yy = (l * rr + dd) * Math.sin(p);
 
-            xx += nLayoutData.rx;
-            yy += nLayoutData.ry;
+            xx += nld.rx;
+            yy += nld.ry;
 
             double cost=Math.cos(t);
             double sint=Math.sin(t);
@@ -192,8 +195,8 @@ public class BalloonTreeLayout extends AbstractLayout {
            c.getNodeData().setX((float) xx);
            c.getNodeData().setY((float) yy);
           
-            pr = cLayoutData.a;
-            secondWalk(c, bx + xx, by + yy, l * rr/cLayoutData.r, p);
+            pr = cld.a;
+            secondWalk(c, bx + xx, by + yy, l * rr/cld.r, p);
         }
     }
 
@@ -203,12 +206,13 @@ public class BalloonTreeLayout extends AbstractLayout {
         Node[] nodes = graph.getNodes().toArray();
 
         for (Node n : nodes) {
-            if (n.getNodeData().getLayoutData() == null || !(n.getNodeData().getLayoutData() instanceof BalloonTreeNodeLayoutData)) {
+            NodeData nd = n.getNodeData();
+            if (nd == null || !(nd.getLayoutData() instanceof BalloonTreeNodeLayoutData)) {
                 n.getNodeData().setLayoutData(new BalloonTreeNodeLayoutData());
             }
         }
-        layout(rootNode, 0, 0);
 
+        layout(rootNode, 0, 0);
         setConverged(true);
     }
 
