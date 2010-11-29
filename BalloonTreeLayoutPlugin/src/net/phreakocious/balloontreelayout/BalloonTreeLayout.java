@@ -81,100 +81,119 @@ public class BalloonTreeLayout extends AbstractLayout {
 
     private void layout(Node n, double x, double y) {
         firstWalk(n);
-        secondWalk(n, null, x, y, 10, 10);
+        secondWalk(n, 0, 0, 1, 0);
     }
 
     private void firstWalk(Node n) {
         BalloonTreeNodeLayoutData nLayoutData = n.getNodeData().getLayoutData();
         nLayoutData.d = 0;
-        double s = 0;
         NodeIterator childIter = graph.getSuccessors(n).iterator();
         while (childIter.hasNext()) {
             Node c = (Node) childIter.next();
-            firstWalk(c);
             BalloonTreeNodeLayoutData cLayoutData = c.getNodeData().getLayoutData();
-            nLayoutData.d = Math.max(cLayoutData.d, cLayoutData.r);
+            firstWalk(c);            
+            nLayoutData.d = Math.max(nLayoutData.d, cLayoutData.r);
             cLayoutData.a = (Math.atan(cLayoutData.r) / (nLayoutData.d + cLayoutData.r));
-            s += cLayoutData.a;
+            
         }
-        adjustChildren(nLayoutData, s);
+        adjustChildren(n);
         setRadius(n);
     }
 
-    private void adjustChildren(BalloonTreeNodeLayoutData layoutData, double s) {
+    private void adjustChildren(Node n) {
+        double s = 0;
+        BalloonTreeNodeLayoutData nLayoutData = n.getNodeData().getLayoutData();
+        NodeIterator childIter = graph.getSuccessors(n).iterator();
+        while (childIter.hasNext()) {
+            Node c = (Node) childIter.next();
+            BalloonTreeNodeLayoutData cLayoutData = c.getNodeData().getLayoutData();
+            s += cLayoutData.a;
+        }
+
         if (s > Math.PI) {
-            layoutData.c = (Math.PI / s);
-            layoutData.f = 0;
+            nLayoutData.c = Math.PI / s;
+            nLayoutData.f = 0;
         } else {
-            layoutData.c = 1;
-            layoutData.f = Math.PI - s;
+            nLayoutData.c = 1;
+            nLayoutData.f = Math.PI - s;
         }
     }
 
     private void setRadius(Node n) {
         BalloonTreeNodeLayoutData layoutData = n.getNodeData().getLayoutData();
-        double cx = 0.0, cy = 0.0;
+        double bx = 0.0, by = 0.0;
 
         Node children[] = graph.getSuccessors(n).toArray();
 
         // Compute barycenter of the layout circle containing all children
-        for (int i = 0; i < children.length - 1; i++) {
-            float thisX = children[i].getNodeData().x();
-            float thisY = children[i].getNodeData().y();
-            float nextX = children[i + 1].getNodeData().x() ;
-            float nextY = children[i + 1].getNodeData().y();
-
-            cx = cx + (thisX + nextX) * (thisY * nextX - thisX * nextY);
-            cy = cy + (thisY + nextY) * (thisY * nextX - thisX * nextY);
+        for (int i = 0; i < children.length; i++) {
+            bx += children[i].getNodeData().x();
+            by += children[i].getNodeData().y();
         }
-        cx /= (6 * area(n));
-        cy /= (6 * area(n));
-        layoutData.rx = cx * -1;
-        layoutData.ry = cy * -1;
+        bx /= children.length;
+        by /= children.length;
+
+        double maxVal = 0;
+        // Compute radius for the layout circle as the largest required to contain all children
+        for (int i = 0; i < children.length; i++) {
+            BalloonTreeNodeLayoutData cLayoutData = children[i].getNodeData().getLayoutData();
+            double cx = children[i].getNodeData().x();
+            double cy = children[i].getNodeData().y();
+
+            double dist = Math.sqrt(Math.pow(cx - bx, 2) + Math.pow(cy - by, 2)) + cLayoutData.r;
+
+            if (dist > maxVal) {
+                maxVal = dist;
+            }
+        }
+
+        layoutData.rx = bx * -1;
+        layoutData.ry = by * -1;
         
-        layoutData.r = Math.max(layoutData.d, minRadius) + 2 * layoutData.d;
+        layoutData.r = Math.max((int) maxVal, minRadius) + 2 * layoutData.d;
     }
 
-    private double area(Node n) {
+    private void secondWalk(Node n,
+            double bx, double by, double l, double t) {
+        BalloonTreeNodeLayoutData nLayoutData = n.getNodeData().getLayoutData();
 
-        Node children[] = graph.getSuccessors(n).toArray();
+        // Store x and y values for node
 
-        double sum = 0.0;
-        for (int i = 0; i < children.length - 1; i++) {
-            float thisX = children[i].getNodeData().x();
-            float thisY = children[i].getNodeData().y();
-            float nextX = children[i + 1].getNodeData().x();
-            float nextY = children[i + 1].getNodeData().y();
-            sum = sum + (thisX * nextY) - (thisY * nextX);
-        }
-        return Math.abs(sum / 2);
-    }
-
-    private void secondWalk(Node n, Node r,
-            double x, double y, double l, double t) {
-        n.getNodeData().setX((float) x / 100);
-        n.getNodeData().setY((float) y / 100);
-
-        BalloonTreeNodeLayoutData nlayoutData = n.getNodeData().getLayoutData();
+        n.getNodeData().setX((float) (bx + l * (nLayoutData.rx * Math.cos(t) - nLayoutData.ry * Math.sin(t))));
+        n.getNodeData().setY((float) (by + l * (nLayoutData.rx * Math.sin(t) + nLayoutData.ry * Math.cos(t))));
 
         int numChildren = 0;
         numChildren = graph.getSuccessors(n).toArray().length;
 
-        double dd = l * nlayoutData.d;
-        double p = t + Math.PI;
-        double fs = (numChildren == 0 ? 0 : nlayoutData.f / numChildren);
+        double dd = l * nLayoutData.d;
+        double p = Math.PI;
+        double fs = (numChildren == 0 ? 0 : nLayoutData.f / numChildren + 1);
         double pr = 0;
         NodeIterator childIter = graph.getSuccessors(n).iterator();
         while (childIter.hasNext()) {
             Node c = (Node) childIter.next();
-            BalloonTreeNodeLayoutData clayoutData = c.getNodeData().getLayoutData();
-            double aa = nlayoutData.c * clayoutData.a;
-            double rr = nlayoutData.d * Math.tan(aa) / (1 - Math.tan(aa));
-            p += pr + aa + fs;
+            BalloonTreeNodeLayoutData cLayoutData = c.getNodeData().getLayoutData();
+            double aa = nLayoutData.c * cLayoutData.a;
+            double rr = nLayoutData.d * Math.tan(aa) / (1 - Math.tan(aa));
+            p += pr + cLayoutData.a + fs;
+
             double xx = (l * rr + dd) * Math.cos(p);
             double yy = (l * rr + dd) * Math.sin(p);
-            pr = aa;
-            secondWalk(c, n, x + xx, y + yy, l * nlayoutData.c, p);
+
+            xx += nLayoutData.rx;
+            yy += nLayoutData.ry;
+
+            double cost=Math.cos(t);
+            double sint=Math.sin(t);
+
+            xx = (cost * xx) + ((sint * -1) * yy);
+            yy = (sint * xx) + (cost * yy);
+               
+           c.getNodeData().setX((float) xx);
+           c.getNodeData().setY((float) yy);
+          
+            pr = cLayoutData.a;
+            secondWalk(c, bx + xx, by + yy, l * rr/cLayoutData.r, p);
         }
     }
 
