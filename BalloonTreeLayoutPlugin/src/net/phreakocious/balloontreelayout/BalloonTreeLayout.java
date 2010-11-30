@@ -1,14 +1,10 @@
 package net.phreakocious.balloontreelayout;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import org.gephi.graph.api.DirectedGraph;
 import org.gephi.graph.api.Node;
 import org.gephi.graph.api.NodeData;
-import org.gephi.graph.api.NodeIterable;
-import org.gephi.graph.api.NodeIterator;
 import org.gephi.layout.plugin.AbstractLayout;
 // import org.gephi.layout.plugin.tree.GraphUtils;
 import org.gephi.layout.spi.LayoutBuilder;
