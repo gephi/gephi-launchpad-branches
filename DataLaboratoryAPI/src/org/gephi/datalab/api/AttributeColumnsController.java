@@ -54,13 +54,15 @@ public interface AttributeColumnsController {
     /**
      * <p>Adds a new column to the specified table with the given title and type of column.</p>
      * <p>The title for the new column can't be repeated in the table, null or an empty string.</p>.
-     * <p>The id of the column will be set to the title.</p>
+     * <p>The id of the column will be set to the same as the title,
+     * but if the first TimeInterval column of the table is created
+     * it will be given the default dynamic time interval id to be able to use dynamic filters.</p>
      * <p>The <code>AttributeOrigin</code> of the column will be set to <code>DATA</code>.</p>
      * <p>Default column value will be set to null.</p>
      * @param table Table to add the column
      * @param title Title for the new column, can't be repeated in the table, null or empty string
      * @param type Type for the new column
-     * @return The created column or null if title is not correct
+     * @return The created column or null if the column could not be created
      */
     AttributeColumn addAttributeColumn(AttributeTable table, String title, AttributeType type);
 
@@ -75,7 +77,7 @@ public interface AttributeColumnsController {
      * @param column Column to duplicate
      * @param title Title for the new column
      * @param type AttributeType for the new column
-     * @return The created column or null if title is not correct
+     * @return The created column or null if the column could not be created
      */
     AttributeColumn duplicateColumn(AttributeTable table, AttributeColumn column, String title, AttributeType type);
 

@@ -105,7 +105,7 @@ public class NodeDataTable {
     private TimeFormat currentTimeFormat;
 
     public NodeDataTable() {
-        attributeUtils=AttributeUtils.getDefault();
+        attributeUtils = AttributeUtils.getDefault();
         attributeColumnsController = Lookup.getDefault().lookup(AttributeColumnsController.class);
 
         outlineTable = new Outline();
@@ -114,7 +114,7 @@ public class NodeDataTable {
 
             public boolean accept(Object value) {
                 if (value == null) {
-                    return false;
+                    value = "";
                 }
                 if (value instanceof ImmutableTreeNode) {
                     String label = ((ImmutableTreeNode) value).getNode().getNodeData().getLabel();
@@ -205,12 +205,27 @@ public class NodeDataTable {
     }
 
     public boolean setFilter(String regularExpr, int columnIndex) {
+        if (selectedNodes == null) {
+            selectedNodes = getNodesFromSelectedRows();
+        }
         try {
             pattern = Pattern.compile(regularExpr, Pattern.CASE_INSENSITIVE);
         } catch (PatternSyntaxException e) {
             return false;
         }
-        outlineTable.setQuickFilter(columnIndex, quickFilter);
+        if (regularExpr == null || regularExpr.isEmpty()) {
+            outlineTable.unsetQuickFilter();
+        } else {
+            outlineTable.setQuickFilter(columnIndex, quickFilter);
+        }
+
+        SwingUtilities.invokeLater(new Runnable() {
+
+            public void run() {
+                setNodesSelection(selectedNodes); //Keep row selection before refreshing.
+                selectedNodes = null;
+            }
+        });
         return true;
     }
 
@@ -252,13 +267,15 @@ public class NodeDataTable {
     }
 
     public void setNodesSelection(Node[] nodes) {
-        this.selectedNodes = nodes;//Keep this selection request to be able to do it if the table is first refreshed later.
-        HashSet<Node> nodesSet = new HashSet<Node>();
-        nodesSet.addAll(Arrays.asList(nodes));
-        outlineTable.clearSelection();
-        for (int i = 0; i < outlineTable.getRowCount(); i++) {
-            if (nodesSet.contains(getNodeFromRow(i))) {
-                outlineTable.addRowSelectionInterval(i, i);
+        this.selectedNodes = nodes;//Keep this selection request to be able to apply nodes selection if the table is first refreshed later.
+        if (selectedNodes != null) {
+            HashSet<Node> nodesSet = new HashSet<Node>();
+            nodesSet.addAll(Arrays.asList(selectedNodes));
+            outlineTable.clearSelection();
+            for (int i = 0; i < outlineTable.getRowCount(); i++) {
+                if (nodesSet.contains(getNodeFromRow(i))) {
+                    outlineTable.addRowSelectionInterval(i, i);
+                }
             }
         }
     }
@@ -440,7 +457,7 @@ public class NodeDataTable {
                 return value;
             } else if (attributeUtils.isNumberColumn(column)) {
                 return value;
-            }else {
+            } else {
                 //Show values as Strings like in Edit window and other parts of the program to be consistent
                 if (value != null) {
                     if (value instanceof DynamicType) {//When type is dynamic, take care to show proper time format
@@ -599,10 +616,10 @@ public class NodeDataTable {
 
     public Node[] getNodesFromSelectedRows() {
         int[] selectedRows = outlineTable.getSelectedRows();
-        Node[] node = new Node[selectedRows.length];
-        for (int i = 0; i < node.length; i++) {
-            node[i] = getNodeFromRow(selectedRows[i]);
+        Node[] nodes = new Node[selectedRows.length];
+        for (int i = 0; i < nodes.length; i++) {
+            nodes[i] = getNodeFromRow(selectedRows[i]);
         }
-        return node;
+        return nodes;
     }
 }
