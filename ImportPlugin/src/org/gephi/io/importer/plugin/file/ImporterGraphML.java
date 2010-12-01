@@ -89,6 +89,8 @@ public class ImporterGraphML implements FileImporter, LongTask {
         properties.addNodePropertyAssociation(NodeProperties.LABEL, "d3");  // Default node label used by yEd from yworks.com.
         properties.addNodePropertyAssociation(NodeProperties.X, "x");
         properties.addNodePropertyAssociation(NodeProperties.Y, "y");
+        properties.addNodePropertyAssociation(NodeProperties.X, "xpos");
+        properties.addNodePropertyAssociation(NodeProperties.Y, "ypos");
         properties.addNodePropertyAssociation(NodeProperties.Z, "z");
         properties.addNodePropertyAssociation(NodeProperties.SIZE, "size");
         properties.addNodePropertyAssociation(NodeProperties.R, "r");
@@ -100,6 +102,7 @@ public class ImporterGraphML implements FileImporter, LongTask {
         properties.addEdgePropertyAssociation(EdgeProperties.LABEL, "edgelabel");
         properties.addEdgePropertyAssociation(EdgeProperties.LABEL, "d7");  // Default edge label used by yEd from yworks.com.
         properties.addEdgePropertyAssociation(EdgeProperties.WEIGHT, "weight");
+        properties.addEdgePropertyAssociation(EdgeProperties.WEIGHT, "Edge Weight");
         properties.addEdgePropertyAssociation(EdgeProperties.ID, "id");
         properties.addEdgePropertyAssociation(EdgeProperties.ID, "edgeid");
         properties.addEdgePropertyAssociation(EdgeProperties.R, "r");
@@ -648,7 +651,7 @@ public class ImporterGraphML implements FileImporter, LongTask {
                 report.log(NbBundle.getMessage(ImporterGraphML.class, "importerGraphML_log_nodeattribute", title, attributeType.getTypeString()));
             } else if ("edge".equalsIgnoreCase(forStr) || "all".equalsIgnoreCase(forStr)) {
                 if (container.getAttributeModel().getEdgeTable().hasColumn(id) || container.getAttributeModel().getEdgeTable().hasColumn(title)) {
-                    report.log(NbBundle.getMessage(ImporterGraphML.class, "importerGraphMLF_error_attributecolumn_exist", id));
+                    report.log(NbBundle.getMessage(ImporterGraphML.class, "importerGraphML_error_attributecolumn_exist", id));
                     return;
                 }
                 container.getAttributeModel().getEdgeTable().addColumn(id, title, attributeType, AttributeOrigin.DATA, defaultValue);
