@@ -104,7 +104,6 @@ public class DualCircleLayout extends AbstractLayout implements Layout {
             if (index < this.secondarynodecount ) {
                 //Draw secondary circle
                 double noderadius = (n.getNodeData().getRadius());
-                System.out.println(secondary_scale);
                 //This step is hackish... but it makes small numbers of nodes symetrical on both the secondary circles.
                 if (secondary_scale > 2) {
                     noderadius = (tmpsecondarycirc/(2*this.secondarynodecount*secondary_scale*1.2));
