@@ -59,8 +59,8 @@ public class DualCircleLayout extends AbstractLayout implements Layout {
         Arrays.sort(nodes, new Comparator<Node>() {
             @Override
             public int compare(Node o1, Node o2) {
-                int f1 = (int) graph.getDegree(o1);
-                int f2 = (int) graph.getDegree(o2);
+                int f1 = graph.getDegree(o1);
+                int f2 = graph.getDegree(o2);
               return f2-f1;
             }
         });
