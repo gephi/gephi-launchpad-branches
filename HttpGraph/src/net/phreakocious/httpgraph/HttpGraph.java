@@ -1,7 +1,13 @@
 package net.phreakocious.httpgraph;
 
+import com.predic8.membrane.core.HttpRouter;
+import com.predic8.membrane.core.rules.ProxyRule;
+import com.predic8.membrane.core.rules.ProxyRuleKey;
 import java.awt.Color;
+import java.io.IOException;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.gephi.data.attributes.api.AttributeColumn;
 import org.gephi.data.attributes.api.AttributeModel;
 import org.gephi.data.attributes.api.AttributeOrigin;
@@ -19,11 +25,8 @@ import org.gephi.io.processor.plugin.AppendProcessor;
 import org.gephi.project.api.ProjectController;
 import org.gephi.project.api.Workspace;
 import org.gephi.utils.progress.ProgressTicket;
-import org.littleshoot.proxy.HttpProxyServer;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.ServiceProvider;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -33,13 +36,9 @@ import org.slf4j.LoggerFactory;
 public class HttpGraph implements Generator {
 
     private static Workspace workspace;
-    private static Container container;
-    private static AttributeColumn type;
-    private static AttributeColumn domain;
 
     private static ImportController importController;
-    private static final Logger log =
-            LoggerFactory.getLogger(HttpGraph.class);
+    private static final Logger log = Logger.getLogger(HttpGraph.class.getName());
     protected ProgressTicket progress;
     protected boolean cancel = false;
     protected int proxyport = 8088;
@@ -47,9 +46,18 @@ public class HttpGraph implements Generator {
     private static Color[] colors;
     private static HashMap colormap = new HashMap();
 
-    public static void graphupdate(SnarfData data, ContainerLoader cldr) {
-        //ContainerLoader cldr = container.getLoader();
-        //data.dump();
+    public static void graphupdate(SnarfData data) {
+        Container container = Lookup.getDefault().lookup(ContainerFactory.class).newContainer();
+        container.setAutoScale(false);
+        container.setAllowParallelEdge(true);
+        container.setSource("Snarfing your world wide web!");
+
+        ContainerLoader cldr = container.getLoader();
+        AttributeModel attributemodel = cldr.getAttributeModel();
+        AttributeTable nodeTable = attributemodel.getNodeTable();
+
+        AttributeColumn type  = nodeTable.addColumn("type", AttributeType.STRING, AttributeOrigin.DATA);
+        AttributeColumn domain = nodeTable.addColumn("domain", AttributeType.STRING,AttributeOrigin.DATA);
 
         NodeDraft nd;
         NodeDraft nd1;
@@ -58,7 +66,7 @@ public class HttpGraph implements Generator {
         for (SnarfData.sdNode n : data.getNodes()) {
             String nl = n.label;
             if (!cldr.nodeExists(nl)) {
-                // log.warn("node doesn't exist!  {}", nl);
+                //log.log(Level.INFO, "node doesn't exist!  {0}", nl);
                 nd = cldr.factory().newNodeDraft();
 
                 if (! colormap.containsKey(n.domain)) {
@@ -97,40 +105,33 @@ public class HttpGraph implements Generator {
             }
         }
 
-        //log.warn("graphupdate!  {}", cldr.toString());
+        //log.log(Level.INFO, "graphupdate!  {0}", cldr.toString());
+
         importController.process(container, new AppendProcessor(), workspace);
     }
 
     @Override
-    public void generate(ContainerLoader cldr) {
-        cldr = null;
+    public void generate(ContainerLoader c) {
+        
+        c = null;
         colors = generateColors(36);
-        importController = Lookup.getDefault().lookup(ImportController.class);
-        container = Lookup.getDefault().lookup(ContainerFactory.class).newContainer();
-        container.setAutoScale(false);
-        container.setAllowParallelEdge(true);
-        container.setSource("Snarfing your world wide web!");
-
-        cldr = container.getLoader();
-        AttributeModel attributemodel = cldr.getAttributeModel();
-        AttributeTable nodeTable = attributemodel.getNodeTable();
-
-        type  = nodeTable.addColumn("type", AttributeType.STRING, AttributeOrigin.DATA);
-        domain = nodeTable.addColumn("domain", AttributeType.STRING,AttributeOrigin.DATA);
-
-        //Get Current workspace
         ProjectController pc = Lookup.getDefault().lookup(ProjectController.class);
         workspace = pc.getCurrentWorkspace();
+        importController = Lookup.getDefault().lookup(ImportController.class);
 
-        
-        final HttpProxyServer server = new HttpGraphHttpProxyServer(proxyport);
-        ((HttpGraphHttpProxyServer) server).setContainer(cldr);
-        server.start();
+        HttpRouter router = new HttpRouter();
+        try {
+            router.getRuleManager().addRuleIfNew(new ProxyRule(new ProxyRuleKey(proxyport)));
+            HttpGraphProxyInterceptor interceptor = new HttpGraphProxyInterceptor();
+            router.getTransport().getInterceptors().add(interceptor);
+        } catch (IOException ex) {
+            log.log(Level.SEVERE, ex.getMessage());
+        }
         
         progress.start();
     }
 
-    public Color[] generateColors(int n) {
+    private Color[] generateColors(int n) {
         Color[] cols = new Color[n];
         for (int i = 0; i < n; i++) {
             cols[i] = Color.getHSBColor((float) i / (float) n, 0.85f, 1.0f);

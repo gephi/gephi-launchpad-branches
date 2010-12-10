@@ -1,9 +1,8 @@
 package net.phreakocious.httpgraph;
 
-import org.gephi.io.importer.api.ContainerLoader;
-import org.jboss.netty.handler.codec.http.HttpRequest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 
 /**
  *
@@ -11,11 +10,10 @@ import org.slf4j.LoggerFactory;
  */
 public class SnarfData {
 
-    private final Logger log =
-            LoggerFactory.getLogger(HttpGraph.class);
-    private ContainerLoader container;
+    private static final Logger log = Logger.getLogger(SnarfData.class.getName());
 
     public class sdNode {
+
         String type;
         String domain;
         String label;
@@ -32,6 +30,7 @@ public class SnarfData {
     }
 
     public class sdEdge {
+
         sdNode node1;
         sdNode node2;
 
@@ -40,7 +39,6 @@ public class SnarfData {
             node2 = n2;
         }
     }
-
     private String srcaddr = "";
     private String method = "";
     private String uri = "";
@@ -58,25 +56,46 @@ public class SnarfData {
     private sdNode referernode;
     private sdNode rhostnode;
     private sdNode rdomainnode;
-    private sdNode[] nodes;
-    private sdEdge[] edges;
+    ;
 
-    public SnarfData(final HttpRequest request, String saddr) {
-        uri = request.getUri();
+    public SnarfData() {
+    }
+
+    public String setSrcaddr(String rawaddr) {
+        srcaddr = rawaddr.replaceFirst("[^\\d]+(\\d+\\.\\d+\\.\\d+\\.\\d+).*", "$1");
+        clientnode = new sdNode("client", "client", srcaddr, true, 12f);
+        return srcaddr;
+    }
+
+    public String setUri(String rawuri) {
+        uri = rawuri;
         if (uri == null) {
-            log.warn("Snarfailure!");
-            return;
+            log.log(Level.WARNING, "Snarfailure!");
+            return null;
         }
+
         uri = uri.replaceFirst("^https?://", "");
         uri = uri.replaceFirst("\\?.*", "");
+        urinode = new sdNode("uri", domain, uri, false, 2);
 
-        host = request.getHeader("Host");
-        if (host == null) {
-            host = uri.replaceFirst("/.*", "");
+        return uri;
+    }
+
+    public String setHost(String rawhost) {
+        host = rawhost;
+        if (host == null || host.isEmpty()) {
+            if (!uri.isEmpty()) {
+                host = uri.replaceFirst("/.*", "");
+            }
         }
-        domain = host.replaceFirst(".*\\.([^.]+\\.[^.]+)", "$1");
+        hostnode = new sdNode("host", domain, host, true, 6f);
+        domain = host.replaceFirst(".*\\.([^.]+\\.[^.]+)$", "$1");
+        domainnode = new sdNode("domain", domain, domain, true, 9f);
+        return host;
+    }
 
-        referer = request.getHeader("Referer");
+    public String setReferer(String rawreferer) {
+        referer = rawreferer;
         if (referer == null) {
             referer = "client";
             rhost = "client";
@@ -88,26 +107,29 @@ public class SnarfData {
             rdomain = rhost.replaceFirst(".*\\.([^.]+\\.[^.]+)", "$1");
         }
 
-        method = request.getMethod().toString();
-        bytes = request.toString().length();
-
-        srcaddr = saddr.replaceFirst("[^\\d]+(\\d+\\.\\d+\\.\\d+\\.\\d+).*", "$1");
-//        for (String s : request.getHeaderNames()) {
-//            log.warn("header: {} {}", s, request.getHeader(s));
-//        }
-        
-        clientnode = new sdNode("client", "client", srcaddr, true, 12f);
-        urinode = new sdNode("uri", domain, uri, false, 2);
-        hostnode = new sdNode("host", domain, host, true, 6f);
-        domainnode = new sdNode("domain", domain, domain, true, 9f);
         referernode = new sdNode("uri", rdomain, referer, false, 2f);
         rhostnode = new sdNode("host", rdomain, rhost, true, 6f);
         rdomainnode = new sdNode("domain", rdomain, rdomain, true, 9f);
+        return referer;
+    }
 
-        nodes = new sdNode[]{
-                    clientnode, urinode, hostnode, domainnode, referernode, rhostnode, rdomainnode
-                };
-        edges = new sdEdge[]{
+    public int setBytes(int thebytes) {
+        bytes = thebytes;
+        return bytes;
+    }
+
+    public sdNode[] getNodes() {
+        sdNode[] nodes = {clientnode, urinode, hostnode, domainnode, referernode, rhostnode, rdomainnode};
+        return (nodes);
+    }
+
+    public sdNode[] getEdgeNodes(sdEdge e) {
+        sdEdge edge = e;
+        return new sdNode[]{edge.node1, edge.node2};
+    }
+
+    public sdEdge[] getEdges() {
+        return new sdEdge[]{
                     new sdEdge(rdomainnode, rhostnode),
                     new sdEdge(rhostnode, referernode),
                     new sdEdge(referernode, urinode),
@@ -115,41 +137,22 @@ public class SnarfData {
                     new sdEdge(hostnode, urinode),
                     new sdEdge(domainnode, hostnode)
                 };
-        /**
-         *            sdNode servernode = new sdNode("server", domain, dstaddr, false);
-         */
-    }
 
-    public sdEdge[] getEdges() {
-        return (edges);
-    }
-
-    public sdNode[] getNodes() {
-        return (nodes);
-    }
-
-    public sdNode[] getNodes(sdEdge e) {
-        sdEdge edge = e;
-        return new sdNode[]{edge.node1, edge.node2};
-    }
-
-    public void setContainer(ContainerLoader c) {
-        container = c;
     }
 
     public void graphUpdate() {
-        dump();
-        net.phreakocious.httpgraph.HttpGraph.graphupdate(this, container);
+     //   dump();
+        net.phreakocious.httpgraph.HttpGraph.graphupdate(this);
     }
 
     public void dump() {
-        log.warn("vars: {} {}", "srcaddr", srcaddr);
-        log.warn("vars: {} {}", "bytes", bytes);
-        log.warn("vars: {} {}", "uri", uri);
-        log.warn("vars: {} {}", "host", host);
-        log.warn("vars: {} {}", "domain", domain);
-        log.warn("vars: {} {}", "referer", referer);
-        log.warn("vars: {} {}", "rhost", rhost);
-        log.warn("vars: {} {}", "rdomain", rdomain);
+        log.log(Level.INFO, "vars:  srcaddr {0}", srcaddr);
+        log.log(Level.INFO, "vars:  bytes {0}", bytes);
+        log.log(Level.INFO, "vars:  uri {0}", uri);
+        log.log(Level.INFO, "vars:  host {0}", host);
+        log.log(Level.INFO, "vars:  domain {0}", domain);
+        log.log(Level.INFO, "vars:  referer {0}", referer);
+        log.log(Level.INFO, "vars:  rhost {0}", rhost);
+        log.log(Level.INFO, "vars:  rdomain {0}", rdomain);
     }
 }
