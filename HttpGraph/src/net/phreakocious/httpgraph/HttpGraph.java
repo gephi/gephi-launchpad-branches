@@ -43,6 +43,7 @@ public class HttpGraph implements Generator {
     protected boolean cancel = false;
     protected int proxyport = 8088;
     private static int colorcount = 0;
+    private static final int colordiv = 36;
     private static Color[] colors;
     private static HashMap colormap = new HashMap();
 
@@ -70,8 +71,10 @@ public class HttpGraph implements Generator {
                 nd = cldr.factory().newNodeDraft();
 
                 if (! colormap.containsKey(n.domain)) {
+                    if (colorcount <= colordiv) {
                     colormap.put(n.domain, colors[colorcount]);
                     colorcount++;
+                    }
                 }
 
                 nd.setId(nl);
@@ -114,7 +117,7 @@ public class HttpGraph implements Generator {
     public void generate(ContainerLoader c) {
         
         c = null;
-        colors = generateColors(36);
+        colors = generateColors(colordiv);
         ProjectController pc = Lookup.getDefault().lookup(ProjectController.class);
         workspace = pc.getCurrentWorkspace();
         importController = Lookup.getDefault().lookup(ImportController.class);
