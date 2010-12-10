@@ -195,7 +195,7 @@ public class CircleLayout extends AbstractLayout implements Layout {
                     NbBundle.getMessage(CircleLayout.class, "CircleLayout.NodePlacement.Direction.name"),
                     "Node Placement",
                     NbBundle.getMessage(CircleLayout.class, "CircleLayout.NodePlacement.Direction.desc"),
-                    "getNodePlacementDirection", "setNodePlacementDirection"));
+                    "getNodePlacementDirection", "setNodePlacementDirection",RotationComboBoxEditor.class));
             properties.add(LayoutProperty.createProperty(
                     this, Boolean.class,
                     NbBundle.getMessage(CircleLayout.class, "CircleLayout.NodePlacement.NoOverlap.name"),
