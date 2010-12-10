@@ -1,4 +1,30 @@
-package org.gephi.layout.plugin.dualcirclelayout;
+/*
+Copyright (c) 2010, Matt Groeninger
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are
+permitted provided that the following conditions are met:
+
+   1. Redistributions of source code must retain the above copyright notice, this list of
+      conditions and the following disclaimer.
+
+   2. Redistributions in binary form must reproduce the above copyright notice, this list
+      of conditions and the following disclaimer in the documentation and/or other materials
+      provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+THE POSSIBILITY OF SUCH DAMAGE.
+*/
+package org.gephi.layout.plugin.circularlayout.dualcirclelayout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +37,7 @@ import org.gephi.layout.spi.Layout;
 import org.gephi.layout.spi.LayoutBuilder;
 import org.gephi.layout.spi.LayoutProperty;
 import org.openide.util.NbBundle;
+
 
 /**
  *
@@ -144,6 +171,7 @@ public class DualCircleLayout extends AbstractLayout implements Layout {
 
     @Override
     public LayoutProperty[] getProperties() {
+
         List<LayoutProperty> properties = new ArrayList<LayoutProperty>();
         try {
             properties.add(LayoutProperty.createProperty(
@@ -163,7 +191,7 @@ public class DualCircleLayout extends AbstractLayout implements Layout {
                     NbBundle.getMessage(DualCircleLayout.class, "DualCircleLayout.NodePlacement.Direction.name"),
                     "Node Placement",
                     NbBundle.getMessage(DualCircleLayout.class, "DualCircleLayout.NodePlacement.Direction.desc"),
-                    "getNodePlacementDirection", "setNodePlacementDirection"));
+                    "getNodePlacementDirection", "setNodePlacementDirection",RotationComboBoxEditor.class));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -173,6 +201,8 @@ public class DualCircleLayout extends AbstractLayout implements Layout {
     @Override
     public void resetPropertiesValues() {
         setInnerNodeCount(4);
+        setHighDegreeOutside(false);
+        setNodePlacementDirection("CCW");
     }
 
     public void setInnerNodeCount(Integer secondarynodecount) {
@@ -195,6 +225,7 @@ public class DualCircleLayout extends AbstractLayout implements Layout {
     public String getNodePlacementDirection() {
         return this.stringNodePlacementDirection;
     }
+
     public void setNodePlacementDirection(String stringNodePlacementDirection) {
         if ((stringNodePlacementDirection == null ? "CCW" == null : stringNodePlacementDirection.equals("CCW")) || (stringNodePlacementDirection == null ? "CW" == null : stringNodePlacementDirection.equals("CW"))) {
             this.stringNodePlacementDirection = stringNodePlacementDirection;
@@ -203,10 +234,15 @@ public class DualCircleLayout extends AbstractLayout implements Layout {
         }
     }
 
+
     private float[] cartCoors(double radius, int whichInt,double theta) {
        	float[] coOrds = new float[2];
         coOrds[0] = (float) (radius * (Math.cos((theta * whichInt)+(Math.PI/2))));
         coOrds[1] = (float) (radius * (Math.sin((theta * whichInt)+(Math.PI/2))));
         return coOrds;
     }
+
 }
+
+
+
