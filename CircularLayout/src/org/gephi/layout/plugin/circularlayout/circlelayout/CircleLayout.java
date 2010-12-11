@@ -50,10 +50,7 @@ public class CircleLayout extends AbstractLayout implements Layout {
     private boolean converged;
     private double diameter;
     private boolean boolfixeddiameter;
-    private int nodeplacement = 1;
-    private boolean boolNodePlacementNodeID = true;
-    private boolean boolNodePlacementRandom = false;
-    private boolean boolNodePlacementDegree = false;
+    private int intnodeplacement = 1;
     private boolean boolNoOverlap = true;
     private String stringNodePlacementDirection = "CCW";
 
@@ -108,7 +105,7 @@ public class CircleLayout extends AbstractLayout implements Layout {
         //determine Node placement
         Node[] nodes = graph.getNodes().toArray();
 
-        switch (nodeplacement) {
+        switch (intnodeplacement) {
             case NODE_ID_PLACEMENT:
             default:
                 break;
@@ -173,23 +170,11 @@ public class CircleLayout extends AbstractLayout implements Layout {
                     NbBundle.getMessage(CircleLayout.class, "CircleLayout.Diameter.desc"),
                     "getDiameter", "setDiameter"));
             properties.add(LayoutProperty.createProperty(
-                    this, Boolean.class,
-                    NbBundle.getMessage(CircleLayout.class, "CircleLayout.NodePlacement.NodeID.name"),
+                    this, String.class,
+                    NbBundle.getMessage(CircleLayout.class, "CircleLayout.NodePlacement.NodeOrdering.name"),
                     "Node Placement",
-                    NbBundle.getMessage(CircleLayout.class, "CircleLayout.NodePlacement.NodeID.desc"),
-                    "isNodePlacementNodeID", "setNodePlacementNodeID"));
-            properties.add(LayoutProperty.createProperty(
-                    this, Boolean.class,
-                    NbBundle.getMessage(CircleLayout.class, "CircleLayout.NodePlacement.Random.name"),
-                    "Node Placement",
-                    NbBundle.getMessage(CircleLayout.class, "CircleLayout.NodePlacement.Random.desc"),
-                    "isNodePlacementRandom", "setNodePlacementRandom"));
-            properties.add(LayoutProperty.createProperty(
-                    this, Boolean.class,
-                    NbBundle.getMessage(CircleLayout.class, "CircleLayout.NodePlacement.Degree.name"),
-                    "Node Placement",
-                    NbBundle.getMessage(CircleLayout.class, "CircleLayout.NodePlacement.Degree.desc"),
-                    "isNodePlacementDegree", "setNodePlacementDegree"));
+                    NbBundle.getMessage(CircleLayout.class, "CircleLayout.NodePlacement.NodeOrdering.desc"),
+                    "getNodePlacement", "setNodePlacement",LayoutComboBoxEditor.class));
             properties.add(LayoutProperty.createProperty(
                     this, String.class,
                     NbBundle.getMessage(CircleLayout.class, "CircleLayout.NodePlacement.Direction.name"),
@@ -212,39 +197,29 @@ public class CircleLayout extends AbstractLayout implements Layout {
     public void resetPropertiesValues() {
         setDiameter(500.0);
         setBoolFixedDiameter(false);
-        setNodePlacementNodeID(true);
+        setNodePlacement("1");
         setNodePlacementNoOverlap(true);
+        setNodePlacementDirection("CCW");
     }
 
-    public void setNodePlacementNodeID(Boolean boolNodePlacementNodeID) {
-        if (boolNodePlacementNodeID == true) {
-            setPlacement(NODE_ID_PLACEMENT);
+    public void setNodePlacement(String strnodeplacement) {
+       int nodeplacement = Integer.parseInt(strnodeplacement.trim());
+       switch (nodeplacement) {
+            case NODE_ID_PLACEMENT:
+            default:
+                this.intnodeplacement = CircleLayout.NODE_ID_PLACEMENT;
+                break;
+            case RANDOM_PLACEMENT:
+                this.intnodeplacement = CircleLayout.RANDOM_PLACEMENT;
+                break;
+            case DEGREE_PLACEMENT:
+                this.intnodeplacement = CircleLayout.DEGREE_PLACEMENT;
+                break;
         }
     }
 
-    public boolean isNodePlacementNodeID() {
-        return boolNodePlacementNodeID;
-    }
-
-
-    public void setNodePlacementRandom(Boolean boolNodePlacementRandom) {
-        if (boolNodePlacementRandom == true) {
-            setPlacement(RANDOM_PLACEMENT);
-        }
-    }
-
-    public boolean isNodePlacementRandom() {
-        return boolNodePlacementRandom;
-    }
-
-    public void setNodePlacementDegree(Boolean boolNodePlacementDegree) {
-        if (boolNodePlacementDegree == true) {
-            setPlacement(DEGREE_PLACEMENT);
-        }
-    }
-
-    public boolean isNodePlacementDegree() {
-        return boolNodePlacementDegree;
+    public String getNodePlacement() {
+        return new Integer(intnodeplacement).toString();
     }
 
 
@@ -297,25 +272,4 @@ public class CircleLayout extends AbstractLayout implements Layout {
         return coOrds;
     }
 
-    private void setPlacement(int layout) {
-        this.nodeplacement = CircleLayout.NODE_ID_PLACEMENT;
-        this.boolNodePlacementRandom = false;
-        this.boolNodePlacementNodeID = false;
-        this.boolNodePlacementDegree = false;
-        switch (layout) {
-            case NODE_ID_PLACEMENT:
-            default:
-                this.nodeplacement = CircleLayout.NODE_ID_PLACEMENT;
-                this.boolNodePlacementNodeID = true;
-                break;
-            case RANDOM_PLACEMENT:
-                this.nodeplacement = CircleLayout.RANDOM_PLACEMENT;
-                this.boolNodePlacementRandom = true;
-                break;
-            case DEGREE_PLACEMENT:
-                this.nodeplacement = CircleLayout.DEGREE_PLACEMENT;
-                this.boolNodePlacementDegree = true;
-                break;
-        }
-    }
 }
