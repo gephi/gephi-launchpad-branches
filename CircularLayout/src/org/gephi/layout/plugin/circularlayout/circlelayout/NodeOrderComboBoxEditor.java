@@ -33,10 +33,10 @@ import java.util.HashMap;
 public class NodeOrderComboBoxEditor extends AbstractComboBoxEditor {
 
     public NodeOrderComboBoxEditor() {
-        HashMap options = new HashMap();
-        options.put("CCW", NbBundle.getMessage(CircleLayout.class, "CircleLayout.NodePlacement.Random.name"));
-        options.put("CW", NbBundle.getMessage(CircleLayout.class, "CircleLayout.NodePlacement.Degree.name"));
-        options.put("CW", NbBundle.getMessage(CircleLayout.class, "CircleLayout.NodePlacement.NodeID.name"));
+        HashMap<String, String> options = new HashMap<String, String>();
+        options.put("1", NbBundle.getMessage(CircleLayout.class, "CircleLayout.NodePlacement.Random.name"));
+        options.put("2", NbBundle.getMessage(CircleLayout.class, "CircleLayout.NodePlacement.Degree.name"));
+        options.put("3", NbBundle.getMessage(CircleLayout.class, "CircleLayout.NodePlacement.NodeID.name"));
         super.ComboValues = options;
     }
 }
