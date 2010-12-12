@@ -5,12 +5,12 @@ All rights reserved.
 Redistribution and use in source and binary forms, with or without modification, are
 permitted provided that the following conditions are met:
 
-   1. Redistributions of source code must retain the above copyright notice, this list of
-      conditions and the following disclaimer.
+1. Redistributions of source code must retain the above copyright notice, this list of
+conditions and the following disclaimer.
 
-   2. Redistributions in binary form must reproduce the above copyright notice, this list
-      of conditions and the following disclaimer in the documentation and/or other materials
-      provided with the distribution.
+2. Redistributions in binary form must reproduce the above copyright notice, this list
+of conditions and the following disclaimer in the documentation and/or other materials
+provided with the distribution.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -23,13 +23,14 @@ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
 CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
 THE POSSIBILITY OF SUCH DAMAGE.
-*/
+ */
 package org.gephi.layout.plugin.circularlayout.dualcirclelayout;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Arrays;
 import java.util.Comparator;
+import javax.swing.JOptionPane;
 import org.gephi.graph.api.Graph;
 import org.gephi.graph.api.Node;
 import org.gephi.layout.plugin.AbstractLayout;
@@ -37,7 +38,6 @@ import org.gephi.layout.spi.Layout;
 import org.gephi.layout.spi.LayoutBuilder;
 import org.gephi.layout.spi.LayoutProperty;
 import org.openide.util.NbBundle;
-
 
 /**
  *
@@ -49,9 +49,8 @@ public class DualCircleLayout extends AbstractLayout implements Layout {
     private boolean converged;
     private boolean highdegreeoutside;
     private int secondarynodecount;
-    static double TWO_PI = (2*Math.PI);
+    static double TWO_PI = (2 * Math.PI);
     private String stringNodePlacementDirection = "CCW";
-
 
     public DualCircleLayout(LayoutBuilder layoutBuilder, int secondarynodecount) {
         super(layoutBuilder);
@@ -84,73 +83,74 @@ public class DualCircleLayout extends AbstractLayout implements Layout {
 
         Node[] nodes = graph.getNodes().toArray();
         Arrays.sort(nodes, new Comparator<Node>() {
+
             @Override
             public int compare(Node o1, Node o2) {
                 int f1 = graph.getDegree(o1);
                 int f2 = graph.getDegree(o2);
-              return f2-f1;
+                return f2 - f1;
             }
         });
 
 
         for (Node n : nodes) {
             if (index < this.secondarynodecount) {
-                tmpsecondarycirc += (n.getNodeData().getRadius()*2);
+                tmpsecondarycirc += (n.getNodeData().getRadius() * 2);
             } else {
-                tmpprimarycirc += (n.getNodeData().getRadius()*2);
+                tmpprimarycirc += (n.getNodeData().getRadius() * 2);
             }
             index++;
         }
         index = 0;//reset index
 
-        double circum_ratio = tmpprimarycirc/tmpsecondarycirc;
+        double circum_ratio = tmpprimarycirc / tmpsecondarycirc;
 
         if (circum_ratio < 2) {
-            primary_scale = (2/circum_ratio);
-            tmpprimarycirc = 2*tmpsecondarycirc;
+            primary_scale = (2 / circum_ratio);
+            tmpprimarycirc = 2 * tmpsecondarycirc;
         }
 
         if (this.isHighDegreeOutside()) {
-            secondary_scale = ((2*tmpprimarycirc)/tmpsecondarycirc); //Need to know how much the circumference has changed from the original
-            tmpsecondarycirc = tmpprimarycirc*2; //Scale to a better relationship
+            secondary_scale = ((2 * tmpprimarycirc) / tmpsecondarycirc); //Need to know how much the circumference has changed from the original
+            tmpsecondarycirc = tmpprimarycirc * 2; //Scale to a better relationship
         } else {
-            secondary_scale = (tmpprimarycirc/(2*tmpsecondarycirc)); //Need to know how much the circumference has changed from the original
-            tmpsecondarycirc = tmpprimarycirc/2; //Scale to a better relationship
+            secondary_scale = (tmpprimarycirc / (2 * tmpsecondarycirc)); //Need to know how much the circumference has changed from the original
+            tmpsecondarycirc = tmpprimarycirc / 2; //Scale to a better relationship
         }
 
-        tmpprimarycirc = tmpprimarycirc*1.2;
-        primary_theta = (twopi/tmpprimarycirc);
-        double primaryradius = (tmpprimarycirc/Math.PI)/2;
+        tmpprimarycirc = tmpprimarycirc * 1.2;
+        primary_theta = (twopi / tmpprimarycirc);
+        double primaryradius = (tmpprimarycirc / Math.PI) / 2;
 
 
-        tmpsecondarycirc = tmpsecondarycirc*1.2;
-        secondary_theta = (twopi/tmpsecondarycirc);
-        double secondaryradius = (tmpsecondarycirc/Math.PI)/2;
+        tmpsecondarycirc = tmpsecondarycirc * 1.2;
+        secondary_theta = (twopi / tmpsecondarycirc);
+        double secondaryradius = (tmpsecondarycirc / Math.PI) / 2;
 
         for (Node n : nodes) {
-            if (index < this.secondarynodecount ) {
+            if (index < this.secondarynodecount) {
                 //Draw secondary circle
                 double noderadius = (n.getNodeData().getRadius());
                 //This step is hackish... but it makes small numbers of nodes symetrical on both the secondary circles.
                 if (secondary_scale > 2) {
-                    noderadius = (tmpsecondarycirc/(2*this.secondarynodecount*secondary_scale*1.2));
+                    noderadius = (tmpsecondarycirc / (2 * this.secondarynodecount * secondary_scale * 1.2));
                 }
-                double noderadian = (secondary_theta*noderadius*1.2*secondary_scale);
-                if (index==0) {
-                    correct_theta=noderadian; //correct for cosmetics... overlap prevention offsets the first node by it's radius which looks weird.
+                double noderadian = (secondary_theta * noderadius * 1.2 * secondary_scale);
+                if (index == 0) {
+                    correct_theta = noderadian; //correct for cosmetics... overlap prevention offsets the first node by it's radius which looks weird.
                 }
-                nodeCoords = this.cartCoors(secondaryradius, 1,lasttheta+noderadian-correct_theta);
-                lasttheta += (noderadius*2*secondary_theta*1.2*secondary_scale);
+                nodeCoords = this.cartCoors(secondaryradius, 1, lasttheta + noderadian - correct_theta);
+                lasttheta += (noderadius * 2 * secondary_theta * 1.2 * secondary_scale);
             } else {
                 double noderadius = (n.getNodeData().getRadius());
-                double noderadian = (primary_theta*noderadius*1.2*primary_scale);
-                if (index==this.secondarynodecount) {
-                    lasttheta=0;
+                double noderadian = (primary_theta * noderadius * 1.2 * primary_scale);
+                if (index == this.secondarynodecount) {
+                    lasttheta = 0;
                     correct_theta = noderadian; //correct for cosmetics... overlap prevention offsets the first node by it's radius which looks weird.
                 }
                 //Draw primary circle
-                nodeCoords = this.cartCoors(primaryradius, 1,lasttheta+noderadian-correct_theta);
-                lasttheta += (noderadius*2*primary_theta*1.2*primary_scale);
+                nodeCoords = this.cartCoors(primaryradius, 1, lasttheta + noderadian - correct_theta);
+                lasttheta += (noderadius * 2 * primary_theta * 1.2 * primary_scale);
             }
             n.getNodeData().setX(nodeCoords[0]);
             n.getNodeData().setY(nodeCoords[1]);
@@ -191,7 +191,7 @@ public class DualCircleLayout extends AbstractLayout implements Layout {
                     NbBundle.getMessage(DualCircleLayout.class, "DualCircleLayout.NodePlacement.Direction.name"),
                     "Node Placement",
                     NbBundle.getMessage(DualCircleLayout.class, "DualCircleLayout.NodePlacement.Direction.desc"),
-                    "getNodePlacementDirection", "setNodePlacementDirection",RotationComboBoxEditor.class));
+                    "getNodePlacementDirection", "setNodePlacementDirection", RotationComboBoxEditor.class));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -205,23 +205,22 @@ public class DualCircleLayout extends AbstractLayout implements Layout {
         setNodePlacementDirection("CCW");
     }
 
-    public void setInnerNodeCount(Integer secondarynodecount) {
-        this.secondarynodecount = secondarynodecount;
+    public void setInnerNodeCount(Integer intsecondarynodecount) {
+        this.secondarynodecount = intsecondarynodecount;
     }
 
     public Integer getInnerNodeCount() {
         return secondarynodecount;
     }
 
-
     public Boolean isHighDegreeOutside() {
         return highdegreeoutside;
     }
-    
+
     public void setHighDegreeOutside(Boolean highdegreeoutside) {
         this.highdegreeoutside = highdegreeoutside;
     }
-    
+
     public String getNodePlacementDirection() {
         return this.stringNodePlacementDirection;
     }
@@ -230,19 +229,14 @@ public class DualCircleLayout extends AbstractLayout implements Layout {
         if ((stringNodePlacementDirection == null ? "CCW" == null : stringNodePlacementDirection.equals("CCW")) || (stringNodePlacementDirection == null ? "CW" == null : stringNodePlacementDirection.equals("CW"))) {
             this.stringNodePlacementDirection = stringNodePlacementDirection;
         } else {
-            this.stringNodePlacementDirection="CCW";
+            this.stringNodePlacementDirection = "CCW";
         }
     }
 
-
-    private float[] cartCoors(double radius, int whichInt,double theta) {
-       	float[] coOrds = new float[2];
-        coOrds[0] = (float) (radius * (Math.cos((theta * whichInt)+(Math.PI/2))));
-        coOrds[1] = (float) (radius * (Math.sin((theta * whichInt)+(Math.PI/2))));
+    private float[] cartCoors(double radius, int whichInt, double theta) {
+        float[] coOrds = new float[2];
+        coOrds[0] = (float) (radius * (Math.cos((theta * whichInt) + (Math.PI / 2))));
+        coOrds[1] = (float) (radius * (Math.sin((theta * whichInt) + (Math.PI / 2))));
         return coOrds;
     }
-
 }
-
-
-

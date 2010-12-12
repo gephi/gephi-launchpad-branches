@@ -5,12 +5,12 @@ All rights reserved.
 Redistribution and use in source and binary forms, with or without modification, are
 permitted provided that the following conditions are met:
 
-   1. Redistributions of source code must retain the above copyright notice, this list of
-      conditions and the following disclaimer.
+1. Redistributions of source code must retain the above copyright notice, this list of
+conditions and the following disclaimer.
 
-   2. Redistributions in binary form must reproduce the above copyright notice, this list
-      of conditions and the following disclaimer in the documentation and/or other materials
-      provided with the distribution.
+2. Redistributions in binary form must reproduce the above copyright notice, this list
+of conditions and the following disclaimer in the documentation and/or other materials
+provided with the distribution.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -23,9 +23,8 @@ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
 CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
 THE POSSIBILITY OF SUCH DAMAGE.
-*/
+ */
 package org.gephi.layout.plugin.circularlayout.circlelayout;
-
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -53,14 +52,11 @@ public class CircleLayout extends AbstractLayout implements Layout {
     private int intnodeplacement = 1;
     private boolean boolNoOverlap = true;
     private String stringNodePlacementDirection = "CCW";
-
-
     //Node Placement types
     static final int NODE_ID_PLACEMENT = 1;
     static final int RANDOM_PLACEMENT = 2;
     static final int DEGREE_PLACEMENT = 3;
-    static final double TWO_PI = (2*Math.PI);
-
+    static final double TWO_PI = (2 * Math.PI);
 
     public CircleLayout(LayoutBuilder layoutBuilder, double diameter, boolean boolfixeddiameter) {
         super(layoutBuilder);
@@ -80,27 +76,27 @@ public class CircleLayout extends AbstractLayout implements Layout {
         graph = graphModel.getGraphVisible();
         float[] nodeCoords = new float[2];
         double tmpcirc = 0;
-        double tmpdiameter =0;
+        double tmpdiameter = 0;
         int index = 0;
         int nodecount = graph.getNodeCount();
-        double noderadius =0;
-        double theta = TWO_PI/nodecount;
+        double noderadius = 0;
+        double theta = TWO_PI / nodecount;
         double lasttheta = 0;
-        
+
         if (!this.boolfixeddiameter) {
             Node[] nodes = graph.getNodes().toArray();
             for (Node n : nodes) {
-                tmpcirc += (n.getNodeData().getRadius()*2);
+                tmpcirc += (n.getNodeData().getRadius() * 2);
             }
-            tmpcirc=(tmpcirc*1.2);
-            tmpdiameter = tmpcirc/Math.PI;
+            tmpcirc = (tmpcirc * 1.2);
+            tmpdiameter = tmpcirc / Math.PI;
             if (this.boolNoOverlap) {
-                theta = (TWO_PI/tmpcirc);
+                theta = (TWO_PI / tmpcirc);
             }
         } else {
             tmpdiameter = this.diameter;
         }
-        double radius = tmpdiameter/2;
+        double radius = tmpdiameter / 2;
 
         //determine Node placement
         Node[] nodes = graph.getNodes().toArray();
@@ -110,30 +106,31 @@ public class CircleLayout extends AbstractLayout implements Layout {
             default:
                 break;
             case RANDOM_PLACEMENT:
-                   List nodesList = Arrays.asList(nodes);
-                   Collections.shuffle(nodesList);
+                List nodesList = Arrays.asList(nodes);
+                Collections.shuffle(nodesList);
                 break;
             case DEGREE_PLACEMENT:
-                   Arrays.sort(nodes, new Comparator<Node>() {
-                        @Override
-                        public int compare(Node o1, Node o2) {
-                            int f1 = graph.getDegree(o1);
-                            int f2 = graph.getDegree(o2);
-                          return f2-f1;
-                        }
-                    });
-                    break;
+                Arrays.sort(nodes, new Comparator<Node>() {
+
+                    @Override
+                    public int compare(Node o1, Node o2) {
+                        int f1 = graph.getDegree(o1);
+                        int f2 = graph.getDegree(o2);
+                        return f2 - f1;
+                    }
+                });
+                break;
         }
-        
+
         if (this.stringNodePlacementDirection == null ? "CW" == null : this.stringNodePlacementDirection.equals("CW")) {
             theta = -theta;
         }
         for (Node n : nodes) {
             if (this.boolNoOverlap) {
                 noderadius = (n.getNodeData().getRadius());
-                double noderadian = (theta*noderadius*1.2);
-                nodeCoords = this.cartCoors(radius, 1,lasttheta+noderadian);
-                lasttheta += (noderadius*2*theta*1.2);
+                double noderadian = (theta * noderadius * 1.2);
+                nodeCoords = this.cartCoors(radius, 1, lasttheta + noderadian);
+                lasttheta += (noderadius * 2 * theta * 1.2);
             } else {
                 nodeCoords = this.cartCoors(radius, index, theta);
             }
@@ -174,13 +171,13 @@ public class CircleLayout extends AbstractLayout implements Layout {
                     NbBundle.getMessage(CircleLayout.class, "CircleLayout.NodePlacement.NodeOrdering.name"),
                     "Node Placement",
                     NbBundle.getMessage(CircleLayout.class, "CircleLayout.NodePlacement.NodeOrdering.desc"),
-                    "getNodePlacement", "setNodePlacement",LayoutComboBoxEditor.class));
+                    "getNodePlacement", "setNodePlacement", LayoutComboBoxEditor.class));
             properties.add(LayoutProperty.createProperty(
                     this, String.class,
                     NbBundle.getMessage(CircleLayout.class, "CircleLayout.NodePlacement.Direction.name"),
                     "Node Placement",
                     NbBundle.getMessage(CircleLayout.class, "CircleLayout.NodePlacement.Direction.desc"),
-                    "getNodePlacementDirection", "setNodePlacementDirection",RotationComboBoxEditor.class));
+                    "getNodePlacementDirection", "setNodePlacementDirection", RotationComboBoxEditor.class));
             properties.add(LayoutProperty.createProperty(
                     this, Boolean.class,
                     NbBundle.getMessage(CircleLayout.class, "CircleLayout.NodePlacement.NoOverlap.name"),
@@ -203,8 +200,8 @@ public class CircleLayout extends AbstractLayout implements Layout {
     }
 
     public void setNodePlacement(String strnodeplacement) {
-       int nodeplacement = Integer.parseInt(strnodeplacement.trim());
-       switch (nodeplacement) {
+        int nodeplacement = Integer.parseInt(strnodeplacement.trim());
+        switch (nodeplacement) {
             case NODE_ID_PLACEMENT:
             default:
                 this.intnodeplacement = CircleLayout.NODE_ID_PLACEMENT;
@@ -221,7 +218,6 @@ public class CircleLayout extends AbstractLayout implements Layout {
     public String getNodePlacement() {
         return new Integer(intnodeplacement).toString();
     }
-
 
     public void setBoolFixedDiameter(Boolean boolfixeddiameter) {
         this.boolfixeddiameter = boolfixeddiameter;
@@ -245,19 +241,19 @@ public class CircleLayout extends AbstractLayout implements Layout {
     public String getNodePlacementDirection() {
         return this.stringNodePlacementDirection;
     }
-    
+
     public void setNodePlacementDirection(String stringNodePlacementDirection) {
         if ((stringNodePlacementDirection == null ? "CCW" == null : stringNodePlacementDirection.equals("CCW")) || (stringNodePlacementDirection == null ? "CW" == null : stringNodePlacementDirection.equals("CW"))) {
             this.stringNodePlacementDirection = stringNodePlacementDirection;
         } else {
-            this.stringNodePlacementDirection="CCW";
+            this.stringNodePlacementDirection = "CCW";
         }
     }
 
     public boolean isNodePlacementNoOverlap() {
         return boolNoOverlap;
     }
-            
+
     public void setNodePlacementNoOverlap(Boolean boolNoOverlap) {
         this.boolNoOverlap = boolNoOverlap;
         if (this.boolfixeddiameter && this.boolNoOverlap) {
@@ -265,11 +261,10 @@ public class CircleLayout extends AbstractLayout implements Layout {
         }
     }
 
-    private float[] cartCoors(double radius, int whichInt,double theta) {
-       	float[] coOrds = new float[2];
-        coOrds[0] = (float) (radius * (Math.cos((theta * whichInt)+(Math.PI/2))));
-        coOrds[1] = (float) (radius * (Math.sin((theta * whichInt)+(Math.PI/2))));
+    private float[] cartCoors(double radius, int whichInt, double theta) {
+        float[] coOrds = new float[2];
+        coOrds[0] = (float) (radius * (Math.cos((theta * whichInt) + (Math.PI / 2))));
+        coOrds[1] = (float) (radius * (Math.sin((theta * whichInt) + (Math.PI / 2))));
         return coOrds;
     }
-
 }
