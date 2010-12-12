@@ -55,11 +55,7 @@
                     </run-dependency>
                 </dependency>
             </module-dependencies>
-            <public-packages>
-                <package>org.gephi.layout.plugin.circularlayout</package>
-                <package>org.gephi.layout.plugin.circularlayout.circlelayout</package>
-                <package>org.gephi.layout.plugin.circularlayout.dualcirclelayout</package>
-            </public-packages>
+            <public-packages/>
         </data>
     </configuration>
 </project>
