@@ -30,14 +30,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Arrays;
 import java.util.Comparator;
-import javax.swing.JOptionPane;
 import org.gephi.graph.api.Graph;
+import org.gephi.graph.api.DirectedGraph;
+import org.gephi.graph.api.HierarchicalGraph;
+import org.gephi.graph.api.GraphModel;
+import org.gephi.graph.api.GraphController;
 import org.gephi.graph.api.Node;
 import org.gephi.layout.plugin.AbstractLayout;
 import org.gephi.layout.spi.Layout;
 import org.gephi.layout.spi.LayoutBuilder;
 import org.gephi.layout.spi.LayoutProperty;
 import org.openide.util.NbBundle;
+import org.openide.util.Lookup;
+import java.util.Map;
+import java.util.EnumMap;
 
 /**
  *
@@ -50,7 +56,50 @@ public class DualCircleLayout extends AbstractLayout implements Layout {
     private boolean highdegreeoutside;
     private int secondarynodecount;
     static double TWO_PI = (2 * Math.PI);
-    private String stringNodePlacementDirection = "CCW";
+    private Enum enumNodePlacementDirection;
+    private Enum attribute;
+
+
+    private enum AttributeEnum {
+        Degree,
+        Indegree,
+        Outdegree,
+        Mutual,
+        Children,
+        Descendents;
+    }
+
+    private enum RotationEnum {
+        CCW,
+        CW;
+    }
+
+    public static Map getRotationEnumMap() {
+        Map<RotationEnum, String> map = new EnumMap<RotationEnum, String>(RotationEnum.class);
+        map.put(RotationEnum.CCW, NbBundle.getMessage(DualCircleLayout.class, "DualCircleLayout.NodePlacement.CCW"));
+        map.put(RotationEnum.CW, NbBundle.getMessage(DualCircleLayout.class, "DualCircleLayout.NodePlacement.CW"));
+        return map;
+    }
+
+
+
+    public static Map getAttributeEnumMap() {
+        GraphController graphController = Lookup.getDefault().lookup(GraphController.class);
+        GraphModel objGraphModel = graphController.getModel();
+        Map<AttributeEnum, String> map = new EnumMap<AttributeEnum, String>(AttributeEnum.class);
+        map.put(AttributeEnum.Degree, NbBundle.getMessage(DualCircleLayout.class, "DualCircleLayout.NodePlacement.Degree.name"));
+
+        if (objGraphModel.isDirected()) {
+            map.put(AttributeEnum.Indegree, NbBundle.getMessage(DualCircleLayout.class, "DualCircleLayout.NodePlacement.InDegree.name"));
+            map.put(AttributeEnum.Outdegree, NbBundle.getMessage(DualCircleLayout.class, "DualCircleLayout.NodePlacement.OutDegree.name"));
+            map.put(AttributeEnum.Mutual, NbBundle.getMessage(DualCircleLayout.class, "DualCircleLayout.NodePlacement.Mutual.name"));
+        } else if (objGraphModel.isHierarchical()) {
+            map.put(AttributeEnum.Children, NbBundle.getMessage(DualCircleLayout.class, "DualCircleLayout.NodePlacement.Children.name"));
+            map.put(AttributeEnum.Descendents, NbBundle.getMessage(DualCircleLayout.class, "DualCircleLayout.NodePlacement.Descendents.name"));
+        }
+        return map;
+    }
+
 
     public DualCircleLayout(LayoutBuilder layoutBuilder, int secondarynodecount) {
         super(layoutBuilder);
@@ -77,21 +126,23 @@ public class DualCircleLayout extends AbstractLayout implements Layout {
         double primary_scale = 1;
         double secondary_scale = 1;
         double correct_theta = 0;
-        if (this.stringNodePlacementDirection == null ? "CW" == null : this.stringNodePlacementDirection.equals("CW")) {
+        if (this.enumNodePlacementDirection == RotationEnum.CW) {
             twopi = -twopi;
         }
-
         Node[] nodes = graph.getNodes().toArray();
-        Arrays.sort(nodes, new Comparator<Node>() {
-
-            @Override
-            public int compare(Node o1, Node o2) {
-                int f1 = graph.getDegree(o1);
-                int f2 = graph.getDegree(o2);
-                return f2 - f1;
-            }
-        });
-
+        if (this.attribute == AttributeEnum.Degree) {
+            Arrays.sort(nodes, new DegreeComparator());
+        } else if (this.attribute == AttributeEnum.Indegree){
+            Arrays.sort(nodes, new InDegreeComparator());
+        } else if (this.attribute == AttributeEnum.Outdegree){
+            Arrays.sort(nodes, new OutDegreeComparator());
+        } else if (this.attribute == AttributeEnum.Mutual){
+            Arrays.sort(nodes, new MutualDegreeComparator());
+        } else if (this.attribute == AttributeEnum.Children){
+            Arrays.sort(nodes, new ChildrenComparator());
+        } else if (this.attribute == AttributeEnum.Descendents){
+            Arrays.sort(nodes, new DescendantComparator());
+        }
 
         for (Node n : nodes) {
             if (index < this.secondarynodecount) {
@@ -187,7 +238,13 @@ public class DualCircleLayout extends AbstractLayout implements Layout {
                     NbBundle.getMessage(DualCircleLayout.class, "DualCircleLayout.InnerNodeCount.desc"),
                     "getInnerNodeCount", "setInnerNodeCount"));
             properties.add(LayoutProperty.createProperty(
-                    this, String.class,
+                    this, Enum.class,
+                    NbBundle.getMessage(DualCircleLayout.class, "DualCircleLayout.attribue.name"),
+                     "Node Placement",
+                    NbBundle.getMessage(DualCircleLayout.class, "DualCircleLayout.attribue.desc"),
+                    "getAttribute", "setAttribute",LayoutComboBoxEditor.class));
+            properties.add(LayoutProperty.createProperty(
+                    this, Enum.class,
                     NbBundle.getMessage(DualCircleLayout.class, "DualCircleLayout.NodePlacement.Direction.name"),
                     "Node Placement",
                     NbBundle.getMessage(DualCircleLayout.class, "DualCircleLayout.NodePlacement.Direction.desc"),
@@ -202,10 +259,15 @@ public class DualCircleLayout extends AbstractLayout implements Layout {
     public void resetPropertiesValues() {
         setInnerNodeCount(4);
         setHighDegreeOutside(false);
-        setNodePlacementDirection("CCW");
+        setNodePlacementDirection(RotationEnum.CCW);
+        setAttribute(AttributeEnum.Degree);
     }
 
     public void setInnerNodeCount(Integer intsecondarynodecount) {
+        GraphController graphController = Lookup.getDefault().lookup(GraphController.class);
+        GraphModel objGraphModel = graphController.getModel();
+        graph = objGraphModel.getGraphVisible();
+        //TODO: add node count check to do boundary checking on user input
         this.secondarynodecount = intsecondarynodecount;
     }
 
@@ -221,16 +283,20 @@ public class DualCircleLayout extends AbstractLayout implements Layout {
         this.highdegreeoutside = highdegreeoutside;
     }
 
-    public String getNodePlacementDirection() {
-        return this.stringNodePlacementDirection;
+    public Enum getNodePlacementDirection() {
+        return this.enumNodePlacementDirection;
     }
 
-    public void setNodePlacementDirection(String stringNodePlacementDirection) {
-        if ((stringNodePlacementDirection == null ? "CCW" == null : stringNodePlacementDirection.equals("CCW")) || (stringNodePlacementDirection == null ? "CW" == null : stringNodePlacementDirection.equals("CW"))) {
-            this.stringNodePlacementDirection = stringNodePlacementDirection;
-        } else {
-            this.stringNodePlacementDirection = "CCW";
-        }
+    public void setNodePlacementDirection(Enum enumNodePlacementDirection) {
+        this.enumNodePlacementDirection = enumNodePlacementDirection;
+    }
+
+    public Enum getAttribute() {
+        return this.attribute;
+    }
+
+    public void setAttribute(Enum attribute) {
+        this.attribute = attribute;
     }
 
     private float[] cartCoors(double radius, int whichInt, double theta) {
@@ -239,4 +305,77 @@ public class DualCircleLayout extends AbstractLayout implements Layout {
         coOrds[1] = (float) (radius * (Math.sin((theta * whichInt) + (Math.PI / 2))));
         return coOrds;
     }
+
+    class DegreeComparator implements Comparator<Object> {
+        @Override
+        public int compare(Object o1, Object o2) {
+            int f1 = graph.getDegree((Node) o1);
+            int f2 = graph.getDegree((Node) o2);
+            return f2 - f1;
+        }
+    }
+
+    class InDegreeComparator implements Comparator<Object> {
+        @Override
+        public int compare(Object o1, Object o2) {
+            GraphController graphController = Lookup.getDefault().lookup(GraphController.class);
+            GraphModel objGraphModel = graphController.getModel();
+            DirectedGraph objGraph = objGraphModel.getDirectedGraph();
+            int f1 = objGraph.getInDegree((Node) o1);
+            int f2 = objGraph.getInDegree((Node) o2);
+            return f2 - f1;
+        }
+    }
+
+    class OutDegreeComparator implements Comparator<Object> {
+        @Override
+        public int compare(Object o1, Object o2) {
+            GraphController graphController = Lookup.getDefault().lookup(GraphController.class);
+            GraphModel objGraphModel = graphController.getModel();
+            DirectedGraph objGraph = objGraphModel.getDirectedGraph();
+            int f1 = objGraph.getOutDegree((Node) o1);
+            int f2 = objGraph.getOutDegree((Node) o2);
+            return f2 - f1;
+        }
+    }
+
+
+    class MutualDegreeComparator implements Comparator<Object> {
+        @Override
+        public int compare(Object o1, Object o2) {
+            GraphController graphController = Lookup.getDefault().lookup(GraphController.class);
+            GraphModel objGraphModel = graphController.getModel();
+            DirectedGraph objGraph = objGraphModel.getDirectedGraph();
+            int f1 = objGraph.getMutualDegree((Node) o1);
+            int f2 = objGraph.getMutualDegree((Node) o2);
+            return f2 - f1;
+        }
+    }
+
+
+    class ChildrenComparator implements Comparator<Object> {
+        @Override
+        public int compare(Object o1, Object o2) {
+            GraphController graphController = Lookup.getDefault().lookup(GraphController.class);
+            GraphModel objGraphModel = graphController.getModel();
+            HierarchicalGraph objGraph = objGraphModel.getHierarchicalGraph();
+            int f1 = objGraph.getChildrenCount((Node) o1);
+            int f2 = objGraph.getChildrenCount((Node) o2);
+            return f2 - f1;
+        }
+    }
+
+    class DescendantComparator implements Comparator<Object> {
+        @Override
+        public int compare(Object o1, Object o2) {
+            GraphController graphController = Lookup.getDefault().lookup(GraphController.class);
+            GraphModel objGraphModel = graphController.getModel();
+            HierarchicalGraph objGraph = objGraphModel.getHierarchicalGraph();
+            int f1 = objGraph.getDescendantCount((Node) o1);
+            int f2 = objGraph.getDescendantCount((Node) o2);
+            return f2 - f1;
+        }
+    }
 }
+
+

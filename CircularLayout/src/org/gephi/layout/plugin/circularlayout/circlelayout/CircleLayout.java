@@ -32,12 +32,22 @@ import java.util.Comparator;
 import java.util.Collections;
 import java.util.List;
 import org.gephi.graph.api.Graph;
+import org.gephi.graph.api.DirectedGraph;
+import org.gephi.graph.api.HierarchicalGraph;
+import org.gephi.graph.api.GraphModel;
+import org.gephi.graph.api.GraphController;
+import org.gephi.graph.api.Graph;
 import org.gephi.graph.api.Node;
 import org.gephi.layout.plugin.AbstractLayout;
 import org.gephi.layout.spi.Layout;
 import org.gephi.layout.spi.LayoutBuilder;
 import org.gephi.layout.spi.LayoutProperty;
 import org.openide.util.NbBundle;
+import org.openide.util.Lookup;
+import java.util.Map;
+import java.util.EnumMap;
+import java.util.Map;
+
 
 /**
  *
@@ -49,13 +59,9 @@ public class CircleLayout extends AbstractLayout implements Layout {
     private boolean converged;
     private double diameter;
     private boolean boolfixeddiameter;
-    private int intnodeplacement = 1;
+    private Enum enumNodeplacement;
     private boolean boolNoOverlap = true;
-    private String stringNodePlacementDirection = "CCW";
-    //Node Placement types
-    static final int NODE_ID_PLACEMENT = 1;
-    static final int RANDOM_PLACEMENT = 2;
-    static final int DEGREE_PLACEMENT = 3;
+    private Enum enumNodePlacementDirection;
     static final double TWO_PI = (2 * Math.PI);
 
     public CircleLayout(LayoutBuilder layoutBuilder, double diameter, boolean boolfixeddiameter) {
@@ -63,6 +69,48 @@ public class CircleLayout extends AbstractLayout implements Layout {
         this.diameter = diameter;
         this.boolfixeddiameter = boolfixeddiameter;
     }
+
+    private enum PlacementEnum {
+        NodeID,
+        Random,
+        Degree,
+        Indegree,
+        Outdegree,
+        Mutual,
+        Children,
+        Descendents;
+    }
+
+    public static Map getPlacementEnumMap() {
+        GraphController graphController = Lookup.getDefault().lookup(GraphController.class);
+        GraphModel objGraphModel = graphController.getModel();
+        Map<PlacementEnum, String> map = new EnumMap<PlacementEnum, String>(PlacementEnum.class);
+        map.put(PlacementEnum.Degree, NbBundle.getMessage(CircleLayout.class, "CircleLayout.NodePlacement.NodeID.name"));
+        map.put(PlacementEnum.Degree, NbBundle.getMessage(CircleLayout.class, "CircleLayout.NodePlacement.Random.name"));
+        map.put(PlacementEnum.Degree, NbBundle.getMessage(CircleLayout.class, "CircleLayout.NodePlacement.Degree.name"));
+        if (objGraphModel.isDirected()) {
+            map.put(PlacementEnum.Indegree, NbBundle.getMessage(CircleLayout.class, "CircleLayout.NodePlacement.InDegree.name"));
+            map.put(PlacementEnum.Outdegree, NbBundle.getMessage(CircleLayout.class, "CircleLayout.NodePlacement.OutDegree.name"));
+            map.put(PlacementEnum.Mutual, NbBundle.getMessage(CircleLayout.class, "CircleLayout.NodePlacement.Mutual.name"));
+        } else if (objGraphModel.isHierarchical()) {
+            map.put(PlacementEnum.Children, NbBundle.getMessage(CircleLayout.class, "CircleLayout.NodePlacement.Children.name"));
+            map.put(PlacementEnum.Descendents, NbBundle.getMessage(CircleLayout.class, "CircleLayout.NodePlacement.Descendents.name"));
+        }
+        return map;
+    }
+
+        private enum RotationEnum {
+        CCW,
+        CW;
+    }
+
+    public static Map getRotationEnumMap() {
+        Map<RotationEnum, String> map = new EnumMap<RotationEnum, String>(RotationEnum.class);
+        map.put(RotationEnum.CCW, NbBundle.getMessage(CircleLayout.class, "CircleLayout.NodePlacement.CCW"));
+        map.put(RotationEnum.CW, NbBundle.getMessage(CircleLayout.class, "CircleLayout.NodePlacement.CW"));
+        return map;
+    }
+
 
     @Override
     public void initAlgo() {
@@ -100,29 +148,28 @@ public class CircleLayout extends AbstractLayout implements Layout {
 
         //determine Node placement
         Node[] nodes = graph.getNodes().toArray();
-
-        switch (intnodeplacement) {
-            case NODE_ID_PLACEMENT:
-            default:
-                break;
-            case RANDOM_PLACEMENT:
-                List nodesList = Arrays.asList(nodes);
-                Collections.shuffle(nodesList);
-                break;
-            case DEGREE_PLACEMENT:
-                Arrays.sort(nodes, new Comparator<Node>() {
-
-                    @Override
-                    public int compare(Node o1, Node o2) {
-                        int f1 = graph.getDegree(o1);
-                        int f2 = graph.getDegree(o2);
-                        return f2 - f1;
-                    }
-                });
-                break;
+        
+        if (this.enumNodeplacement == PlacementEnum.NodeID) {
+            //Do nothing
+        } else if (this.enumNodeplacement == PlacementEnum.Random) {
+            List nodesList = Arrays.asList(nodes);
+            Collections.shuffle(nodesList);
+        } else if (this.enumNodeplacement == PlacementEnum.Degree) {
+            Arrays.sort(nodes, new DegreeComparator());
+        } else if (this.enumNodeplacement == PlacementEnum.Indegree){
+            Arrays.sort(nodes, new InDegreeComparator());
+        } else if (this.enumNodeplacement == PlacementEnum.Outdegree){
+            Arrays.sort(nodes, new OutDegreeComparator());
+        } else if (this.enumNodeplacement == PlacementEnum.Mutual){
+            Arrays.sort(nodes, new MutualDegreeComparator());
+        } else if (this.enumNodeplacement == PlacementEnum.Children){
+            Arrays.sort(nodes, new ChildrenComparator());
+        } else if (this.enumNodeplacement == PlacementEnum.Descendents){
+            Arrays.sort(nodes, new DescendantComparator());
         }
 
-        if (this.stringNodePlacementDirection == null ? "CW" == null : this.stringNodePlacementDirection.equals("CW")) {
+
+        if (this.enumNodePlacementDirection == RotationEnum.CW) {
             theta = -theta;
         }
         for (Node n : nodes) {
@@ -167,13 +214,13 @@ public class CircleLayout extends AbstractLayout implements Layout {
                     NbBundle.getMessage(CircleLayout.class, "CircleLayout.Diameter.desc"),
                     "getDiameter", "setDiameter"));
             properties.add(LayoutProperty.createProperty(
-                    this, String.class,
+                    this, Enum.class,
                     NbBundle.getMessage(CircleLayout.class, "CircleLayout.NodePlacement.NodeOrdering.name"),
                     "Node Placement",
                     NbBundle.getMessage(CircleLayout.class, "CircleLayout.NodePlacement.NodeOrdering.desc"),
                     "getNodePlacement", "setNodePlacement", LayoutComboBoxEditor.class));
             properties.add(LayoutProperty.createProperty(
-                    this, String.class,
+                    this, Enum.class,
                     NbBundle.getMessage(CircleLayout.class, "CircleLayout.NodePlacement.Direction.name"),
                     "Node Placement",
                     NbBundle.getMessage(CircleLayout.class, "CircleLayout.NodePlacement.Direction.desc"),
@@ -194,29 +241,17 @@ public class CircleLayout extends AbstractLayout implements Layout {
     public void resetPropertiesValues() {
         setDiameter(500.0);
         setBoolFixedDiameter(false);
-        setNodePlacement("1");
+        setNodePlacement(PlacementEnum.NodeID);
         setNodePlacementNoOverlap(true);
-        setNodePlacementDirection("CCW");
+        setNodePlacementDirection(RotationEnum.CCW);
     }
 
-    public void setNodePlacement(String strnodeplacement) {
-        int nodeplacement = Integer.parseInt(strnodeplacement.trim());
-        switch (nodeplacement) {
-            case NODE_ID_PLACEMENT:
-            default:
-                this.intnodeplacement = CircleLayout.NODE_ID_PLACEMENT;
-                break;
-            case RANDOM_PLACEMENT:
-                this.intnodeplacement = CircleLayout.RANDOM_PLACEMENT;
-                break;
-            case DEGREE_PLACEMENT:
-                this.intnodeplacement = CircleLayout.DEGREE_PLACEMENT;
-                break;
-        }
+    public void setNodePlacement(Enum enumNodeplacement) {
+        this.enumNodeplacement = enumNodeplacement;
     }
 
-    public String getNodePlacement() {
-        return new Integer(intnodeplacement).toString();
+    public Enum getNodePlacement() {
+        return this.enumNodeplacement;
     }
 
     public void setBoolFixedDiameter(Boolean boolfixeddiameter) {
@@ -238,16 +273,12 @@ public class CircleLayout extends AbstractLayout implements Layout {
         return diameter;
     }
 
-    public String getNodePlacementDirection() {
-        return this.stringNodePlacementDirection;
+    public Enum getNodePlacementDirection() {
+        return this.enumNodePlacementDirection;
     }
 
-    public void setNodePlacementDirection(String stringNodePlacementDirection) {
-        if ((stringNodePlacementDirection == null ? "CCW" == null : stringNodePlacementDirection.equals("CCW")) || (stringNodePlacementDirection == null ? "CW" == null : stringNodePlacementDirection.equals("CW"))) {
-            this.stringNodePlacementDirection = stringNodePlacementDirection;
-        } else {
-            this.stringNodePlacementDirection = "CCW";
-        }
+    public void setNodePlacementDirection(Enum enumNodePlacementDirection) {
+        this.enumNodePlacementDirection = enumNodePlacementDirection;
     }
 
     public boolean isNodePlacementNoOverlap() {
@@ -266,5 +297,78 @@ public class CircleLayout extends AbstractLayout implements Layout {
         coOrds[0] = (float) (radius * (Math.cos((theta * whichInt) + (Math.PI / 2))));
         coOrds[1] = (float) (radius * (Math.sin((theta * whichInt) + (Math.PI / 2))));
         return coOrds;
+    }
+
+
+
+        class DegreeComparator implements Comparator<Object> {
+        @Override
+        public int compare(Object o1, Object o2) {
+            int f1 = graph.getDegree((Node) o1);
+            int f2 = graph.getDegree((Node) o2);
+            return f2 - f1;
+        }
+    }
+
+    class InDegreeComparator implements Comparator<Object> {
+        @Override
+        public int compare(Object o1, Object o2) {
+            GraphController graphController = Lookup.getDefault().lookup(GraphController.class);
+            GraphModel objGraphModel = graphController.getModel();
+            DirectedGraph objGraph = objGraphModel.getDirectedGraph();
+            int f1 = objGraph.getInDegree((Node) o1);
+            int f2 = objGraph.getInDegree((Node) o2);
+            return f2 - f1;
+        }
+    }
+
+    class OutDegreeComparator implements Comparator<Object> {
+        @Override
+        public int compare(Object o1, Object o2) {
+            GraphController graphController = Lookup.getDefault().lookup(GraphController.class);
+            GraphModel objGraphModel = graphController.getModel();
+            DirectedGraph objGraph = objGraphModel.getDirectedGraph();
+            int f1 = objGraph.getOutDegree((Node) o1);
+            int f2 = objGraph.getOutDegree((Node) o2);
+            return f2 - f1;
+        }
+    }
+
+
+    class MutualDegreeComparator implements Comparator<Object> {
+        @Override
+        public int compare(Object o1, Object o2) {
+            GraphController graphController = Lookup.getDefault().lookup(GraphController.class);
+            GraphModel objGraphModel = graphController.getModel();
+            DirectedGraph objGraph = objGraphModel.getDirectedGraph();
+            int f1 = objGraph.getMutualDegree((Node) o1);
+            int f2 = objGraph.getMutualDegree((Node) o2);
+            return f2 - f1;
+        }
+    }
+
+
+    class ChildrenComparator implements Comparator<Object> {
+        @Override
+        public int compare(Object o1, Object o2) {
+            GraphController graphController = Lookup.getDefault().lookup(GraphController.class);
+            GraphModel objGraphModel = graphController.getModel();
+            HierarchicalGraph objGraph = objGraphModel.getHierarchicalGraph();
+            int f1 = objGraph.getChildrenCount((Node) o1);
+            int f2 = objGraph.getChildrenCount((Node) o2);
+            return f2 - f1;
+        }
+    }
+
+    class DescendantComparator implements Comparator<Object> {
+        @Override
+        public int compare(Object o1, Object o2) {
+            GraphController graphController = Lookup.getDefault().lookup(GraphController.class);
+            GraphModel objGraphModel = graphController.getModel();
+            HierarchicalGraph objGraph = objGraphModel.getHierarchicalGraph();
+            int f1 = objGraph.getDescendantCount((Node) o1);
+            int f2 = objGraph.getDescendantCount((Node) o2);
+            return f2 - f1;
+        }
     }
 }

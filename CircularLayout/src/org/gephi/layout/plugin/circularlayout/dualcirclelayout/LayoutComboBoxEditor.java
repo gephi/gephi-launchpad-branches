@@ -24,19 +24,18 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
 THE POSSIBILITY OF SUCH DAMAGE.
 */
-package org.gephi.layout.plugin.circularlayout.circlelayout;
+package org.gephi.layout.plugin.circularlayout.dualcirclelayout;
 
 import org.gephi.layout.plugin.circularlayout.abstractcombo.AbstractComboBoxEditor;
-import org.openide.util.NbBundle;
-import java.util.HashMap;
+import java.util.Map;
+/**
+ *
+ * @author Matt
+ */
+public class LayoutComboBoxEditor extends AbstractComboBoxEditor {
 
-public class NodeOrderComboBoxEditor extends AbstractComboBoxEditor {
-
-    public NodeOrderComboBoxEditor() {
-        HashMap<String, String> options = new HashMap<String, String>();
-        options.put("1", NbBundle.getMessage(CircleLayout.class, "CircleLayout.NodePlacement.Random.name"));
-        options.put("2", NbBundle.getMessage(CircleLayout.class, "CircleLayout.NodePlacement.Degree.name"));
-        options.put("3", NbBundle.getMessage(CircleLayout.class, "CircleLayout.NodePlacement.NodeID.name"));
+    public LayoutComboBoxEditor() {
+        Map options = DualCircleLayout.getAttributeEnumMap();
         super.ComboValues = options;
     }
 }

@@ -27,8 +27,7 @@ THE POSSIBILITY OF SUCH DAMAGE.
 package org.gephi.layout.plugin.circularlayout.dualcirclelayout;
 
 import org.gephi.layout.plugin.circularlayout.abstractcombo.AbstractComboBoxEditor;
-import org.openide.util.NbBundle;
-import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
@@ -36,10 +35,9 @@ import java.util.HashMap;
  */
 public class RotationComboBoxEditor extends AbstractComboBoxEditor {
 
+        
     public RotationComboBoxEditor() {
-        HashMap<String, String> options = new HashMap<String, String>();
-        options.put("CCW", NbBundle.getMessage(DualCircleLayout.class, "DualCircleLayout.NodePlacement.CCW"));
-        options.put("CW", NbBundle.getMessage(DualCircleLayout.class, "DualCircleLayout.NodePlacement.CW"));
+        Map options = DualCircleLayout.getRotationEnumMap();
         super.ComboValues = options;
     }
 }
