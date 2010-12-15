@@ -42,6 +42,8 @@ import org.gephi.layout.spi.LayoutBuilder;
 import org.gephi.layout.spi.LayoutProperty;
 import org.openide.util.NbBundle;
 import org.openide.util.Lookup;
+import javax.swing.JOptionPane;
+
 import java.util.Map;
 import java.util.EnumMap;
 
@@ -267,8 +269,19 @@ public class DualCircleLayout extends AbstractLayout implements Layout {
         GraphController graphController = Lookup.getDefault().lookup(GraphController.class);
         GraphModel objGraphModel = graphController.getModel();
         graph = objGraphModel.getGraphVisible();
-        //TODO: add node count check to do boundary checking on user input
-        this.secondarynodecount = intsecondarynodecount;
+        if (intsecondarynodecount > graph.getNodeCount()) {
+            JOptionPane.showMessageDialog(null,
+                NbBundle.getMessage(DualCircleLayout.class, "DualCircleLayout.setInnerNodeCount.TooHigh.message"),
+                NbBundle.getMessage(DualCircleLayout.class, "DualCircleLayout.setInnerNodeCount.TooHigh.title"),
+                 JOptionPane.WARNING_MESSAGE);
+        } else if (intsecondarynodecount < 1) {
+            JOptionPane.showMessageDialog(null,
+                NbBundle.getMessage(DualCircleLayout.class, "DualCircleLayout.setInnerNodeCount.TooLow.message"),
+                NbBundle.getMessage(DualCircleLayout.class, "DualCircleLayout.setInnerNodeCount.TooLow.title"),
+                 JOptionPane.WARNING_MESSAGE);        } else {
+            //TODO: add node count check to do boundary checking on user input
+            this.secondarynodecount = intsecondarynodecount;
+        }
     }
 
     public Integer getInnerNodeCount() {
