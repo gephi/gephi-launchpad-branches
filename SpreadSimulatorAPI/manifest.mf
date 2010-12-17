@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+OpenIDE-Module: org.gephi.spreadsimulator.api
+OpenIDE-Module-Layer: org/gephi/spreadsimulator/api/layer.xml
+OpenIDE-Module-Localizing-Bundle: org/gephi/spreadsimulator/api/Bundle.properties
+OpenIDE-Module-Specification-Version: 0.8.0
+
