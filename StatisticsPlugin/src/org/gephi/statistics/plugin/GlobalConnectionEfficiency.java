@@ -60,7 +60,7 @@ public class GlobalConnectionEfficiency implements Statistics, LongTask {
 		graph.readLock();
 
 		int n = graph.getNodeCount();
-		Progress.start(progressTicket, n * n + n * n * n + n * n);
+		Progress.start(progressTicket, n * n + n * n + n * n);
 
 		// FloydWarshall algorithm
 		Node[] nodes = graph.getNodes().toArray();
@@ -75,11 +75,11 @@ public class GlobalConnectionEfficiency implements Statistics, LongTask {
 				Progress.progress(progressTicket);
 			}
 		for (int k = 0; k < n && !cancel; ++k)
-			for (int i = 0; i < n && !cancel; ++i)
-				for (int j = 0; j < n && !cancel; ++j) {
+			for (int i = 0; i < n && !cancel; ++i) {
+				for (int j = 0; j < n && !cancel; ++j)
 					d[i][j] = Math.min(d[i][j], d[i][k] + d[k][j]);
-					Progress.progress(progressTicket);
-				}
+				Progress.progress(progressTicket);
+			}
 
 		double sum = 0.0;
 		for (int i = 0; i < n && !cancel; ++i)
