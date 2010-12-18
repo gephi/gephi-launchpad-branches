@@ -29,6 +29,4 @@ public interface StopConditionBuilder {
 	public String getName();
 
 	public StopCondition getStopCondition();
-
-	public Class<? extends StopCondition> getStopConditionClass();
 }

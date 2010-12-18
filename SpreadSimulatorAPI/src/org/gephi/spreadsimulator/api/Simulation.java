@@ -21,7 +21,6 @@
 package org.gephi.spreadsimulator.api;
 
 import org.gephi.spreadsimulator.spi.StopCondition;
-import org.gephi.utils.longtask.spi.LongTask;
 
 /**
  * It is a service and can therefore be found in Lookup:
@@ -29,36 +28,16 @@ import org.gephi.utils.longtask.spi.LongTask;
  * 
  * @author Cezary Bartosiak
  */
-public interface Simulation extends LongTask {
+public interface Simulation {
 	public void init();
 
 	public void addStopCondition(StopCondition stopCondition);
-
-	public void removeStopCondition(StopCondition stopCondition);
 
 	public StopCondition[] getStopConditions();
 
 	public SimulationData getSimulationData();
 
-	public long getDelay();
-
-	public void setDelay(long delay);
-
-	public void start();
-
-	public void start(int count);
-
-	public boolean isCancelled();
-
-	public void previousStep();
-
 	public void nextStep();
 
-	public boolean isFinished();
-
 	public String getReport();
-
-	public void addSimulationListener(SimulationListener listener);
-
-	public void removeSimulationListener(SimulationListener listener);
 }

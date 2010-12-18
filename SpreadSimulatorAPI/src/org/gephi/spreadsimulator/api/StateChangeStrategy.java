@@ -20,12 +20,13 @@
  */
 package org.gephi.spreadsimulator.api;
 
+import org.gephi.statistics.spi.Statistics;
+
 /**
- * It is a service and can therefore be found in Lookup:
- * <pre>StateChangeStrategy scs = Lookup.getDefault().lookup(StateChangeStrategy.class);</pre>
+ *
  * 
  * @author Cezary Bartosiak
  */
 public interface StateChangeStrategy {
-	public void changeStates();
+	public void changeStates(Statistics statistics, int k, boolean biggest, String stateName);
 }

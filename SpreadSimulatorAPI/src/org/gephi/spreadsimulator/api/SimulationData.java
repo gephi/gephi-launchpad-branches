@@ -20,9 +20,9 @@
  */
 package org.gephi.spreadsimulator.api;
 
+import org.gephi.data.attributes.api.AttributeModel;
 import org.gephi.graph.api.GraphModel;
 import org.gephi.graph.api.Node;
-import org.openide.util.NbBundle;
 
 /**
  *
@@ -30,23 +30,15 @@ import org.openide.util.NbBundle;
  * @author Cezary Bartosiak
  */
 public interface SimulationData {
-	public static final String NM_CURRENT_STATE = "CurrentState";
-	public static final String SM_STATE_NAME    = "StateName";
-	public static final String SM_DEFAULT_STATE = "DefaultState";
-	public static final String SM_INITIAL_EVENT = "InitialEvent";
-	public static final String SM_CHOICE        = "Choice";
-	public static final String SM_PROBABILITY   = "Probability";
-
-	public static final String NM_CURRENT_STATE_TITLE =
-			NbBundle.getMessage(SimulationData.class, "SimulationData.CurrentStateTitle");
-
 	public GraphModel getNetworkModel();
 
 	public GraphModel getStateMachineModel();
 
-	public String getDefaultState();
+	public AttributeModel getNetworkAttributeModel();
 
-	public int getNodesCountInStateAndStep(String state, int step);
+	public AttributeModel getStateMachineAttributeModel();
+
+	public int getNodesCountInStateAndStep(String stateName, int step);
 
 	public int getCurrentStep();
 
