@@ -1,6 +1,5 @@
 package net.phreakocious.httpgraph;
 
-import org.gephi.lib.validation.PositiveNumberValidator;
 import org.netbeans.validation.api.builtin.Validators;
 import org.netbeans.validation.api.ui.ValidationGroup;
 import org.netbeans.validation.api.ui.ValidationPanel;
@@ -15,6 +14,8 @@ public class HttpGraphPanel extends JPanel {
 
     public HttpGraphPanel() {
         initComponents();
+        chainProxy.setEnabled(false);
+        chainProxyPort.setEnabled(false);
     }
 
     public static ValidationPanel createValidationPanel(HttpGraphPanel innerPanel) {
@@ -27,7 +28,13 @@ public class HttpGraphPanel extends JPanel {
         ValidationGroup group = validationPanel.getValidationGroup();
 
         group.add(innerPanel.portField, Validators.REQUIRE_NON_EMPTY_STRING,
-                new PositiveNumberValidator());
+                Validators.REQUIRE_VALID_INTEGER,
+                Validators.numberRange(1, 65535));
+
+        group.add(innerPanel.chainProxy, Validators.HOST_NAME_OR_IP_ADDRESS);
+
+        group.add(innerPanel.chainProxyPort, Validators.REQUIRE_VALID_INTEGER,
+                Validators.numberRange(1, 65535));
 
         return validationPanel;
     }
@@ -43,21 +50,53 @@ public class HttpGraphPanel extends JPanel {
 
         portLabel = new javax.swing.JLabel();
         portField = new javax.swing.JTextField();
+        chainProxy = new javax.swing.JTextField();
+        chainProxyEnabled = new javax.swing.JCheckBox();
+        chainProxyPort = new javax.swing.JTextField();
+        jLabel1 = new javax.swing.JLabel();
 
         portLabel.setText(org.openide.util.NbBundle.getMessage(HttpGraphPanel.class, "HttpGraphPanel.portLabel.text")); // NOI18N
 
         portField.setText(org.openide.util.NbBundle.getMessage(HttpGraphPanel.class, "HttpGraphPanel.portField.text")); // NOI18N
 
+        chainProxy.setText(org.openide.util.NbBundle.getMessage(HttpGraphPanel.class, "HttpGraphPanel.chainProxy.text")); // NOI18N
+        chainProxy.setToolTipText(org.openide.util.NbBundle.getMessage(HttpGraphPanel.class, "HttpGraphPanel.chainProxy.toolTipText")); // NOI18N
+
+        chainProxyEnabled.setText(org.openide.util.NbBundle.getMessage(HttpGraphPanel.class, "HttpGraphPanel.chainProxyEnabled.text")); // NOI18N
+        chainProxyEnabled.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                chainProxyEnabledActionPerformed(evt);
+            }
+        });
+
+        chainProxyPort.setText(org.openide.util.NbBundle.getMessage(HttpGraphPanel.class, "HttpGraphPanel.chainProxyPort.text")); // NOI18N
+        chainProxyPort.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                chainProxyPortActionPerformed(evt);
+            }
+        });
+
+        jLabel1.setText(org.openide.util.NbBundle.getMessage(HttpGraphPanel.class, "HttpGraphPanel.jLabel1.text")); // NOI18N
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(20, Short.MAX_VALUE)
-                .addComponent(portLabel)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(portLabel)
+                    .addComponent(chainProxyEnabled))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(portField, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(154, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(portField, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(chainProxy, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(chainProxyPort, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(89, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -65,11 +104,36 @@ public class HttpGraphPanel extends JPanel {
                 .addGap(20, 20, 20)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(portField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(portLabel))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(portLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(chainProxy, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel1)
+                    .addComponent(chainProxyPort, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(chainProxyEnabled, javax.swing.GroupLayout.PREFERRED_SIZE, 14, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(19, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
+
+    private void chainProxyEnabledActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chainProxyEnabledActionPerformed
+        if (chainProxyEnabled.isSelected()) {
+            chainProxy.setEnabled(true);
+            chainProxyPort.setEnabled(true);
+        }  else {
+            chainProxy.setEnabled(false);
+            chainProxyPort.setEnabled(false);
+        }
+    }//GEN-LAST:event_chainProxyEnabledActionPerformed
+
+    private void chainProxyPortActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chainProxyPortActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_chainProxyPortActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    protected javax.swing.JTextField chainProxy;
+    protected javax.swing.JCheckBox chainProxyEnabled;
+    protected javax.swing.JTextField chainProxyPort;
+    private javax.swing.JLabel jLabel1;
     protected javax.swing.JTextField portField;
     private javax.swing.JLabel portLabel;
     // End of variables declaration//GEN-END:variables

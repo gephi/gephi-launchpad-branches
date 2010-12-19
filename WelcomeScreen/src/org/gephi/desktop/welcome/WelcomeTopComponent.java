@@ -17,7 +17,7 @@ GNU Affero General Public License for more details.
 
 You should have received a copy of the GNU Affero General Public License
 along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 package org.gephi.desktop.welcome;
 
 import java.awt.event.ActionEvent;
@@ -33,6 +33,8 @@ import javax.swing.Action;
 import org.gephi.desktop.importer.api.ImportControllerUI;
 import org.gephi.desktop.mrufiles.api.MostRecentFiles;
 import org.gephi.desktop.project.api.ProjectControllerUI;
+import org.gephi.io.generator.api.GeneratorController;
+import org.gephi.io.generator.spi.Generator;
 import org.jdesktop.swingx.JXHyperlink;
 import org.openide.util.Exceptions;
 import org.openide.util.NbBundle;
@@ -111,6 +113,24 @@ public final class WelcomeTopComponent extends TopComponent {
                 WelcomeTopComponent.this.close();
             }
         });
+
+        genHttpGraphLink.addActionListener(new ActionListener() {
+
+            public void actionPerformed(ActionEvent e) {
+                ProjectControllerUI pc = Lookup.getDefault().lookup(ProjectControllerUI.class);
+                pc.newProject();
+
+                GeneratorController gc = Lookup.getDefault().lookup(GeneratorController.class);
+                for (Generator g : gc.getGenerators()) {
+
+                    if (g.getName().equals("HTTP Graph")) {
+                        gc.generate(g);
+                    }
+                }
+                WelcomeTopComponent.this.close();
+            }
+        });
+
         openFileLink.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
@@ -216,6 +236,7 @@ public final class WelcomeTopComponent extends TopComponent {
         labelSamples = new javax.swing.JLabel();
         samplesPanel = new javax.swing.JPanel();
         openFileLink = new org.jdesktop.swingx.JXHyperlink();
+        genHttpGraphLink = new org.jdesktop.swingx.JXHyperlink();
         southPanel = new javax.swing.JPanel();
         openOnStartupCheckbox = new javax.swing.JCheckBox();
 
@@ -248,6 +269,13 @@ public final class WelcomeTopComponent extends TopComponent {
 
         org.openide.awt.Mnemonics.setLocalizedText(openFileLink, org.openide.util.NbBundle.getMessage(WelcomeTopComponent.class, "WelcomeTopComponent.openFileLink.text")); // NOI18N
 
+        org.openide.awt.Mnemonics.setLocalizedText(genHttpGraphLink, org.openide.util.NbBundle.getMessage(WelcomeTopComponent.class, "WelcomeTopComponent.genHttpGraphLink.text")); // NOI18N
+        genHttpGraphLink.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                genHttpGraphLinkActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout mainPanelLayout = new javax.swing.GroupLayout(mainPanel);
         mainPanel.setLayout(mainPanelLayout);
         mainPanelLayout.setHorizontalGroup(
@@ -261,12 +289,13 @@ public final class WelcomeTopComponent extends TopComponent {
                 .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(labelNew)
                     .addComponent(labelSamples)
-                    .addComponent(samplesPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 162, Short.MAX_VALUE)
+                    .addComponent(samplesPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 178, Short.MAX_VALUE)
                     .addGroup(mainPanelLayout.createSequentialGroup()
                         .addGap(10, 10, 10)
                         .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(openFileLink, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(newProjectLink, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(newProjectLink, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(genHttpGraphLink, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(62, 62, 62)))
                 .addContainerGap())
         );
@@ -284,10 +313,12 @@ public final class WelcomeTopComponent extends TopComponent {
                         .addComponent(newProjectLink, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(openFileLink, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(genHttpGraphLink, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addComponent(labelSamples)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(samplesPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 81, Short.MAX_VALUE))
+                        .addComponent(samplesPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 61, Short.MAX_VALUE))
                     .addComponent(recentPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 160, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -298,12 +329,16 @@ public final class WelcomeTopComponent extends TopComponent {
         southPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
 
         org.openide.awt.Mnemonics.setLocalizedText(openOnStartupCheckbox, org.openide.util.NbBundle.getMessage(WelcomeTopComponent.class, "WelcomeTopComponent.openOnStartupCheckbox.text")); // NOI18N
-        openOnStartupCheckbox.setOpaque(false);
         southPanel.add(openOnStartupCheckbox);
 
         add(southPanel, java.awt.BorderLayout.SOUTH);
     }// </editor-fold>//GEN-END:initComponents
+
+    private void genHttpGraphLinkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_genHttpGraphLinkActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_genHttpGraphLinkActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private org.jdesktop.swingx.JXHyperlink genHttpGraphLink;
     private org.jdesktop.swingx.JXHeader header;
     private javax.swing.JLabel labelNew;
     private javax.swing.JLabel labelRecent;

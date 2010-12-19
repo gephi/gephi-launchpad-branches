@@ -1,15 +1,17 @@
 package net.phreakocious.httpgraph;
 
+import com.predic8.membrane.core.Configuration;
 import com.predic8.membrane.core.HttpRouter;
 import com.predic8.membrane.core.rules.ProxyRule;
 import com.predic8.membrane.core.rules.ProxyRuleKey;
 import java.awt.Color;
-import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import net.phreakocious.httpgraph.SnarfData.SDEdge;
+import net.phreakocious.httpgraph.SnarfData.SDNode;
 import org.gephi.data.attributes.api.AttributeColumn;
-import org.gephi.data.attributes.api.AttributeModel;
 import org.gephi.data.attributes.api.AttributeOrigin;
 import org.gephi.data.attributes.api.AttributeTable;
 import org.gephi.data.attributes.api.AttributeType;
@@ -22,6 +24,8 @@ import org.gephi.io.importer.api.EdgeDraft;
 import org.gephi.io.importer.api.ImportController;
 import org.gephi.io.importer.api.NodeDraft;
 import org.gephi.io.processor.plugin.AppendProcessor;
+import org.gephi.layout.api.LayoutController;
+import org.gephi.layout.spi.LayoutBuilder;
 import org.gephi.project.api.ProjectController;
 import org.gephi.project.api.Workspace;
 import org.gephi.utils.progress.ProgressTicket;
@@ -35,71 +39,96 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = Generator.class)
 public class HttpGraph implements Generator {
 
-    private static Workspace workspace;
+    public static HttpGraph INSTANCE;
 
-    private static ImportController importController;
-    private static final Logger log = Logger.getLogger(HttpGraph.class.getName());
+    private static final Logger log;
+    private static final Workspace workspace;
+    private static final ImportController importController;
+    private static final HttpRouter router;
+    private static final int colordiv = 32;
+    private static ArrayList<Color> colors;
+    private static HashMap<String, Color> colormap;
+    private static HashMap<String, AttributeType> attribmap;
     protected ProgressTicket progress;
     protected boolean cancel = false;
     protected int proxyport = 8088;
-    private static int colorcount = 0;
-    private static final int colordiv = 36;
-    private static Color[] colors;
-    private static HashMap colormap = new HashMap();
+    protected String chainproxy = "";
+    protected int chainproxyport = 0;
 
-    public static void graphupdate(SnarfData data) {
-        Container container = Lookup.getDefault().lookup(ContainerFactory.class).newContainer();
+    static {
+        INSTANCE = new HttpGraph();
+        log = Logger.getLogger(HttpGraph.class.getName());
+        workspace = Lookup.getDefault().lookup(ProjectController.class).getCurrentWorkspace();
+        importController = Lookup.getDefault().lookup(ImportController.class);
+        router = new HttpRouter();
+        colormap = new HashMap<String, Color>();
+        attribmap = new HashMap<String, AttributeType>();
+
+        setAttributeMap();
+        generateColors(colordiv);
+    }
+
+    private ContainerLoader hgContainerLoader(Container container) {
         container.setAutoScale(false);
         container.setAllowParallelEdge(true);
+        container.setAllowSelfLoop(true);
         container.setSource("Snarfing your world wide web!");
-
         ContainerLoader cldr = container.getLoader();
-        AttributeModel attributemodel = cldr.getAttributeModel();
-        AttributeTable nodeTable = attributemodel.getNodeTable();
+        return cldr;
+    }
 
-        AttributeColumn type  = nodeTable.addColumn("type", AttributeType.STRING, AttributeOrigin.DATA);
-        AttributeColumn domain = nodeTable.addColumn("domain", AttributeType.STRING,AttributeOrigin.DATA);
+    public void graphupdate(SnarfData data) {
+        Container container = Lookup.getDefault().lookup(ContainerFactory.class).newContainer();
+        ContainerLoader cldr = hgContainerLoader(container);
 
-        NodeDraft nd;
-        NodeDraft nd1;
-        NodeDraft nd2;
+        AttributeTable nodeTable = cldr.getAttributeModel().getNodeTable();
+        HashMap<String, AttributeColumn> colmap = new HashMap();
+        HashMap<String,String> nodeattrmap = data.getNodeAttributeList();
 
-        for (SnarfData.sdNode n : data.getNodes()) {
+        for (String attrib : nodeattrmap.keySet()) {
+            AttributeType attrtype = attribmap.get(nodeattrmap.get(attrib));
+            colmap.put(attrib, nodeTable.addColumn(attrib, attrtype, AttributeOrigin.DATA));
+        }
+
+        NodeDraft nd, nd1, nd2;
+
+        for (SDNode n : data.getNodes()) {
             String nl = n.label;
+            String domain = n.domain;
+
             if (!cldr.nodeExists(nl)) {
                 //log.log(Level.INFO, "node doesn't exist!  {0}", nl);
                 nd = cldr.factory().newNodeDraft();
-
-                if (! colormap.containsKey(n.domain)) {
-                    if (colorcount <= colordiv) {
-                    colormap.put(n.domain, colors[colorcount]);
-                    colorcount++;
-                    }
-                }
+                
+                if ( ! colormap.containsKey(domain) && ! colors.isEmpty())
+                        colormap.put(domain, colors.remove(0));
 
                 nd.setId(nl);
                 cldr.addNode(nd);
-                nd.setColor((Color) colormap.get(n.domain));
-                nd.addAttributeValue(type, n.type);
-                nd.addAttributeValue(domain, n.domain);
+                nd.setColor(colormap.get(domain));
+
+                for (String attrib : n.attributes.keySet()) {
+                    Object value = n.attributes.get(attrib);
+                    AttributeColumn col = colmap.get(attrib);
+                    nd.addAttributeValue(col, value);
+                }
 
                 nd.setLabel(nl);
                 nd.setLabelVisible(n.labelvisible);
                 nd.setSize(n.size);
-
             }
         }
 
-        for (SnarfData.sdEdge e : data.getEdges()) {
-            SnarfData.sdNode n1 = e.node1;
-            SnarfData.sdNode n2 = e.node2;
+        for (SDEdge e : data.getEdges()) {
+            SDNode n1 = e.src;
+            SDNode n2 = e.dst;
             String n1l = n1.label;
             String n2l = n2.label;
             String el = n1l + "--" + n2l;
             nd1 = cldr.getNode(n1l);
             nd2 = cldr.getNode(n2l);
 
-            if (!cldr.edgeExists(el)) {
+           if (!cldr.edgeExists(el)) {
                 EdgeDraft ed = cldr.factory().newEdgeDraft();
                 ed.setSource(nd1);
                 ed.setTarget(nd2);
@@ -115,33 +144,47 @@ public class HttpGraph implements Generator {
 
     @Override
     public void generate(ContainerLoader c) {
-        
-        c = null;
-        colors = generateColors(colordiv);
-        ProjectController pc = Lookup.getDefault().lookup(ProjectController.class);
-        workspace = pc.getCurrentWorkspace();
-        importController = Lookup.getDefault().lookup(ImportController.class);
 
-        HttpRouter router = new HttpRouter();
+        c = null;
+        Configuration config = new Configuration();
+
         try {
+            if (! chainproxy.isEmpty()) {
+                config.setProxyHost(chainproxy);
+                config.setProxyPort(Integer.toString(chainproxyport));
+                config.setUseProxy(true);
+                router.getConfigurationManager().setConfiguration(config);
+                router.getConfigurationManager().setSecuritySystemProperties();
+            }
+            
             router.getRuleManager().addRuleIfNew(new ProxyRule(new ProxyRuleKey(proxyport)));
-            HttpGraphProxyInterceptor interceptor = new HttpGraphProxyInterceptor();
-            router.getTransport().getInterceptors().add(interceptor);
-        } catch (IOException ex) {
+            router.getTransport().getInterceptors().add(new HttpGraphProxyInterceptor());
+            
+        } catch (Exception ex) {
             log.log(Level.SEVERE, ex.getMessage());
         }
-        
+
+        LayoutBuilder lb = Lookup.getDefault().lookup(HGForceAtlas.class);
+        LayoutController lc = Lookup.getDefault().lookup(LayoutController.class);
+        lc.setLayout(lb.buildLayout());
+        lc.executeLayout();
         progress.start();
     }
 
-    private Color[] generateColors(int n) {
-        Color[] cols = new Color[n];
+    private static void generateColors(int n) {
+        colors = new ArrayList<Color>(colordiv);
         for (int i = 0; i < n; i++) {
-            cols[i] = Color.getHSBColor((float) i / (float) n, 0.85f, 1.0f);
+            //colors.add(Color.getHSBColor((float) i / (float) n, 0.6f, 0.75f));
+            colors.add(Color.getHSBColor((float) i / (float) n, 0.85f, 1f));
+            //colors.add(Color.getHSBColor((float) i / (float) n, 0.65f, 0.8f));
         }
-        return cols;
     }
 
+    private static void setAttributeMap() {
+        attribmap.put("java.lang.String", AttributeType.STRING);
+        attribmap.put("java.lang.Integer", AttributeType.INT);
+    }
+// <editor-fold defaultstate="collapsed" desc="comment">
     @Override
     public String getName() {
         return "HTTP Graph";
@@ -163,6 +206,22 @@ public class HttpGraph implements Generator {
         this.proxyport = port;
     }
 
+    public String getChainProxy() {
+        return chainproxy;
+    }
+
+    public void setChainProxy(String proxy) {
+        this.chainproxy = proxy;
+    }
+
+    public int getChainProxyPort() {
+        return chainproxyport;
+    }
+    
+    public void setChainProxyPort(int port) {
+        this.chainproxyport = port;
+    }
+
     @Override
     public boolean cancel() {
         cancel = true;
@@ -172,5 +231,5 @@ public class HttpGraph implements Generator {
     @Override
     public void setProgressTicket(ProgressTicket progressTicket) {
         this.progress = progressTicket;
-    }
+    }// </editor-fold>
 }
