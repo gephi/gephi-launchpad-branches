@@ -28,5 +28,7 @@ package org.gephi.spreadsimulator.spi;
 public interface InitialEventBuilder {
 	public String getName();
 
-	public InitialEvent getInitialEvent();
+	public InitialEvent getInitialEvent(String params);
+
+	public Class<? extends InitialEvent> getInitialEventClass();
 }

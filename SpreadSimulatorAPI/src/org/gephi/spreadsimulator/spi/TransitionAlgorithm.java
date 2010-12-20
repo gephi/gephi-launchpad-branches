@@ -28,5 +28,5 @@ import org.gephi.spreadsimulator.api.SimulationData;
  * @author Cezary Bartosiak
  */
 public interface TransitionAlgorithm {
-	public boolean tryDoTransition(SimulationData simulationData);
+	public boolean tryDoTransition(SimulationData simulationData, double probability);
 }

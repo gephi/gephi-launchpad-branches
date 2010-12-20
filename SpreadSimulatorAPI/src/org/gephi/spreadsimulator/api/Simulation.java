@@ -33,11 +33,15 @@ public interface Simulation {
 
 	public void addStopCondition(StopCondition stopCondition);
 
+	public void removeStopCondition(StopCondition stopCondition);
+
 	public StopCondition[] getStopConditions();
 
 	public SimulationData getSimulationData();
 
 	public void nextStep();
+
+	public boolean isFinished();
 
 	public String getReport();
 }
