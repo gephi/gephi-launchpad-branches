@@ -43,10 +43,7 @@ public class InitialEventFactoryImpl implements InitialEventFactory {
 
 	@Override
 	public InitialEvent getInitialEvent(String params) {
-		if (params.contains(":")) {
-			String name = params.split(":")[0];
-			return builders.get(name).getInitialEvent(params.split(":")[1]);
-		}
-		return builders.get(params).getInitialEvent("");
+		String name = params.split(":")[0];
+		return builders.get(name).getInitialEvent(params.split(":")[1]);
 	}
 }
