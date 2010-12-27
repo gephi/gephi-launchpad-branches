@@ -37,12 +37,14 @@ public interface Similarity {
 	 * that will be compared with the source.
 	 *
 	 * @param sourceGraphModel      the source graph topology
-	 * @param targetGraphModels     the list of target graphs topologies
+	 * @param targetGraphModels     the list of target graphs topologies (including source)
 	 * @param sourceAttributeModel  the source elements attributes and where to write table results
-	 * @param targetAttributeModels the list of targets elements attributes and where to write table results
+	 * @param targetAttributeModels the list of targets elements attributes and where to write table results (including source)
+	 * @param graphNames            the list of all considered graphs names (including source)
 	 */
 	public void execute(GraphModel sourceGraphModel, GraphModel[] targetGraphModels,
-			AttributeModel sourceAttributeModel, AttributeModel[] targetAttributeModels);
+			AttributeModel sourceAttributeModel, AttributeModel[] targetAttributeModels,
+			String[] graphNames);
 
 	/**
 	 * Returns an HTML string that displays the similarity result. Can contains

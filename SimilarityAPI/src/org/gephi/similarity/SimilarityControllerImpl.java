@@ -103,18 +103,21 @@ public class SimilarityControllerImpl implements SimilarityController {
 
 		final GraphController     graphController       = Lookup.getDefault().lookup(GraphController.class);
 		final GraphModel          sourceGraphModel      = graphController.getModel();
-		final GraphModel[]        targetGraphModels     = new GraphModel[workspaces.length - 1];
+		final GraphModel[]        targetGraphModels     = new GraphModel[workspaces.length];
 		final AttributeController attributeController   = Lookup.getDefault().lookup(AttributeController.class);
 		final AttributeModel      sourceAttributeModel  = attributeController.getModel();
-		final AttributeModel[]    targetAttributeModels = new AttributeModel[workspaces.length - 1];
+		final AttributeModel[]    targetAttributeModels = new AttributeModel[workspaces.length];
 		final SimilarityUI[]      uis                   = getUI(similarity);
+		final String[]            graphNames            = new String[workspaces.length];
 
-		for (int i = 0, j = 0; i < workspaces.length; ++i)
-			if (workspaces[i] != pc.getCurrentWorkspace()) {
-				targetGraphModels[j]     = graphController.getModel(workspaces[i]);
-				targetAttributeModels[j] = attributeController.getModel(workspaces[i]);
-				j++;
-			}
+		for (int i = 0; i < workspaces.length; ++i) {
+			if (workspaces[i] != pc.getCurrentWorkspace())
+				graphNames[i] = "Target graph " + i;
+			else graphNames[i] = "Source graph";
+			
+			targetGraphModels[i]     = graphController.getModel(workspaces[i]);
+			targetAttributeModels[i] = attributeController.getModel(workspaces[i]);
+		}
 
 		SimilarityBuilder builder = getBuilder(similarity.getClass());
 
@@ -130,7 +133,7 @@ public class SimilarityControllerImpl implements SimilarityController {
 				@Override
 				public void run() {
 					similarity.execute(sourceGraphModel, targetGraphModels,
-							sourceAttributeModel, targetAttributeModels);
+							sourceAttributeModel, targetAttributeModels, graphNames);
 					model.setRunning(similarity, false);
 					for (SimilarityUI s : uis) {
 						model.addResult(s);
@@ -141,7 +144,8 @@ public class SimilarityControllerImpl implements SimilarityController {
 			}, builder.getName(), null);
 		}
 		else {
-			similarity.execute(sourceGraphModel, targetGraphModels, sourceAttributeModel, targetAttributeModels);
+			similarity.execute(sourceGraphModel, targetGraphModels,
+					sourceAttributeModel, targetAttributeModels, graphNames);
 			if (listener != null)
 				listener.taskFinished(null);
 			model.setRunning(similarity, false);

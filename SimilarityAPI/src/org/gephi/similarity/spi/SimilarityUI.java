@@ -39,10 +39,9 @@ import org.openide.util.NbBundle;
  * @see SimilarityBuilder
  */
 public interface SimilarityUI {
-	public static final String CATEGORY_ISOMORPHISM          = NbBundle.getMessage(SimilarityUI.class, "SimilarityUI.category.isomorphism");
-	public static final String CATEGORY_EDIT_DISTANCE        = NbBundle.getMessage(SimilarityUI.class, "SimilarityUI.category.editDistance");
-	public static final String CATEGORY_TOPOLOGICAL_MEASURES = NbBundle.getMessage(SimilarityUI.class, "SimilarityUI.category.topologicalMeasures");
-	public static final String CATEGORY_ITERATIVE_MEASURES   = NbBundle.getMessage(SimilarityUI.class, "SimilarityUI.category.iterativeMeasures");
+	public static final String CATEGORY_ISOMORPHISM       = NbBundle.getMessage(SimilarityUI.class, "SimilarityUI.category.isomorphism");
+	public static final String CATEGORY_EDIT_DISTANCE     = NbBundle.getMessage(SimilarityUI.class, "SimilarityUI.category.editDistance");
+	public static final String CATEGORY_ITERATIVE_METHODS = NbBundle.getMessage(SimilarityUI.class, "SimilarityUI.category.iterativeMethods");
 
 	/**
 	 * Returns a settings panel instance.
@@ -92,8 +91,7 @@ public interface SimilarityUI {
 	 * <ul>
      * <li>{@link SimilarityUI#CATEGORY_ISOMORPHISM}</li>
      * <li>{@link SimilarityUI#CATEGORY_EDIT_DISTANCE}</li>
-     * <li>{@link SimilarityUI#CATEGORY_TOPOLOGICAL_MEASURES}</li>
-	 * <li>{@link SimilarityUI#CATEGORY_ITERATIVE_MEASURES}</li>
+	 * <li>{@link SimilarityUI#CATEGORY_ITERATIVE_METHODS}</li>
 	 * </ul>
      * Returns a custom String for defining a new category.
 	 *

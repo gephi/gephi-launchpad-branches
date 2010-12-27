@@ -143,10 +143,9 @@ public class SimilarityPanel extends JPanel {
 		Map<String, SimilarityCategory> cats = new LinkedHashMap<String, SimilarityCategory>();
 		cats.put(SimilarityUI.CATEGORY_ISOMORPHISM, new SimilarityCategory(SimilarityUI.CATEGORY_ISOMORPHISM, 100));
 		cats.put(SimilarityUI.CATEGORY_EDIT_DISTANCE, new SimilarityCategory(SimilarityUI.CATEGORY_EDIT_DISTANCE, 200));
-		cats.put(SimilarityUI.CATEGORY_TOPOLOGICAL_MEASURES, new SimilarityCategory(SimilarityUI.CATEGORY_TOPOLOGICAL_MEASURES, 300));
-		cats.put(SimilarityUI.CATEGORY_ITERATIVE_MEASURES, new SimilarityCategory(SimilarityUI.CATEGORY_ITERATIVE_MEASURES, 400));
+		cats.put(SimilarityUI.CATEGORY_ITERATIVE_METHODS, new SimilarityCategory(SimilarityUI.CATEGORY_ITERATIVE_METHODS, 300));
 
-		int position = 500;
+		int position = 400;
 		for (SimilarityUI uis : Lookup.getDefault().lookupAll(SimilarityUI.class)) {
 			String category = uis.getCategory();
 			if (!cats.containsKey(category)) {
