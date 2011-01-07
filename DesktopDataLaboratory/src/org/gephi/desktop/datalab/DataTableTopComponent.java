@@ -5,39 +5,18 @@ Website : http://www.gephi.org
 
 This file is part of Gephi.
 
-DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+Gephi is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
 
-Copyright 2011 Gephi Consortium. All rights reserved.
+Gephi is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
 
-The contents of this file are subject to the terms of either the GNU
-General Public License Version 3 only ("GPL") or the Common
-Development and Distribution License("CDDL") (collectively, the
-"License"). You may not use this file except in compliance with the
-License. You can obtain a copy of the License at
-http://gephi.org/about/legal/license-notice/
-or /cddl-1.0.txt and /gpl-3.0.txt. See the License for the
-specific language governing permissions and limitations under the
-License.  When distributing the software, include this License Header
-Notice in each file and include the License files at
-/cddl-1.0.txt and /gpl-3.0.txt. If applicable, add the following below the
-License Header, with the fields enclosed by brackets [] replaced by
-your own identifying information:
-"Portions Copyrighted [year] [name of copyright owner]"
-
-If you wish your version of this file to be governed by only the CDDL
-or only the GPL Version 3, indicate your decision by adding
-"[Contributor] elects to include this software in this distribution
-under the [CDDL or GPL Version 3] license." If you do not indicate a
-single choice of license, a recipient has the option to distribute
-your version of this file under either the CDDL, the GPL Version 3 or
-to extend the choice of license to its licensees as provided above.
-However, if you add GPL Version 3 code and therefore, elected the GPL
-Version 3 license, then the option applies only if the new code is
-made subject to such option by the copyright holder.
-
-Contributor(s):
-
-Portions Copyrighted 2011 Gephi Consortium.
+You should have received a copy of the GNU Affero General Public License
+along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.gephi.desktop.datalab;
 
@@ -53,8 +32,6 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.logging.Logger;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
@@ -77,15 +54,11 @@ import org.gephi.data.attributes.api.AttributeEvent.EventType;
 import org.gephi.data.attributes.api.AttributeListener;
 import org.gephi.data.attributes.api.AttributeModel;
 import org.gephi.data.attributes.api.AttributeTable;
-import org.gephi.datalab.api.DataLaboratoryHelper;
-import org.gephi.datalab.api.datatables.DataTablesController;
-import org.gephi.datalab.api.datatables.DataTablesEventListener;
-import org.gephi.datalab.spi.ContextMenuItemManipulator;
+import org.gephi.datalab.api.DataTablesController;
+import org.gephi.datalab.api.DataTablesEventListener;
 import org.gephi.datalab.spi.columns.AttributeColumnsManipulator;
-import org.gephi.datalab.spi.edges.EdgesManipulator;
 import org.gephi.datalab.spi.general.GeneralActionsManipulator;
 import org.gephi.datalab.spi.general.PluginGeneralActionsManipulator;
-import org.gephi.datalab.spi.nodes.NodesManipulator;
 import org.gephi.graph.api.Edge;
 import org.gephi.graph.api.GraphController;
 import org.gephi.graph.api.GraphEvent;
@@ -101,12 +74,20 @@ import org.gephi.ui.components.WrapLayout;
 import org.gephi.desktop.datalab.general.actions.AddColumnUI;
 import org.gephi.desktop.datalab.general.actions.CSVExportUI;
 import org.gephi.desktop.datalab.general.actions.MergeColumnsUI;
-import org.gephi.project.api.ProjectInformation;
-import org.gephi.project.api.WorkspaceInformation;
-import org.gephi.project.api.WorkspaceProvider;
+import org.gephi.desktop.datalab.utils.DataLaboratoryHelper;
 import org.gephi.ui.utils.DialogFileFilter;
 import org.gephi.ui.utils.UIUtils;
 import org.gephi.utils.TableCSVExporter;
+import org.jvnet.flamingo.common.CommandButtonDisplayState;
+import org.jvnet.flamingo.common.JCommandButton;
+import org.jvnet.flamingo.common.JCommandButtonPanel;
+import org.jvnet.flamingo.common.JCommandButtonStrip;
+import org.jvnet.flamingo.common.JCommandMenuButton;
+import org.jvnet.flamingo.common.RichTooltip;
+import org.jvnet.flamingo.common.icon.ImageWrapperResizableIcon;
+import org.jvnet.flamingo.common.popup.JCommandPopupMenu;
+import org.jvnet.flamingo.common.popup.JPopupPanel;
+import org.jvnet.flamingo.common.popup.PopupPanelCallback;
 import org.netbeans.swing.etable.ETableColumnModel;
 import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
@@ -117,16 +98,6 @@ import org.openide.util.NbBundle;
 import org.openide.util.NbPreferences;
 import org.openide.windows.TopComponent;
 import org.openide.windows.WindowManager;
-import org.pushingpixels.flamingo.api.common.CommandButtonDisplayState;
-import org.pushingpixels.flamingo.api.common.JCommandButton;
-import org.pushingpixels.flamingo.api.common.JCommandButtonPanel;
-import org.pushingpixels.flamingo.api.common.JCommandButtonStrip;
-import org.pushingpixels.flamingo.api.common.JCommandMenuButton;
-import org.pushingpixels.flamingo.api.common.RichTooltip;
-import org.pushingpixels.flamingo.api.common.icon.ImageWrapperResizableIcon;
-import org.pushingpixels.flamingo.api.common.popup.JCommandPopupMenu;
-import org.pushingpixels.flamingo.api.common.popup.JPopupPanel;
-import org.pushingpixels.flamingo.api.common.popup.PopupPanelCallback;
 
 /**
  *
@@ -153,8 +124,6 @@ final class DataTableTopComponent extends TopComponent implements AWTEventListen
     private boolean useSparklines = false;
     private boolean timeIntervalGraphics = false;
     private boolean showEdgesNodesLabels = false;
-    private Map<Integer, ContextMenuItemManipulator> nodesActionMappings = new HashMap<Integer, ContextMenuItemManipulator>();//For key bindings
-    private Map<Integer, ContextMenuItemManipulator> edgesActionMappings = new HashMap<Integer, ContextMenuItemManipulator>();//For key bindings
     //Data
     private GraphModel graphModel;
     private DataTablesModel dataTablesModel;
@@ -326,33 +295,10 @@ final class DataTableTopComponent extends TopComponent implements AWTEventListen
                 refreshFilter();
             }
         });
-        initKeyEventContextMenuActionMappings();
-    }
-
-    private void initKeyEventContextMenuActionMappings() {
-        mapItems(DataLaboratoryHelper.getDefault().getNodesManipulators(), nodesActionMappings);
-        mapItems(DataLaboratoryHelper.getDefault().getEdgesManipulators(), edgesActionMappings);
-    }
-
-    private void mapItems(ContextMenuItemManipulator[] items, Map<Integer, ContextMenuItemManipulator> map) {
-        Integer key;
-        ContextMenuItemManipulator[] subItems;
-        for (ContextMenuItemManipulator item : items) {
-            key = item.getMnemonicKey();
-            if (key != null) {
-                if (!map.containsKey(key)) {
-                    map.put(key, item);
-                }
-            }
-            subItems = item.getSubItems();
-            if (subItems != null) {
-                mapItems(subItems, map);
-            }
-        }
     }
 
     private synchronized void refreshAll() {
-        if (Lookup.getDefault().lookup(ProjectController.class).getCurrentWorkspace() != null) {//Some workspace is selected
+        if (Lookup.getDefault().lookup(ProjectController.class).getCurrentWorkspace()!=null) {//Some workspace is selected
             refreshTable();
             refreshColumnManipulators();
             refreshGeneralActionsButtons();
@@ -740,63 +686,24 @@ final class DataTableTopComponent extends TopComponent implements AWTEventListen
 
     public void exportCurrentTable(ExportMode exportMode) {
         JTable table;
-        String fileName = prepareTableExportFileName();
-
         if (classDisplayed == classDisplayed.NODE) {
             table = nodeTable.getOutlineTable();
-            fileName += " [Nodes]";
         } else {
             table = edgeTable.getTable();
-            fileName += " [Edges]";
         }
-        fileName += ".csv";
 
         switch (exportMode) {
             case CSV:
-                showCSVExportUI(table, fileName);
+                showCSVExportUI(table);
                 break;
         }
     }
 
-    private String prepareTableExportFileName() {
-        String fileName = null;
-        ProjectController pc = Lookup.getDefault().lookup(ProjectController.class);
-        ProjectInformation projectInfo = pc.getCurrentProject().getLookup().lookup(ProjectInformation.class);
-        if (projectInfo.hasFile()) {
-            fileName = removeFileNameExtension(projectInfo.getFileName());
-        }
-        WorkspaceProvider wp = pc.getCurrentProject().getLookup().lookup(WorkspaceProvider.class);
-        if (wp.getWorkspaces().length > 1 || fileName == null) {
-            if (fileName != null) {
-                fileName += " - ";
-            } else {
-                fileName = "";
-            }
-
-            WorkspaceInformation workspaceInfo = pc.getCurrentWorkspace().getLookup().lookup(WorkspaceInformation.class);
-            if (workspaceInfo.hasSource()) {
-                fileName += removeFileNameExtension(workspaceInfo.getSource());
-            } else {
-                fileName += workspaceInfo.getName();
-            }
-        }
-
-        return fileName;
-    }
-
-    private String removeFileNameExtension(String fileName) {
-        int extensionIndex = fileName.lastIndexOf(".");
-        if (extensionIndex != -1) {
-            fileName = fileName.substring(0, extensionIndex);
-        }
-        return fileName;
-    }
-
-    private void showCSVExportUI(JTable table, String fileName) {
+    private void showCSVExportUI(JTable table) {
         CSVExportUI csvUI = new CSVExportUI(table);
         DialogDescriptor dd = new DialogDescriptor(csvUI, csvUI.getDisplayName());
         if (DialogDisplayer.getDefault().notify(dd).equals(DialogDescriptor.OK_OPTION)) {
-            DataTableTopComponent.exportTableAsCSV(this, table, csvUI.getSelectedSeparator(), csvUI.getSelectedCharset(), csvUI.getSelectedColumnsIndexes(), fileName);
+            DataTableTopComponent.exportTableAsCSV(this, table, csvUI.getSelectedSeparator(), csvUI.getSelectedCharset(), csvUI.getSelectedColumnsIndexes());
         }
         csvUI.unSetup();
     }
@@ -834,7 +741,7 @@ final class DataTableTopComponent extends TopComponent implements AWTEventListen
             columns = edgeAvailableColumnsModel.getAvailableColumns();
         }
 
-        DataLaboratoryHelper dlh = DataLaboratoryHelper.getDefault();
+        DataLaboratoryHelper dlh = new DataLaboratoryHelper();
         AttributeColumnsManipulator[] manipulators = dlh.getAttributeColumnsManipulators();
 
         JCommandButtonStrip currentButtonGroup = new JCommandButtonStrip(JCommandButtonStrip.StripOrientation.HORIZONTAL);
@@ -895,7 +802,7 @@ final class DataTableTopComponent extends TopComponent implements AWTEventListen
                         button.addActionListener(new ActionListener() {
 
                             public void actionPerformed(ActionEvent e) {
-                                DataLaboratoryHelper.getDefault().executeAttributeColumnsManipulator(acm, table, column);
+                                new DataLaboratoryHelper().executeAttributeColumnsManipulator(acm, table, column);
                             }
                         });
                         popup.addMenuButton(button);
@@ -1017,7 +924,7 @@ final class DataTableTopComponent extends TopComponent implements AWTEventListen
         //Figure out the index to place the buttons, in order to put them between separator 2 and the boxGlue.
         int index = controlToolbar.getComponentIndex(boxGlue);
 
-        final DataLaboratoryHelper dlh = DataLaboratoryHelper.getDefault();
+        final DataLaboratoryHelper dlh = new DataLaboratoryHelper();
         JButton button;
         for (final GeneralActionsManipulator m : dlh.getGeneralActionsManipulators()) {
             button = new JButton(m.getName(), m.getIcon());
@@ -1089,7 +996,7 @@ final class DataTableTopComponent extends TopComponent implements AWTEventListen
             button.addActionListener(new ActionListener() {
 
                 public void actionPerformed(ActionEvent e) {
-                    DataLaboratoryHelper.getDefault().executeManipulator(m);
+                    new DataLaboratoryHelper().executeManipulator(m);
                 }
             });
         } else {
@@ -1139,48 +1046,16 @@ final class DataTableTopComponent extends TopComponent implements AWTEventListen
     }
 
     /**
-     * To react to Ctrl+F keys combination calling Search/Replace general action
-     * (and nodes/edges context menu mappings)
+     * To react to Ctrl+F keys combination calling Search/Replace general action:
      * @param event
      */
     public void eventDispatched(AWTEvent event) {
         KeyEvent evt = (KeyEvent) event;
 
-        if (evt.getID() == KeyEvent.KEY_RELEASED && (evt.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0) {
-            DataLaboratoryHelper dlh = DataLaboratoryHelper.getDefault();
-            if (evt.getKeyCode() == KeyEvent.VK_F) {//Call Search replace with 'F' without general actions key mappings support:
-                GeneralActionsManipulator gam = dlh.getGeneralActionsManipulatorByName("SearchReplace");
-                if (gam != null) {
-                    dlh.executeManipulator(gam);
-                }
-                evt.consume();
-            } else {//Nodes/edges mappings:
-                if (classDisplayed == ClassDisplayed.NODE) {
-                    final ContextMenuItemManipulator item = nodesActionMappings.get(evt.getKeyCode());
-                    if (item != null) {
-                        Node[] nodes = nodeTable.getNodesFromSelectedRows();
-                        if (nodes.length > 0) {
-                            ((NodesManipulator) item).setup(nodes, nodes[0]);
-                            if (item.isAvailable() && item.canExecute()) {
-                                DataLaboratoryHelper.getDefault().executeManipulator(item);
-                            }
-                        }
-                        evt.consume();
-                    }
-                } else if (classDisplayed == ClassDisplayed.EDGE) {
-                    final ContextMenuItemManipulator item = edgesActionMappings.get(evt.getKeyCode());
-                    if (item != null) {
-                        Edge[] edges = edgeTable.getEdgesFromSelectedRows();
-                        if (edges.length > 0) {
-                            ((EdgesManipulator) item).setup(edges, edges[0]);
-                            if (item.isAvailable() && item.canExecute()) {
-                                DataLaboratoryHelper.getDefault().executeManipulator(item);
-                            }
-                        }
-                        evt.consume();
-                    }
-                }
-            }
+        if (evt.getID() == KeyEvent.KEY_RELEASED && (evt.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0 && evt.getKeyCode() == KeyEvent.VK_F) {
+            DataLaboratoryHelper dlh = new DataLaboratoryHelper();
+            dlh.executeManipulator(dlh.getSearchReplaceManipulator());
+            evt.consume();
         }
     }
 
@@ -1242,7 +1117,6 @@ final class DataTableTopComponent extends TopComponent implements AWTEventListen
         controlToolbar.add(edgesButton);
         controlToolbar.add(separator);
 
-        configurationButton.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         configurationButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/gephi/desktop/datalab/resources/gear-small.png"))); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(configurationButton, org.openide.util.NbBundle.getMessage(DataTableTopComponent.class, "DataTableTopComponent.configurationButton.text")); // NOI18N
         configurationButton.setFocusable(false);
@@ -1496,14 +1370,14 @@ final class DataTableTopComponent extends TopComponent implements AWTEventListen
      * @param charset Charset encoding for the file
      * @param columnsToExport Indicates the indexes of the columns to export. All columns will be exported if null
      */
-    public static void exportTableAsCSV(JComponent parent, JTable table, Character separator, Charset charset, Integer[] columnsToExport, String fileName) {
+    public static void exportTableAsCSV(JComponent parent, JTable table, Character separator, Charset charset, Integer[] columnsToExport) {
         String lastPath = NbPreferences.forModule(TableCSVExporter.class).get(LAST_PATH, null);
         final JFileChooser chooser = new JFileChooser(lastPath);
         chooser.setAcceptAllFileFilterUsed(false);
         DialogFileFilter dialogFileFilter = new DialogFileFilter(NbBundle.getMessage(TableCSVExporter.class, "TableCSVExporter.filechooser.csvDescription"));
         dialogFileFilter.addExtension("csv");
         chooser.addChoosableFileFilter(dialogFileFilter);
-        File selectedFile = new File(chooser.getCurrentDirectory(), fileName);
+        File selectedFile = new File(chooser.getCurrentDirectory(), "table.csv");
         chooser.setSelectedFile(selectedFile);
         int returnFile = chooser.showSaveDialog(null);
         if (returnFile != JFileChooser.APPROVE_OPTION) {
