@@ -24,12 +24,13 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
+import java.util.Stack;
 import org.gephi.data.attributes.api.AttributeModel;
 import org.gephi.graph.api.DirectedGraph;
+import org.gephi.graph.api.Edge;
 import org.gephi.graph.api.Graph;
 import org.gephi.graph.api.GraphController;
 import org.gephi.graph.api.GraphModel;
@@ -84,49 +85,346 @@ public class VF2 implements Similarity, LongTask {
 		return directed;
 	}
 
-	private class UndirectedMatcher {
-		private UndirectedGraph g1;
-		private UndirectedGraph g2;
-		private Set<Node> g1Nodes;
-		private Set<Node> g2Nodes;
+	private class Matcher {
+		private Graph graph1;
+		private Graph graph2;
 
-		private List<Node> core1;
-		private List<Node> core2;
-		private List<Node> inout1;
-		private List<Node> inout2;
-
-		public UndirectedMatcher(UndirectedGraph g1, UndirectedGraph g2) {
-			this.g1 = g1;
-			this.g2 = g2;
-			g1Nodes = new HashSet<Node>();
-			g2Nodes = new HashSet<Node>();
-			g1Nodes.addAll(Arrays.asList(g1.getNodes().toArray()));
-			g2Nodes.addAll(Arrays.asList(g2.getNodes().toArray()));
-
-			// recursion limit?
-
-			initialize();
-		}
-
-		private void initialize() {
-			core1 = new ArrayList<Node>();
-			core2 = new ArrayList<Node>();
-			inout1 = new ArrayList<Node>();
-			inout2 = new ArrayList<Node>();
+		public Matcher(Graph g1, Graph g2) {
+			graph1 = g1;
+			graph2 = g2;
 		}
 
 		public boolean isIsomorphic() {
-			return true;
+			int noOfNodes = graph1.getNodeCount();
+			List<Integer> core1, core2;
+			List<Integer> in1, in2, out1, out2;
+			int in1size = 0, in2size = 0, out1size = 0, out2size = 0;
+			List<Integer> inneis1, inneis2, outneis1, outneis2;
+			int matchedNodes = 0;
+			int depth;
+			int cand1, cand2;
+			int last1, last2;
+			Stack<Integer> path;
+			List<List<Integer>> inadj1, inadj2, outadj1, outadj2;
+			List<Integer> indeg1, indeg2, outdeg1, outdeg2;
+
+			if (noOfNodes != graph2.getNodeCount() || graph1.getEdgeCount() != graph2.getEdgeCount())
+				return false;
+
+			core1 = new ArrayList<Integer>(noOfNodes);
+			core2 = new ArrayList<Integer>(noOfNodes);
+			in1 = new ArrayList<Integer>(noOfNodes);
+			in2 = new ArrayList<Integer>(noOfNodes);
+			out1 = new ArrayList<Integer>(noOfNodes);
+			out2 = new ArrayList<Integer>(noOfNodes);
+			for (int i = 0; i < noOfNodes; ++i) {
+				core1.add(0);
+				core2.add(0);
+				in1.add(0);
+				in2.add(0);
+				out1.add(0);
+				out2.add(0);
+			}
+			path = new Stack<Integer>();
+			inadj1 = new ArrayList<List<Integer>>();
+			outadj1 = new ArrayList<List<Integer>>();
+			inadj2 = new ArrayList<List<Integer>>();
+			outadj2 = new ArrayList<List<Integer>>();
+			initAdjList(graph1, inadj1, false);
+			initAdjList(graph1, outadj1, true);
+			initAdjList(graph2, inadj2, false);
+			initAdjList(graph2, outadj2, true);
+			indeg1 = new ArrayList<Integer>();
+			indeg2 = new ArrayList<Integer>();
+			outdeg1 = new ArrayList<Integer>();
+			outdeg2 = new ArrayList<Integer>();
+
+			degree(graph1, indeg1, false);
+			degree(graph2, indeg2, false);
+			degree(graph1, outdeg1, true);
+			degree(graph2, outdeg2, true);
+
+			depth = 0; last1 = -1; last2 = -1;
+			while (depth >= 0) {
+				int i;
+
+				cand1 = -1; cand2 = -1;
+				if (in1size != in2size || out1size != out2size);
+				else if (out1size > 0 && out2size > 0) {
+					if (last2 >= 0)
+						cand2 = last2;
+					else {
+						i = 0;
+						while (cand2 < 0) {
+							if (out2.get(i) > 0 && core2.get(i) == 0)
+								cand2 = i;
+							i++;
+						}
+					}
+
+					i = last1 + 1;
+					while (cand1 < 0 && i < noOfNodes) {
+						if (out1.get(i) > 0 && core1.get(i) == 0)
+							cand1 = i;
+						i++;
+					}
+				}
+				else if (in1size > 0 && in2size > 0) {
+					if (last2 >= 0)
+						cand2 = last2;
+					else {
+						i = 0;
+						while (cand2 < 0) {
+							if (in2.get(i) > 0 && core2.get(i) == 0)
+								cand2 = i;
+							i++;
+						}
+					}
+
+					i = last1 + 1;
+					while (cand1 < 0 && i < noOfNodes) {
+						if (in1.get(i) > 0 && core1.get(i) == 0)
+							cand1 = i;
+						i++;
+					}
+				}
+				else {
+					if (last2 >= 0)
+						cand2 = last2;
+					else {
+						i = 0;
+						while (cand2 < 0) {
+							if (core2.get(i) == 0)
+								cand2 = i;
+							i++;
+						}
+					}
+
+					i = last1 + 1;
+					while (cand1 < 0 && i < noOfNodes) {
+						if (core1.get(i) == 0)
+							cand1 = i;
+						i++;
+					}
+				}
+
+				if (cand1 < 0 || cand2 < 0) {
+					if (depth >= 1) {
+						last2 = path.pop();
+						last1 = path.pop();
+				 		matchedNodes--;
+						core1.set(last1, 0);
+						core2.set(last2, 0);
+
+						if (in1.get(last1) != 0)
+							in1size++;
+						if (out1.get(last1) != 0)
+							out1size++;
+						if (in2.get(last2) != 0)
+							in2size++;
+						if (out2.get(last2) != 0)
+							out2size++;
+
+						inneis1 = inadj1.get(last1);
+						for (i = 0; i < inneis1.size(); ++i) {
+							int node = inneis1.get(i);
+							if (in1.get(node) == depth) {
+								in1.set(node, 0);
+								in1size--;
+							}
+						}
+						outneis1 = outadj1.get(last1);
+						for (i = 0; i < outneis1.size(); ++i) {
+							int node = outneis1.get(i);
+							if (out1.get(node) == depth) {
+								out1.set(node, 0);
+								out1size--;
+							}
+						}
+						inneis2 = inadj2.get(last2);
+						for (i = 0; i < inneis2.size(); ++i) {
+							int node = inneis2.get(i);
+							if (in2.get(node) == depth) {
+								in2.set(node, 0);
+								in2size--;
+							}
+						}
+						outneis2 = outadj2.get(last2);
+						for (i = 0; i < outneis2.size(); ++i) {
+							int node = outneis2.get(i);
+							if (out2.get(node) == depth) {
+								out2.set(node, 0);
+								out2size--;
+							}
+						}
+					}
+					
+					depth--;
+				}
+				else {
+					int xin1 = 0, xin2 = 0, xout1 = 0, xout2 = 0;
+					boolean end = false;
+					inneis1 = inadj1.get(cand1);
+					outneis1 = outadj1.get(cand1);
+					inneis2 = inadj2.get(cand2);
+					outneis2 = outadj2.get(cand2);
+					if (indeg1.get(cand1) != indeg2.get(cand2) ||
+							outdeg1.get(cand1) != outdeg2.get(cand2))
+						end = true;
+
+					for (i = 0; !end && i < inneis1.size(); ++i) {
+						int node = inneis1.get(i);
+						if (core1.get(node) != 0) {
+							int node2 = core1.get(node) - 1;
+							if (!inneis2.contains(node2)) // ???
+								end = true;
+						}
+						else {
+							if (in1.get(node) != 0)
+								xin1++;
+							if (out1.get(node) != 0)
+								xout1++;
+						}
+					}
+					for (i = 0; !end && i < outneis1.size(); ++i) {
+						int node = outneis1.get(i);
+						if (core1.get(node) != 0) {
+							int node2 = core1.get(node) - 1;
+							if (!outneis2.contains(node2)) // ???
+								end = true;
+						}
+						else {
+							if (in1.get(node) != 0)
+								xin1++;
+							if (out1.get(node) != 0)
+								xout1++;
+						}
+					}
+					for (i = 0; !end && i < inneis2.size(); ++i) {
+						int node = inneis2.get(i);
+						if (core2.get(node) != 0) {
+							int node2 = core2.get(node) - 1;
+							if (!inneis1.contains(node2)) // ???
+								end = true;
+						}
+						else {
+							if (in2.get(node) != 0)
+								xin2++;
+							if (out2.get(node) != 0)
+								xout2++;
+						}
+					}
+					for (i = 0; !end && i < outneis2.size(); ++i) {
+						int node = outneis2.get(i);
+						if (core2.get(node) != 0) {
+							int node2 = core2.get(node) - 1;
+							if (!outneis1.contains(node2)) // ???
+								end = true;
+						}
+						else {
+							if (in2.get(node) != 0)
+								xin2++;
+							if (out2.get(node) != 0)
+								xout2++;
+						}
+					}
+
+					if (!end && xin1 == xin2 && xout1 == xout2) {
+						depth++;
+						path.push(cand1);
+						path.push(cand2);
+						matchedNodes++;
+						core1.set(cand1, cand2 + 1);
+						core2.set(cand2, cand1 + 1);
+
+						if (in1.get(cand1) != 0)
+							in1size--;
+						if (out1.get(cand1) != 0)
+							out1size--;
+						if (in2.get(cand2) != 0)
+							in2size--;
+						if (out2.get(cand2) != 0)
+							out2size--;
+
+						inneis1 = inadj1.get(cand1);
+						for (i = 0; i < inneis1.size(); ++i) {
+							int node = inneis1.get(i);
+							if (in1.get(node) == 0 && core1.get(node) == 0) {
+								in1.set(node, depth);
+								in1size++;
+							}
+						}
+						outneis1 = outadj1.get(cand1);
+						for (i = 0; i < outneis1.size(); ++i) {
+							int node = outneis1.get(i);
+							if (out1.get(node) == 0 && core1.get(node) == 0) {
+								out1.set(node, depth);
+								out1size++;
+							}
+						}
+						inneis2 = inadj2.get(cand2);
+						for (i = 0; i < inneis2.size(); ++i) {
+							int node = inneis2.get(i);
+							if (in2.get(node) == 0 && core2.get(node) == 0) {
+								in2.set(node, depth);
+								in2size++;
+							}
+						}
+						outneis2 = outadj2.get(cand2);
+						for (i = 0; i < outneis2.size(); ++i) {
+							int node = outneis2.get(i);
+							if (out2.get(node) == 0 && core2.get(node) == 0) {
+								out2.set(node, depth);
+								out2size++;
+							}
+						}
+						last1 = -1; last2 = -1;
+					}
+					else {
+						last1 = cand1;
+						last2 = cand2;
+					}
+				}
+
+				if (matchedNodes == noOfNodes)
+					return true;
+			}
+
+			return false;
 		}
-	}
 
-	private class DirectedMatcher {
-		public DirectedMatcher(DirectedGraph g1, DirectedGraph g2) {
-
+		private void initAdjList(Graph graph, List<List<Integer>> adjList, boolean out) {
+			Map<Node, Integer> map = new HashMap<Node, Integer>();
+			Node[] nodes = graph.getNodes().toArray();
+			for (int i = 0; i < nodes.length; ++i)
+				map.put(nodes[i], i);
+			for (int i = 0; i < nodes.length; ++i) {
+				List<Integer> neighbours = new ArrayList<Integer>();
+				if (!directed)
+					for (Edge edge : ((UndirectedGraph)graph).getEdges(nodes[i])) {
+						if (!edge.isSelfLoop())
+							neighbours.add(map.get(graph.getOpposite(nodes[i], edge)));
+					}
+				else if (out)
+					for (Edge edge : ((DirectedGraph)graph).getOutEdges(nodes[i])) {
+						if (!edge.isSelfLoop())
+							neighbours.add(map.get(graph.getOpposite(nodes[i], edge)));
+					}
+				else for (Edge edge : ((DirectedGraph)graph).getInEdges(nodes[i]))
+						if (!edge.isSelfLoop())
+							neighbours.add(map.get(graph.getOpposite(nodes[i], edge)));
+				adjList.add(neighbours);
+			}
 		}
 
-		public boolean isIsomorphic() {
-			return true;
+		private void degree(Graph graph, List<Integer> deg, boolean out) {
+			Node[] nodes = graph.getNodes().toArray();
+			for (int i = 0; i < nodes.length; ++i)
+				if (!directed)
+					deg.add(((UndirectedGraph)graph).getDegree(nodes[i]));
+				else if (out)
+					deg.add(((DirectedGraph)graph).getOutDegree(nodes[i]));
+				else deg.add(((DirectedGraph)graph).getInDegree(nodes[i]));
 		}
 	}
 
@@ -166,13 +464,7 @@ public class VF2 implements Similarity, LongTask {
 			}
 
 			try {
-				if (directed)
-					isomorphic[i] = new DirectedMatcher(
-							(DirectedGraph)sourceGraph,
-							(DirectedGraph)targetGraphs[i]).isIsomorphic();
-				else isomorphic[i] = new UndirectedMatcher(
-							(UndirectedGraph)sourceGraph,
-							(UndirectedGraph)targetGraphs[i]).isIsomorphic();
+				isomorphic[i] = new Matcher(sourceGraph, targetGraphs[i]).isIsomorphic();
 			}
 			catch (Exception ex) {
 				sourceGraph.readUnlockAll();

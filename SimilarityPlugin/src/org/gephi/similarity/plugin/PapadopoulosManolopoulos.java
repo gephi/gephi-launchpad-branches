@@ -23,9 +23,13 @@ package org.gephi.similarity.plugin;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import org.gephi.data.attributes.api.AttributeModel;
 import org.gephi.graph.api.Graph;
 import org.gephi.graph.api.GraphModel;
+import org.gephi.graph.api.Node;
 import org.gephi.graph.api.UndirectedGraph;
 import org.gephi.similarity.spi.Similarity;
 import org.gephi.utils.TempDirUtils;
@@ -60,12 +64,42 @@ public class PapadopoulosManolopoulos implements Similarity, LongTask {
 	private double[] dist;
 
 	private class Matcher {
-		public Matcher(UndirectedGraph g1, UndirectedGraph g2) {
+		private UndirectedGraph gA;
+		private UndirectedGraph gB;
 
+		public Matcher(UndirectedGraph g1, UndirectedGraph g2) {
+			gA = g1;
+			gB = g2;
 		}
 
 		public double countDistance() {
-			return 0.5;
+			int n = Math.max(gA.getNodeCount(), gB.getNodeCount());
+			List<Integer> histogramA = getHistogram(gA, n);
+			List<Integer> histogramB = getHistogram(gB, n);
+			double d = 0.0;
+			for (int i = 0; i < n; ++i)
+				d += Math.abs(histogramA.get(i) - histogramB.get(i));
+			return d / getMaxDistance();
+		}
+
+		private List<Integer> getHistogram(UndirectedGraph g, int n) {
+			List<Integer> histogram = new ArrayList<Integer>();
+			for (Node node : g.getNodes().toArray()) {
+				int degree = g.getDegree(node);
+				histogram.add(degree + 1);
+			}
+			while (histogram.size() < n)
+				histogram.add(0);
+			Integer[] array = histogram.toArray(new Integer[] { });
+			Arrays.sort(array);
+			return Arrays.asList(array);
+		}
+
+		private double getMaxDistance() {
+			int maxN = Math.max(gA.getNodeCount(), gB.getNodeCount());
+			int minN = Math.min(gA.getNodeCount(), gB.getNodeCount());
+			int max = 2 * maxN * maxN + maxN - minN;
+			return max != 0 ? max : 1;
 		}
 	}
 
