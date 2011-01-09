@@ -21,17 +21,13 @@
 package org.gephi.similarity.plugin;
 
 import Jama.Matrix;
-import java.awt.BasicStroke;
 import java.awt.Color;
 import java.io.File;
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.gephi.data.attributes.api.AttributeColumn;
 import org.gephi.data.attributes.api.AttributeModel;
-import org.gephi.data.attributes.api.AttributeType;
 import org.gephi.graph.api.Graph;
 import org.gephi.graph.api.GraphModel;
 import org.gephi.graph.api.Node;
@@ -43,17 +39,16 @@ import org.gephi.utils.TempDirUtils.TempDir;
 import org.gephi.utils.longtask.spi.LongTask;
 import org.gephi.utils.progress.Progress;
 import org.gephi.utils.progress.ProgressTicket;
+import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartRenderingInfo;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.CategoryAxis;
 import org.jfree.chart.axis.CategoryLabelPositions;
-import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.entity.StandardEntityCollection;
 import org.jfree.chart.plot.CategoryPlot;
-import org.jfree.chart.renderer.category.CategoryItemRenderer;
-import org.jfree.chart.renderer.category.CategoryStepRenderer;
+import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.general.DatasetUtilities;
 
@@ -237,27 +232,31 @@ public class QuantitativeNodesSimilarity implements Similarity, LongTask {
 		CategoryDataset dataset = DatasetUtilities.createCategoryDataset(
 				new String[] { "dqn" }, names, data);
 
-		CategoryItemRenderer renderer = new CategoryStepRenderer(true);
-		CategoryAxis domainAxis = new CategoryAxis("Graphs");
-		ValueAxis rangeAxis = new NumberAxis("dqn (less = better)");
-		CategoryPlot plot = new CategoryPlot(dataset, domainAxis, rangeAxis, renderer);
-		JFreeChart chart = new JFreeChart("Quantitative Nodes Similarity Chart", plot);
+		JFreeChart chart = ChartFactory.createBarChart(
+				"Quantitative Nodes Similarity Chart",
+				"Graphs",
+				"dqn (less = better)",
+				dataset,
+				PlotOrientation.VERTICAL,
+				true,
+				false,
+				false
+		);
 
 		chart.setBackgroundPaint(Color.WHITE);
 
+		CategoryPlot plot = chart.getCategoryPlot();
 		plot.setBackgroundPaint(Color.GRAY);
-		plot.setDomainGridlinesVisible(true);
 		plot.setDomainGridlinePaint(Color.WHITE);
-		plot.setRangeGridlinesVisible(true);
 		plot.setRangeGridlinePaint(Color.WHITE);
 
+		CategoryAxis domainAxis = plot.getDomainAxis();
 		domainAxis.setCategoryLabelPositions(CategoryLabelPositions.UP_45);
 		domainAxis.setLowerMargin(0.0);
 		domainAxis.setUpperMargin(0.0);
 
+		ValueAxis rangeAxis = plot.getRangeAxis();
 		rangeAxis.setRange(0.0, 1.0);
-
-		renderer.setSeriesStroke(0, new BasicStroke(10.0f));
 
 		String image = "";
 		try {
