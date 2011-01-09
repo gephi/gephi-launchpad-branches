@@ -20,7 +20,6 @@
  */
 package org.gephi.similarity.plugin;
 
-import java.awt.BasicStroke;
 import java.awt.Color;
 import java.io.File;
 import java.util.ArrayList;
@@ -42,6 +41,7 @@ import org.gephi.utils.TempDirUtils.TempDir;
 import org.gephi.utils.longtask.spi.LongTask;
 import org.gephi.utils.progress.Progress;
 import org.gephi.utils.progress.ProgressTicket;
+import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartRenderingInfo;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
@@ -51,14 +51,13 @@ import org.jfree.chart.axis.SymbolAxis;
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.entity.StandardEntityCollection;
 import org.jfree.chart.plot.CategoryPlot;
-import org.jfree.chart.renderer.category.CategoryItemRenderer;
-import org.jfree.chart.renderer.category.CategoryStepRenderer;
+import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.general.DatasetUtilities;
 import org.openide.util.Lookup;
 
 /**
- * 
+ * Based on IGraph library implementation.
  *
  * @author Cezary Bartosiak
  */
@@ -483,29 +482,35 @@ public class VF2 implements Similarity, LongTask {
 	public String getReport() {
 		double[][] data = new double[1][isomorphic.length];
 		for (int i = 0; i < isomorphic.length; ++i)
-			data[0][i] = isomorphic[i] ? 1.0 : 0.0;
+			data[0][i] = isomorphic[i] ? 1.0 : 0.1;
 		CategoryDataset dataset = DatasetUtilities.createCategoryDataset(
 				new String[] { "Isomorphism" }, names, data);
 
-		CategoryItemRenderer renderer = new CategoryStepRenderer(true);
-		CategoryAxis domainAxis = new CategoryAxis("Graphs");
-		ValueAxis rangeAxis = new SymbolAxis("Is isomorphic", new String[] { "False", "True" });
-		CategoryPlot plot = new CategoryPlot(dataset, domainAxis, rangeAxis, renderer);
-		JFreeChart chart = new JFreeChart("Isomorphism Chart", plot);
+		JFreeChart chart = ChartFactory.createBarChart(
+				"Isomorphism Chart",
+				"Graphs",
+				"Is isomorphic",
+				dataset,
+				PlotOrientation.VERTICAL,
+				true,
+				false,
+				false
+		);
 
 		chart.setBackgroundPaint(Color.WHITE);
 
+		CategoryPlot plot = chart.getCategoryPlot();
 		plot.setBackgroundPaint(Color.GRAY);
-		plot.setDomainGridlinesVisible(true);
 		plot.setDomainGridlinePaint(Color.WHITE);
-		plot.setRangeGridlinesVisible(true);
 		plot.setRangeGridlinePaint(Color.WHITE);
 
+		CategoryAxis domainAxis = plot.getDomainAxis();
 		domainAxis.setCategoryLabelPositions(CategoryLabelPositions.UP_45);
 		domainAxis.setLowerMargin(0.0);
 		domainAxis.setUpperMargin(0.0);
 
-		renderer.setSeriesStroke(0, new BasicStroke(10.0f));
+		ValueAxis rangeAxis = new SymbolAxis("Is isomorphic", new String[] { "False", "True" });
+		plot.setRangeAxis(rangeAxis);
 
 		String image = "";
 		try {
