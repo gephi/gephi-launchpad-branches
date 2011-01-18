@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+AutoUpdate-Essential-Module: true
+OpenIDE-Module: org.gephi.lib.jogamp
+OpenIDE-Module-Localizing-Bundle: org/gephi/lib/jogamp/Bundle.properties
+OpenIDE-Module-Specification-Version: 1.0
+OpenIDE-Module-Install: org/gephi/lib/jogamp/JogAmpNativesInstaller.class
