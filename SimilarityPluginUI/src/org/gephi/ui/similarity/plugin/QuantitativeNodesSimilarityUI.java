@@ -45,22 +45,14 @@ public class QuantitativeNodesSimilarityUI implements SimilarityUI {
 	@Override
 	public void setup(Similarity similarity) {
 		qns = (QuantitativeNodesSimilarity)similarity;
-		if (panel != null) {
+		if (panel != null)
 			panel.setColumns(qns.getColumns());
-			panel.setP(qns.getP());
-			panel.setDoNorm(qns.getDoNorm());
-			panel.setLambdas(qns.getLambdas());
-		}
 	}
 
 	@Override
 	public void unsetup() {
-		if (panel != null) {
+		if (panel != null)
 			qns.setColumns(panel.getColumns());
-			qns.setP(panel.getP());
-			qns.setDoNorm(panel.getDoNorm());
-			qns.setLambdas(panel.getLambdas());
-		}
 		panel = null;
 		qns = null;
 	}

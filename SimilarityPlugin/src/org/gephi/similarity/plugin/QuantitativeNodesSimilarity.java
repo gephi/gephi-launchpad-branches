@@ -23,14 +23,11 @@ package org.gephi.similarity.plugin;
 import Jama.Matrix;
 import java.awt.Color;
 import java.io.File;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.gephi.data.attributes.api.AttributeColumn;
 import org.gephi.data.attributes.api.AttributeModel;
-import org.gephi.data.attributes.type.DoubleList;
-import org.gephi.data.attributes.type.NumberList;
 import org.gephi.graph.api.Graph;
 import org.gephi.graph.api.GraphModel;
 import org.gephi.graph.api.Node;
@@ -56,10 +53,7 @@ import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.general.DatasetUtilities;
 
 /**
- * Z. Tarapata. "Multicriteria weighted graphs similarity and its application for
- * decision situation pattern matching problem". Proceedings of the 13th IEEE/IFAC
- * International Conference on Methods and Models in Automation and Robotics.
- * 2007, 1149-1155.
+ * 
  *
  * @author Cezary Bartosiak
  */
@@ -69,26 +63,9 @@ public class QuantitativeNodesSimilarity implements Similarity, LongTask {
 	private String[] names;
 
 	private AttributeColumn[] columns = new AttributeColumn[0];
-	private int p = 1;
-	private boolean[] doNorm = new boolean[0];
-	private double[] lambdas = new double[0];
+	private double p = 1.0;
 
-	private Node[][][] xs;
-	private double[][] xsvals;
-	private double[] normMaxRow;
-	private double[] normMaxCol;
-	private double[] normMaxRowReal;
-	private double[] normMaxColReal;
-	private double[] normSrc;
-	private double[] normTgt;
-	private double[] dqnArtf;
-	private double[] dqnReal;
-	private double[] dqnMaxRow;
-	private double[] dqnMaxCol;
-	private double[] dqnMaxRowReal;
-	private double[] dqnMaxColReal;
-	private double[] dqnSrc;
-	private double[] dqnTgt;
+	private double[] dqn;
 
 	private class Matcher {
 		private UndirectedGraph gA;
@@ -99,26 +76,9 @@ public class QuantitativeNodesSimilarity implements Similarity, LongTask {
 			gB = g2;
 		}
 
-		public void countDqn(int index) {
-			if (columns.length == 0) {
-				xs[index] = new Node[0][0];
-				xsvals[index] = new double[0];
-				normMaxRow[index] = 1.0;
-				normMaxCol[index] = 1.0;
-				normMaxRowReal[index] = 1.0;
-				normMaxColReal[index] = 1.0;
-				normSrc[index] = 1.0;
-				normTgt[index] = 1.0;
-				dqnArtf[index] = 1.0;
-				dqnReal[index] = 1.0;
-				dqnMaxRow[index] = 1.0;
-				dqnMaxCol[index] = 1.0;
-				dqnMaxRowReal[index] = 1.0;
-				dqnMaxColReal[index] = 1.0;
-				dqnSrc[index] = 1.0;
-				dqnTgt[index] = 1.0;
-				return;
-			}
+		public double countDqn() {
+			if (columns.length == 0)
+				return 1.0;
 
 			List<Matrix> v = new ArrayList<Matrix>();
 			Node[] nodesB = gB.getNodes().toArray();
@@ -128,126 +88,82 @@ public class QuantitativeNodesSimilarity implements Similarity, LongTask {
 			int n = Math.max(nB, nA);
 			int lf = columns.length;
 
-			for (int k = 0; k < lf && !cancel; ++k) {
-				Matrix vk = new Matrix(nB, nA);
+			for (int k = 0; k < lf; ++k) {
+				Matrix vk = new Matrix(n, n);
 				
-				for (int i = 0; i < nB && !cancel; ++i)
-					for (int j = 0; j < nA && !cancel; ++j) {
+				for (int i = 0; i < nB; ++i)
+					for (int j = 0; j < nA; ++j) {
+						double fkB = getValueForColumn(nodesB[i], columns[k]);
+						double fkA = getValueForColumn(nodesA[j], columns[k]);
 						double sum = 0.0;
-
-						if (columns[k].getType().isListType()) {
-							DoubleList fkB = getVectorValueForColumn(nodesB[i], columns[k]);
-							DoubleList fkA = getVectorValueForColumn(nodesA[j], columns[k]);
-
-							int size = Math.min(fkB.size(), fkA.size());
-							for (int r = 0; r < size && !cancel; ++r) {
-								double fkrB = fkB.getItem(r);
-								double fkrA = fkA.getItem(r);
-								sum += Math.pow(Math.abs(fkrB - fkrA), p);
-							}
+						for (int r = 0; r < n; ++r) {
+							double fkrB = /* r < nB ? Math.abs(fkB - getValueForColumn(nodesB[r], columns[k])) : */ fkB;
+							double fkrA = /* r < nA ? Math.abs(fkA - getValueForColumn(nodesA[r], columns[k])) : */ fkA;
+							sum += Math.pow(Math.abs(fkrB - fkrA), p);
 						}
-						else {
-							double fkB = getScalarValueForColumn(nodesB[i], columns[k]);
-							double fkA = getScalarValueForColumn(nodesA[j], columns[k]);
-							sum += Math.pow(Math.abs(fkB - fkA), p);
-						}
-						
 						vk.set(i, j, Math.pow(sum, 1.0 / p));
 					}
 
-				v.add(vk);
+				double max = getMaxValue(vk) + 0.01;
 
-				Progress.progress(progressTicket);
+				for (int i = nB; i < n; ++i)
+					for (int j = 0; j < n; ++j)
+						vk.set(i, j, max);
+				for (int j = nA; j < n; ++j)
+					for (int i = 0; i < n; ++i)
+						vk.set(i, j, max);
+
+				v.add(vk);
 			}
 
-			for (int k = 0; k < lf && !cancel; ++k) {
-				if (doNorm[k]) {
-					double denominator = v.get(k).normF();
-					if (denominator != 0)
-						for (int i = 0; i < nB && !cancel; ++i)
-							for (int j = 0; j < nA && !cancel; ++j)
-								v.get(k).set(i, j, v.get(k).get(i, j) / denominator);
-				}
-				Progress.progress(progressTicket);
+			for (int k = 0; k < lf; ++k) {
+				double denominator = v.get(k).normF();
+				if (denominator != 0)
+					for (int i = 0; i < n; ++i)
+						for (int j = 0; j < n; ++j)
+							v.get(k).set(i, j, v.get(k).get(i, j) / denominator);
 			}
 
 			Matrix vij = new Matrix(n, n);
-			for (int k = 0; k < lf && !cancel; ++k) {
-				for (int i = 0; i < n && !cancel; ++i)
-					for (int j = 0; j < n && !cancel; ++j)
-						if (v.get(k).getRowDimension() <= i || v.get(k).getColumnDimension() <= j)
-							vij.set(i, j, vij.get(i, j) + 1.0 * lambdas[k]);
-						else vij.set(i, j, vij.get(i, j) + v.get(k).get(i, j) * lambdas[k]);
-				Progress.progress(progressTicket);
-			}
+			for (int k = 0; k < lf; ++k)
+				for (int i = 0; i < n; ++i)
+					for (int j = 0; j < n; ++j)
+						vij.set(i, j, vij.get(i, j) + v.get(k).get(i, j) / lf);
 
 			Matrix s = new Matrix(n, n);
-			for (int i = 0; i < n && !cancel; ++i)
-				for (int j = 0; j < n && !cancel; ++j)
+			for (int i = 0; i < n; ++i)
+				for (int j = 0; j < n; ++j)
 					s.set(i, j, -vij.get(i, j));
 
-			int[][] x = new int[0][0];
-			if (!cancel)
-				x = HungarianAlgorithm.hgAlgorithm(s.getArray(), "max");
-			xs[index] = new Node[n][2];
-			xsvals[index] = new double[n];
-			double dsArtf = 0.0;
-			double dsReal = 0.0;
-			for (int i = 0; i < n && !cancel; ++i) {
-				xs[index][i][0] = x[i][0] >= nodesB.length ? null : nodesB[x[i][0]];
-				xs[index][i][1] = x[i][1] >= nodesA.length ? null : nodesA[x[i][1]];
-				xsvals[index][i] = -s.get(x[i][0], x[i][1]);
-				dsArtf += s.get(x[i][0], x[i][1]);
-				if (xs[index][i][0] != null && xs[index][i][1] != null)
-					dsReal += s.get(x[i][0], x[i][1]);
-			}
+			int[][] x = HungarianAlgorithm.hgAlgorithm(s.getArray(), "max");
+			double ds = 0.0;
+			for (int i = 0; i < n; ++i)
+				ds += s.get(x[i][0], x[i][1]);
 
-			normMaxRow[index] = getMaxRowMeasureValue(vij, n, n);
-			normMaxCol[index] = getMaxColMeasureValue(vij, n, n);
-			normMaxRowReal[index] = getMaxRowMeasureValue(vij, nB, nA);
-			normMaxColReal[index] = getMaxColMeasureValue(vij, nA, nB);
-			normSrc[index] = nA;
-			normTgt[index] = nB;
-			dqnArtf[index] = -dsArtf;
-			dqnReal[index] = -dsReal;
-			dqnMaxRow[index] = normMaxRow[index] != 0 ? -dsArtf / normMaxRow[index] : 0.0;
-			dqnMaxCol[index] = normMaxCol[index] != 0 ? -dsArtf / normMaxCol[index] : 0.0;
-			dqnMaxRowReal[index] = normMaxRowReal[index] != 0 ? -dsReal / normMaxRowReal[index] : 0.0;
-			dqnMaxColReal[index] = normMaxColReal[index] != 0 ? -dsReal / normMaxColReal[index] : 0.0;
-			dqnSrc[index] = (nA > nB ? -dsArtf : -dsReal) / normSrc[index];
-			dqnTgt[index] = (nB > nA ? -dsArtf : -dsReal) / normTgt[index];
+			double maxMeasureValue = getMaxMeasureValue(vij);
+			double dqn = maxMeasureValue != 0 ? -ds / maxMeasureValue : 0.0;
+			return dqn;
 		}
 
-		private double getScalarValueForColumn(Node node, AttributeColumn column) {
+		private double getValueForColumn(Node node, AttributeColumn column) {
 			Number value = (Number)node.getNodeData().getAttributes().getValue(column.getId());
 			return value.doubleValue();
 		}
 
-		private DoubleList getVectorValueForColumn(Node node, AttributeColumn column) {
-			NumberList<Number> vector = (NumberList<Number>)node.getNodeData().getAttributes().getValue(column.getId());
-			double[] values = new double[vector.size()];
-			for (int i = 0; i < vector.size() && !cancel; ++i)
-				values[i] = ((Number)vector.getItem(i)).doubleValue();
-			return new DoubleList(values);
+		private double getMaxValue(Matrix m) {
+			double max = Double.MIN_VALUE;
+			for (int i = 0; i < m.getRowDimension(); ++i)
+				for (int j = 0; j < m.getColumnDimension(); ++j)
+					if (m.get(i, j) > max)
+						max = m.get(i, j);
+			return max;
 		}
 
-		private double getMaxRowMeasureValue(Matrix vij, int maxi, int maxj) {
+		private double getMaxMeasureValue(Matrix vij) {
 			double sum = 0.0;
-			for (int i = 0; i < maxi && !cancel; ++i) {
+			for (int i = 0; i < vij.getColumnDimension(); ++i) {
 				double max = 0.0;
-				for (int j = 0; j < maxj && !cancel; ++j)
-					if (vij.get(i, j) > max)
-						max = vij.get(i, j);
-				sum += max;
-			}
-			return sum;
-		}
-
-		private double getMaxColMeasureValue(Matrix vij, int maxj, int maxi) {
-			double sum = 0.0;
-			for (int j = 0; j < maxj && !cancel; ++j) {
-				double max = 0.0;
-				for (int i = 0; i < maxi && !cancel; ++i)
+				for (int j = 0; j < vij.getColumnDimension(); ++j)
 					if (vij.get(i, j) > max)
 						max = vij.get(i, j);
 				sum += max;
@@ -262,30 +178,6 @@ public class QuantitativeNodesSimilarity implements Similarity, LongTask {
 
 	public void setColumns(AttributeColumn[] columns) {
 		this.columns = Arrays.copyOf(columns, columns.length);
-	}
-
-	public int getP() {
-		return p;
-	}
-
-	public void setP(int p) {
-		this.p = p;
-	}
-
-	public boolean[] getDoNorm() {
-		return doNorm;
-	}
-
-	public void setDoNorm(boolean[] doNorm) {
-		this.doNorm = doNorm;
-	}
-
-	public double[] getLambdas() {
-		return lambdas;
-	}
-
-	public void setLambdas(double[] lambdas) {
-		this.lambdas = lambdas;
 	}
 
 	@Override
@@ -305,25 +197,10 @@ public class QuantitativeNodesSimilarity implements Similarity, LongTask {
 		for (Graph targetGraph : targetGraphs)
 			targetGraph.readLock();
 
-		Progress.start(progressTicket, targetGraphs.length * columns.length * 3);
+		Progress.start(progressTicket);
 
-		xs = new Node[targetGraphs.length][][];
-		xsvals = new double[targetGraphs.length][];
-		normMaxRow = new double[targetGraphs.length];
-		normMaxCol = new double[targetGraphs.length];
-		normMaxRowReal = new double[targetGraphs.length];
-		normMaxColReal = new double[targetGraphs.length];
-		normSrc = new double[targetGraphs.length];
-		normTgt = new double[targetGraphs.length];
-		dqnArtf = new double[targetGraphs.length];
-		dqnReal = new double[targetGraphs.length];
-		dqnMaxRow = new double[targetGraphs.length];
-		dqnMaxCol = new double[targetGraphs.length];
-		dqnMaxRowReal = new double[targetGraphs.length];
-		dqnMaxColReal = new double[targetGraphs.length];
-		dqnSrc = new double[targetGraphs.length];
-		dqnTgt = new double[targetGraphs.length];
-		for (int i = 0; i < targetGraphs.length && !cancel; ++i) {
+		dqn = new double[targetGraphs.length];
+		for (int i = 0; i < targetGraphs.length; ++i) {
 			if (cancel) {
 				sourceGraph.readUnlockAll();
 				for (Graph targetGraph : targetGraphs)
@@ -332,9 +209,9 @@ public class QuantitativeNodesSimilarity implements Similarity, LongTask {
 			}
 
 			try {
-				new Matcher(
-					(UndirectedGraph)sourceGraph,
-					(UndirectedGraph)targetGraphs[i]).countDqn(i);
+				dqn[i] = new Matcher(
+						(UndirectedGraph)sourceGraph,
+						(UndirectedGraph)targetGraphs[i]).countDqn();
 			}
 			catch (Exception ex) {
 				sourceGraph.readUnlockAll();
@@ -344,20 +221,19 @@ public class QuantitativeNodesSimilarity implements Similarity, LongTask {
 			}
 		}
 
-		Progress.finish(progressTicket);
-
 		sourceGraph.readUnlock();
 		for (Graph targetGraph : targetGraphs)
 			targetGraph.readUnlock();
 	}
 
-	private JFreeChart getChart(double[] dqn, String title) {
+	@Override
+	public String getReport() {
 		double[][] data = new double[][] { dqn };
 		CategoryDataset dataset = DatasetUtilities.createCategoryDataset(
 				new String[] { "dqn" }, names, data);
 
 		JFreeChart chart = ChartFactory.createBarChart(
-				title,
+				"Quantitative Nodes Similarity Chart",
 				"Graphs",
 				"dqn (less = better)",
 				dataset,
@@ -382,64 +258,19 @@ public class QuantitativeNodesSimilarity implements Similarity, LongTask {
 		ValueAxis rangeAxis = plot.getRangeAxis();
 		rangeAxis.setRange(0.0, 1.0);
 
-		return chart;
-	}
-
-	@Override
-	public String getReport() {
-		JFreeChart[] charts = new JFreeChart[6];
-		charts[0] = getChart(dqnMaxRow, "QNS Chart (max row sum norm)");
-		charts[1] = getChart(dqnMaxRowReal, "QNS Chart (max row sum real norm)");
-		charts[2] = getChart(dqnMaxCol, "QNS Chart (max col sum norm)");
-		charts[3] = getChart(dqnMaxColReal, "QNS Chart (max col sum real norm)");
-		charts[4] = getChart(dqnSrc, "QNS Chart (src node count norm)");
-		charts[5] = getChart(dqnTgt, "QNS Chart (tgt node count norm)");
-
-		String[] images = new String[6];
-		for (int i = 0; i < 6; ++i)
-			try {
-				final ChartRenderingInfo info = new ChartRenderingInfo(new StandardEntityCollection());
-				TempDir tempDir = TempDirUtils.createTempDir();
-				final String fileName = "qns.png";
-				final File file = tempDir.createFile(fileName);
-				images[i] = "<img src=\"file:" + file.getAbsolutePath() + "\" " + "width=\"600\" height=\"400\" border=\"0\" usemap=\"#chart\"></img>";
-				ChartUtilities.saveChartAsPNG(file, charts[i], 600, 400, info);
-			}
-			catch (Exception e) { }
-
-		String xss = "";
-		for (int i = 0; i < xs.length; ++i) {
-			xss += "x for source (" + new DecimalFormat("#0").format(normSrc[i]) + " nodes) - " + names[i] +
-					" (" + new DecimalFormat("#0").format(normTgt[i]) + " nodes):<br>";
-			xss += "{dqnArtf = " + new DecimalFormat("0.000000").format(dqnArtf[i]) +
-					", dqnReal = " + new DecimalFormat("0.000000").format(dqnReal[i]) +
-					", max row sum = " + new DecimalFormat("0.000000").format(normMaxRow[i]) +
-					", max row sum real = " + new DecimalFormat("0.000000").format(normMaxRowReal[i]) +
-					", max col sum = " + new DecimalFormat("0.000000").format(normMaxCol[i]) +
-					", max col sum real = " + new DecimalFormat("0.000000").format(normMaxColReal[i]) + "}<br>";
-			if (xs[i].length == 0)
-				xss += "&nbsp;&nbsp;&nbsp;" + "none<br>";
-			else for (int j = 0; j < xs[i].length; ++j) {
-				String label1 = "Node x";
-				String label2 = "Node y";
-				if (xs[i][j][0] != null)
-					label2 = xs[i][j][0].getNodeData().getLabel();
-				if (xs[i][j][1] != null)
-					label1 = xs[i][j][1].getNodeData().getLabel();
-				xss += "&nbsp;&nbsp;&nbsp;\"" + label1 + "\" - \"" + label2 +
-						"\" with " + new DecimalFormat("0.000000").format(xsvals[i][j]) + "<br>";
-			}
-			xss += "<br>";
+		String image = "";
+		try {
+			final ChartRenderingInfo info = new ChartRenderingInfo(new StandardEntityCollection());
+			TempDir tempDir = TempDirUtils.createTempDir();
+			final String fileName = "qns.png";
+			final File file = tempDir.createFile(fileName);
+			image = "<img src=\"file:" + file.getAbsolutePath() + "\" " + "width=\"600\" height=\"400\" border=\"0\" usemap=\"#chart\"></img>";
+			ChartUtilities.saveChartAsPNG(file, chart, 600, 400, info);
 		}
+		catch (Exception e) { }
 
 		String report = "<html><body><h1>Quantitative Nodes Similarity Report</h1><hr><br>";
-		report += images[0] + "<br><br>";
-		report += images[1] + "<br><br>";
-		report += images[2] + "<br><br>";
-		report += images[3] + "<br><br>";
-		report += images[4] + "<br><br>";
-		report += images[5] + "<br><br>";
-		report += xss + "</body></html>";
+		report += image + "</body></html>";
 		return report;
 	}
 

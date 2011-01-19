@@ -57,13 +57,7 @@ import org.jfree.data.general.DatasetUtilities;
 import org.openide.util.Lookup;
 
 /**
- * L. P. Cordella, P. Foggia, C. Sansone, M. Vento. "An improved algorithm for
- * matching large graphs". Proc. of the 3rd IAPR TC-15 Workshop on Graphbased
- * Representations in Pattern Recognition. 2001, 149-159.
- *
  * Based on IGraph library implementation.
- *
- * http://igraph.sourceforge.net/
  *
  * @author Cezary Bartosiak
  */

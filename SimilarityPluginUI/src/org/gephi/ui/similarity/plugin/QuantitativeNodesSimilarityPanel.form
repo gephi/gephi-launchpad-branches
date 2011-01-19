@@ -1,13 +1,9 @@
 <?xml version="1.1" encoding="UTF-8" ?>
 
-<Form version="1.5" maxVersion="1.7" type="org.netbeans.modules.form.forminfo.JPanelFormInfo">
-  <NonVisualComponents>
-    <Component class="javax.swing.ButtonGroup" name="doNormButtonGroup">
-    </Component>
-  </NonVisualComponents>
+<Form version="1.4" maxVersion="1.7" type="org.netbeans.modules.form.forminfo.JPanelFormInfo">
   <Properties>
     <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-      <Dimension value="[458, 373]"/>
+      <Dimension value="[458, 305]"/>
     </Property>
   </Properties>
   <AuxValues>
@@ -28,13 +24,6 @@
           <Component id="vf2Header" alignment="0" pref="458" max="32767" attributes="0"/>
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="pLabel" min="-2" max="-2" attributes="0"/>
-              <EmptySpace max="-2" attributes="0"/>
-              <Component id="pFormattedTextField" pref="68" max="32767" attributes="0"/>
-              <EmptySpace min="-2" pref="363" max="-2" attributes="0"/>
-          </Group>
-          <Group type="102" alignment="0" attributes="0">
-              <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
                   <Component id="contentScrollPane" alignment="0" pref="315" max="32767" attributes="0"/>
                   <Component id="columnsLabel" alignment="0" min="-2" max="-2" attributes="0"/>
@@ -48,14 +37,9 @@
           <Group type="102" alignment="0" attributes="0">
               <Component id="vf2Header" min="-2" pref="73" max="-2" attributes="0"/>
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="pLabel" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="pFormattedTextField" alignment="3" min="-2" max="-2" attributes="0"/>
-              </Group>
-              <EmptySpace max="-2" attributes="0"/>
               <Component id="columnsLabel" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="contentScrollPane" pref="232" max="32767" attributes="0"/>
+              <Component id="contentScrollPane" pref="190" max="32767" attributes="0"/>
               <EmptySpace min="-2" max="-2" attributes="0"/>
           </Group>
       </Group>
@@ -92,19 +76,5 @@
         </Container>
       </SubComponents>
     </Container>
-    <Component class="javax.swing.JFormattedTextField" name="pFormattedTextField">
-      <Properties>
-        <Property name="formatterFactory" type="javax.swing.JFormattedTextField$AbstractFormatterFactory" editor="org.netbeans.modules.form.editors.AbstractFormatterFactoryEditor">
-          <Format format="#0" subtype="-1" type="0"/>
-        </Property>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JLabel" name="pLabel">
-      <Properties>
-        <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="org/gephi/ui/similarity/plugin/Bundle.properties" key="QuantitativeNodesSimilarityPanel.pLabel.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
-        </Property>
-      </Properties>
-    </Component>
   </SubComponents>
 </Form>
