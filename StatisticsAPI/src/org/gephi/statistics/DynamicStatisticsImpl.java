@@ -28,7 +28,7 @@ import org.gephi.dynamic.api.DynamicController;
 import org.gephi.dynamic.api.DynamicGraph;
 import org.gephi.dynamic.api.DynamicModel;
 import org.gephi.graph.api.Graph;
-import org.gephi.graph.api.GraphModel;
+import org.gephi.graph.api.HierarchicalGraph;
 import org.gephi.statistics.spi.DynamicStatistics;
 import org.gephi.statistics.spi.Statistics;
 import org.gephi.utils.longtask.spi.LongTask;
@@ -85,9 +85,7 @@ public abstract class DynamicStatisticsImpl implements DynamicStatistics, Statis
 		this.estimator = estimator;
 	}
 
-	public void execute(GraphModel graphModel, AttributeModel attributeModel) {
-		Graph graph = graphModel.getGraphVisible();
-
+	public void execute(HierarchicalGraph graph, AttributeModel attributeModel) {
 		DynamicController dynamicController = Lookup.getDefault().lookup(DynamicController.class);
 		DynamicModel      dynamicModel      = dynamicController.getModel();
 		DynamicGraph      dynamicGraph      = dynamicModel.createDynamicGraph(graph, timeInterval);
@@ -110,7 +108,7 @@ public abstract class DynamicStatisticsImpl implements DynamicStatistics, Statis
 			Graph g = dynamicGraph.getSnapshotGraph(low, high, estimator);
 
 			// fire abstract inloop method
-			inloop(low, high, g, attributeModel);
+			inloop(low, high, (HierarchicalGraph)g, attributeModel);
 
 			Progress.progress(progressTicket, ++progress);
 			if (cancel) {
@@ -135,7 +133,7 @@ public abstract class DynamicStatisticsImpl implements DynamicStatistics, Statis
 	 * @param g              the snapshot graph
 	 * @param attributeModel the attributes model to write results to
 	 */
-	protected abstract void inloop(double low, double high, Graph g, AttributeModel attributeModel);
+	protected abstract void inloop(double low, double high, HierarchicalGraph g, AttributeModel attributeModel);
 
 	public String getReport() {
 		String start = "-inf";

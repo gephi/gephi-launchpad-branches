@@ -35,13 +35,13 @@ import org.gephi.data.attributes.type.DynamicInteger;
 import org.gephi.data.attributes.type.Interval;
 import org.gephi.dynamic.DynamicUtilities;
 import org.gephi.graph.api.DirectedGraph;
-import org.gephi.graph.api.Graph;
+import org.gephi.graph.api.GraphModel;
+import org.gephi.graph.api.HierarchicalGraph;
 import org.gephi.graph.api.Node;
 import org.gephi.graph.api.UndirectedGraph;
 import org.gephi.statistics.DynamicStatisticsImpl;
 import org.gephi.utils.TempDirUtils;
 import org.gephi.utils.TempDirUtils.TempDir;
-import org.gephi.utils.progress.ProgressTicket;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartRenderingInfo;
 import org.jfree.chart.ChartUtilities;
@@ -94,6 +94,15 @@ public class DynamicDegreeDistribution extends DynamicStatisticsImpl {
 	}
 
 	@Override
+	public void execute(GraphModel graphModel, AttributeModel attributeModel) {
+		HierarchicalGraph graph;
+		if (directed)
+			graph = graphModel.getHierarchicalDirectedGraphVisible();
+		else graph = graphModel.getHierarchicalUndirectedGraphVisible();
+		execute(graph, attributeModel);
+	}
+
+	@Override
 	protected void preloop() {
 		inDegrees.clear();
 		outDegrees.clear();
@@ -101,7 +110,7 @@ public class DynamicDegreeDistribution extends DynamicStatisticsImpl {
 	}
 
 	@Override
-	protected void inloop(double low, double high, Graph g, AttributeModel attributeModel) {
+	protected void inloop(double low, double high, HierarchicalGraph g, AttributeModel attributeModel) {
 		DegreeDistribution dd = new DegreeDistribution();
 		dd.setDirected(directed);
 		dd.execute(g, attributeModel);
