@@ -68,7 +68,15 @@ public class QuantitativeNodesSimilarityPanel extends javax.swing.JPanel {
 					c.getType().equals(AttributeType.FLOAT) ||
 					c.getType().equals(AttributeType.INT) ||
 					c.getType().equals(AttributeType.LONG) ||
-					c.getType().equals(AttributeType.SHORT)))
+					c.getType().equals(AttributeType.SHORT) ||
+					c.getType().equals(AttributeType.LIST_BIGDECIMAL) ||
+					c.getType().equals(AttributeType.LIST_BIGINTEGER) ||
+					c.getType().equals(AttributeType.LIST_BYTE) ||
+					c.getType().equals(AttributeType.LIST_DOUBLE) ||
+					c.getType().equals(AttributeType.LIST_FLOAT) ||
+					c.getType().equals(AttributeType.LIST_INTEGER) ||
+					c.getType().equals(AttributeType.LIST_LONG) ||
+					c.getType().equals(AttributeType.LIST_SHORT)))
 				availableColumns.add(c);
 
 		nodeCheckBoxs = new AttributesCheckBox[availableColumns.size()];

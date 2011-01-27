@@ -50,7 +50,9 @@ import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.general.DatasetUtilities;
 
 /**
- * 
+ * A. N. Papadopoulos, Y. Manolopoulos. "Structure-based similarity search with
+ * graph histograms". DEXA '99 Proceedings of the 10th International Workshop on
+ * Database & Expert Systems Applications. 1999, 174-178.
  *
  * @author Cezary Bartosiak
  */
