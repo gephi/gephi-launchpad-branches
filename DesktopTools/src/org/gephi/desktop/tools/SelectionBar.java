@@ -29,7 +29,7 @@ import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import org.gephi.ui.utils.UIUtils;
-import org.gephi.visualization.VizController;
+import org.gephi.visualization.VizServiceProvider;
 import org.gephi.visualization.api.selection.SelectionManager;
 import org.openide.util.NbBundle;
 
@@ -44,7 +44,7 @@ public class SelectionBar extends javax.swing.JPanel {
     /** Creates new form SelectionBar */
     public SelectionBar() {
         initComponents();
-        VizController.getInstance().getSelectionManager().addChangeListener(new ChangeListener() {
+        VizServiceProvider.getSelectionManager().addChangeListener(new ChangeListener() {
 
             public void stateChanged(ChangeEvent e) {
                 refresh();
@@ -70,14 +70,14 @@ public class SelectionBar extends javax.swing.JPanel {
 
     public JPopupMenu createPopup() {
 
-        SelectionManager manager = VizController.getInstance().getSelectionManager();
+        SelectionManager manager = VizServiceProvider.getSelectionManager();
         final MouseSelectionPopupPanel popupPanel = new MouseSelectionPopupPanel();
         popupPanel.setDiameter(manager.getMouseSelectionDiameter());
         popupPanel.setProportionnalToZoom(manager.isMouseSelectionZoomProportionnal());
         popupPanel.setChangeListener(new ChangeListener() {
 
             public void stateChanged(ChangeEvent e) {
-                SelectionManager manager = VizController.getInstance().getSelectionManager();
+                SelectionManager manager = VizServiceProvider.getSelectionManager();
                 manager.setMouseSelectionDiameter(popupPanel.getDiameter());
                 manager.setMouseSelectionZoomProportionnal(popupPanel.isProportionnalToZoom());
             }
@@ -89,7 +89,7 @@ public class SelectionBar extends javax.swing.JPanel {
     }
 
     public void refresh() {
-        SelectionManager manager = VizController.getInstance().getSelectionManager();
+        SelectionManager manager = VizServiceProvider.getSelectionManager();
         if (manager.isSelectionEnabled()) {
             if (manager.isRectangleSelection()) {
                 mouseSelection = false;

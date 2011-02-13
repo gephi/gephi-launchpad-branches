@@ -32,7 +32,6 @@ import org.gephi.data.attributes.api.AttributeController;
 import org.gephi.data.attributes.api.AttributeModel;
 import org.gephi.data.attributes.api.AttributeOrigin;
 import org.gephi.data.attributes.api.AttributeType;
-import org.gephi.graph.api.Graph;
 import org.gephi.graph.api.GraphController;
 import org.gephi.graph.api.GraphModel;
 import org.gephi.graph.api.HierarchicalGraph;
@@ -41,7 +40,7 @@ import org.gephi.project.api.ProjectController;
 import org.gephi.utils.longtask.spi.LongTask;
 import org.gephi.utils.longtask.api.LongTaskErrorHandler;
 import org.gephi.utils.longtask.api.LongTaskExecutor;
-import org.gephi.visualization.VizController;
+import org.gephi.visualization.VizServiceProvider;
 import org.gephi.visualization.api.selection.SelectionManager;
 import org.openide.awt.StatusDisplayer;
 import org.openide.util.Lookup;
@@ -118,7 +117,7 @@ public class ClusteringControllerImpl implements ClusteringController {
     }
 
     public void selectCluster(Cluster cluster) {
-        SelectionManager selectionManager = VizController.getInstance().getSelectionManager();
+        SelectionManager selectionManager = VizServiceProvider.getSelectionManager();
         selectionManager.resetSelection();
         selectionManager.selectNodes(cluster.getNodes());
     }

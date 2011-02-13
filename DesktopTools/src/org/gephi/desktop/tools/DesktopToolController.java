@@ -42,7 +42,7 @@ import org.gephi.tools.spi.NodePressAndDraggingEventListener;
 import org.gephi.tools.spi.ToolEventListener;
 import org.gephi.tools.spi.ToolSelectionType;
 import org.gephi.tools.spi.ToolUI;
-import org.gephi.visualization.VizController;
+import org.gephi.visualization.VizServiceProvider;
 import org.gephi.visualization.apiimpl.VizEvent;
 import org.gephi.visualization.apiimpl.VizEvent.Type;
 import org.gephi.visualization.apiimpl.VizEventListener;
@@ -102,15 +102,15 @@ public class DesktopToolController implements ToolController {
         currentHandlers = handlers.toArray(new ToolEventHandler[0]);
         switch (tool.getSelectionType()) {
             case NONE:
-                VizController.getInstance().getSelectionManager().disableSelection();
+                VizServiceProvider.getSelectionManager().disableSelection();
                 break;
             case SELECTION:
-                VizController.getInstance().getSelectionManager().blockSelection(true);
-                VizController.getInstance().getSelectionManager().setDraggingEnable(false);
+                VizServiceProvider.getSelectionManager().blockSelection(true);
+                VizServiceProvider.getSelectionManager().setDraggingEnable(false);
                 break;
             case SELECTION_AND_DRAGGING:
-                VizController.getInstance().getSelectionManager().blockSelection(true);
-                VizController.getInstance().getSelectionManager().setDraggingEnable(true);
+                VizServiceProvider.getSelectionManager().blockSelection(true);
+                VizServiceProvider.getSelectionManager().setDraggingEnable(true);
                 break;
         }
         currentTool = tool;
@@ -184,10 +184,10 @@ public class DesktopToolController implements ToolController {
         }
 
         //SelectionManager events
-        VizController.getInstance().getSelectionManager().addChangeListener(new ChangeListener() {
+        VizServiceProvider.getSelectionManager().addChangeListener(new ChangeListener() {
 
             public void stateChanged(ChangeEvent e) {
-                SelectionManager selectionManager = VizController.getInstance().getSelectionManager();
+                SelectionManager selectionManager = VizServiceProvider.getSelectionManager();
 
                 if (selectionManager.isRectangleSelection() && currentTool != null) {
                     toolbar.clearSelection();
@@ -239,11 +239,11 @@ public class DesktopToolController implements ToolController {
                     return VizEvent.Type.NODE_LEFT_CLICK;
                 }
             };
-            VizController.getInstance().getVizEventManager().addListener(currentListener);
+            VizServiceProvider.getVizEventManager().addListener(currentListener);
         }
 
         public void unselect() {
-            VizController.getInstance().getVizEventManager().removeListener(currentListener);
+            VizServiceProvider.getVizEventManager().removeListener(currentListener);
             currentListener = null;
             toolEventListener = null;
         }
@@ -280,11 +280,11 @@ public class DesktopToolController implements ToolController {
                     return VizEvent.Type.MOUSE_RELEASED;
                 }
             };
-            VizController.getInstance().getVizEventManager().addListener(currentListeners);
+            VizServiceProvider.getVizEventManager().addListener(currentListeners);
         }
 
         public void unselect() {
-            VizController.getInstance().getVizEventManager().removeListener(currentListeners);
+            VizServiceProvider.getVizEventManager().removeListener(currentListeners);
             toolEventListener = null;
             currentListeners = null;
         }
@@ -332,11 +332,11 @@ public class DesktopToolController implements ToolController {
                     return VizEvent.Type.MOUSE_RELEASED;
                 }
             };
-            VizController.getInstance().getVizEventManager().addListener(currentListeners);
+            VizServiceProvider.getVizEventManager().addListener(currentListeners);
         }
 
         public void unselect() {
-            VizController.getInstance().getVizEventManager().removeListener(currentListeners);
+            VizServiceProvider.getVizEventManager().removeListener(currentListeners);
             toolEventListener = null;
             currentListeners = null;
         }
@@ -365,11 +365,11 @@ public class DesktopToolController implements ToolController {
                     return VizEvent.Type.MOUSE_LEFT_CLICK;
                 }
             };
-            VizController.getInstance().getVizEventManager().addListener(currentListener);
+            VizServiceProvider.getVizEventManager().addListener(currentListener);
         }
 
         public void unselect() {
-            VizController.getInstance().getVizEventManager().removeListener(currentListener);
+            VizServiceProvider.getVizEventManager().removeListener(currentListener);
             toolEventListener = null;
             currentListener = null;
         }

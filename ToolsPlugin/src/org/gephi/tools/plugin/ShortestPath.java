@@ -38,7 +38,7 @@ import org.gephi.tools.spi.ToolEventListener;
 import org.gephi.tools.spi.ToolSelectionType;
 import org.gephi.ui.tools.plugin.ShortestPathPanel;
 import org.gephi.tools.spi.ToolUI;
-import org.gephi.visualization.VizController;
+import org.gephi.visualization.VizServiceProvider;
 import org.openide.util.Lookup;
 import org.openide.util.NbBundle;
 import org.openide.util.lookup.ServiceProvider;
@@ -65,17 +65,17 @@ public class ShortestPath implements Tool {
     }
 
     public void select() {
-        settingEdgeSourceColor = !VizController.getInstance().getVizModel().isEdgeHasUniColor();
-        VizController.getInstance().getVizModel().setEdgeHasUniColor(true);
-        VizController.getInstance().getVizConfig().setEnableAutoSelect(false);
+        settingEdgeSourceColor = !VizServiceProvider.getVizModel().isEdgeHasUniColor();
+        VizServiceProvider.getVizModel().setEdgeHasUniColor(true);
+        VizServiceProvider.getVizConfig().setEnableAutoSelect(false);
     }
 
     public void unselect() {
         listeners = null;
         sourceNode = null;
         shortestPathPanel = null;
-        VizController.getInstance().getVizModel().setEdgeHasUniColor(settingEdgeSourceColor);
-        VizController.getInstance().getVizConfig().setEnableAutoSelect(true);
+        VizServiceProvider.getVizModel().setEdgeHasUniColor(settingEdgeSourceColor);
+        VizServiceProvider.getVizConfig().setEnableAutoSelect(true);
     }
 
     public ToolEventListener[] getListeners() {
@@ -105,21 +105,21 @@ public class ShortestPath implements Tool {
                     double distance;
                     if ((distance = algorithm.getDistances().get(targetNode)) != Double.POSITIVE_INFINITY) {
                         targetNode.getNodeData().setColor(colorArray[0], colorArray[1], colorArray[2]);
-                        VizController.getInstance().selectNode(targetNode);
+                        VizServiceProvider.getSelectionManager().selectNode(targetNode);
                         Edge predecessorEdge = algorithm.getPredecessorIncoming(targetNode);
                         Node predecessor = algorithm.getPredecessor(targetNode);
                         while (predecessorEdge != null && predecessor != sourceNode) {
                             predecessorEdge.getEdgeData().setColor(colorArray[0], colorArray[1], colorArray[2]);
-                            VizController.getInstance().selectEdge(predecessorEdge);
+                            VizServiceProvider.getSelectionManager().selectEdge(predecessorEdge);
                             predecessor.getNodeData().setColor(colorArray[0], colorArray[1], colorArray[2]);
-                            VizController.getInstance().selectNode(predecessor);
+                            VizServiceProvider.getSelectionManager().selectNode(predecessor);
                             predecessorEdge = algorithm.getPredecessorIncoming(predecessor);
                             predecessor = algorithm.getPredecessor(predecessor);
                         }
                         predecessorEdge.getEdgeData().setColor(colorArray[0], colorArray[1], colorArray[2]);
-                        VizController.getInstance().selectEdge(predecessorEdge);
+                        VizServiceProvider.getSelectionManager().selectEdge(predecessorEdge);
                         sourceNode.getNodeData().setColor(colorArray[0], colorArray[1], colorArray[2]);
-                        VizController.getInstance().selectNode(sourceNode);
+                        VizServiceProvider.getSelectionManager().selectNode(sourceNode);
                         shortestPathPanel.setResult(NbBundle.getMessage(ShortestPath.class, "ShortestPath.result", distance));
                     } else {
                         //No path
@@ -139,7 +139,7 @@ public class ShortestPath implements Tool {
                     shortestPathPanel.setStatus(NbBundle.getMessage(ShortestPath.class, "ShortestPath.status1"));
                     sourceNode = null;
                 } else {
-                    VizController.getInstance().resetSelection();
+                    VizServiceProvider.getSelectionManager().resetSelection();
                 }
             }
         };

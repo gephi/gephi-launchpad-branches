@@ -32,7 +32,7 @@ import org.gephi.preview.api.supervisors.EdgeSupervisor;
 import org.gephi.preview.api.supervisors.GlobalEdgeSupervisor;
 import org.gephi.preview.updaters.LabelFontAdjuster;
 import org.gephi.preview.updaters.LabelShortener;
-import org.gephi.visualization.api.VisualizationController;
+import org.gephi.visualization.VizServiceProvider;
 import org.openide.util.Lookup;
 
 /**
@@ -51,7 +51,6 @@ public abstract class EdgeSupervisorImpl implements EdgeSupervisor {
     protected EdgeChildColorizer labelColorizer;
     protected Float edgeScale;
     protected Boolean rescaleWeight;
-    protected VisualizationController visualizationController;
 
     /**
      * Adds the given edge to the list of the supervised edges.
@@ -67,10 +66,6 @@ public abstract class EdgeSupervisorImpl implements EdgeSupervisor {
         updateEdgeLabelValue(edge);
         adjustEdgeLabelFont(edge);
 
-        if (visualizationController == null) {
-            visualizationController = Lookup.getDefault().lookup(VisualizationController.class);
-        }
-
         float weight = edge.getThickness();
         float min = edge.getMetaEdge() ? edge.getGraph().getMinMetaWeight() : edge.getGraph().getMinWeight();
         float max = edge.getMetaEdge() ? edge.getGraph().getMaxMetaWeight() : edge.getGraph().getMaxWeight();
@@ -83,8 +78,9 @@ public abstract class EdgeSupervisorImpl implements EdgeSupervisor {
             weight += Math.abs(min) + 1;
         }
 
-        if (edge.getMetaEdge() && visualizationController != null) {
-            weight *= visualizationController.getMetaEdgeScale();
+        float metaEdgeScale = VizServiceProvider.getVizModel().getMetaEdgeScale();
+        if (edge.getMetaEdge() && metaEdgeScale != 0.0f) {
+            weight *= metaEdgeScale;
         }
 
         edge.setThickness(weight);
