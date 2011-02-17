@@ -28,6 +28,8 @@ import java.util.Arrays;
 import java.util.List;
 import org.gephi.data.attributes.api.AttributeColumn;
 import org.gephi.data.attributes.api.AttributeModel;
+import org.gephi.data.attributes.type.DoubleList;
+import org.gephi.data.attributes.type.NumberList;
 import org.gephi.graph.api.Graph;
 import org.gephi.graph.api.GraphModel;
 import org.gephi.graph.api.Node;
@@ -53,7 +55,10 @@ import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.general.DatasetUtilities;
 
 /**
- * 
+ * Z. Tarapata. "Multicriteria weighted graphs similarity and its application for
+ * decision situation pattern matching problem". Proceedings of the 13th IEEE/IFAC
+ * International Conference on Methods and Models in Automation and Robotics.
+ * 2007, 1149-1155.
  *
  * @author Cezary Bartosiak
  */
@@ -93,14 +98,25 @@ public class QuantitativeNodesSimilarity implements Similarity, LongTask {
 				
 				for (int i = 0; i < nB; ++i)
 					for (int j = 0; j < nA; ++j) {
-						double fkB = getValueForColumn(nodesB[i], columns[k]);
-						double fkA = getValueForColumn(nodesA[j], columns[k]);
 						double sum = 0.0;
-						for (int r = 0; r < n; ++r) {
-							double fkrB = /* r < nB ? Math.abs(fkB - getValueForColumn(nodesB[r], columns[k])) : */ fkB;
-							double fkrA = /* r < nA ? Math.abs(fkA - getValueForColumn(nodesA[r], columns[k])) : */ fkA;
-							sum += Math.pow(Math.abs(fkrB - fkrA), p);
+
+						if (columns[k].getType().isListType()) {
+							DoubleList fkB = getVectorValueForColumn(nodesB[i], columns[k]);
+							DoubleList fkA = getVectorValueForColumn(nodesA[j], columns[k]);
+
+							int size = Math.min(fkB.size(), fkA.size());
+							for (int r = 0; r < size; ++r) {
+								double fkrB = fkB.getItem(r);
+								double fkrA = fkA.getItem(r);
+								sum += Math.pow(Math.abs(fkrB - fkrA), p);
+							}
 						}
+						else {
+							double fkB = getScalarValueForColumn(nodesB[i], columns[k]);
+							double fkA = getScalarValueForColumn(nodesA[j], columns[k]);
+							sum += Math.pow(Math.abs(fkB - fkA), p);
+						}
+						
 						vk.set(i, j, Math.pow(sum, 1.0 / p));
 					}
 
@@ -145,9 +161,17 @@ public class QuantitativeNodesSimilarity implements Similarity, LongTask {
 			return dqn;
 		}
 
-		private double getValueForColumn(Node node, AttributeColumn column) {
+		private double getScalarValueForColumn(Node node, AttributeColumn column) {
 			Number value = (Number)node.getNodeData().getAttributes().getValue(column.getId());
 			return value.doubleValue();
+		}
+
+		private DoubleList getVectorValueForColumn(Node node, AttributeColumn column) {
+			NumberList<Number> vector = (NumberList<Number>)node.getNodeData().getAttributes().getValue(column.getId());
+			double[] values = new double[vector.size()];
+			for (int i = 0; i < vector.size(); ++i)
+				values[i] = ((Number)vector.getItem(i)).doubleValue();
+			return new DoubleList(values);
 		}
 
 		private double getMaxValue(Matrix m) {
