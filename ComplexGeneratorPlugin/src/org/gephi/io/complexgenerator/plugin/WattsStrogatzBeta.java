@@ -57,15 +57,10 @@ public class WattsStrogatzBeta implements Generator {
 	private int    K    = 4;
 	private double beta = 0.2;
 
-	@Override
 	public void generate(ContainerLoader container) {
 		Progress.start(progressTicket, N + N * K);
 		Random random = new Random();
 		container.setEdgeDefault(EdgeDefault.UNDIRECTED);
-
-		// Timestamps
-		int vt = 1;
-		int et = 1;
 
 		NodeDraft[] nodes = new NodeDraft[N];
 
@@ -73,7 +68,6 @@ public class WattsStrogatzBeta implements Generator {
 		for (int i = 0; i < N && !cancel; ++i) {
 			NodeDraft node = container.factory().newNodeDraft();
 			node.setLabel("Node " + i);
-			node.addTimeInterval(i + "", N + "");
 			nodes[i] = node;
 			container.addNode(node);
 			Progress.progress(progressTicket);
@@ -91,7 +85,6 @@ public class WattsStrogatzBeta implements Generator {
 		for (int i = 0; i < N && !cancel; ++i)
 			for (int j = 1; j <= K / 2 && !cancel; ++j)
 				if (random.nextDouble() <= beta) {
-					// TODO: timestamps!
 					container.removeEdge(getEdge(container, nodes[i], nodes[(i + j) % N]));
 
 					int k = random.nextInt(N);
@@ -145,23 +138,19 @@ public class WattsStrogatzBeta implements Generator {
 		this.beta = beta;
 	}
 
-	@Override
 	public String getName() {
 		return "Watts-Strogatz Small World model Beta";
 	}
 
-	@Override
 	public GeneratorUI getUI() {
 		return Lookup.getDefault().lookup(WattsStrogatzBetaUI.class);
 	}
 
-	@Override
 	public boolean cancel() {
 		cancel = true;
 		return true;
 	}
 
-	@Override
 	public void setProgressTicket(ProgressTicket progressTicket) {
 		this.progressTicket = progressTicket;
 	}

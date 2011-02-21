@@ -36,6 +36,8 @@ public class BarabasiAlbertUIImpl implements BarabasiAlbertUI {
 	private BarabasiAlbertPanel panel;
 	private BarabasiAlbert barabasiAlbert;
 
+	public BarabasiAlbertUIImpl() { }
+
 	public JPanel getPanel() {
 		if (panel == null)
 			panel = new BarabasiAlbertPanel();
@@ -51,14 +53,12 @@ public class BarabasiAlbertUIImpl implements BarabasiAlbertUI {
 		panel.NField.setText(String.valueOf(barabasiAlbert.getN()));
 		panel.m0Field.setText(String.valueOf(barabasiAlbert.getm0()));
 		panel.MField.setText(String.valueOf(barabasiAlbert.getM()));
-		panel.setConsiderExistingNodes(barabasiAlbert.isConsiderExistingNodes());
 	}
 
 	public void unsetup() {
 		barabasiAlbert.setN(Integer.parseInt(panel.NField.getText()));
 		barabasiAlbert.setm0(Integer.parseInt(panel.m0Field.getText()));
 		barabasiAlbert.setM(Integer.parseInt(panel.MField.getText()));
-		barabasiAlbert.setConsiderExistingNodes(panel.isConsiderExistingNodes());
 		panel = null;
 	}
 }

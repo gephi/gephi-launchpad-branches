@@ -51,58 +51,46 @@ public class BalancedTree implements Generator {
 	private int r = 2;
 	private int h = 4;
 
-	@Override
 	public void generate(ContainerLoader container) {
 		int n = ((int)Math.pow(r, h + 1) - 1) / (r - 1);
 
 		Progress.start(progressTicket, n - 1);
 		container.setEdgeDefault(EdgeDefault.UNDIRECTED);
 
-		// Timestamps
-		int vt = 1;
-		int et = 1;
-
 		// Creating a root of degree r
-		int v = 1;
 		NodeDraft root = container.factory().newNodeDraft();
 		root.setLabel("Node 0");
-		root.addTimeInterval("0", h + "");
 		container.addNode(root);
 		List<NodeDraft> newLeaves = new ArrayList<NodeDraft>();
+		int v = 1;
 		for (int i = 0; i < r && !cancel; ++i) {
 			NodeDraft node = container.factory().newNodeDraft();
 			node.setLabel("Node " + v++);
-			node.addTimeInterval(vt + "", h + "");
 			newLeaves.add(node);
 			container.addNode(node);
 
 			EdgeDraft edge = container.factory().newEdgeDraft();
 			edge.setSource(root);
 			edge.setTarget(node);
-			edge.addTimeInterval(et + "", h + "");
 			container.addEdge(edge);
 			
 			Progress.progress(progressTicket);
 		}
-		vt++;
-		et++;
 
 		// Creating internal nodes
-		for (int height = 1; height < h && !cancel; ++height, ++vt, ++et) {
+		for (int height = 1; height < h && !cancel; ++height) {
 			List<NodeDraft> leaves = newLeaves;
 			newLeaves = new ArrayList<NodeDraft>();
 			for (NodeDraft leave : leaves)
 				for (int i = 0; i < r; ++i) {
 					NodeDraft node = container.factory().newNodeDraft();
 					node.setLabel("Node " + v++);
-					node.addTimeInterval(vt + "", h + "");
 					newLeaves.add(node);
 					container.addNode(node);
 
 					EdgeDraft edge = container.factory().newEdgeDraft();
 					edge.setSource(leave);
 					edge.setTarget(node);
-					edge.addTimeInterval(et + "", h + "");
 					container.addEdge(edge);
 
 					Progress.progress(progressTicket);
@@ -129,23 +117,19 @@ public class BalancedTree implements Generator {
 		this.h = h;
 	}
 
-	@Override
 	public String getName() {
 		return "Balanced Tree";
 	}
 
-	@Override
 	public GeneratorUI getUI() {
 		return Lookup.getDefault().lookup(BalancedTreeUI.class);
 	}
 
-	@Override
 	public boolean cancel() {
 		cancel = true;
 		return true;
 	}
 
-	@Override
 	public void setProgressTicket(ProgressTicket progressTicket) {
 		this.progressTicket = progressTicket;
 	}

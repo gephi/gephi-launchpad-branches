@@ -55,18 +55,11 @@ public class BarabasiAlbert implements Generator {
 	private int N  = 50;
 	private int m0 = 1;
 	private int M  = 1;
-	
-	private boolean considerExistingNodes;
 
-	@Override
 	public void generate(ContainerLoader container) {
-		Progress.start(progressTicket, m0 + (N - m0) * M);
+		Progress.start(progressTicket, N + M);
 		Random random = new Random();
 		container.setEdgeDefault(EdgeDefault.UNDIRECTED);
-
-		// Timestamps
-		int vt = 1;
-		int et = 1;
 
 		NodeDraft[] nodes = new NodeDraft[N];
 		int[] degrees = new int[N];
@@ -75,7 +68,6 @@ public class BarabasiAlbert implements Generator {
 		for (int i = 0; i < m0 && !cancel; ++i) {
 			NodeDraft node = container.factory().newNodeDraft();
 			node.setLabel("Node " + i);
-			node.addTimeInterval("0", (N - m0) + "");
 			nodes[i] = node;
 			degrees[i] = 0;
 			container.addNode(node);
@@ -88,18 +80,17 @@ public class BarabasiAlbert implements Generator {
 				EdgeDraft edge = container.factory().newEdgeDraft();
 				edge.setSource(nodes[i]);
 				edge.setTarget(nodes[j]);
-				edge.addTimeInterval("0", (N - m0) + "");
 				degrees[i]++;
 				degrees[j]++;
 				container.addEdge(edge);
+				Progress.progress(progressTicket);
 			}
 
 		// Adding N - m0 nodes, each with M edges
-		for (int i = m0; i < N && !cancel; ++i, ++vt, ++et) {
+		for (int i = m0; i < N && !cancel; ++i) {
 			// Adding new node
 			NodeDraft node = container.factory().newNodeDraft();
 			node.setLabel("Node " + i);
-			node.addTimeInterval(vt + "", (N - m0) + "");
 			nodes[i] = node;
 			degrees[i] = 0;
 			container.addNode(node);
@@ -126,7 +117,6 @@ public class BarabasiAlbert implements Generator {
 						EdgeDraft edge = container.factory().newEdgeDraft();
 						edge.setSource(nodes[i]);
 						edge.setTarget(nodes[j]);
-						edge.addTimeInterval(et + "", (N - m0) + "");
 						degrees[i]++;
 						degrees[j]++;
 						container.addEdge(edge);
@@ -168,31 +158,19 @@ public class BarabasiAlbert implements Generator {
 		this.M = M;
 	}
 
-	public boolean isConsiderExistingNodes() {
-		return considerExistingNodes;
-	}
-
-	public void setConsiderExistingNodes(boolean considerExistingNodes) {
-		this.considerExistingNodes = considerExistingNodes;
-	}
-
-	@Override
 	public String getName() {
 		return "Barabasi-Albert Scale Free model";
 	}
 
-	@Override
 	public GeneratorUI getUI() {
 		return Lookup.getDefault().lookup(BarabasiAlbertUI.class);
 	}
 
-	@Override
 	public boolean cancel() {
 		cancel = true;
 		return true;
 	}
 
-	@Override
 	public void setProgressTicket(ProgressTicket progressTicket) {
 		this.progressTicket = progressTicket;
 	}

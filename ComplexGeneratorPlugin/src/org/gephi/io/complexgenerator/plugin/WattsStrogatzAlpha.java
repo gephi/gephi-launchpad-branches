@@ -59,15 +59,10 @@ public class WattsStrogatzAlpha implements Generator {
 	private double alpha = 3.5;
 	private double p     = Math.pow(10, -10);
 
-	@Override
 	public void generate(ContainerLoader container) {
 		Progress.start(progressTicket, n + n + n * k / 2);
 		Random random = new Random();
 		container.setEdgeDefault(EdgeDefault.UNDIRECTED);
-
-		// Timestamps
-		int vt = 0;
-		int et = 1;
 
 		NodeDraft[] nodes = new NodeDraft[n];
 
@@ -76,16 +71,14 @@ public class WattsStrogatzAlpha implements Generator {
 		for (int i = 0; i < n && !cancel; ++i) {
 			NodeDraft node = container.factory().newNodeDraft();
 			node.setLabel("Node " + i);
-			node.addTimeInterval(vt + "", n * k / 2 + "");
 			nodes[i] = node;
 			container.addNode(node);
 			Progress.progress(progressTicket);
 		}
-		for (int i = 0; i < n && !cancel; ++i, ++et) {
+		for (int i = 0; i < n && !cancel; ++i) {
 			EdgeDraft edge = container.factory().newEdgeDraft();
 			edge.setSource(nodes[i]);
 			edge.setTarget(nodes[(i + 1) % n]);
-			edge.addTimeInterval(et + "", n * k / 2 + "");
 			container.addEdge(edge);
 			ec++;
 			Progress.progress(progressTicket);
@@ -113,7 +106,6 @@ public class WattsStrogatzAlpha implements Generator {
 							EdgeDraft edge = container.factory().newEdgeDraft();
 							edge.setSource(nodes[i]);
 							edge.setTarget(nodes[j]);
-							edge.addTimeInterval(et++ + "", n * k / 2 + "");
 							container.addEdge(edge);
 							ec++;
 
@@ -177,23 +169,19 @@ public class WattsStrogatzAlpha implements Generator {
 		this.alpha = alpha;
 	}
 
-	@Override
 	public String getName() {
 		return "Watts-Strogatz Small World model Alpha";
 	}
 
-	@Override
 	public GeneratorUI getUI() {
 		return Lookup.getDefault().lookup(WattsStrogatzAlphaUI.class);
 	}
 
-	@Override
 	public boolean cancel() {
 		cancel = true;
 		return true;
 	}
 
-	@Override
 	public void setProgressTicket(ProgressTicket progressTicket) {
 		this.progressTicket = progressTicket;
 	}
