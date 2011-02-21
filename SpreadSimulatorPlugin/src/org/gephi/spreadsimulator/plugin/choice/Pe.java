@@ -34,18 +34,18 @@ import org.gephi.spreadsimulator.spi.Choice;
  */
 public class Pe implements Choice {
 	@Override
-	public List<List<Edge>> chooseEdges(List<List<Edge>> redges) {
-		List<List<Edge>> cedges = new ArrayList<List<Edge>>();
+	public Edge[] chooseEdges(Edge[] edges) {
+		List<Edge> cedges = new ArrayList<Edge>();
 		double p = new Random().nextDouble();
 		double sum = 0.0;
-		for (List<Edge> le : redges) {
-			double ePe = Double.parseDouble(((String)le.get(0).getEdgeData().getAttributes().getValue(SimulationData.SM_CHOICE)).split(":")[1]);
+		for (Edge e : edges) {
+			double ePe = Double.parseDouble(((String)e.getEdgeData().getAttributes().getValue(SimulationData.SM_CHOICE)).split(":")[1]);
 			sum += ePe;
 			if (p <= sum) {
-				cedges.add(le);
+				cedges.add(e);
 				break;
 			}
 		}
-		return cedges;
+		return cedges.toArray(new Edge[0]);
 	}
 }

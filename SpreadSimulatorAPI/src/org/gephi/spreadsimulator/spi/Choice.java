@@ -20,7 +20,6 @@
  */
 package org.gephi.spreadsimulator.spi;
 
-import java.util.List;
 import org.gephi.graph.api.Edge;
 
 /**
@@ -29,5 +28,5 @@ import org.gephi.graph.api.Edge;
  * @author Cezary Bartosiak
  */
 public interface Choice {
-	public List<List<Edge>> chooseEdges(List<List<Edge>> redges);
+	public Edge[] chooseEdges(Edge[] edges);
 }

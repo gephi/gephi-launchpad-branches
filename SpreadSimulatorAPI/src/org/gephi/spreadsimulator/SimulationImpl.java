@@ -23,10 +23,13 @@ package org.gephi.spreadsimulator;
 import java.awt.Color;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Timer;
+import java.util.TimerTask;
 import org.gephi.data.attributes.api.AttributeController;
 import org.gephi.data.attributes.api.AttributeEvent;
 import org.gephi.data.attributes.api.AttributeListener;
@@ -43,10 +46,15 @@ import org.gephi.project.api.Workspace;
 import org.gephi.project.api.WorkspaceProvider;
 import org.gephi.spreadsimulator.api.Simulation;
 import org.gephi.spreadsimulator.api.SimulationData;
+import org.gephi.spreadsimulator.api.SimulationEvent;
+import org.gephi.spreadsimulator.api.SimulationEvent.EventType;
+import org.gephi.spreadsimulator.api.SimulationListener;
 import org.gephi.spreadsimulator.spi.InitialEvent;
 import org.gephi.spreadsimulator.spi.StopCondition;
 import org.gephi.utils.TempDirUtils;
 import org.gephi.utils.TempDirUtils.TempDir;
+import org.gephi.utils.progress.Progress;
+import org.gephi.utils.progress.ProgressTicket;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartRenderingInfo;
 import org.jfree.chart.ChartUtilities;
@@ -68,15 +76,24 @@ import org.openide.util.lookup.ServiceProvider;
  */
 @ServiceProvider(service = Simulation.class)
 public class SimulationImpl implements Simulation {
+	private SimulationEventManager eventManager;
+
 	private List<StopCondition> stopConditions;
 	private SimulationDataImpl simulationData;
 	private InitialEventFactoryImpl ieFactory;
+	private ChoiceFactoryImpl cFactory;
 
+	private long delay;
+	private boolean cancel;
+	private ProgressTicket progressTicket;
 	private boolean finished;
 
 	private AttributeListener al;
 
 	public SimulationImpl() {
+		eventManager = new SimulationEventManager();
+		eventManager.start();
+
 		al = new AttributeListener() {
 			@Override
 			public void attributesChanged(AttributeEvent event) {
@@ -120,7 +137,10 @@ public class SimulationImpl implements Simulation {
 		stopConditions = new ArrayList<StopCondition>();
 		simulationData = new SimulationDataImpl(gc.getModel(workspaces[0]), gc.getModel(workspaces[1]));
 		ieFactory = new InitialEventFactoryImpl();
+		cFactory = new ChoiceFactoryImpl();
 
+		delay = 1000;
+		cancel = true;
 		finished = false;
 
 		AttributeModel networkAttributeModel = Lookup.getDefault().lookup(AttributeController.class).getModel(workspaces[0]);
@@ -134,16 +154,20 @@ public class SimulationImpl implements Simulation {
 					AttributeOrigin.DATA, simulationData.getDefaultState());
 		else for (Node node : gc.getModel(workspaces[0]).getGraph().getNodes())
 			node.getNodeData().getAttributes().setValue(SimulationData.NM_CURRENT_STATE, simulationData.getDefaultState());
+
+		fireSimulationEvent(new SimulationEventImpl(EventType.INIT));
 	}
 
 	@Override
 	public void addStopCondition(StopCondition stopCondition) {
 		stopConditions.add(stopCondition);
+		fireSimulationEvent(new SimulationEventImpl(EventType.ADD_STOP_CONDITION));
 	}
 
 	@Override
 	public void removeStopCondition(StopCondition stopCondition) {
 		stopConditions.remove(stopCondition);
+		fireSimulationEvent(new SimulationEventImpl(EventType.REMOVE_STOP_CONDITION));
 	}
 
 	@Override
@@ -157,6 +181,64 @@ public class SimulationImpl implements Simulation {
 	}
 
 	@Override
+	public long getDelay() {
+		return delay;
+	}
+
+	@Override
+	public void setDelay(long delay) {
+		this.delay = delay;
+	}
+
+	@Override
+	public void start() {
+		final Timer timer = new Timer();
+		Progress.start(progressTicket);
+
+		fireSimulationEvent(new SimulationEventImpl(EventType.START));
+
+		final Simulation sim = this;
+		TimerTask task = new TimerTask() {
+			@Override
+			public void run() {
+				if (!cancel && !finished)
+					nextStep();
+				else {
+					timer.cancel();
+					timer.purge();
+					Progress.finish(progressTicket);
+					sim.cancel();
+				}
+			}
+		};
+		cancel = false;
+		timer.schedule(task, delay, delay);
+	}
+
+	@Override
+	public boolean cancel() {
+		cancel = true;
+		fireSimulationEvent(new SimulationEventImpl(EventType.CANCEL));
+		return true;
+	}
+
+	@Override
+	public boolean isCancelled() {
+		return cancel;
+	}
+
+	@Override
+	public void setProgressTicket(ProgressTicket progressTicket) {
+		this.progressTicket = progressTicket;
+	}
+
+	@Override
+	public void previousStep() {
+		throw new UnsupportedOperationException("Not supported yet.");
+		// fireSimulationEvent(new SimulationEventImpl(EventType.PREVIOUS_STEP));
+	}
+
+	@Override
 	public void nextStep() {
 		if (finished)
 			return;
@@ -166,20 +248,30 @@ public class SimulationImpl implements Simulation {
 			simulationData.setCurrentlyExaminedNode(nmNode);
 			String currentState = (String)nmNode.getNodeData().getAttributes().getValue(SimulationData.NM_CURRENT_STATE);
 			Node smNode = simulationData.getStateMachineNodeForState(currentState);
-			List<String> states = new ArrayList<String>();
-			for (Edge smEdge : simulationData.getStateMachineModel().getDirectedGraph().getOutEdges(smNode)) {
+
+			String state = null;
+			List<Edge> edges = new ArrayList<Edge>();
+			for (Edge smEdge : simulationData.getStateMachineModel().getDirectedGraph().getOutEdges(smNode).toArray()) {
+				InitialEvent ie = ieFactory.getInitialEvent(
+						(String)smEdge.getEdgeData().getAttributes().getValue(SimulationData.SM_INITIAL_EVENT));
+				if (ie.isOccuring(simulationData))
+					edges.add(smEdge);
+			}
+			if (!edges.isEmpty())
+				edges = Arrays.asList(cFactory.getChoice(
+							(String)edges.get(0).getEdgeData().getAttributes().getValue(SimulationData.SM_CHOICE)).
+							chooseEdges(edges.toArray(new Edge[0])));
+			for (Edge smEdge : edges) {
 				Double probability = (Double)smEdge.getEdgeData().getAttributes().getValue(SimulationData.SM_PROBABILITY);
 				boolean aout = false;
 				InitialEvent ie = ieFactory.getInitialEvent(
 						(String)smEdge.getEdgeData().getAttributes().getValue(SimulationData.SM_INITIAL_EVENT));
-				if (ie.isOccuring(simulationData))
-					aout = ie.getAlgorithm().tryDoTransition(simulationData, probability);
-				if (aout)
-					states.add((String)smEdge.getTarget().getNodeData().getAttributes().getValue(SimulationData.SM_STATE_NAME));
+				aout = ie.getAlgorithm().tryDoTransition(simulationData, probability);
+				if (aout) {
+					state = (String)smEdge.getTarget().getNodeData().getAttributes().getValue(SimulationData.SM_STATE_NAME);
+					break;
+				}
 			}
-			String state = null;
-			if (states.size() > 0)
-				state = states.get(0); // for now get the first state from the list
 			newStates.put(nmNode, state);
 		}
 		for (Entry<Node, String> entry : newStates.entrySet())
@@ -192,6 +284,8 @@ public class SimulationImpl implements Simulation {
 				finished = true;
 				break;
 			}
+
+		fireSimulationEvent(new SimulationEventImpl(EventType.NEXT_STEP));
 	}
 
 	@Override
@@ -221,6 +315,24 @@ public class SimulationImpl implements Simulation {
 			datasets[i] = new XYSeriesCollection();
 			datasets[i].addSeries(series);
 		}
+
+		String stable = "<table border=\"1\">";
+		for (int i = 0; i <= simulationData.getCurrentStep() + 1; ++i) {
+			stable += "<tr>";
+			for (int j = 0; j < states.length + 1; ++j) {
+				stable += "<td>";
+				if (i == 0 && j == 0)
+					; // nothing
+				else if (i == 0)
+					stable += states[j - 1];
+				else if (j == 0)
+					stable += (i - 1);
+				else stable += simulationData.getNodesCountInStateAndStep(states[j - 1], i - 1);
+				stable += "</td>";
+			}
+			stable += "</tr>";
+		}
+		stable += "</table>";
 
 		JFreeChart[] charts = new JFreeChart[states.length];
 		for (int i = 0; i < states.length; ++i) {
@@ -261,9 +373,24 @@ public class SimulationImpl implements Simulation {
 			catch (Exception e) { }
 
 		String report = "<html><body><h1>Nodes Count Report</h1><hr><br>";
+		report += stable + "<br><br>";
 		for (String image : images)
 			report += image + "<br><br>";
 		report += "</body></html>";
 		return report;
+	}
+
+	@Override
+	public void addSimulationListener(SimulationListener listener) {
+		eventManager.addSimulationListener(listener);
+	}
+
+	@Override
+	public void removeSimulationListener(SimulationListener listener) {
+		eventManager.removeSimulationListener(listener);
+	}
+
+	public void fireSimulationEvent(SimulationEvent event) {
+		eventManager.fireEvent(event);
 	}
 }

@@ -35,6 +35,9 @@ import java.util.Map;
 import javax.imageio.ImageIO;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
 import org.apache.commons.codec.binary.Base64;
 import org.gephi.similarity.api.SimilarityModel;
 import org.gephi.similarity.spi.Similarity;
@@ -43,10 +46,6 @@ import org.gephi.similarity.spi.SimilarityUI;
 import org.gephi.utils.TempDirUtils;
 import org.gephi.utils.TempDirUtils.TempDir;
 import org.openide.util.Lookup;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 /**
  * 
@@ -152,88 +151,75 @@ public class SimilarityModelImpl implements SimilarityModel {
 			listener.stateChanged(evt);
 	}
 
-	public Element writeXML(Document document) {
-		Element modelE = document.createElement("similaritymodel");
+	public void writeXML(XMLStreamWriter writer) throws XMLStreamException {
+		writer.writeStartElement("similaritymodel");
 
-		Element resultsE = document.createElement("results");
+		writer.writeStartElement("results");
 		for (Map.Entry<SimilarityUI, String> entry : resultMap.entrySet())
 			if (entry.getValue() != null && !entry.getValue().isEmpty()) {
-				Element resultE = document.createElement("result");
-				resultE.setAttribute("class", entry.getKey().getClass().getName());
-				resultE.setAttribute("value", entry.getValue());
-				resultsE.appendChild(resultE);
+				writer.writeStartElement("result");
+				writer.writeAttribute("class", entry.getKey().getClass().getName());
+				writer.writeAttribute("value", entry.getValue());
+				writer.writeEndElement();
 			}
-		modelE.appendChild(resultsE);
+		writer.writeEndElement();
 
-		Element reportsE = document.createElement("reports");
+		writer.writeStartElement("reports");
 		for (Map.Entry<Class, String> entry : reportMap.entrySet())
 			if (entry.getValue() != null && !entry.getValue().isEmpty()) {
-				Element reportE = document.createElement("report");
-				String  report  = entry.getValue();
+				writer.writeStartElement("report");
+				String report = entry.getValue();
 				report = embedImages(report);
-				reportE.setAttribute("class", entry.getKey().getName());
-				reportE.setAttribute("value", report);
-				reportsE.appendChild(reportE);
+				writer.writeAttribute("class", entry.getKey().getName());
+				writer.writeAttribute("value", report);
+				writer.writeEndElement();
 			}
-		modelE.appendChild(reportsE);
+		writer.writeEndElement();
 
-		return modelE;
+		writer.writeEndElement();
 	}
 
-	public void readXML(Element modelE) {
-		Element resultsE = getNextElementByTagName(modelE, "results");
-		if (resultsE != null) {
-			Collection<? extends SimilarityUI> uis = Lookup.getDefault().lookupAll(SimilarityUI.class);
-			for (Element resultE : getElementsByTagName(resultsE, "result")) {
-				String       classStr = resultE.getAttribute("class");
-				SimilarityUI resultUI = null;
-				for (SimilarityUI ui : uis)
-					if (ui.getClass().getName().equals(classStr))
-						resultUI = ui;
-				if (resultUI != null) {
-					String value = resultE.getAttribute("value");
-					resultMap.put(resultUI, value);
-				}
+	public void readXML(XMLStreamReader reader) throws XMLStreamException {
+		Collection<? extends SimilarityUI> uis = Lookup.getDefault().lookupAll(SimilarityUI.class);
+		Collection<? extends SimilarityBuilder> builders = Lookup.getDefault().lookupAll(SimilarityBuilder.class);
+
+		boolean end = false;
+		while (reader.hasNext() && !end) {
+			int type = reader.next();
+
+			switch (type) {
+				case XMLStreamReader.START_ELEMENT:
+					String name = reader.getLocalName();
+					if ("result".equalsIgnoreCase(name)) {
+						String classStr = reader.getAttributeValue(null, "class");
+						SimilarityUI resultUI = null;
+						for (SimilarityUI ui : uis)
+							if (ui.getClass().getName().equals(classStr))
+								resultUI = ui;
+						if (resultUI != null) {
+							String value = reader.getAttributeValue(null, "value");
+							resultMap.put(resultUI, value);
+						}
+					}
+					else if ("report".equalsIgnoreCase(name)) {
+						String classStr = reader.getAttributeValue(null, "class");
+						Class reportClass = null;
+						for (SimilarityBuilder builder : builders)
+							if (builder.getSimilarityClass().getName().equals(classStr))
+								reportClass = builder.getSimilarityClass();
+						if (reportClass != null) {
+							String report = reader.getAttributeValue(null, "value");
+							report = unembedImages(report);
+							reportMap.put(reportClass, report);
+						}
+					}
+					break;
+				case XMLStreamReader.END_ELEMENT:
+					if ("similaritymodel".equalsIgnoreCase(reader.getLocalName()))
+						end = true;
+					break;
 			}
 		}
-
-		Element reportsE = getNextElementByTagName(modelE, "reports");
-		if (reportsE != null) {
-			Collection<? extends SimilarityBuilder> builders = Lookup.getDefault().lookupAll(SimilarityBuilder.class);
-			for (Element reportE : getElementsByTagName(reportsE, "report")) {
-				String classStr    = reportE.getAttribute("class");
-				Class  reportClass = null;
-				for (SimilarityBuilder builder : builders)
-					if (builder.getSimilarityClass().getName().equals(classStr))
-						reportClass = builder.getSimilarityClass();
-				if (reportClass != null) {
-					String report = reportE.getAttribute("value");
-					report = unembedImages(report);
-					reportMap.put(reportClass, report);
-				}
-			}
-		}
-	}
-
-	private Element getNextElementByTagName(Element node, String name) {
-		NodeList list = node.getChildNodes();
-		for (int i = 0; i < list.getLength(); ++i) {
-			Node n = list.item(i);
-			if (n.getNodeType() == Node.ELEMENT_NODE && n.getNodeName().equalsIgnoreCase(name))
-				return (Element) n;
-		}
-		return null;
-	}
-
-	private Element[] getElementsByTagName(Element node, String name) {
-		NodeList list = node.getElementsByTagName(name);
-		Element[] res = new Element[list.getLength()];
-		for (int i = 0; i < list.getLength(); ++i) {
-			Node n = list.item(i);
-			if (n.getNodeType() == Node.ELEMENT_NODE)
-				res[i] = (Element)n;
-		}
-		return res;
 	}
 
 	private String embedImages(String report) {

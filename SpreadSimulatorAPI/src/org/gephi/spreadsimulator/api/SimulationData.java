@@ -34,6 +34,7 @@ public interface SimulationData {
 	public static final String SM_STATE_NAME    = "StateName";
 	public static final String SM_DEFAULT_STATE = "DefaultState";
 	public static final String SM_INITIAL_EVENT = "InitialEvent";
+	public static final String SM_CHOICE        = "Choice";
 	public static final String SM_PROBABILITY   = "Probability";
 
 	public static final String NM_CURRENT_STATE_TITLE =

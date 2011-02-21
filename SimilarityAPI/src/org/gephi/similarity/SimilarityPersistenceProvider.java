@@ -20,11 +20,12 @@
  */
 package org.gephi.similarity;
 
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
 import org.gephi.project.api.Workspace;
 import org.gephi.project.spi.WorkspacePersistenceProvider;
 import org.openide.util.lookup.ServiceProvider;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 /**
  * 
@@ -34,19 +35,26 @@ import org.w3c.dom.Element;
 @ServiceProvider(service = WorkspacePersistenceProvider.class)
 public class SimilarityPersistenceProvider implements WorkspacePersistenceProvider {
 	@Override
-	public Element writeXML(Document document, Workspace workspace) {
+	public void writeXML(XMLStreamWriter writer, Workspace workspace) {
 		SimilarityModelImpl similarityModel = workspace.getLookup().lookup(SimilarityModelImpl.class);
-		if (similarityModel != null) {
-			Element similarityModelE = similarityModel.writeXML(document);
-			return similarityModelE;
-		}
-		return null;
+		if (similarityModel != null)
+			try {
+				similarityModel.writeXML(writer);
+			}
+			catch (XMLStreamException ex) {
+				throw new RuntimeException(ex);
+			}
 	}
 
 	@Override
-	public void readXML(Element element, Workspace workspace) {
+	public void readXML(XMLStreamReader reader, Workspace workspace) {
 		SimilarityModelImpl similarityModel = new SimilarityModelImpl();
-		similarityModel.readXML(element);
+		try {
+			similarityModel.readXML(reader);
+		}
+		catch (XMLStreamException ex) {
+			throw new RuntimeException(ex);
+		}
 		workspace.add(similarityModel);
 	}
 
