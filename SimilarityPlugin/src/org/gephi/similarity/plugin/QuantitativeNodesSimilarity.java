@@ -165,8 +165,8 @@ public class QuantitativeNodesSimilarity implements Similarity, LongTask {
 			xsvals[index] = new double[n];
 			double ds = 0.0;
 			for (int i = 0; i < n; ++i) {
-				xs[index][i][0] = nodesA[x[i][0]];
-				xs[index][i][1] = nodesB[x[i][1]];
+				xs[index][i][0] = x[i][0] >= nodesA.length ? null : nodesA[x[i][0]];
+				xs[index][i][1] = x[i][1] >= nodesB.length ? null : nodesB[x[i][1]];
 				xsvals[index][i] = -s.get(x[i][0], x[i][1]);
 				ds += s.get(x[i][0], x[i][1]);
 			}
@@ -331,9 +331,10 @@ public class QuantitativeNodesSimilarity implements Similarity, LongTask {
 			if (xs[i].length == 0)
 				xss += "&nbsp;&nbsp;&nbsp;" + "none<br>";
 			else for (int j = 0; j < xs[i].length; ++j)
-				xss += "&nbsp;&nbsp;&nbsp;\"" + xs[i][j][0].getNodeData().getLabel() +
-						"\" - \"" + xs[i][j][1].getNodeData().getLabel() +
-						"\" with " + new DecimalFormat("0.000000").format(xsvals[i][j]) + "<br>";
+				if (xs[i][j][0] != null && xs[i][j][1] != null)
+					xss += "&nbsp;&nbsp;&nbsp;\"" + xs[i][j][0].getNodeData().getLabel() +
+							"\" - \"" + xs[i][j][1].getNodeData().getLabel() +
+							"\" with " + new DecimalFormat("0.000000").format(xsvals[i][j]) + "<br>";
 			xss += "<br>";
 		}
 
