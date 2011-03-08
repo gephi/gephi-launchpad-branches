@@ -44,6 +44,22 @@ public class QuantitativeNodesSimilarityPanel extends javax.swing.JPanel {
         initComponents();
     }
 
+	public boolean isDoNorm() {
+		return doNormRadioButton.isSelected();
+	}
+
+	public void setDoNorm(boolean doNorm) {
+		doNormButtonGroup.setSelected(doNorm ? doNormRadioButton.getModel() : doNotNormRadioButton.getModel(), true);
+	}
+
+	public double getP() {
+		return Double.parseDouble(pFormattedTextField.getText());
+	}
+
+	public void setP(double p) {
+		pFormattedTextField.setText(p + "");
+	}
+
 	public AttributeColumn[] getColumns() {
 		List<AttributeColumn> nodeColumnsList = new ArrayList<AttributeColumn>();
 		if (nodeCheckBoxs != null)
@@ -103,20 +119,36 @@ public class QuantitativeNodesSimilarityPanel extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        doNormButtonGroup = new javax.swing.ButtonGroup();
         vf2Header = new org.jdesktop.swingx.JXHeader();
         columnsLabel = new javax.swing.JLabel();
         contentScrollPane = new javax.swing.JScrollPane();
         contentPanel = new javax.swing.JPanel();
+        doNormRadioButton = new javax.swing.JRadioButton();
+        doNotNormRadioButton = new javax.swing.JRadioButton();
+        pFormattedTextField = new javax.swing.JFormattedTextField();
+        pLabel = new javax.swing.JLabel();
 
-        setMinimumSize(new java.awt.Dimension(458, 305));
+        setMinimumSize(new java.awt.Dimension(458, 373));
 
         vf2Header.setDescription(org.openide.util.NbBundle.getMessage(QuantitativeNodesSimilarityPanel.class, "QuantitativeNodesSimilarityPanel.vf2Header.description")); // NOI18N
         vf2Header.setTitle(org.openide.util.NbBundle.getMessage(QuantitativeNodesSimilarityPanel.class, "QuantitativeNodesSimilarityPanel.vf2Header.title")); // NOI18N
 
         columnsLabel.setText(org.openide.util.NbBundle.getMessage(QuantitativeNodesSimilarityPanel.class, "QuantitativeNodesSimilarityPanel.columnsLabel.text")); // NOI18N
 
-        contentPanel.setLayout(new java.awt.GridLayout());
+        contentPanel.setLayout(new java.awt.GridLayout(1, 0));
         contentScrollPane.setViewportView(contentPanel);
+
+        doNormButtonGroup.add(doNormRadioButton);
+        doNormRadioButton.setText(org.openide.util.NbBundle.getMessage(QuantitativeNodesSimilarityPanel.class, "QuantitativeNodesSimilarityPanel.doNormRadioButton.text")); // NOI18N
+
+        doNormButtonGroup.add(doNotNormRadioButton);
+        doNotNormRadioButton.setText(org.openide.util.NbBundle.getMessage(QuantitativeNodesSimilarityPanel.class, "QuantitativeNodesSimilarityPanel.doNotNormRadioButton.text")); // NOI18N
+        doNotNormRadioButton.setActionCommand(org.openide.util.NbBundle.getMessage(QuantitativeNodesSimilarityPanel.class, "QuantitativeNodesSimilarityPanel.doNotNormRadioButton.actionCommand")); // NOI18N
+
+        pFormattedTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.00"))));
+
+        pLabel.setText(org.openide.util.NbBundle.getMessage(QuantitativeNodesSimilarityPanel.class, "QuantitativeNodesSimilarityPanel.pLabel.text")); // NOI18N
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -129,15 +161,33 @@ public class QuantitativeNodesSimilarityPanel extends javax.swing.JPanel {
                     .addComponent(contentScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 315, Short.MAX_VALUE)
                     .addComponent(columnsLabel))
                 .addGap(133, 133, 133))
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(pLabel)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(pFormattedTextField))
+                    .addComponent(doNormRadioButton)
+                    .addComponent(doNotNormRadioButton))
+                .addGap(363, 363, 363))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(vf2Header, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(doNormRadioButton)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(doNotNormRadioButton)
+                .addGap(9, 9, 9)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(pLabel)
+                    .addComponent(pFormattedTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(columnsLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(contentScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 190, Short.MAX_VALUE)
+                .addComponent(contentScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 176, Short.MAX_VALUE)
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
@@ -147,6 +197,11 @@ public class QuantitativeNodesSimilarityPanel extends javax.swing.JPanel {
     private javax.swing.JLabel columnsLabel;
     private javax.swing.JPanel contentPanel;
     private javax.swing.JScrollPane contentScrollPane;
+    private javax.swing.ButtonGroup doNormButtonGroup;
+    protected javax.swing.JRadioButton doNormRadioButton;
+    protected javax.swing.JRadioButton doNotNormRadioButton;
+    private javax.swing.JFormattedTextField pFormattedTextField;
+    private javax.swing.JLabel pLabel;
     private org.jdesktop.swingx.JXHeader vf2Header;
     // End of variables declaration//GEN-END:variables
 

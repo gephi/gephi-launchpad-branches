@@ -23,6 +23,7 @@ package org.gephi.similarity.plugin;
 import Jama.Matrix;
 import java.awt.Color;
 import java.io.File;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -69,7 +70,10 @@ public class QuantitativeNodesSimilarity implements Similarity, LongTask {
 
 	private AttributeColumn[] columns = new AttributeColumn[0];
 	private double p = 1.0;
+	private boolean doNorm = true;
 
+	private Node[][][] xs;
+	private double[][] xsvals;
 	private double[] dqn;
 
 	private class Matcher {
@@ -81,9 +85,13 @@ public class QuantitativeNodesSimilarity implements Similarity, LongTask {
 			gB = g2;
 		}
 
-		public double countDqn() {
-			if (columns.length == 0)
-				return 1.0;
+		public void countDqn(int index) {
+			if (columns.length == 0) {
+				xs[index] = new Node[0][0];
+				xsvals[index] = new double[0];
+				dqn[index] = 1.0;
+				return;
+			}
 
 			List<Matrix> v = new ArrayList<Matrix>();
 			Node[] nodesB = gB.getNodes().toArray();
@@ -132,13 +140,14 @@ public class QuantitativeNodesSimilarity implements Similarity, LongTask {
 				v.add(vk);
 			}
 
-			for (int k = 0; k < lf; ++k) {
-				double denominator = v.get(k).normF();
-				if (denominator != 0)
-					for (int i = 0; i < n; ++i)
-						for (int j = 0; j < n; ++j)
-							v.get(k).set(i, j, v.get(k).get(i, j) / denominator);
-			}
+			if (doNorm)
+				for (int k = 0; k < lf; ++k) {
+					double denominator = v.get(k).normF();
+					if (denominator != 0)
+						for (int i = 0; i < n; ++i)
+							for (int j = 0; j < n; ++j)
+								v.get(k).set(i, j, v.get(k).get(i, j) / denominator);
+				}
 
 			Matrix vij = new Matrix(n, n);
 			for (int k = 0; k < lf; ++k)
@@ -152,13 +161,18 @@ public class QuantitativeNodesSimilarity implements Similarity, LongTask {
 					s.set(i, j, -vij.get(i, j));
 
 			int[][] x = HungarianAlgorithm.hgAlgorithm(s.getArray(), "max");
+			xs[index] = new Node[n][2];
+			xsvals[index] = new double[n];
 			double ds = 0.0;
-			for (int i = 0; i < n; ++i)
+			for (int i = 0; i < n; ++i) {
+				xs[index][i][0] = nodesA[x[i][0]];
+				xs[index][i][1] = nodesB[x[i][1]];
+				xsvals[index][i] = -s.get(x[i][0], x[i][1]);
 				ds += s.get(x[i][0], x[i][1]);
+			}
 
 			double maxMeasureValue = getMaxMeasureValue(vij);
-			double dqn = maxMeasureValue != 0 ? -ds / maxMeasureValue : 0.0;
-			return dqn;
+			dqn[index] = maxMeasureValue != 0 ? -ds / maxMeasureValue : 0.0;
 		}
 
 		private double getScalarValueForColumn(Node node, AttributeColumn column) {
@@ -204,6 +218,22 @@ public class QuantitativeNodesSimilarity implements Similarity, LongTask {
 		this.columns = Arrays.copyOf(columns, columns.length);
 	}
 
+	public double getP() {
+		return p;
+	}
+
+	public void setP(double p) {
+		this.p = p;
+	}
+
+	public boolean getDoNorm() {
+		return doNorm;
+	}
+
+	public void setDoNorm(boolean doNorm) {
+		this.doNorm = doNorm;
+	}
+
 	@Override
 	public void execute(GraphModel sourceGraphModel, GraphModel[] targetGraphModels,
 						AttributeModel sourceAttributeModel, AttributeModel[] targetAttributeModels,
@@ -223,6 +253,8 @@ public class QuantitativeNodesSimilarity implements Similarity, LongTask {
 
 		Progress.start(progressTicket);
 
+		xs = new Node[targetGraphs.length][][];
+		xsvals = new double[targetGraphs.length][];
 		dqn = new double[targetGraphs.length];
 		for (int i = 0; i < targetGraphs.length; ++i) {
 			if (cancel) {
@@ -233,9 +265,9 @@ public class QuantitativeNodesSimilarity implements Similarity, LongTask {
 			}
 
 			try {
-				dqn[i] = new Matcher(
-						(UndirectedGraph)sourceGraph,
-						(UndirectedGraph)targetGraphs[i]).countDqn();
+				new Matcher(
+					(UndirectedGraph)sourceGraph,
+					(UndirectedGraph)targetGraphs[i]).countDqn(i);
 			}
 			catch (Exception ex) {
 				sourceGraph.readUnlockAll();
@@ -293,8 +325,20 @@ public class QuantitativeNodesSimilarity implements Similarity, LongTask {
 		}
 		catch (Exception e) { }
 
+		String xss = "";
+		for (int i = 0; i < xs.length; ++i) {
+			xss += "x for source - " + names[i] + ":<br>";
+			if (xs[i].length == 0)
+				xss += "&nbsp;&nbsp;&nbsp;" + "none<br>";
+			else for (int j = 0; j < xs[i].length; ++j)
+				xss += "&nbsp;&nbsp;&nbsp;\"" + xs[i][j][0].getNodeData().getLabel() +
+						"\" - \"" + xs[i][j][1].getNodeData().getLabel() +
+						"\" with " + new DecimalFormat("0.000000").format(xsvals[i][j]) + "<br>";
+			xss += "<br>";
+		}
+
 		String report = "<html><body><h1>Quantitative Nodes Similarity Report</h1><hr><br>";
-		report += image + "</body></html>";
+		report += image + "<br><br>" + xss + "</body></html>";
 		return report;
 	}
 
