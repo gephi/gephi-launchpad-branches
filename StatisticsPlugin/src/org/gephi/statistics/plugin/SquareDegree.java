@@ -94,7 +94,7 @@ public class SquareDegree implements Statistics, LongTask {
 		String report = "<html><body><h1>Square Degree Report</h1>"
 						+ "<hr>"
 						+ "<br />"
-						+ "<br/ ><h2>Results:</h2>"
+						+ "<br /><h2>Results:</h2>"
 						+ "Average Square Degree: " + f.format(avgSDegree)
 						+ "</body></html>";
 
