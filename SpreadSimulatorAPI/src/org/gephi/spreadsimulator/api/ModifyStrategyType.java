@@ -26,8 +26,8 @@ package org.gephi.spreadsimulator.api;
  * @author Cezary Bartosiak
  */
 public enum ModifyStrategyType {
-	ATTRIBUTE_HIGHEST,
-	ATTRIBUTE_LOWEST,
+	ATTRIBUTE_BIGGEST,
+	ATTRIBUTE_SMALLEST,
 	RANDOM,
 	RANDOM_RANDOM
 }

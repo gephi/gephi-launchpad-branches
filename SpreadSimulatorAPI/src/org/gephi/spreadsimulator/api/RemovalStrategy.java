@@ -20,13 +20,14 @@
  */
 package org.gephi.spreadsimulator.api;
 
-import org.gephi.statistics.spi.Statistics;
+import org.gephi.data.attributes.api.AttributeColumn;
 
 /**
- *
+ * It is a service and can therefore be found in Lookup:
+ * <pre>RemovalStrategy rs = Lookup.getDefault().lookup(RemovalStrategy.class);</pre>
  * 
  * @author Cezary Bartosiak
  */
 public interface RemovalStrategy {
-	public void removeNodes(Statistics statistics, int k, boolean biggest);
+	public void removeNodes(AttributeColumn attributeColumn, int k, ModifyStrategyType mstype);
 }

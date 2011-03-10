@@ -23,7 +23,6 @@ package org.gephi.spreadsimulator;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 import org.gephi.data.attributes.api.AttributeColumn;
@@ -46,14 +45,8 @@ import org.openide.util.lookup.ServiceProvider;
  */
 @ServiceProvider(service = StateChangeStrategy.class)
 public class StateChangeStrategyImpl implements StateChangeStrategy {
-	private AttributeColumn attributeColumn = null;
-	private int k = 0;
-	private boolean exactlyK = true;
-	private ModifyStrategyType mstype = ModifyStrategyType.RANDOM;
-	private String stateName = "";
-
 	@Override
-	public void changeStates() {
+	public void changeStates(AttributeColumn attributeColumn, int k, ModifyStrategyType mstype, String stateName) {
 		final AttributeColumn column = attributeColumn;
 		final ModifyStrategyType modstype = mstype;
 		Random random = new Random();
@@ -66,8 +59,8 @@ public class StateChangeStrategyImpl implements StateChangeStrategy {
 		Node[] nodes = gm.getGraph().getNodes().toArray();
 		List<Node> modNodes = new ArrayList<Node>();
 		switch (mstype) {
-			case ATTRIBUTE_LOWEST:
-			case ATTRIBUTE_HIGHEST:
+			case ATTRIBUTE_SMALLEST:
+			case ATTRIBUTE_BIGGEST:
 				Arrays.sort(nodes, new Comparator<Node>() {
 					@Override
 					public int compare(Node n1, Node n2) {
@@ -76,7 +69,7 @@ public class StateChangeStrategyImpl implements StateChangeStrategy {
 						int c = Double.compare(v1, v2);
 						if (c == 0)
 							return 0;
-						if (modstype == ModifyStrategyType.ATTRIBUTE_LOWEST)
+						if (modstype == ModifyStrategyType.ATTRIBUTE_SMALLEST)
 							return c;
 						return -c;
 					}
@@ -85,27 +78,18 @@ public class StateChangeStrategyImpl implements StateChangeStrategy {
 					modNodes.add(nodes[i]);
 				break;
 			case RANDOM:
-				List<Node> rNodes = new LinkedList<Node>(Arrays.asList(nodes));
+				List<Node> rNodes = Arrays.asList(nodes);
 				for (int i = 0; i < k; ++i)
-					if (exactlyK)
-						modNodes.add(rNodes.remove(random.nextInt(rNodes.size())));
-					else {
-						Node node = rNodes.get(random.nextInt(rNodes.size()));
-						if (!modNodes.contains(node))
-							modNodes.add(node);
-					}
+					modNodes.add(rNodes.remove(random.nextInt(rNodes.size())));
 				break;
 			case RANDOM_RANDOM:
-				rNodes = new LinkedList<Node>(Arrays.asList(nodes));
+				rNodes = Arrays.asList(nodes);
 				for (int i = 0; i < k; ++i) {
-					Node rNode;
-					if (exactlyK)
-						rNode = rNodes.remove(random.nextInt(rNodes.size()));
-					else rNode = rNodes.get(random.nextInt(rNodes.size()));
-					Node[] neighbors = gm.getGraph().getNeighbors(rNode).toArray();
-					Node node = neighbors[random.nextInt(neighbors.length)];
-					if (!modNodes.contains(node))
-						modNodes.add(node);
+					int index = random.nextInt(rNodes.size());
+					Node[] neighbors = gm.getGraph().getNeighbors(rNodes.get(index)).toArray();
+					Node rNode = neighbors[random.nextInt(neighbors.length)];
+					rNodes.remove(rNode);
+					modNodes.add(rNode);
 				}
 				break;
 			default:
@@ -120,45 +104,5 @@ public class StateChangeStrategyImpl implements StateChangeStrategy {
 	private double getScalarValueForColumn(Node node, AttributeColumn column) {
 		Number value = (Number)node.getNodeData().getAttributes().getValue(column.getId());
 		return value.doubleValue();
-	}
-
-	public AttributeColumn getAttributeColumn() {
-		return attributeColumn;
-	}
-
-	public int getK() {
-		return k;
-	}
-
-	public boolean isExactlyK() {
-		return exactlyK;
-	}
-
-	public ModifyStrategyType getMstype() {
-		return mstype;
-	}
-
-	public String getStateName() {
-		return stateName;
-	}
-
-	public void setAttributeColumn(AttributeColumn attributeColumn) {
-		this.attributeColumn = attributeColumn;
-	}
-
-	public void setK(int k) {
-		this.k = k;
-	}
-
-	public void setExactlyK(boolean exactlyK) {
-		this.exactlyK = exactlyK;
-	}
-
-	public void setMstype(ModifyStrategyType mstype) {
-		this.mstype = mstype;
-	}
-
-	public void setStateName(String stateName) {
-		this.stateName = stateName;
 	}
 }
