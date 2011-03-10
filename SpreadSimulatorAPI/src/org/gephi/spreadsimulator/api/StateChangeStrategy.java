@@ -20,8 +20,6 @@
  */
 package org.gephi.spreadsimulator.api;
 
-import org.gephi.data.attributes.api.AttributeColumn;
-
 /**
  * It is a service and can therefore be found in Lookup:
  * <pre>StateChangeStrategy scs = Lookup.getDefault().lookup(StateChangeStrategy.class);</pre>
@@ -29,5 +27,5 @@ import org.gephi.data.attributes.api.AttributeColumn;
  * @author Cezary Bartosiak
  */
 public interface StateChangeStrategy {
-	public void changeStates(AttributeColumn attributeColumn, int k, ModifyStrategyType mstype, String stateName);
+	public void changeStates();
 }

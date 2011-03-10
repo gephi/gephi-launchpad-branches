@@ -11,10 +11,14 @@ import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
 import javax.swing.JPanel;
+import org.gephi.spreadsimulator.api.RemovalStrategy;
+import org.gephi.spreadsimulator.api.RemovalStrategyUI;
 import org.gephi.spreadsimulator.api.Simulation;
 import org.gephi.spreadsimulator.api.SimulationEvent;
 import org.gephi.spreadsimulator.api.SimulationEvent.EventType;
 import org.gephi.spreadsimulator.api.SimulationListener;
+import org.gephi.spreadsimulator.api.StateChangeStrategy;
+import org.gephi.spreadsimulator.api.StateChangeStrategyUI;
 import org.gephi.spreadsimulator.spi.StopCondition;
 import org.gephi.spreadsimulator.spi.StopConditionBuilder;
 import org.gephi.spreadsimulator.spi.StopConditionUI;
@@ -45,6 +49,11 @@ public final class SpreadSimulatorTopComponent extends TopComponent {
 	private ComboBoxModel    scComboBoxModel;
 	private DefaultListModel scListModel;
 
+	private StateChangeStrategy scs;
+	private StateChangeStrategyUI scsUI;
+	private RemovalStrategy rs;
+	private RemovalStrategyUI rsUI;
+
 	private Simulation simulation;
 
 	public SpreadSimulatorTopComponent() {
@@ -59,6 +68,11 @@ public final class SpreadSimulatorTopComponent extends TopComponent {
 		scComboBoxModel = new DefaultComboBoxModel(scMap.keySet().toArray());
 		scListModel = new DefaultListModel();
 
+		scs = Lookup.getDefault().lookup(StateChangeStrategy.class);
+		scsUI = Lookup.getDefault().lookup(StateChangeStrategyUI.class);
+		rs = Lookup.getDefault().lookup(RemovalStrategy.class);
+		rsUI = Lookup.getDefault().lookup(RemovalStrategyUI.class);
+
 		simulation = Lookup.getDefault().lookup(Simulation.class);
 		simulation.addSimulationListener(new SimulationListener() {
 			@Override
@@ -67,8 +81,8 @@ public final class SpreadSimulatorTopComponent extends TopComponent {
 					scListModel.clear();
 					addSCButton.setEnabled(true);
 					removeSCButton.setEnabled(false);
-					// fireSCSButton.setEnabled(true);
-					// fireRSButton.setEnabled(true);
+					fireSCSButton.setEnabled(true);
+					fireRSButton.setEnabled(true);
 					delayFormattedTextField.setText(simulation.getDelay() + "");
 					delayFormattedTextField.setEnabled(true);
 					stopButton.setEnabled(false);
@@ -91,6 +105,8 @@ public final class SpreadSimulatorTopComponent extends TopComponent {
 				else if (event.is(EventType.CANCEL)) {
 					addSCButton.setEnabled(true);
 					removeSCButton.setEnabled(true);
+					fireSCSButton.setEnabled(true);
+					fireRSButton.setEnabled(true);
 					stopButton.setEnabled(false);
 					startButton.setEnabled(!simulation.isFinished());
 					nextStepButton.setEnabled(!simulation.isFinished());
@@ -101,6 +117,8 @@ public final class SpreadSimulatorTopComponent extends TopComponent {
 				else if (event.is(EventType.PREVIOUS_STEP)) {
 					addSCButton.setEnabled(true);
 					removeSCButton.setEnabled(true);
+					fireSCSButton.setEnabled(true);
+					fireRSButton.setEnabled(true);
 					startButton.setEnabled(true);
 					previousStepButton.setEnabled(simulation.getSimulationData().getCurrentStep() > 0);
 					nextStepButton.setEnabled(true);
@@ -108,6 +126,8 @@ public final class SpreadSimulatorTopComponent extends TopComponent {
 				else if (event.is(EventType.NEXT_STEP)) {
 					addSCButton.setEnabled(simulation.isCancelled());
 					removeSCButton.setEnabled(simulation.isCancelled());
+					fireSCSButton.setEnabled(simulation.isCancelled());
+					fireRSButton.setEnabled(simulation.isCancelled());
 					startButton.setEnabled(simulation.isCancelled() && !simulation.isFinished());
 					stepLabel.setText(NbBundle.getMessage(SpreadSimulatorTopComponent.class, "SpreadSimulatorTopComponent.stepLabel.text")
 							+ " " + simulation.getSimulationData().getCurrentStep());
@@ -161,6 +181,11 @@ public final class SpreadSimulatorTopComponent extends TopComponent {
 
         org.openide.awt.Mnemonics.setLocalizedText(fireSCSButton, org.openide.util.NbBundle.getMessage(SpreadSimulatorTopComponent.class, "SpreadSimulatorTopComponent.fireSCSButton.text")); // NOI18N
         fireSCSButton.setEnabled(false);
+        fireSCSButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                fireSCSActionPerformed(evt);
+            }
+        });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 3;
@@ -185,6 +210,11 @@ public final class SpreadSimulatorTopComponent extends TopComponent {
 
         org.openide.awt.Mnemonics.setLocalizedText(fireRSButton, org.openide.util.NbBundle.getMessage(SpreadSimulatorTopComponent.class, "SpreadSimulatorTopComponent.fireRSButton.text")); // NOI18N
         fireRSButton.setEnabled(false);
+        fireRSButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                fireRSActionPerformed(evt);
+            }
+        });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 4;
@@ -365,6 +395,24 @@ public final class SpreadSimulatorTopComponent extends TopComponent {
 		}
 	}//GEN-LAST:event_removeSCButtonActionPerformed
 
+	private void fireSCSActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fireSCSActionPerformed
+		JPanel settingsPanel = scsUI.getSettingsPanel();
+		scsUI.setup(scs);
+		DialogDescriptor dd = new DialogDescriptor(settingsPanel, "State Change Strategy");
+		if (DialogDisplayer.getDefault().notify(dd).equals(NotifyDescriptor.OK_OPTION))
+			scsUI.unsetup();
+		scs.changeStates();
+	}//GEN-LAST:event_fireSCSActionPerformed
+
+	private void fireRSActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fireRSActionPerformed
+		JPanel settingsPanel = rsUI.getSettingsPanel();
+		rsUI.setup(rs);
+		DialogDescriptor dd = new DialogDescriptor(settingsPanel, "Removal Strategy");
+		if (DialogDisplayer.getDefault().notify(dd).equals(NotifyDescriptor.OK_OPTION))
+			rsUI.unsetup();
+		rs.removeNodes();
+	}//GEN-LAST:event_fireRSActionPerformed
+
 	private void stopButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_stopButtonActionPerformed
 		simulation.cancel();
 	}//GEN-LAST:event_stopButtonActionPerformed
@@ -372,6 +420,8 @@ public final class SpreadSimulatorTopComponent extends TopComponent {
 	private void startButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startButtonActionPerformed
 		addSCButton.setEnabled(false);
 		removeSCButton.setEnabled(false);
+		fireSCSButton.setEnabled(false);
+		fireRSButton.setEnabled(false);
 		startButton.setEnabled(false);
 		nextStepButton.setEnabled(false);
 
@@ -384,6 +434,8 @@ public final class SpreadSimulatorTopComponent extends TopComponent {
 	private void previousStepButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_previousStepButtonActionPerformed
 		addSCButton.setEnabled(false);
 		removeSCButton.setEnabled(false);
+		fireSCSButton.setEnabled(false);
+		fireRSButton.setEnabled(false);
 		startButton.setEnabled(false);
 		previousStepButton.setEnabled(false);
 		nextStepButton.setEnabled(false);
@@ -394,6 +446,8 @@ public final class SpreadSimulatorTopComponent extends TopComponent {
 	private void nextStepButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nextStepButtonActionPerformed
 		addSCButton.setEnabled(false);
 		removeSCButton.setEnabled(false);
+		fireSCSButton.setEnabled(false);
+		fireRSButton.setEnabled(false);
 		startButton.setEnabled(false);
 		nextStepButton.setEnabled(false);
 

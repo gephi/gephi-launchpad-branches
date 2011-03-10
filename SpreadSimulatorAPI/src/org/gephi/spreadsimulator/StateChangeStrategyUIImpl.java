@@ -47,7 +47,6 @@ public class StateChangeStrategyUIImpl implements StateChangeStrategyUI {
 		if (panel != null) {
 			panel.setAttributeColumn(scs.getAttributeColumn());
 			panel.setK(scs.getK());
-			panel.setExactlyK(scs.isExactlyK());
 			panel.setMstype(scs.getMstype());
 			panel.setStateName(scs.getStateName());
 		}
@@ -58,7 +57,6 @@ public class StateChangeStrategyUIImpl implements StateChangeStrategyUI {
 		if (panel != null) {
 			scs.setAttributeColumn(panel.getAttributeColumn());
 			scs.setK(panel.getK());
-			scs.setExactlyK(panel.isExactlyK());
 			scs.setMstype(panel.getMstype());
 			scs.setStateName(panel.getStateName());
 		}
