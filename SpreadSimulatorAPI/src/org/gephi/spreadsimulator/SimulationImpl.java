@@ -78,15 +78,22 @@ import org.openide.util.lookup.ServiceProvider;
 public class SimulationImpl implements Simulation {
 	private SimulationEventManager eventManager;
 
+	private ProjectController pc;
+	private Workspace[] workspaces;
+	private GraphController gc;
+
 	private List<StopCondition> stopConditions;
-	private SimulationDataImpl simulationData;
+	private List<SimulationDataImpl> simulationDatas;
 	private InitialEventFactoryImpl ieFactory;
 	private ChoiceFactoryImpl cFactory;
 
 	private long delay;
+	private int simnr;
+	private int count;
 	private boolean cancel;
 	private ProgressTicket progressTicket;
 	private boolean finished;
+	private boolean nextSim;
 
 	private AttributeListener al;
 
@@ -103,11 +110,11 @@ public class SimulationImpl implements Simulation {
 				if (event.is(AttributeEvent.EventType.ADD_COLUMN) &&
 						event.getData().getAddedColumns()[0].getId().equals(SimulationData.NM_CURRENT_STATE))
 					for (Node node : gc.getModel(workspaces[0]).getGraph().getNodes()) {
-						node.getNodeData().setR(simulationData.getRForState(
+						node.getNodeData().setR(simulationDatas.get(simnr).getRForState(
 								(String)node.getNodeData().getAttributes().getValue(SimulationData.NM_CURRENT_STATE)));
-						node.getNodeData().setG(simulationData.getGForState(
+						node.getNodeData().setG(simulationDatas.get(simnr).getGForState(
 								(String)node.getNodeData().getAttributes().getValue(SimulationData.NM_CURRENT_STATE)));
-						node.getNodeData().setB(simulationData.getBForState(
+						node.getNodeData().setB(simulationDatas.get(simnr).getBForState(
 								(String)node.getNodeData().getAttributes().getValue(SimulationData.NM_CURRENT_STATE)));
 					}
 				else if (event.is(AttributeEvent.EventType.SET_VALUE))
@@ -116,12 +123,18 @@ public class SimulationImpl implements Simulation {
 						Object ob = event.getData().getTouchedObjects()[i];
 						if (av.getColumn().getId().equals(SimulationData.NM_CURRENT_STATE) && ob instanceof NodeData) {
 							NodeData nodeData = (NodeData)ob;
-							nodeData.setR(simulationData.getRForState(
-									(String)nodeData.getAttributes().getValue(SimulationData.NM_CURRENT_STATE)));
-							nodeData.setG(simulationData.getGForState(
-									(String)nodeData.getAttributes().getValue(SimulationData.NM_CURRENT_STATE)));
-							nodeData.setB(simulationData.getBForState(
-									(String)nodeData.getAttributes().getValue(SimulationData.NM_CURRENT_STATE)));
+							try {
+								if (simulationDatas.size() > simnr)
+									nodeData.setR(simulationDatas.get(simnr).getRForState(
+										(String)nodeData.getAttributes().getValue(SimulationData.NM_CURRENT_STATE)));
+								if (simulationDatas.size() > simnr)
+									nodeData.setG(simulationDatas.get(simnr).getGForState(
+										(String)nodeData.getAttributes().getValue(SimulationData.NM_CURRENT_STATE)));
+								if (simulationDatas.size() > simnr)
+									nodeData.setB(simulationDatas.get(simnr).getBForState(
+										(String)nodeData.getAttributes().getValue(SimulationData.NM_CURRENT_STATE)));
+							}
+							catch (Exception ex) { }
 						}
 					}
 			}
@@ -130,18 +143,22 @@ public class SimulationImpl implements Simulation {
 
 	@Override
 	public void init() {
-		ProjectController pc = Lookup.getDefault().lookup(ProjectController.class);
-		Workspace[] workspaces = pc.getCurrentProject().getLookup().lookup(WorkspaceProvider.class).getWorkspaces();
-		GraphController gc = Lookup.getDefault().lookup(GraphController.class);
+		pc = Lookup.getDefault().lookup(ProjectController.class);
+		workspaces = pc.getCurrentProject().getLookup().lookup(WorkspaceProvider.class).getWorkspaces();
+		gc = Lookup.getDefault().lookup(GraphController.class);
 
 		stopConditions = new ArrayList<StopCondition>();
-		simulationData = new SimulationDataImpl(gc.getModel(workspaces[0]), gc.getModel(workspaces[1]));
+		simulationDatas = new ArrayList<SimulationDataImpl>();
+		simulationDatas.add(new SimulationDataImpl(gc.getModel(workspaces[0]), gc.getModel(workspaces[1])));
 		ieFactory = new InitialEventFactoryImpl();
 		cFactory = new ChoiceFactoryImpl();
 
 		delay = 1000;
+		simnr = 0;
+		count = 1;
 		cancel = true;
 		finished = false;
+		nextSim = false;
 
 		AttributeModel networkAttributeModel = Lookup.getDefault().lookup(AttributeController.class).getModel(workspaces[0]);
 
@@ -151,9 +168,9 @@ public class SimulationImpl implements Simulation {
 		if (!networkAttributeModel.getNodeTable().hasColumn(SimulationDataImpl.NM_CURRENT_STATE))
 			networkAttributeModel.getNodeTable().addColumn(SimulationDataImpl.NM_CURRENT_STATE,
 					SimulationData.NM_CURRENT_STATE_TITLE, AttributeType.STRING,
-					AttributeOrigin.DATA, simulationData.getDefaultState());
+					AttributeOrigin.DATA, simulationDatas.get(simnr).getDefaultState());
 		else for (Node node : gc.getModel(workspaces[0]).getGraph().getNodes())
-			node.getNodeData().getAttributes().setValue(SimulationData.NM_CURRENT_STATE, simulationData.getDefaultState());
+			node.getNodeData().getAttributes().setValue(SimulationData.NM_CURRENT_STATE, simulationDatas.get(simnr).getDefaultState());
 
 		fireSimulationEvent(new SimulationEventImpl(EventType.INIT));
 	}
@@ -177,7 +194,7 @@ public class SimulationImpl implements Simulation {
 
 	@Override
 	public SimulationData getSimulationData() {
-		return simulationData;
+		return simulationDatas.get(simnr);
 	}
 
 	@Override
@@ -197,7 +214,6 @@ public class SimulationImpl implements Simulation {
 
 		fireSimulationEvent(new SimulationEventImpl(EventType.START));
 
-		final Simulation sim = this;
 		TimerTask task = new TimerTask() {
 			@Override
 			public void run() {
@@ -207,12 +223,54 @@ public class SimulationImpl implements Simulation {
 					timer.cancel();
 					timer.purge();
 					Progress.finish(progressTicket);
-					sim.cancel();
 				}
 			}
 		};
 		cancel = false;
 		timer.schedule(task, delay, delay);
+	}
+
+	@Override
+	public void start(int count) {
+		this.count = count;
+		if (count < 1)
+			throw new IllegalArgumentException("Count must be greater than 0.");
+
+		Map<Node, String> nsmap = new HashMap<Node, String>();
+		for (Node node : gc.getModel(workspaces[0]).getGraph().getNodes())
+			nsmap.put(node, (String)node.getNodeData().getAttributes().getValue(SimulationData.NM_CURRENT_STATE));
+
+		if (count == 1)
+			start();
+		else {
+			Progress.start(progressTicket, count);
+			fireSimulationEvent(new SimulationEventImpl(EventType.START));
+			cancel = false;
+
+			for (simnr = 0; simnr < count; ++simnr) {
+				while (!cancel && !nextSim)
+					nextStep();
+				for (Node node : gc.getModel(workspaces[0]).getGraph().getNodes())
+					node.getNodeData().getAttributes().setValue(SimulationData.NM_CURRENT_STATE, nsmap.get(node));
+				if (cancel) {
+					simulationDatas = new ArrayList<SimulationDataImpl>();
+					simulationDatas.add(new SimulationDataImpl(gc.getModel(workspaces[0]), gc.getModel(workspaces[1])));
+					simnr = 0;
+					count = 1;
+					Progress.finish(progressTicket);
+					return;
+				}
+				nextSim = false;
+				if (simnr < count - 1)
+					simulationDatas.add(new SimulationDataImpl(gc.getModel(workspaces[0]), gc.getModel(workspaces[1])));
+				Progress.progress(progressTicket, simnr);
+			}
+			simnr--;
+
+			finished = true;
+			fireSimulationEvent(new SimulationEventImpl(EventType.FINISHED));
+			Progress.finish(progressTicket);
+		}
 	}
 
 	@Override
@@ -243,32 +301,45 @@ public class SimulationImpl implements Simulation {
 		if (finished)
 			return;
 
+		SimulationDataImpl simd = simulationDatas.get(simnr);
 		Map<Node, String> newStates = new HashMap<Node, String>();
-		for (Node nmNode : simulationData.getNetworkModel().getGraph().getNodes()) {
-			simulationData.setCurrentlyExaminedNode(nmNode);
+		for (Node nmNode : simd.getNetworkModel().getGraph().getNodes()) {
+			simd.setCurrentlyExaminedNode(nmNode);
 			String currentState = (String)nmNode.getNodeData().getAttributes().getValue(SimulationData.NM_CURRENT_STATE);
-			Node smNode = simulationData.getStateMachineNodeForState(currentState);
-
-			String state = null;
-			List<Edge> edges = new ArrayList<Edge>();
-			for (Edge smEdge : simulationData.getStateMachineModel().getDirectedGraph().getOutEdges(smNode).toArray()) {
-				InitialEvent ie = ieFactory.getInitialEvent(
-						(String)smEdge.getEdgeData().getAttributes().getValue(SimulationData.SM_INITIAL_EVENT));
-				if (ie.isOccuring(simulationData))
-					edges.add(smEdge);
+			Node smNode = simd.getStateMachineNodeForState(currentState);
+			Edge[] outsmEdges = simd.getStateMachineModel().getDirectedGraph().getOutEdges(smNode).toArray();
+			Map<Edge, InitialEvent> edgeIEventMap = new HashMap<Edge, InitialEvent>();
+			for (Edge smEdge : outsmEdges)
+				edgeIEventMap.put(smEdge, ieFactory.getInitialEvent(
+						(String)smEdge.getEdgeData().getAttributes().getValue(SimulationData.SM_INITIAL_EVENT)));
+			Map<InitialEvent, List<Edge>> ieventEdgesMap = new HashMap<InitialEvent, List<Edge>>();
+			for (Edge smEdge : outsmEdges) {
+				InitialEvent ie = edgeIEventMap.get(smEdge);
+				if (!ieventEdgesMap.containsKey(ie))
+					ieventEdgesMap.put(ie, new ArrayList<Edge>());
+				if (ie.isOccuring(simd))
+					ieventEdgesMap.get(ie).add(smEdge);
 			}
-			if (!edges.isEmpty())
-				edges = Arrays.asList(cFactory.getChoice(
-							(String)edges.get(0).getEdgeData().getAttributes().getValue(SimulationData.SM_CHOICE)).
-							chooseEdges(edges.toArray(new Edge[0])));
-			for (Edge smEdge : edges) {
-				Double probability = (Double)smEdge.getEdgeData().getAttributes().getValue(SimulationData.SM_PROBABILITY);
-				boolean aout = false;
-				InitialEvent ie = ieFactory.getInitialEvent(
-						(String)smEdge.getEdgeData().getAttributes().getValue(SimulationData.SM_INITIAL_EVENT));
-				aout = ie.getAlgorithm().tryDoTransition(simulationData, probability);
-				if (aout) {
-					state = (String)smEdge.getTarget().getNodeData().getAttributes().getValue(SimulationData.SM_STATE_NAME);
+			List<List<Edge>> redges = new ArrayList<List<Edge>>();
+			for (Entry<InitialEvent, List<Edge>> entry : ieventEdgesMap.entrySet())
+				if (!entry.getValue().isEmpty())
+					redges.add(entry.getValue());
+
+			if (!redges.isEmpty())
+				redges = cFactory.getChoice(
+							(String)redges.get(0).get(0).getEdgeData().getAttributes().getValue(SimulationData.SM_CHOICE)).
+							chooseEdges(redges);
+			String state = null;
+			for (List<Edge> edges : redges) {
+				Map<Edge, Double> probs = new HashMap<Edge, Double>();
+				for (Edge e : edges) {
+					Double probability = (Double)e.getEdgeData().getAttributes().getValue(SimulationData.SM_PROBABILITY);
+					probs.put(e, probability);
+				}
+				InitialEvent ie = edgeIEventMap.get(edges.get(0));
+				Edge redge = ie.getAlgorithm().tryDoTransition(simd, probs);
+				if (redge != null) {
+					state = (String)redge.getTarget().getNodeData().getAttributes().getValue(SimulationData.SM_STATE_NAME);
 					break;
 				}
 			}
@@ -278,14 +349,18 @@ public class SimulationImpl implements Simulation {
 			if (entry.getValue() != null)
 				entry.getKey().getNodeData().getAttributes().setValue(SimulationData.NM_CURRENT_STATE, entry.getValue());
 
-		simulationData.incrementCurrentStep();
+		simulationDatas.get(simnr).incrementCurrentStep();
 		for (StopCondition sc : stopConditions)
-			if (sc.isOccuring(simulationData)) {
-				finished = true;
+			if (sc.isOccuring(simulationDatas.get(simnr))) {
+				if (count == 1)
+					finished = true;
+				else nextSim = true;
 				break;
 			}
 
-		fireSimulationEvent(new SimulationEventImpl(EventType.NEXT_STEP));
+		if (finished)
+			fireSimulationEvent(new SimulationEventImpl(EventType.FINISHED));
+		else fireSimulationEvent(new SimulationEventImpl(EventType.NEXT_STEP));
 	}
 
 	@Override
@@ -295,29 +370,48 @@ public class SimulationImpl implements Simulation {
 
 	@Override
 	public String getReport() {
-		String[] states = simulationData.getStates();
+		String[] states = simulationDatas.get(simnr).getStates();
 		
 		Color[] colors = new Color[states.length];
 		for (int i = 0; i < states.length; ++i) {
-			int r = (int)(255.0f * simulationData.getRForState(states[i]));
-			int g = (int)(255.0f * simulationData.getGForState(states[i]));
-			int b = (int)(255.0f * simulationData.getBForState(states[i]));
+			int r = (int)(255.0f * simulationDatas.get(simnr).getRForState(states[i]));
+			int g = (int)(255.0f * simulationDatas.get(simnr).getGForState(states[i]));
+			int b = (int)(255.0f * simulationDatas.get(simnr).getBForState(states[i]));
 			float[] hsbValues = new float[3];
 			hsbValues = Color.RGBtoHSB(r, g, b, hsbValues);
 			colors[i] = Color.getHSBColor(hsbValues[0], hsbValues[1], hsbValues[2]);
 		}
-		
+
+		int maxStep = 0;
+		for (int i = 0; i <= simnr; ++i)
+			if (maxStep < simulationDatas.get(i).getCurrentStep())
+				maxStep = simulationDatas.get(i).getCurrentStep();
+		List<Map<String, Integer>> ncss = new ArrayList<Map<String, Integer>>();
+		for (int i = 0; i <= maxStep; ++i) {
+			ncss.add(new HashMap<String, Integer>());
+			for (int j = 0; j < states.length; ++j)
+				ncss.get(i).put(states[j], 0);
+		}
+
 		XYSeriesCollection[] datasets = new XYSeriesCollection[states.length];
 		for (int i = 0; i < states.length; ++i) {
 			XYSeries series = new XYSeries(states[i]);
-			for (int j = 0; j <= simulationData.getCurrentStep(); ++j)
-				series.add(j, simulationData.getNodesCountInStateAndStep(states[i], j));
+			for (int j = 0; j <= maxStep; ++j) {
+				int sum = 0;
+				for (int k = 0; k <= simnr; ++k)
+					if (simulationDatas.get(k).getCurrentStep() >= j)
+						sum += simulationDatas.get(k).getNodesCountInStateAndStep(states[i], j);
+					else sum += simulationDatas.get(k).getNodesCountInStateAndStep(states[i],
+								simulationDatas.get(k).getCurrentStep());
+				ncss.get(j).put(states[i], sum / (simnr + 1));
+				series.add(j, ncss.get(j).get(states[i]));
+			}
 			datasets[i] = new XYSeriesCollection();
 			datasets[i].addSeries(series);
 		}
 
 		String stable = "<table border=\"1\">";
-		for (int i = 0; i <= simulationData.getCurrentStep() + 1; ++i) {
+		for (int i = 0; i <= maxStep + 1; ++i) {
 			stable += "<tr>";
 			for (int j = 0; j < states.length + 1; ++j) {
 				stable += "<td>";
@@ -327,7 +421,7 @@ public class SimulationImpl implements Simulation {
 					stable += states[j - 1];
 				else if (j == 0)
 					stable += (i - 1);
-				else stable += simulationData.getNodesCountInStateAndStep(states[j - 1], i - 1);
+				else stable += ncss.get(i - 1).get(states[j - 1]);
 				stable += "</td>";
 			}
 			stable += "</tr>";
@@ -355,9 +449,9 @@ public class SimulationImpl implements Simulation {
 			plot.setRangeGridlinePaint(Color.WHITE);
 			plot.setRenderer(renderer);
 			plot.getDomainAxis().setStandardTickUnits(NumberAxis.createIntegerTickUnits());
-			plot.getDomainAxis().setRange(0, simulationData.getCurrentStep());
+			plot.getDomainAxis().setRange(0, maxStep);
 			plot.getRangeAxis().setStandardTickUnits(NumberAxis.createIntegerTickUnits());
-			plot.getRangeAxis().setRange(0, simulationData.getNetworkModel().getGraph().getNodeCount());
+			plot.getRangeAxis().setRange(0, simulationDatas.get(simnr).getNetworkModel().getGraph().getNodeCount());
 		}
 
 		String[] images = new String[states.length];

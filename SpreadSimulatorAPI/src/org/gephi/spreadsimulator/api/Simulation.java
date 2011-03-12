@@ -46,6 +46,8 @@ public interface Simulation extends LongTask {
 
 	public void start();
 
+	public void start(int count);
+
 	public boolean isCancelled();
 
 	public void previousStep();

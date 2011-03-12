@@ -20,6 +20,8 @@
  */
 package org.gephi.spreadsimulator.spi;
 
+import java.util.Map;
+import org.gephi.graph.api.Edge;
 import org.gephi.spreadsimulator.api.SimulationData;
 
 /**
@@ -28,5 +30,5 @@ import org.gephi.spreadsimulator.api.SimulationData;
  * @author Cezary Bartosiak
  */
 public interface TransitionAlgorithm {
-	public boolean tryDoTransition(SimulationData simulationData, double probability);
+	public Edge tryDoTransition(SimulationData simulationData, Map<Edge, Double> probs);
 }

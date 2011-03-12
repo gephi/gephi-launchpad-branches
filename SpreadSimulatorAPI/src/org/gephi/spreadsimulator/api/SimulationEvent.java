@@ -33,7 +33,8 @@ public interface SimulationEvent {
 		CANCEL,
 		START,
 		PREVIOUS_STEP,
-		NEXT_STEP
+		NEXT_STEP,
+		FINISHED
 	};
 
 	public EventType getEventType();

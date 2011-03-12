@@ -20,7 +20,10 @@
  */
 package org.gephi.spreadsimulator.plugin.initialevent;
 
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Random;
+import org.gephi.graph.api.Edge;
 import org.gephi.graph.api.Node;
 import org.gephi.spreadsimulator.api.SimulationData;
 import org.gephi.spreadsimulator.spi.TransitionAlgorithm;
@@ -38,14 +41,19 @@ public class NeighbourhoodAlgorithm implements TransitionAlgorithm {
 	}
 
 	@Override
-	public boolean tryDoTransition(SimulationData simulationData, double probability) {
-		Random random = new Random();
+	public Edge tryDoTransition(SimulationData simulationData, Map<Edge, Double> probs) {
 		Node ceNode = simulationData.getCurrentlyExaminedNode();
 		for (Node node : simulationData.getNetworkModel().getGraph().getNeighbors(ceNode).toArray())
 			for (String state : states)
-				if (state.equals(node.getNodeData().getAttributes().getValue(simulationData.NM_CURRENT_STATE)) &&
-						random.nextDouble() <= probability)
-					return true;
-		return false;
+				if (state.equals(node.getNodeData().getAttributes().getValue(simulationData.NM_CURRENT_STATE))) {
+					double p = new Random().nextDouble();
+					double sum = 0.0;
+					for (Entry<Edge, Double> prob : probs.entrySet()) {
+						sum += prob.getValue();
+						if (p <= sum)
+							return prob.getKey();
+					}
+				}
+		return null;
 	}
 }

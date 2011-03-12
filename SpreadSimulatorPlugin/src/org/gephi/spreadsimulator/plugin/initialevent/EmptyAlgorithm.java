@@ -20,7 +20,12 @@
  */
 package org.gephi.spreadsimulator.plugin.initialevent;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Random;
+import org.gephi.graph.api.Edge;
 import org.gephi.spreadsimulator.api.SimulationData;
 import org.gephi.spreadsimulator.spi.TransitionAlgorithm;
 
@@ -31,10 +36,14 @@ import org.gephi.spreadsimulator.spi.TransitionAlgorithm;
  */
 public class EmptyAlgorithm implements TransitionAlgorithm {
 	@Override
-	public boolean tryDoTransition(SimulationData simulationData, double probability) {
-		Random random = new Random();
-		if (random.nextDouble() <= probability)
-			return true;
-		return false;
+	public Edge tryDoTransition(SimulationData simulationData, Map<Edge, Double> probs) {
+		double p = new Random().nextDouble();
+		double sum = 0.0;
+		for (Entry<Edge, Double> prob : probs.entrySet()) {
+			sum += prob.getValue();
+			if (p <= sum)
+				return prob.getKey();
+		}
+		return null;
 	}
 }

@@ -20,8 +20,9 @@
  */
 package org.gephi.spreadsimulator.plugin.choice;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 import org.gephi.graph.api.Edge;
 import org.gephi.spreadsimulator.api.SimulationData;
 import org.gephi.spreadsimulator.spi.Choice;
@@ -33,17 +34,17 @@ import org.gephi.spreadsimulator.spi.Choice;
  */
 public class Priority implements Choice {
 	@Override
-	public Edge[] chooseEdges(Edge[] edges) {
-		Arrays.sort(edges, new PrioComparator());
-		return edges;
+	public List<List<Edge>> chooseEdges(List<List<Edge>> redges) {
+		Collections.sort(redges, new PrioComparator());
+		return redges;
 	}
 
-	private class PrioComparator implements Comparator<Edge> {
+	private class PrioComparator implements Comparator<List<Edge>> {
 		@Override
-		public int compare(Edge e1, Edge e2) {
-			int e1Prio = Integer.parseInt(((String)e1.getEdgeData().getAttributes().getValue(SimulationData.SM_CHOICE)).split(":")[1]);
-			int e2Prio = Integer.parseInt(((String)e2.getEdgeData().getAttributes().getValue(SimulationData.SM_CHOICE)).split(":")[1]);
-			return e1Prio - e2Prio;
+		public int compare(List<Edge> le1, List<Edge> le2) {
+			int le1Prio = Integer.parseInt(((String)le1.get(0).getEdgeData().getAttributes().getValue(SimulationData.SM_CHOICE)).split(":")[1]);
+			int le2Prio = Integer.parseInt(((String)le2.get(0).getEdgeData().getAttributes().getValue(SimulationData.SM_CHOICE)).split(":")[1]);
+			return le1Prio - le2Prio;
 		}
 	}
 }
