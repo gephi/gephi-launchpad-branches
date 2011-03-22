@@ -88,18 +88,16 @@ public class JogAmpNativesInstaller extends ModuleInstall {
                 @Override
                 public void run() {
 
-                    com.jogamp.gluegen.runtime.NativeLibLoader.disableLoading();
-                    com.jogamp.nativewindow.impl.NWJNILibLoader.disableLoading();
-                    com.jogamp.newt.impl.NEWTJNILibLoader.disableLoading();
-                    // find opengl lib loader to disable it
-
                     final String prefix = getPrefix(osDir);
                     final String suffix = getSuffix(osDir);
 
                     loadLibrary(jogAmpDistFolder, "gluegen-rt", prefix, suffix);
+                    if (osDir.equals("macosx")) {
+                        loadLibrary(jogAmpDistFolder, "jocl", prefix, ".dylib");
+                    } else {
+                        loadLibrary(jogAmpDistFolder, "jocl", prefix, suffix);
+                    }
                     loadLibrary(jogAmpDistFolder, "jogl_desktop", prefix, suffix);
-                    loadLibrary(jogAmpDistFolder, "jogl_es1", prefix, suffix);
-                    loadLibrary(jogAmpDistFolder, "jogl_es2", prefix, suffix);
                     if (osDir.equals("linux")) {
                         loadLibrary(jogAmpDistFolder, "nativewindow_x11", prefix, suffix);
                     } else if (osDir.equals("windows")) {

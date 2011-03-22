@@ -25,6 +25,7 @@
             <folder name="graphmode">
                 <file name="GraphTopComponent.wstcref" url="GraphTopComponentWstcref.xml"/>
             </folder>
+            <file name="graphmode.wsmode" url="graphmodeWsmode.xml"/>
         </folder>
     </folder>
 </filesystem>
