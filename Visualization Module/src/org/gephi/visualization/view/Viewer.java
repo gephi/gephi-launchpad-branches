@@ -31,7 +31,6 @@ import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLCapabilities;
 import javax.media.opengl.GLEventListener;
 import javax.media.opengl.GLProfile;
-import javax.media.opengl.glu.gl2.GLUgl2;
 
 /**
  *
@@ -44,9 +43,7 @@ public class Viewer implements GLEventListener {
     private NewtCanvasAWT canvas;
     private FPSAnimator animator;
 
-    private float angle = 0.0f;
-    private int width;
-    private int height;
+    static float angle = 0.0f;
 
     public Viewer() {
         final GLCapabilities caps = new GLCapabilities(GLProfile.getDefault());
@@ -80,12 +77,16 @@ public class Viewer implements GLEventListener {
 
     @Override
     public void init(GLAutoDrawable glad) {
-        final GL gl = glad.getGL();
+        final GL2 gl = glad.getGL().getGL2();
 
         // TODO: change initialization code based on config files
 
-        gl.glClearColor(1.0f, 0.5f, 0.5f, 1.0f);
-        gl.glClearDepth(1.0f);
+        gl.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+        gl.glClearDepth(1.0);
+
+        gl.glMatrixMode(GL2.GL_PROJECTION);
+        gl.glLoadIdentity();
+        gl.glOrtho(-1.0, 1.0, -1.0, 1.0, -1.0, 1.0);
     }
 
     @Override
@@ -94,31 +95,27 @@ public class Viewer implements GLEventListener {
 
     @Override
     public void display(GLAutoDrawable glad) {
-        final GL gl = glad.getGL();
+        final GL2 gl = glad.getGL().getGL2();
 
         gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
 
-        GL2 gl2 = gl.getGL2();
+        gl.glColor3f(1.0f, 1.0f, 1.0f);
 
-        gl2.glColor3f(0.0f, 0.5f, 0.5f);
+        gl.glBegin(GL2.GL_POLYGON);
 
-        gl2.glBegin(gl.GL_TRIANGLES);
-
-        final float x = width * 0.5f;
-        final float y = height * 0.5f;
-        final float d = Math.min(width, height) * 0.25f;
         final float c = (float) Math.cos(angle);
         final float s = (float) Math.sin(angle);
 
-        gl2.glVertex2f(x + d*c, y + s*c);
-        gl2.glVertex2f(x - 0.5f*d*s, y + 0.5f*d*c);
-        gl2.glVertex2f(x + 0.5f*d*s, y - 0.5f*d*c);
+        gl.glVertex3f(-0.5f*c, -0.5f*s, 0.0f);
+        gl.glVertex3f(-0.5f*s, 0.5f*c, 0.0f);
+        gl.glVertex3f(0.5f*c, 0.5f*s, 0.0f);
+        gl.glVertex3f(0.5f*s, -0.5f*c, 0.0f);
+        
+        gl.glEnd();
 
-        gl2.glEnd();
+        angle += Math.toRadians(1.0f);
 
-        angle += Math.PI / 180.0f;
-
-        gl2.glFlush();
+        gl.glFlush();
     }
 
     @Override
@@ -126,12 +123,9 @@ public class Viewer implements GLEventListener {
         final GL gl = glad.getGL();
 
         gl.glViewport(0, 0, w, h);
+    }
 
-        GL2 gl2 = gl.getGL2();
-
-        gl2.glMatrixMode(GL2.GL_PROJECTION);
-        gl2.glLoadIdentity();
-        GLUgl2 glu = new GLUgl2();
-        glu.gluOrtho2D(0.0f, w, 0.0f, h);
+    public void updateSize(int x, int y, int w, int h) {
+        this.canvas.setBounds(x, y, w, h);
     }
 }

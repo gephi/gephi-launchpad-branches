@@ -57,6 +57,12 @@ public final class GraphTopComponent extends TopComponent {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        addComponentListener(new java.awt.event.ComponentAdapter() {
+            public void componentResized(java.awt.event.ComponentEvent evt) {
+                formComponentResized(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -68,6 +74,11 @@ public final class GraphTopComponent extends TopComponent {
             .addGap(0, 300, Short.MAX_VALUE)
         );
     }// </editor-fold>//GEN-END:initComponents
+
+    private void formComponentResized(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_formComponentResized
+        Component comp = evt.getComponent();
+        this.viewer.updateSize(comp.getX(), comp.getY(), comp.getWidth(), comp.getHeight());
+    }//GEN-LAST:event_formComponentResized
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables
@@ -110,6 +121,7 @@ public final class GraphTopComponent extends TopComponent {
     @Override
     protected void componentShowing() {
         super.componentShowing();
+        this.validateTree();
         this.viewer.start();
     }
 
