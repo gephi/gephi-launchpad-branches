@@ -4,7 +4,10 @@
  */
 package org.gephi.visualization.components;
 
+import java.awt.BorderLayout;
+import java.awt.Component;
 import java.util.logging.Logger;
+import org.gephi.visualization.view.Viewer;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 import org.openide.windows.WindowManager;
@@ -23,12 +26,27 @@ public final class GraphTopComponent extends TopComponent {
 //    static final String ICON_PATH = "SET/PATH/TO/ICON/HERE";
     private static final String PREFERRED_ID = "GraphTopComponent";
 
+    private Viewer viewer;
+
     public GraphTopComponent() {
         initComponents();
         setName(NbBundle.getMessage(GraphTopComponent.class, "CTL_GraphTopComponent"));
         setToolTipText(NbBundle.getMessage(GraphTopComponent.class, "HINT_GraphTopComponent"));
 //        setIcon(ImageUtilities.loadImage(ICON_PATH, true));
 
+        this.viewer = new Viewer();
+        final Component canvas = viewer.getCanvas();
+
+        WindowManager.getDefault().invokeWhenUIReady(new Runnable() {
+
+            @Override
+            public void run() {
+                open();
+                requestActive();
+                add(canvas, BorderLayout.CENTER);
+                canvas.setVisible(true);
+            }
+        });
     }
 
     /** This method is called from within the constructor to
@@ -90,13 +108,25 @@ public final class GraphTopComponent extends TopComponent {
     }
 
     @Override
+    protected void componentShowing() {
+        super.componentShowing();
+        this.viewer.start();
+    }
+
+    @Override
+    protected void componentHidden() {
+        super.componentHidden();
+        this.viewer.stop();
+    }
+
+    @Override
     public void componentOpened() {
         // TODO add custom code on component opening
     }
 
     @Override
     public void componentClosed() {
-        // TODO add custom code on component closing
+        this.viewer.stop();
     }
 
     void writeProperties(java.util.Properties p) {
