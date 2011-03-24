@@ -21,8 +21,15 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 
 package org.gephi.visualization.model;
 
+import org.gephi.graph.api.Graph;
+import org.gephi.graph.api.GraphController;
+import org.gephi.graph.api.GraphModel;
+import org.gephi.graph.api.Node;
+import org.gephi.graph.api.NodeData;
 import org.gephi.visualization.controller.Controller;
 import org.gephi.visualization.data.FrameData;
+import org.gephi.visualization.data.NodeBatch;
+import org.openide.util.Lookup;
 
 /**
  *
@@ -59,7 +66,6 @@ public class DataManager implements Runnable {
 
     @Override
     public void run() {
-        // TODO: Get Graph data
 
         while (this.isRunning) {
             long beginFrameTime = System.currentTimeMillis();
@@ -70,7 +76,28 @@ public class DataManager implements Runnable {
 
             final FrameData frameData = new FrameData();
 
-            // TODO: Update graph and send it to the viewer
+            final GraphController graphController = Lookup.getDefault().lookup(GraphController.class);
+            final GraphModel model = graphController.getModel();
+            
+            if (model == null) {
+                try {
+                    Thread.sleep(this.frameDuration);
+		} catch (InterruptedException e) {
+                    return;
+		}
+                continue;
+            }
+
+            final Graph graph = model.getGraph();
+
+            final NodeBatch batch = new NodeBatch();
+
+            for(Node n : graph.getNodes()) {
+                NodeData data = n.getNodeData();
+                batch.addNode(data);
+            }
+            
+            frameData.addNodeBatch(batch);
 
             if (this.controller != null) {
                 this.controller.endUpdateFrame(frameData);

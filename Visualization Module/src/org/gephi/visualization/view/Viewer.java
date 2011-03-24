@@ -50,18 +50,24 @@ public class Viewer implements GLEventListener {
     private FrameData frameData = null;
     final private Object frameDataLock;
 
+    // Start OpenGL testing code
+    int angle = 0;
+    // End OpenGL testing code
+
     static { GLProfile.initSingleton(true); }
 
     public Viewer() {
         this.frameDataLock = new Object();
 
         final GLCapabilities caps = new GLCapabilities(GLProfile.getDefault());
+        caps.setDoubleBuffered(true);
+        caps.setHardwareAccelerated(true);
         // TODO: change capabilities based on config files
 
         this.window = GLWindow.create(caps);
         this.window.setAutoSwapBufferMode(true);
-        this.window.setVisible(true);
-
+        this.window.setVisible(false);
+        
         this.animator = new FPSAnimator(this.window, 30);
 
         this.canvas = new NewtCanvasAWT(this.window);
@@ -74,6 +80,7 @@ public class Viewer implements GLEventListener {
 
     public void start() {
         this.window.addGLEventListener(this);
+        this.window.setVisible(true);
 
         this.animator.start();
     }
@@ -81,21 +88,26 @@ public class Viewer implements GLEventListener {
     public void stop() {
         this.animator.stop();
 
+        this.window.setVisible(false);
         this.window.removeGLEventListener(this);
     }
 
     @Override
     public void init(GLAutoDrawable glad) {
-        final GL2 gl = glad.getGL().getGL2();
+        final GL gl = glad.getGL();
+        gl.setSwapInterval(1);
 
         // TODO: change initialization code based on config files
 
-        gl.glClearColor(0.7f, 0.3f, 0.0f, 1.0f);
+        gl.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         gl.glClearDepth(1.0);
 
-        gl.glMatrixMode(GL2.GL_PROJECTION);
-        gl.glLoadIdentity();
-        gl.glOrtho(-1.0, 1.0, -1.0, 1.0, -1.0, 1.0);
+        // Start OpenGL testing code
+        GL2 gl2 = gl.getGL2();
+        gl2.glMatrixMode(GL2.GL_PROJECTION);
+        gl2.glLoadIdentity();
+        gl2.glOrtho(-1.0, 1.0, -1.0, 1.0, -1.0, 1.0);
+        // End OpenGL testing
     }
 
     @Override
@@ -104,7 +116,7 @@ public class Viewer implements GLEventListener {
 
     @Override
     public void display(GLAutoDrawable glad) {
-        final GL2 gl = glad.getGL().getGL2();
+        final GL gl = glad.getGL();
 
         gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
 
@@ -121,6 +133,23 @@ public class Viewer implements GLEventListener {
         }
 
         // TODO: Rendering code
+
+        // Start OpenGL testing code
+        GL2 gl2 = gl.getGL2();
+
+        gl2.glMatrixMode(GL2.GL_MODELVIEW);
+        gl2.glLoadIdentity();
+        gl2.glRotatef(angle, 0.0f, 0.0f, 1.0f);
+
+        gl2.glColor3f(1.0f, 1.0f, 1.0f);
+        gl2.glBegin(GL2.GL_POLYGON);
+            gl2.glVertex2f(-0.5f, -0.5f);
+            gl2.glVertex2f(0.5f, -0.5f);
+            gl2.glVertex2f(0.5f, 0.5f);
+            gl2.glVertex2f(-0.5f, 0.5f);
+        gl2.glEnd();
+        angle++;
+        // End OpenGL testing code
 
 
         if (this.controller != null) {
@@ -145,7 +174,7 @@ public class Viewer implements GLEventListener {
 
     public void updateSize(int x, int y, int w, int h) {
         this.canvas.setBounds(x, y, w, h);
-        this.canvas.validate();
+        this.reshape(this.window, x, y, w, h);
     }
 
     public void setCurrentFrameData(FrameData frameData) {

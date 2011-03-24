@@ -60,7 +60,7 @@ public class Controller implements KeyListener, MouseListener {
     }
 
     public void endUpdateFrame(FrameData frameData) {
-
+        viewer.setCurrentFrameData(frameData);
     }
 
     public void beginRenderFrame() {

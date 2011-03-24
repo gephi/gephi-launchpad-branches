@@ -21,14 +21,22 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 
 package org.gephi.visualization.data;
 
+import java.util.ArrayList;
+
 /**
  *
  * @author Antonio Patriarca <antoniopatriarca@gmail.com>
  */
 public class FrameData {
 
+    final ArrayList<NodeBatch> nodeBatches;
+
     public FrameData() {
-        
+        this.nodeBatches = new ArrayList<NodeBatch>();
+    }
+
+    public final void addNodeBatch(NodeBatch nodeBatch) {
+        this.nodeBatches.add(nodeBatch);
     }
 
 }
