@@ -7,6 +7,8 @@ package org.gephi.visualization.components;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.util.logging.Logger;
+import org.gephi.visualization.controller.Controller;
+import org.gephi.visualization.model.DataManager;
 import org.gephi.visualization.view.Viewer;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
@@ -26,7 +28,9 @@ public final class GraphTopComponent extends TopComponent {
 //    static final String ICON_PATH = "SET/PATH/TO/ICON/HERE";
     private static final String PREFERRED_ID = "GraphTopComponent";
 
-    private Viewer viewer;
+    private final Viewer viewer;
+    private final DataManager dataManager;
+    private final Controller controller;
 
     public GraphTopComponent() {
         initComponents();
@@ -34,7 +38,10 @@ public final class GraphTopComponent extends TopComponent {
         setToolTipText(NbBundle.getMessage(GraphTopComponent.class, "HINT_GraphTopComponent"));
 //        setIcon(ImageUtilities.loadImage(ICON_PATH, true));
 
+        this.dataManager = new DataManager(33);
         this.viewer = new Viewer();
+        this.controller = new Controller(this.dataManager, this.viewer);
+        
         final Component canvas = viewer.getCanvas();
 
         WindowManager.getDefault().invokeWhenUIReady(new Runnable() {
@@ -122,12 +129,16 @@ public final class GraphTopComponent extends TopComponent {
     protected void componentShowing() {
         super.componentShowing();
         this.validateTree();
+
+        this.dataManager.start();
         this.viewer.start();
     }
 
     @Override
     protected void componentHidden() {
         super.componentHidden();
+
+        this.dataManager.stop();
         this.viewer.stop();
     }
 
@@ -138,6 +149,7 @@ public final class GraphTopComponent extends TopComponent {
 
     @Override
     public void componentClosed() {
+        this.dataManager.stop();
         this.viewer.stop();
     }
 

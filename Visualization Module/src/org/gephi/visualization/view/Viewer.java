@@ -31,6 +31,8 @@ import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLCapabilities;
 import javax.media.opengl.GLEventListener;
 import javax.media.opengl.GLProfile;
+import org.gephi.visualization.controller.Controller;
+import org.gephi.visualization.data.FrameData;
 
 /**
  *
@@ -43,18 +45,27 @@ public class Viewer implements GLEventListener {
     private NewtCanvasAWT canvas;
     private FPSAnimator animator;
 
-    static float angle = 0.0f;
+    private Controller controller;
+
+    private FrameData frameData = null;
+    final private Object frameDataLock;
+
+    static { GLProfile.initSingleton(true); }
 
     public Viewer() {
+        this.frameDataLock = new Object();
+
         final GLCapabilities caps = new GLCapabilities(GLProfile.getDefault());
         // TODO: change capabilities based on config files
 
         this.window = GLWindow.create(caps);
         this.window.setAutoSwapBufferMode(true);
+        this.window.setVisible(true);
 
         this.animator = new FPSAnimator(this.window, 30);
 
         this.canvas = new NewtCanvasAWT(this.window);
+        this.canvas.validate();
     }
     
     public Component getCanvas() {
@@ -63,8 +74,6 @@ public class Viewer implements GLEventListener {
 
     public void start() {
         this.window.addGLEventListener(this);
-        this.window.setVisible(true);
-        this.canvas.setVisible(true);
 
         this.animator.start();
     }
@@ -81,7 +90,7 @@ public class Viewer implements GLEventListener {
 
         // TODO: change initialization code based on config files
 
-        gl.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+        gl.glClearColor(0.7f, 0.3f, 0.0f, 1.0f);
         gl.glClearDepth(1.0);
 
         gl.glMatrixMode(GL2.GL_PROJECTION);
@@ -99,21 +108,24 @@ public class Viewer implements GLEventListener {
 
         gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
 
-        gl.glColor3f(1.0f, 1.0f, 1.0f);
+        FrameData currentFrameData;
+        synchronized (this.frameDataLock) {
+            currentFrameData = this.frameData;
+        }
+        if (currentFrameData == null) {
+            return;
+        }
 
-        gl.glBegin(GL2.GL_POLYGON);
+        if (this.controller != null) {
+            this.controller.beginRenderFrame();
+        }
 
-        final float c = (float) Math.cos(angle);
-        final float s = (float) Math.sin(angle);
+        // TODO: Rendering code
 
-        gl.glVertex3f(-0.5f*c, -0.5f*s, 0.0f);
-        gl.glVertex3f(-0.5f*s, 0.5f*c, 0.0f);
-        gl.glVertex3f(0.5f*c, 0.5f*s, 0.0f);
-        gl.glVertex3f(0.5f*s, -0.5f*c, 0.0f);
-        
-        gl.glEnd();
 
-        angle += Math.toRadians(1.0f);
+        if (this.controller != null) {
+            this.controller.endRenderFrame();
+        }
 
         gl.glFlush();
     }
@@ -122,10 +134,29 @@ public class Viewer implements GLEventListener {
     public void reshape(GLAutoDrawable glad, int x, int y, int w, int h) {
         final GL gl = glad.getGL();
 
-        gl.glViewport(0, 0, w, h);
+        int h2 = h == 0 ? 1 : h;
+
+        gl.glViewport(0, 0, w, h2);
+
+        if (this.controller != null) {
+            this.controller.resize(w, h2);
+        }
     }
 
     public void updateSize(int x, int y, int w, int h) {
         this.canvas.setBounds(x, y, w, h);
+        this.canvas.validate();
+    }
+
+    public void setCurrentFrameData(FrameData frameData) {
+        synchronized (this.frameDataLock) {
+            this.frameData = frameData;
+	}
+    }
+
+    public void setController(Controller controller) {
+        this.controller = controller;
+        this.window.addKeyListener(controller);
+	this.window.addMouseListener(controller);
     }
 }
