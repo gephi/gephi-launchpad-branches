@@ -26,6 +26,9 @@ import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.newt.event.KeyListener;
 import com.jogamp.newt.event.MouseEvent;
 import com.jogamp.newt.event.MouseListener;
+import java.awt.Component;
+import org.gephi.lib.gleem.linalg.Vec3f;
+import org.gephi.visualization.camera.Camera;
 import org.gephi.visualization.data.FrameData;
 import org.gephi.visualization.model.DataManager;
 import org.gephi.visualization.view.Viewer;
@@ -38,12 +41,14 @@ public class Controller implements KeyListener, MouseListener {
 
     final private DataManager dataManager;
     final private Viewer viewer;
+    private Camera camera;
 
     public Controller(DataManager dataManager, Viewer viewer) {
         this.dataManager = dataManager;
         this.viewer = viewer;
 
         setAsController();
+        initCamera();
     }
 
     private void setAsController() {
@@ -51,8 +56,19 @@ public class Controller implements KeyListener, MouseListener {
         viewer.setController(this);
     }
 
-    public void resize(int width, int height) {
+    private void initCamera() {
+        Component canvas = this.viewer.getCanvas();
 
+        this.camera = new Camera(canvas.getWidth(), canvas.getHeight(), 0.1f, 10.0f, false);
+        this.camera.moveTo(new Vec3f(0.0f, 0.0f, 2.0f));
+    }
+
+    public Camera getCurrentCamera() {
+        return this.camera;
+    }
+
+    public void resize(int width, int height) {
+        this.camera.setImageSize(width, height);
     }
 
     public void beginUpdateFrame() {

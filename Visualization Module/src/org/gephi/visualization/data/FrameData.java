@@ -22,17 +22,20 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 package org.gephi.visualization.data;
 
 import java.util.ArrayList;
+import org.gephi.visualization.camera.Camera;
 
 /**
  *
  * @author Antonio Patriarca <antoniopatriarca@gmail.com>
  */
-public class FrameData {
+public final class FrameData {
 
-    final ArrayList<NodeBatch> nodeBatches;
+    final private ArrayList<NodeBatch> nodeBatches;
+    final private Camera camera;
 
-    public FrameData() {
+    public FrameData(Camera camera) {
         this.nodeBatches = new ArrayList<NodeBatch>();
+        this.camera = camera;
     }
 
     public final void addNodeBatch(NodeBatch nodeBatch) {

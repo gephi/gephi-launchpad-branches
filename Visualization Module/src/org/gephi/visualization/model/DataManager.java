@@ -26,6 +26,7 @@ import org.gephi.graph.api.GraphController;
 import org.gephi.graph.api.GraphModel;
 import org.gephi.graph.api.Node;
 import org.gephi.graph.api.NodeData;
+import org.gephi.visualization.camera.Camera;
 import org.gephi.visualization.controller.Controller;
 import org.gephi.visualization.data.FrameData;
 import org.gephi.visualization.data.NodeBatch;
@@ -70,11 +71,20 @@ public class DataManager implements Runnable {
         while (this.isRunning) {
             long beginFrameTime = System.currentTimeMillis();
 
+            Camera camera = null;
             if (this.controller != null) {
                 this.controller.beginUpdateFrame();
+                camera = this.controller.getCurrentCamera();
+            } else {
+                try {
+                    Thread.sleep(this.frameDuration);
+		} catch (InterruptedException e) {
+                    return;
+		}
+                continue;
             }
 
-            final FrameData frameData = new FrameData();
+            final FrameData frameData = new FrameData(camera);
 
             final GraphController graphController = Lookup.getDefault().lookup(GraphController.class);
             final GraphModel model = graphController.getModel();
