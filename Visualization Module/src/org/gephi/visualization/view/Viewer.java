@@ -31,6 +31,7 @@ import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLCapabilities;
 import javax.media.opengl.GLEventListener;
 import javax.media.opengl.GLProfile;
+import javax.media.opengl.awt.GLCanvas;
 import org.gephi.visualization.controller.Controller;
 import org.gephi.visualization.data.FrameData;
 
@@ -41,8 +42,9 @@ import org.gephi.visualization.data.FrameData;
  */
 public class Viewer implements GLEventListener {
 
-    private GLWindow window;
-    private NewtCanvasAWT canvas;
+    private GLCanvas canvas;
+    //private GLWindow window;
+    //private NewtCanvasAWT canvas;
     private FPSAnimator animator;
 
     private Controller controller;
@@ -63,7 +65,7 @@ public class Viewer implements GLEventListener {
         caps.setDoubleBuffered(true);
         caps.setHardwareAccelerated(true);
         // TODO: change capabilities based on config files
-        
+        /*
         this.window = GLWindow.create(caps);
         this.window.setAutoSwapBufferMode(true);
         this.window.setVisible(false);
@@ -72,6 +74,11 @@ public class Viewer implements GLEventListener {
 
         this.canvas = new NewtCanvasAWT(this.window);
         this.canvas.validate();
+         */
+
+        this.canvas = new GLCanvas(caps);
+        this.canvas.setAutoSwapBufferMode(true);
+        this.animator = new FPSAnimator(this.canvas, 30);
     }
     
     public Component getCanvas() {
@@ -79,18 +86,23 @@ public class Viewer implements GLEventListener {
     }
 
     public void start() {
-        
+        /*
         this.window.addGLEventListener(this);
         this.window.setVisible(true);
-
+*/
+        this.canvas.addGLEventListener(this);
+        this.canvas.setVisible(true);
         this.animator.start();
     }
 
     public void stop() {
         this.animator.stop();
-
+/*
         this.window.setVisible(false);
         this.window.removeGLEventListener(this);
+ */
+        this.canvas.setVisible(false);
+        this.canvas.removeGLEventListener(this);
     }
 
     @Override
@@ -175,7 +187,6 @@ public class Viewer implements GLEventListener {
 
     public void updateSize(int x, int y, int w, int h) {
         this.canvas.setBounds(x, y, w, h);
-        //this.reshape(this.window, x, y, w, h);
     }
 
     public void setCurrentFrameData(FrameData frameData) {
@@ -186,7 +197,7 @@ public class Viewer implements GLEventListener {
 
     public void setController(Controller controller) {
         this.controller = controller;
-        this.window.addKeyListener(controller);
-	this.window.addMouseListener(controller);
+        //this.window.addKeyListener(controller);
+	//this.window.addMouseListener(controller);
     }
 }
