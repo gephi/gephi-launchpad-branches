@@ -7,6 +7,8 @@ package org.gephi.visualization.components;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.util.logging.Logger;
+import javax.swing.JPopupMenu;
+import javax.swing.ToolTipManager;
 import org.gephi.visualization.controller.Controller;
 import org.gephi.visualization.model.DataManager;
 import org.gephi.visualization.view.Viewer;
@@ -37,6 +39,9 @@ public final class GraphTopComponent extends TopComponent {
         setName(NbBundle.getMessage(GraphTopComponent.class, "CTL_GraphTopComponent"));
         setToolTipText(NbBundle.getMessage(GraphTopComponent.class, "HINT_GraphTopComponent"));
 //        setIcon(ImageUtilities.loadImage(ICON_PATH, true));
+
+        JPopupMenu.setDefaultLightWeightPopupEnabled(false);
+        ToolTipManager.sharedInstance().setLightWeightPopupEnabled(false);
 
         this.dataManager = new DataManager(33);
         this.viewer = new Viewer();

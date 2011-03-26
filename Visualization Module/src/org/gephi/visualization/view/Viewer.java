@@ -40,7 +40,7 @@ import org.gephi.visualization.data.FrameData;
  * @author Antonio Patriarca <antoniopatriarca@gmail.com>
  */
 public class Viewer implements GLEventListener {
-    
+
     private GLWindow window;
     private NewtCanvasAWT canvas;
     private FPSAnimator animator;
@@ -63,11 +63,11 @@ public class Viewer implements GLEventListener {
         caps.setDoubleBuffered(true);
         caps.setHardwareAccelerated(true);
         // TODO: change capabilities based on config files
-
+        
         this.window = GLWindow.create(caps);
         this.window.setAutoSwapBufferMode(true);
         this.window.setVisible(false);
-        
+
         this.animator = new FPSAnimator(this.window, 30);
 
         this.canvas = new NewtCanvasAWT(this.window);
@@ -79,6 +79,7 @@ public class Viewer implements GLEventListener {
     }
 
     public void start() {
+        
         this.window.addGLEventListener(this);
         this.window.setVisible(true);
 
@@ -174,7 +175,7 @@ public class Viewer implements GLEventListener {
 
     public void updateSize(int x, int y, int w, int h) {
         this.canvas.setBounds(x, y, w, h);
-        this.reshape(this.window, x, y, w, h);
+        //this.reshape(this.window, x, y, w, h);
     }
 
     public void setCurrentFrameData(FrameData frameData) {
