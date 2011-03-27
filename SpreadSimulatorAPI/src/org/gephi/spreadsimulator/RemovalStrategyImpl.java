@@ -83,16 +83,15 @@ public class RemovalStrategyImpl implements RemovalStrategy {
 					modNodes.add(nodes[i]);
 				break;
 			case RANDOM:
-				for (int i = 0; i < k; ++i) {
-					Node node = nodes[random.nextInt(nodes.length)];
-					if (!modNodes.contains(node))
-						modNodes.add(node);
-				}
+				List<Node> rNodes = new LinkedList<Node>(Arrays.asList(nodes));
+				for (int i = 0; i < k; ++i)
+					modNodes.add(rNodes.remove(random.nextInt(rNodes.size())));
 				break;
 			case RANDOM_RANDOM:
+				rNodes = new LinkedList<Node>(Arrays.asList(nodes));
 				for (int i = 0; i < k; ++i) {
-					int index = random.nextInt(nodes.length);
-					Node[] neighbors = gm.getGraph().getNeighbors(nodes[index]).toArray();
+					Node rNode = rNodes.remove(random.nextInt(rNodes.size()));
+					Node[] neighbors = gm.getGraph().getNeighbors(rNode).toArray();
 					Node node = neighbors[random.nextInt(neighbors.length)];
 					if (!modNodes.contains(node))
 						modNodes.add(node);
