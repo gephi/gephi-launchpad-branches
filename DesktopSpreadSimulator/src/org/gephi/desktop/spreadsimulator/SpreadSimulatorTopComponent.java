@@ -4,13 +4,17 @@
  */
 package org.gephi.desktop.spreadsimulator;
 
+import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
+import javax.swing.JFormattedTextField.AbstractFormatterFactory;
 import javax.swing.JPanel;
+import javax.swing.text.DefaultFormatterFactory;
+import javax.swing.text.NumberFormatter;
 import org.gephi.spreadsimulator.api.RemovalStrategy;
 import org.gephi.spreadsimulator.api.RemovalStrategyUI;
 import org.gephi.spreadsimulator.api.Simulation;
@@ -183,6 +187,14 @@ public final class SpreadSimulatorTopComponent extends TopComponent {
 		}, "Simulation", null);
 	}
 
+	private AbstractFormatterFactory getSimcountFormatterFactory() {
+		NumberFormatter formatter = new NumberFormatter(new DecimalFormat("#0"));
+		formatter.setMinimum(1);
+		formatter.setAllowsInvalid(false);
+		formatter.setCommitsOnValidEdit(true);
+		return new DefaultFormatterFactory(formatter);
+	}
+
 	/** This method is called from within the constructor to
 	 * initialize the form.
 	 * WARNING: Do NOT modify this code. The content of this method is
@@ -211,7 +223,6 @@ public final class SpreadSimulatorTopComponent extends TopComponent {
         delayLabel = new javax.swing.JLabel();
 
         setMinimumSize(new java.awt.Dimension(300, 366));
-        setPreferredSize(new java.awt.Dimension(300, 366));
         setLayout(new java.awt.GridBagLayout());
 
         org.openide.awt.Mnemonics.setLocalizedText(fireSCSButton, org.openide.util.NbBundle.getMessage(SpreadSimulatorTopComponent.class, "SpreadSimulatorTopComponent.fireSCSButton.text")); // NOI18N
@@ -391,12 +402,12 @@ public final class SpreadSimulatorTopComponent extends TopComponent {
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 0);
         add(simcountLabel, gridBagConstraints);
 
-        simcountFormattedTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("###0"))));
+        simcountFormattedTextField.setFormatterFactory(getSimcountFormatterFactory());
         simcountFormattedTextField.setText(org.openide.util.NbBundle.getMessage(SpreadSimulatorTopComponent.class, "SpreadSimulatorTopComponent.simcountFormattedTextField.text")); // NOI18N
         simcountFormattedTextField.setEnabled(false);
-        simcountFormattedTextField.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyTyped(java.awt.event.KeyEvent evt) {
-                simcountFormattedTextFieldKeyTyped(evt);
+        simcountFormattedTextField.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
+            public void propertyChange(java.beans.PropertyChangeEvent evt) {
+                simcountFormattedTextFieldPropertyChange(evt);
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -439,10 +450,11 @@ public final class SpreadSimulatorTopComponent extends TopComponent {
 			JPanel settingsPanel = scui.getSettingsPanel();
 			scui.setup(sc);
 			DialogDescriptor dd = new DialogDescriptor(settingsPanel, selectedSC);
-			if (DialogDisplayer.getDefault().notify(dd).equals(NotifyDescriptor.OK_OPTION))
+			if (DialogDisplayer.getDefault().notify(dd).equals(NotifyDescriptor.OK_OPTION)) {
 				scui.unsetup();
-			scListModel.addElement(selectedSC);
-			simulation.addStopCondition(sc);
+				scListModel.addElement(selectedSC);
+				simulation.addStopCondition(sc);
+			}
 		}
 	}//GEN-LAST:event_addSCButtonActionPerformed
 
@@ -472,17 +484,18 @@ public final class SpreadSimulatorTopComponent extends TopComponent {
 		rs.removeNodes();
 	}//GEN-LAST:event_fireRSActionPerformed
 
-	private void simcountFormattedTextFieldKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_simcountFormattedTextFieldKeyTyped
-		try {
-			simcount = Integer.parseInt(simcountFormattedTextField.getText());
-			if (simcount > 1)
+	private void simcountFormattedTextFieldPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_simcountFormattedTextFieldPropertyChange
+		if (evt.getPropertyName().equals("value"))
+			try {
+				simcount = Integer.parseInt(simcountFormattedTextField.getText());
+				if (simcount > 1)
+					nextStepButton.setEnabled(false);
+				else nextStepButton.setEnabled(!scListModel.isEmpty() && !simulation.isFinished());
+			}
+			catch (Exception ex) {
 				nextStepButton.setEnabled(false);
-			else nextStepButton.setEnabled(!scListModel.isEmpty() && !simulation.isFinished());
-		}
-		catch (Exception ex) {
-			nextStepButton.setEnabled(false);
-		}
-	}//GEN-LAST:event_simcountFormattedTextFieldKeyTyped
+			}
+	}//GEN-LAST:event_simcountFormattedTextFieldPropertyChange
 
 	private void stopButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_stopButtonActionPerformed
 		simulation.cancel();
@@ -498,9 +511,7 @@ public final class SpreadSimulatorTopComponent extends TopComponent {
 		nextStepButton.setEnabled(false);
 
 		String sdelay = delayFormattedTextField.getText();
-		String ssimcount = simcountFormattedTextField.getText();
 		long delay = Long.parseLong(sdelay);
-		int simcount = Integer.parseInt(ssimcount);
 		simulation.setDelay(delay);
 		StartSimulations(simulation, simcount);
 	}//GEN-LAST:event_startButtonActionPerformed
