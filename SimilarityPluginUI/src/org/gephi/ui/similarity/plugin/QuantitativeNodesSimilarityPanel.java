@@ -20,11 +20,18 @@
  */
 package org.gephi.ui.similarity.plugin;
 
+import java.awt.Dimension;
+import java.awt.GridBagLayout;
+import java.awt.GridBagConstraints;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import javax.swing.JCheckBox;
-import net.miginfocom.swing.MigLayout;
+import javax.swing.JFormattedTextField;
+import javax.swing.JLabel;
+import javax.swing.text.DefaultFormatterFactory;
+import javax.swing.text.NumberFormatter;
 import org.gephi.data.attributes.api.AttributeColumn;
 import org.gephi.data.attributes.api.AttributeController;
 import org.gephi.data.attributes.api.AttributeOrigin;
@@ -37,44 +44,78 @@ import org.openide.util.Lookup;
  * @author Cezary Bartosiak
  */
 public class QuantitativeNodesSimilarityPanel extends javax.swing.JPanel {
-	private AttributesCheckBox[] nodeCheckBoxs;
+	private AttributeLine[] attrLines;
+
+	private AttributeColumn[] columns;
+	private boolean[] doNorm;
+	private double[] lambdas;
 
     /** Creates new form QuantitativeNodesSimilarityPanel */
     public QuantitativeNodesSimilarityPanel() {
         initComponents();
     }
 
-	public boolean isDoNorm() {
-		return doNormRadioButton.isSelected();
+	public int getP() {
+		return Integer.parseInt(pFormattedTextField.getText());
 	}
 
-	public void setDoNorm(boolean doNorm) {
-		doNormButtonGroup.setSelected(doNorm ? doNormRadioButton.getModel() : doNotNormRadioButton.getModel(), true);
-	}
-
-	public double getP() {
-		return Double.parseDouble(pFormattedTextField.getText());
-	}
-
-	public void setP(double p) {
+	public void setP(int p) {
 		pFormattedTextField.setText(p + "");
 	}
 
 	public AttributeColumn[] getColumns() {
-		List<AttributeColumn> nodeColumnsList = new ArrayList<AttributeColumn>();
-		if (nodeCheckBoxs != null)
-			for (AttributesCheckBox c : nodeCheckBoxs)
-				if (c.isSelected())
-					nodeColumnsList.add(c.getColumn());
-		return nodeColumnsList.toArray(new AttributeColumn[0]);
+		List<AttributeColumn> list = new ArrayList<AttributeColumn>();
+		if (attrLines != null)
+			for (AttributeLine l : attrLines)
+				if (l.isSelected())
+					list.add(l.getColumn());
+		return list.toArray(new AttributeColumn[0]);
 	}
 
 	public void setColumns(AttributeColumn[] columns) {
+		this.columns = columns;
+		setAttrLines();
+	}
+
+	public boolean[] getDoNorm() {
+		List<Boolean> list = new ArrayList<Boolean>();
+		if (attrLines != null)
+			for (AttributeLine l : attrLines)
+				if (l.isSelected())
+					list.add(l.getDoNorm());
+		boolean[] table = new boolean[list.size()];
+		for (int i = 0; i < list.size(); ++i)
+			table[i] = list.get(i);
+		return table;
+	}
+
+	public void setDoNorm(boolean[] doNorm) {
+		this.doNorm = doNorm;
+		setAttrLines();
+	}
+
+	public double[] getLambdas() {
+		List<Double> list = new ArrayList<Double>();
+		if (attrLines != null)
+			for (AttributeLine l : attrLines)
+				if (l.isSelected())
+					list.add(l.getLambda());
+		double[] table = new double[list.size()];
+		for (int i = 0; i < list.size(); ++i)
+			table[i] = list.get(i);
+		return table;
+	}
+
+	public void setLambdas(double[] lambdas) {
+		this.lambdas = lambdas;
+		setAttrLines();
+	}
+
+	private void setAttrLines() {
 		AttributeController attributeController = Lookup.getDefault().lookup(AttributeController.class);
 
 		List<AttributeColumn> availableColumns = new ArrayList<AttributeColumn>();
 		List<AttributeColumn> selectedColumns = Arrays.asList(columns);
-		AttributesCheckBox[] target;
 		for (AttributeColumn c : attributeController.getModel().getNodeTable().getColumns())
 			if ((c.getOrigin().equals(AttributeOrigin.DATA) || c.getOrigin().equals(AttributeOrigin.COMPUTED)) &&
 					(c.getType().equals(AttributeType.BIGDECIMAL) ||
@@ -95,16 +136,34 @@ public class QuantitativeNodesSimilarityPanel extends javax.swing.JPanel {
 					c.getType().equals(AttributeType.LIST_SHORT)))
 				availableColumns.add(c);
 
-		nodeCheckBoxs = new AttributesCheckBox[availableColumns.size()];
-		target = nodeCheckBoxs;
+		attrLines = new AttributeLine[availableColumns.size()];
 
 		contentPanel.removeAll();
-		contentPanel.setLayout(new MigLayout("", "[pref!]"));
-		for (int i = 0; i < availableColumns.size(); i++) {
+		contentPanel.setLayout(new GridBagLayout());
+		for (int i = 0; i < availableColumns.size(); ++i) {
 			AttributeColumn column = availableColumns.get(i);
-			AttributesCheckBox c = new AttributesCheckBox(column, selectedColumns.contains(column));
-			target[i] = c;
-			contentPanel.add(c.getCheckBox(), "wrap");
+			boolean selected = false;
+			boolean doNorm = true;
+			double lambda = 0.0;
+			if (selectedColumns.contains(column)) {
+				selected = true;
+				int index = selectedColumns.indexOf(column);
+				doNorm = this.doNorm[index];
+				lambda = this.lambdas[index];
+			}
+			AttributeLine l = new AttributeLine(column, selected, doNorm, lambda);
+			attrLines[i] = l;
+			GridBagConstraints c = new GridBagConstraints();
+			c.fill = GridBagConstraints.HORIZONTAL;
+			c.gridy = i;
+			c.gridx = 0;
+			contentPanel.add(l.getCheckBox(), c);
+			c.gridx = 1;
+			contentPanel.add(l.getDoNormCB(), c);
+			c.gridx = 2;
+			contentPanel.add(l.getLabel(), c);
+			c.gridx = 3;
+			contentPanel.add(l.getLambdaCB(), c);
 		}
 		contentPanel.revalidate();
 		contentPanel.repaint();
@@ -119,13 +178,10 @@ public class QuantitativeNodesSimilarityPanel extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        doNormButtonGroup = new javax.swing.ButtonGroup();
         vf2Header = new org.jdesktop.swingx.JXHeader();
         columnsLabel = new javax.swing.JLabel();
         contentScrollPane = new javax.swing.JScrollPane();
         contentPanel = new javax.swing.JPanel();
-        doNormRadioButton = new javax.swing.JRadioButton();
-        doNotNormRadioButton = new javax.swing.JRadioButton();
         pFormattedTextField = new javax.swing.JFormattedTextField();
         pLabel = new javax.swing.JLabel();
 
@@ -139,14 +195,7 @@ public class QuantitativeNodesSimilarityPanel extends javax.swing.JPanel {
         contentPanel.setLayout(new java.awt.GridLayout(1, 0));
         contentScrollPane.setViewportView(contentPanel);
 
-        doNormButtonGroup.add(doNormRadioButton);
-        doNormRadioButton.setText(org.openide.util.NbBundle.getMessage(QuantitativeNodesSimilarityPanel.class, "QuantitativeNodesSimilarityPanel.doNormRadioButton.text")); // NOI18N
-
-        doNormButtonGroup.add(doNotNormRadioButton);
-        doNotNormRadioButton.setText(org.openide.util.NbBundle.getMessage(QuantitativeNodesSimilarityPanel.class, "QuantitativeNodesSimilarityPanel.doNotNormRadioButton.text")); // NOI18N
-        doNotNormRadioButton.setActionCommand(org.openide.util.NbBundle.getMessage(QuantitativeNodesSimilarityPanel.class, "QuantitativeNodesSimilarityPanel.doNotNormRadioButton.actionCommand")); // NOI18N
-
-        pFormattedTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.00"))));
+        pFormattedTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0"))));
 
         pLabel.setText(org.openide.util.NbBundle.getMessage(QuantitativeNodesSimilarityPanel.class, "QuantitativeNodesSimilarityPanel.pLabel.text")); // NOI18N
 
@@ -157,37 +206,29 @@ public class QuantitativeNodesSimilarityPanel extends javax.swing.JPanel {
             .addComponent(vf2Header, javax.swing.GroupLayout.DEFAULT_SIZE, 458, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
+                .addComponent(pLabel)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(pFormattedTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 68, Short.MAX_VALUE)
+                .addGap(363, 363, 363))
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(contentScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 315, Short.MAX_VALUE)
                     .addComponent(columnsLabel))
                 .addGap(133, 133, 133))
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(pLabel)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(pFormattedTextField))
-                    .addComponent(doNormRadioButton)
-                    .addComponent(doNotNormRadioButton))
-                .addGap(363, 363, 363))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(vf2Header, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(doNormRadioButton)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(doNotNormRadioButton)
-                .addGap(9, 9, 9)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(pLabel)
                     .addComponent(pFormattedTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(columnsLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(contentScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 176, Short.MAX_VALUE)
+                .addComponent(contentScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 232, Short.MAX_VALUE)
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
@@ -197,37 +238,63 @@ public class QuantitativeNodesSimilarityPanel extends javax.swing.JPanel {
     private javax.swing.JLabel columnsLabel;
     private javax.swing.JPanel contentPanel;
     private javax.swing.JScrollPane contentScrollPane;
-    private javax.swing.ButtonGroup doNormButtonGroup;
-    protected javax.swing.JRadioButton doNormRadioButton;
-    protected javax.swing.JRadioButton doNotNormRadioButton;
     private javax.swing.JFormattedTextField pFormattedTextField;
     private javax.swing.JLabel pLabel;
     private org.jdesktop.swingx.JXHeader vf2Header;
     // End of variables declaration//GEN-END:variables
 
-	private static class AttributesCheckBox {
+	private static class AttributeLine {
 		private JCheckBox checkBox;
 		private AttributeColumn column;
+		private JCheckBox doNorm;
+		private JLabel label;
+		private JFormattedTextField lambda;
 
-		public AttributesCheckBox(AttributeColumn column, boolean selected) {
+		public AttributeLine(AttributeColumn column, boolean selected,
+				boolean doNorm, double lambda) {
 			checkBox = new JCheckBox(column.getTitle(), selected);
 			this.column = column;
-		}
-
-		public void setSelected(boolean selected) {
-			checkBox.setSelected(selected);
-		}
-
-		public boolean isSelected() {
-			return checkBox.isSelected();
+			this.doNorm = new JCheckBox("doNorm", doNorm);
+			this.label = new JLabel("Lambda: ");
+			NumberFormatter formatter = new NumberFormatter(new DecimalFormat("0.00"));
+			formatter.setMinimum(0.0);
+			formatter.setMaximum(1.0);
+			formatter.setAllowsInvalid(false);
+			this.lambda = new JFormattedTextField(new DefaultFormatterFactory(formatter));
+			this.lambda.setPreferredSize(new Dimension(40, 20));
+			this.lambda.setValue(lambda);
 		}
 
 		public JCheckBox getCheckBox() {
 			return checkBox;
 		}
 
+		public boolean isSelected() {
+			return checkBox.isSelected();
+		}
+
 		public AttributeColumn getColumn() {
 			return column;
+		}
+
+		public JCheckBox getDoNormCB() {
+			return doNorm;
+		}
+
+		public boolean getDoNorm() {
+			return doNorm.isSelected();
+		}
+
+		public JLabel getLabel() {
+			return label;
+		}
+
+		public JFormattedTextField getLambdaCB() {
+			return lambda;
+		}
+
+		public double getLambda() {
+			return (Double)lambda.getValue();
 		}
 	}
 }

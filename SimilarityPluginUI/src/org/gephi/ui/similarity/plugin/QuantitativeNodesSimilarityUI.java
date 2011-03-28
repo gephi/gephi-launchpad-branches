@@ -47,8 +47,9 @@ public class QuantitativeNodesSimilarityUI implements SimilarityUI {
 		qns = (QuantitativeNodesSimilarity)similarity;
 		if (panel != null) {
 			panel.setColumns(qns.getColumns());
-			panel.setDoNorm(qns.getDoNorm());
 			panel.setP(qns.getP());
+			panel.setDoNorm(qns.getDoNorm());
+			panel.setLambdas(qns.getLambdas());
 		}
 	}
 
@@ -57,7 +58,8 @@ public class QuantitativeNodesSimilarityUI implements SimilarityUI {
 		if (panel != null) {
 			qns.setColumns(panel.getColumns());
 			qns.setP(panel.getP());
-			qns.setDoNorm(panel.isDoNorm());
+			qns.setDoNorm(panel.getDoNorm());
+			qns.setLambdas(panel.getLambdas());
 		}
 		panel = null;
 		qns = null;
