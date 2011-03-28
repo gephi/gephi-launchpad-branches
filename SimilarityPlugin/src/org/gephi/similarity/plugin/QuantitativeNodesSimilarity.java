@@ -77,10 +77,16 @@ public class QuantitativeNodesSimilarity implements Similarity, LongTask {
 	private double[][] xsvals;
 	private double[] normMaxRow;
 	private double[] normMaxCol;
+	private double[] normMaxRowReal;
+	private double[] normMaxColReal;
 	private double[] normSrc;
 	private double[] normTgt;
+	private double[] dqnArtf;
+	private double[] dqnReal;
 	private double[] dqnMaxRow;
 	private double[] dqnMaxCol;
+	private double[] dqnMaxRowReal;
+	private double[] dqnMaxColReal;
 	private double[] dqnSrc;
 	private double[] dqnTgt;
 
@@ -99,10 +105,16 @@ public class QuantitativeNodesSimilarity implements Similarity, LongTask {
 				xsvals[index] = new double[0];
 				normMaxRow[index] = 1.0;
 				normMaxCol[index] = 1.0;
+				normMaxRowReal[index] = 1.0;
+				normMaxColReal[index] = 1.0;
 				normSrc[index] = 1.0;
 				normTgt[index] = 1.0;
+				dqnArtf[index] = 1.0;
+				dqnReal[index] = 1.0;
 				dqnMaxRow[index] = 1.0;
 				dqnMaxCol[index] = 1.0;
+				dqnMaxRowReal[index] = 1.0;
+				dqnMaxColReal[index] = 1.0;
 				dqnSrc[index] = 1.0;
 				dqnTgt[index] = 1.0;
 				return;
@@ -148,16 +160,16 @@ public class QuantitativeNodesSimilarity implements Similarity, LongTask {
 				Progress.progress(progressTicket);
 			}
 
-				for (int k = 0; k < lf && !cancel; ++k) {
-					if (doNorm[k]) {
-						double denominator = v.get(k).normF();
-						if (denominator != 0)
-							for (int i = 0; i < nB && !cancel; ++i)
-								for (int j = 0; j < nA && !cancel; ++j)
-									v.get(k).set(i, j, v.get(k).get(i, j) / denominator);
-					}
-					Progress.progress(progressTicket);
+			for (int k = 0; k < lf && !cancel; ++k) {
+				if (doNorm[k]) {
+					double denominator = v.get(k).normF();
+					if (denominator != 0)
+						for (int i = 0; i < nB && !cancel; ++i)
+							for (int j = 0; j < nA && !cancel; ++j)
+								v.get(k).set(i, j, v.get(k).get(i, j) / denominator);
 				}
+				Progress.progress(progressTicket);
+			}
 
 			Matrix vij = new Matrix(n, n);
 			for (int k = 0; k < lf && !cancel; ++k) {
@@ -179,22 +191,31 @@ public class QuantitativeNodesSimilarity implements Similarity, LongTask {
 				x = HungarianAlgorithm.hgAlgorithm(s.getArray(), "max");
 			xs[index] = new Node[n][2];
 			xsvals[index] = new double[n];
-			double ds = 0.0;
+			double dsArtf = 0.0;
+			double dsReal = 0.0;
 			for (int i = 0; i < n && !cancel; ++i) {
-				xs[index][i][0] = x[i][0] >= nodesA.length ? null : nodesA[x[i][0]];
-				xs[index][i][1] = x[i][1] >= nodesB.length ? null : nodesB[x[i][1]];
+				xs[index][i][0] = x[i][0] >= nodesB.length ? null : nodesB[x[i][0]];
+				xs[index][i][1] = x[i][1] >= nodesA.length ? null : nodesA[x[i][1]];
 				xsvals[index][i] = -s.get(x[i][0], x[i][1]);
-				ds += s.get(x[i][0], x[i][1]);
+				dsArtf += s.get(x[i][0], x[i][1]);
+				if (xs[index][i][0] != null && xs[index][i][1] != null)
+					dsReal += s.get(x[i][0], x[i][1]);
 			}
 
-			normMaxRow[index] = getMaxRowMeasureValue(vij);
-			normMaxCol[index] = getMaxColMeasureValue(vij);
+			normMaxRow[index] = getMaxRowMeasureValue(vij, n, n);
+			normMaxCol[index] = getMaxColMeasureValue(vij, n, n);
+			normMaxRowReal[index] = getMaxRowMeasureValue(vij, nB, nA);
+			normMaxColReal[index] = getMaxColMeasureValue(vij, nA, nB);
 			normSrc[index] = nA;
 			normTgt[index] = nB;
-			dqnMaxRow[index] = normMaxRow[index] != 0 ? -ds / normMaxRow[index] : 0.0;
-			dqnMaxCol[index] = normMaxCol[index] != 0 ? -ds / normMaxCol[index] : 0.0;
-			dqnSrc[index] = -ds / normSrc[index];
-			dqnTgt[index] = -ds / normTgt[index];
+			dqnArtf[index] = -dsArtf;
+			dqnReal[index] = -dsReal;
+			dqnMaxRow[index] = normMaxRow[index] != 0 ? -dsArtf / normMaxRow[index] : 0.0;
+			dqnMaxCol[index] = normMaxCol[index] != 0 ? -dsArtf / normMaxCol[index] : 0.0;
+			dqnMaxRowReal[index] = normMaxRowReal[index] != 0 ? -dsReal / normMaxRowReal[index] : 0.0;
+			dqnMaxColReal[index] = normMaxColReal[index] != 0 ? -dsReal / normMaxColReal[index] : 0.0;
+			dqnSrc[index] = (nA > nB ? -dsArtf : -dsReal) / normSrc[index];
+			dqnTgt[index] = (nB > nA ? -dsArtf : -dsReal) / normTgt[index];
 		}
 
 		private double getScalarValueForColumn(Node node, AttributeColumn column) {
@@ -210,11 +231,11 @@ public class QuantitativeNodesSimilarity implements Similarity, LongTask {
 			return new DoubleList(values);
 		}
 
-		private double getMaxRowMeasureValue(Matrix vij) {
+		private double getMaxRowMeasureValue(Matrix vij, int maxi, int maxj) {
 			double sum = 0.0;
-			for (int i = 0; i < vij.getRowDimension() && !cancel; ++i) {
+			for (int i = 0; i < maxi && !cancel; ++i) {
 				double max = 0.0;
-				for (int j = 0; j < vij.getColumnDimension() && !cancel; ++j)
+				for (int j = 0; j < maxj && !cancel; ++j)
 					if (vij.get(i, j) > max)
 						max = vij.get(i, j);
 				sum += max;
@@ -222,11 +243,11 @@ public class QuantitativeNodesSimilarity implements Similarity, LongTask {
 			return sum;
 		}
 
-		private double getMaxColMeasureValue(Matrix vij) {
+		private double getMaxColMeasureValue(Matrix vij, int maxj, int maxi) {
 			double sum = 0.0;
-			for (int j = 0; j < vij.getColumnDimension() && !cancel; ++j) {
+			for (int j = 0; j < maxj && !cancel; ++j) {
 				double max = 0.0;
-				for (int i = 0; i < vij.getRowDimension() && !cancel; ++i)
+				for (int i = 0; i < maxi && !cancel; ++i)
 					if (vij.get(i, j) > max)
 						max = vij.get(i, j);
 				sum += max;
@@ -290,10 +311,16 @@ public class QuantitativeNodesSimilarity implements Similarity, LongTask {
 		xsvals = new double[targetGraphs.length][];
 		normMaxRow = new double[targetGraphs.length];
 		normMaxCol = new double[targetGraphs.length];
+		normMaxRowReal = new double[targetGraphs.length];
+		normMaxColReal = new double[targetGraphs.length];
 		normSrc = new double[targetGraphs.length];
 		normTgt = new double[targetGraphs.length];
+		dqnArtf = new double[targetGraphs.length];
+		dqnReal = new double[targetGraphs.length];
 		dqnMaxRow = new double[targetGraphs.length];
 		dqnMaxCol = new double[targetGraphs.length];
+		dqnMaxRowReal = new double[targetGraphs.length];
+		dqnMaxColReal = new double[targetGraphs.length];
 		dqnSrc = new double[targetGraphs.length];
 		dqnTgt = new double[targetGraphs.length];
 		for (int i = 0; i < targetGraphs.length && !cancel; ++i) {
@@ -360,14 +387,16 @@ public class QuantitativeNodesSimilarity implements Similarity, LongTask {
 
 	@Override
 	public String getReport() {
-		JFreeChart[] charts = new JFreeChart[4];
+		JFreeChart[] charts = new JFreeChart[6];
 		charts[0] = getChart(dqnMaxRow, "QNS Chart (max row sum norm)");
-		charts[1] = getChart(dqnMaxCol, "QNS Chart (max col sum norm)");
-		charts[2] = getChart(dqnSrc, "QNS Chart (src node count norm)");
-		charts[3] = getChart(dqnTgt, "QNS Chart (tgt node count norm)");
+		charts[1] = getChart(dqnMaxRowReal, "QNS Chart (max row sum real norm)");
+		charts[2] = getChart(dqnMaxCol, "QNS Chart (max col sum norm)");
+		charts[3] = getChart(dqnMaxColReal, "QNS Chart (max col sum real norm)");
+		charts[4] = getChart(dqnSrc, "QNS Chart (src node count norm)");
+		charts[5] = getChart(dqnTgt, "QNS Chart (tgt node count norm)");
 
-		String[] images = new String[4];
-		for (int i = 0; i < 4; ++i)
+		String[] images = new String[6];
+		for (int i = 0; i < 6; ++i)
 			try {
 				final ChartRenderingInfo info = new ChartRenderingInfo(new StandardEntityCollection());
 				TempDir tempDir = TempDirUtils.createTempDir();
@@ -382,17 +411,21 @@ public class QuantitativeNodesSimilarity implements Similarity, LongTask {
 		for (int i = 0; i < xs.length; ++i) {
 			xss += "x for source (" + new DecimalFormat("#0").format(normSrc[i]) + " nodes) - " + names[i] +
 					" (" + new DecimalFormat("#0").format(normTgt[i]) + " nodes):<br>";
-			xss += "{max row sum = " + new DecimalFormat("0.000000").format(normMaxRow[i]) +
-					", max col sum = " + new DecimalFormat("0.000000").format(normMaxCol[i]) + "}<br>";
+			xss += "{dqnArtf = " + new DecimalFormat("0.000000").format(dqnArtf[i]) +
+					", dqnReal = " + new DecimalFormat("0.000000").format(dqnReal[i]) +
+					", max row sum = " + new DecimalFormat("0.000000").format(normMaxRow[i]) +
+					", max row sum real = " + new DecimalFormat("0.000000").format(normMaxRowReal[i]) +
+					", max col sum = " + new DecimalFormat("0.000000").format(normMaxCol[i]) +
+					", max col sum real = " + new DecimalFormat("0.000000").format(normMaxColReal[i]) + "}<br>";
 			if (xs[i].length == 0)
 				xss += "&nbsp;&nbsp;&nbsp;" + "none<br>";
 			else for (int j = 0; j < xs[i].length; ++j) {
 				String label1 = "Node x";
 				String label2 = "Node y";
 				if (xs[i][j][0] != null)
-					label1 = xs[i][j][0].getNodeData().getLabel();
+					label2 = xs[i][j][0].getNodeData().getLabel();
 				if (xs[i][j][1] != null)
-					label2 = xs[i][j][1].getNodeData().getLabel();
+					label1 = xs[i][j][1].getNodeData().getLabel();
 				xss += "&nbsp;&nbsp;&nbsp;\"" + label1 + "\" - \"" + label2 +
 						"\" with " + new DecimalFormat("0.000000").format(xsvals[i][j]) + "<br>";
 			}
@@ -404,6 +437,8 @@ public class QuantitativeNodesSimilarity implements Similarity, LongTask {
 		report += images[1] + "<br><br>";
 		report += images[2] + "<br><br>";
 		report += images[3] + "<br><br>";
+		report += images[4] + "<br><br>";
+		report += images[5] + "<br><br>";
 		report += xss + "</body></html>";
 		return report;
 	}
