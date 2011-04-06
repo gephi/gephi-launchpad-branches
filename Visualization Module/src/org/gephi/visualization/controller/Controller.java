@@ -1,5 +1,5 @@
 /*
-Copyright 2008-2010 Gephi
+Copyright 2008-2011 Gephi
 Authors : Antonio Patriarca <antoniopatriarca@gmail.com>
 Website : http://www.gephi.org
 
@@ -22,45 +22,30 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 package org.gephi.visualization.controller;
 
 
-import com.jogamp.newt.event.KeyEvent;
-import com.jogamp.newt.event.KeyListener;
-import com.jogamp.newt.event.MouseEvent;
-import com.jogamp.newt.event.MouseListener;
-import java.awt.Component;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
+import org.gephi.graph.api.GraphModel;
+import org.gephi.graph.api.Node;
+import org.gephi.graph.api.NodeData;
 import org.gephi.lib.gleem.linalg.Vec3f;
 import org.gephi.visualization.camera.Camera;
-import org.gephi.visualization.data.FrameData;
-import org.gephi.visualization.model.DataManager;
-import org.gephi.visualization.view.Viewer;
 
 /**
  *
  * @author Antonio Patriarca <antoniopatriarca@gmail.com>
  */
-public class Controller implements KeyListener, MouseListener {
+public class Controller implements KeyListener, MouseListener, MouseMotionListener, MouseWheelListener {
 
-    final private DataManager dataManager;
-    final private Viewer viewer;
     private Camera camera;
 
-    public Controller(DataManager dataManager, Viewer viewer) {
-        this.dataManager = dataManager;
-        this.viewer = viewer;
-
-        setAsController();
-        initCamera();
-    }
-
-    private void setAsController() {
-        dataManager.setController(this);
-        viewer.setController(this);
-    }
-
-    private void initCamera() {
-        Component canvas = this.viewer.getCanvas();
-
-        this.camera = new Camera(canvas.getWidth(), canvas.getHeight(), 0.1f, 10.0f, false);
-        this.camera.moveTo(new Vec3f(0.0f, 0.0f, 2.0f));
+    public Controller() {
+        // Random values..
+        this.camera = new Camera(800, 600, 0.1f, 10.0f);
     }
 
     public Camera getCurrentCamera() {
@@ -75,8 +60,8 @@ public class Controller implements KeyListener, MouseListener {
 
     }
 
-    public void endUpdateFrame(FrameData frameData) {
-        viewer.setCurrentFrameData(frameData);
+    public void endUpdateFrame() {
+
     }
 
     public void beginRenderFrame() {
@@ -88,57 +73,74 @@ public class Controller implements KeyListener, MouseListener {
     }
 
     @Override
-    public void keyPressed(KeyEvent ke) {
-
+    public void keyTyped(KeyEvent e) {
     }
 
     @Override
-    public void keyReleased(KeyEvent ke) {
-
+    public void keyPressed(KeyEvent e) {
     }
 
     @Override
-    public void keyTyped(KeyEvent ke) {
-
+    public void keyReleased(KeyEvent e) {
     }
 
     @Override
-    public void mouseClicked(MouseEvent me) {
-
+    public void mouseClicked(MouseEvent e) {
     }
 
     @Override
-    public void mouseEntered(MouseEvent me) {
-
+    public void mousePressed(MouseEvent e) {
     }
 
     @Override
-    public void mouseExited(MouseEvent me) {
-
+    public void mouseReleased(MouseEvent e) {
     }
 
     @Override
-    public void mousePressed(MouseEvent me) {
-
+    public void mouseEntered(MouseEvent e) {
     }
 
     @Override
-    public void mouseReleased(MouseEvent me) {
-
+    public void mouseExited(MouseEvent e) {
     }
 
     @Override
-    public void mouseMoved(MouseEvent me) {
-
+    public void mouseDragged(MouseEvent e) {
     }
 
     @Override
-    public void mouseDragged(MouseEvent me) {
-
+    public void mouseMoved(MouseEvent e) {
     }
 
     @Override
-    public void mouseWheelMoved(MouseEvent me) {
+    public void mouseWheelMoved(MouseWheelEvent e) {
+    }
 
-    }  
+    public void initCamera(GraphModel model) {
+        Vec3f min = new Vec3f();
+        Vec3f max = new Vec3f();
+
+        for (Node n : model.getGraph().getNodes()) {
+            NodeData nodeData = n.getNodeData();
+
+            min.setX(Math.min(min.x(), nodeData.x()));
+            min.setY(Math.min(min.y(), nodeData.y()));
+            min.setZ(Math.min(min.z(), nodeData.z()));
+
+            max.setX(Math.max(max.x(), nodeData.x()));
+            max.setY(Math.max(max.y(), nodeData.y()));
+            max.setZ(Math.max(max.z(), nodeData.z()));
+        }
+
+        float centerX = 0.5f * (max.x() + min.x());
+        float centerY = 0.5f * (max.y() + min.y());
+        float dY = 0.5f * (max.y() - min.y());
+
+        float d = dY / (float)Math.tan(0.5 * this.camera.fov());
+
+        Vec3f origin = new Vec3f(centerX, centerY, min.z() - d*1.1f);
+        this.camera.lookAt(origin, new Vec3f(centerX, centerY, min.z()), Vec3f.Y_AXIS);
+        this.camera.setClipPlanes(d, max.z() - min.z() + d*1.2f);
+    }
+
 }

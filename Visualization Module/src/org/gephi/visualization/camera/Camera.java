@@ -35,19 +35,16 @@ public class Camera {
     private Vec3f front, up;
     private Vec3f position;
 
-    private boolean is3D;
-
     private float imageWidth, imageHeight, fovy, near, far;
 
     private float scaleFactor;
 
-    public Camera(int width, int height, float near, float far, boolean is3D) {
+    public Camera(int width, int height, float near, float far) {
         this.imageWidth = width;
         this.imageHeight = height;
         this.fovy = (float) Math.toRadians(60.0);
         this.near = near;
         this.far = far;
-        this.is3D = is3D;
         this.scaleFactor = 1.0f;
 
         this.position = new Vec3f();
@@ -56,16 +53,11 @@ public class Camera {
     }
 
     public Camera(Camera camera) {
-        this(camera, camera.is3D);
-    }
-
-    public Camera(Camera camera, boolean is3D) {
         this.imageWidth = camera.imageWidth;
         this.imageHeight = camera.imageHeight;
         this.fovy = camera.fovy;
         this.near = camera.near;
         this.far = camera.far;
-        this.is3D = is3D;
 
         this.position = camera.position.copy();
         this.front = camera.front.copy();
@@ -75,10 +67,6 @@ public class Camera {
     public void setImageSize(int width, int height) {
         this.imageWidth = width;
         this.imageHeight = height;
-    }
-
-    public void setScaleFactor(float scaleFactor) {
-        this.scaleFactor = scaleFactor;
     }
 
     public void moveTo(Vec3f newPos) {
@@ -173,7 +161,6 @@ public class Camera {
 
     public Mat4f projectiveMatrix() {
         Mat4f mat = new Mat4f();
-        if (this.is3D) {
             float aspect = imageWidth/imageHeight;
             float f = (float) (1.0 / Math.tan(this.fovy / 2.0));
             mat.set(0, 0, f/aspect);
@@ -181,13 +168,6 @@ public class Camera {
             mat.set(2, 2, (this.far + this.near)/(this.near - this.far));
             mat.set(2, 3, (2.0f * this.far * this.near)/(this.near - this.far));
             mat.set(3, 2, -1.0f);
-        } else {
-            mat.set(0, 0, 2.0f / (this.imageWidth * this.scaleFactor));
-            mat.set(1, 1, 2.0f / (this.imageHeight * this.scaleFactor));
-            mat.set(2, 2, -2.0f / (this.far - this.near));
-            mat.set(2, 3, (far + near)/(this.far - this.near));
-            mat.set(3, 3, 1.0f);
-        }
         return mat;
     }
 }

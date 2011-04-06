@@ -10,8 +10,8 @@ import java.util.logging.Logger;
 import javax.swing.JPopupMenu;
 import javax.swing.ToolTipManager;
 import org.gephi.visualization.controller.Controller;
-import org.gephi.visualization.model.DataManager;
-import org.gephi.visualization.view.Viewer;
+import org.gephi.visualization.model.Model;
+import org.gephi.visualization.view.View;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 import org.openide.windows.WindowManager;
@@ -30,8 +30,8 @@ public final class GraphTopComponent extends TopComponent {
 //    static final String ICON_PATH = "SET/PATH/TO/ICON/HERE";
     private static final String PREFERRED_ID = "GraphTopComponent";
 
-    private final Viewer viewer;
-    private final DataManager dataManager;
+    private final View view;
+    private final Model dataManager;
     private final Controller controller;
 
     public GraphTopComponent() {
@@ -43,11 +43,11 @@ public final class GraphTopComponent extends TopComponent {
         JPopupMenu.setDefaultLightWeightPopupEnabled(false);
         ToolTipManager.sharedInstance().setLightWeightPopupEnabled(false);
 
-        this.dataManager = new DataManager(33);
-        this.viewer = new Viewer();
-        this.controller = new Controller(this.dataManager, this.viewer);
+        this.controller = new Controller();
+        this.view = new View(this.controller);
+        this.dataManager = new Model(this.controller, this.view, 33);
         
-        final Component canvas = viewer.getCanvas();
+        final Component canvas = this.view.getCanvas();
 
         WindowManager.getDefault().invokeWhenUIReady(new Runnable() {
 
@@ -89,7 +89,7 @@ public final class GraphTopComponent extends TopComponent {
 
     private void formComponentResized(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_formComponentResized
         Component comp = evt.getComponent();
-        this.viewer.updateSize(comp.getX(), comp.getY(), comp.getWidth(), comp.getHeight());
+        this.view.updateSize(comp.getX(), comp.getY(), comp.getWidth(), comp.getHeight());
     }//GEN-LAST:event_formComponentResized
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -136,7 +136,7 @@ public final class GraphTopComponent extends TopComponent {
         this.validateTree();
 
         this.dataManager.start();
-        this.viewer.start();
+        this.view.start();
     }
 
     @Override
@@ -144,7 +144,7 @@ public final class GraphTopComponent extends TopComponent {
         super.componentHidden();
 
         this.dataManager.stop();
-        this.viewer.stop();
+        this.view.stop();
     }
 
     @Override
@@ -155,7 +155,7 @@ public final class GraphTopComponent extends TopComponent {
     @Override
     public void componentClosed() {
         this.dataManager.stop();
-        this.viewer.stop();
+        this.view.stop();
     }
 
     void writeProperties(java.util.Properties p) {

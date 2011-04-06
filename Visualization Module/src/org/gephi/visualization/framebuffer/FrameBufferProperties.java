@@ -19,17 +19,32 @@ You should have received a copy of the GNU Affero General Public License
 along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package org.gephi.visualization.data;
+package org.gephi.visualization.framebuffer;
 
 /**
+ * Class used to set the properties of a new frame buffer.
  *
- * @author Antonio
+ * @author Antonio Patriarca <antoniopatriarca@gmail.com>
  */
-public enum NodeBufferLayout {
-    // TODO: Implement layout
-    V2;
+public class FrameBufferProperties {
 
-    int nodeSize() {
-        throw new UnsupportedOperationException("Not yet implemented");
+    private int width, height;
+
+    private int renderTargetNumbers;
+    private boolean useDepthBuffer;
+    private boolean useStencilBuffer;
+
+    public boolean readable;
+
+    public FrameBufferProperties(int width, int height) {
+        this.width = width;
+        this.height = height;
+
+        this.renderTargetNumbers = 1;
+        this.useDepthBuffer = true;
+        this.useStencilBuffer = false;
+
+        this.readable = false;
     }
+
 }

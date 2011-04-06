@@ -1,5 +1,5 @@
 /*
-Copyright 2008-2010 Gephi
+Copyright 2008-2011 Gephi
 Authors : Antonio Patriarca <antoniopatriarca@gmail.com>
 Website : http://www.gephi.org
 
@@ -21,8 +21,6 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 
 package org.gephi.visualization.view;
 
-import com.jogamp.newt.awt.NewtCanvasAWT;
-import com.jogamp.newt.opengl.GLWindow;
 import com.jogamp.opengl.util.FPSAnimator;
 import java.awt.Component;
 import javax.media.opengl.GL;
@@ -40,11 +38,9 @@ import org.gephi.visualization.data.FrameData;
  *
  * @author Antonio Patriarca <antoniopatriarca@gmail.com>
  */
-public class Viewer implements GLEventListener {
+public class View implements GLEventListener {
 
     private GLCanvas canvas;
-    //private GLWindow window;
-    //private NewtCanvasAWT canvas;
     private FPSAnimator animator;
 
     private Controller controller;
@@ -58,27 +54,24 @@ public class Viewer implements GLEventListener {
 
     static { GLProfile.initSingleton(true); }
 
-    public Viewer() {
+    public View(Controller controller) {
         this.frameDataLock = new Object();
+
+        this.controller = controller;
 
         final GLCapabilities caps = new GLCapabilities(GLProfile.getDefault());
         caps.setDoubleBuffered(true);
         caps.setHardwareAccelerated(true);
         // TODO: change capabilities based on config files
-        /*
-        this.window = GLWindow.create(caps);
-        this.window.setAutoSwapBufferMode(true);
-        this.window.setVisible(false);
-
-        this.animator = new FPSAnimator(this.window, 30);
-
-        this.canvas = new NewtCanvasAWT(this.window);
-        this.canvas.validate();
-         */
 
         this.canvas = new GLCanvas(caps);
         this.canvas.setAutoSwapBufferMode(true);
         this.animator = new FPSAnimator(this.canvas, 30);
+
+        this.canvas.addKeyListener(controller);
+	this.canvas.addMouseListener(controller);
+        this.canvas.addMouseMotionListener(controller);
+        this.canvas.addMouseWheelListener(controller);
     }
     
     public Component getCanvas() {
@@ -86,10 +79,6 @@ public class Viewer implements GLEventListener {
     }
 
     public void start() {
-        /*
-        this.window.addGLEventListener(this);
-        this.window.setVisible(true);
-*/
         this.canvas.addGLEventListener(this);
         this.canvas.setVisible(true);
         this.animator.start();
@@ -97,10 +86,6 @@ public class Viewer implements GLEventListener {
 
     public void stop() {
         this.animator.stop();
-/*
-        this.window.setVisible(false);
-        this.window.removeGLEventListener(this);
- */
         this.canvas.setVisible(false);
         this.canvas.removeGLEventListener(this);
     }
@@ -141,10 +126,8 @@ public class Viewer implements GLEventListener {
             return;
         }
 
-        if (this.controller != null) {
-            this.controller.beginRenderFrame();
-        }
-
+        this.controller.beginRenderFrame();
+        
         // TODO: Rendering code
 
         // Start OpenGL testing code
@@ -165,9 +148,7 @@ public class Viewer implements GLEventListener {
         // End OpenGL testing code
 
 
-        if (this.controller != null) {
-            this.controller.endRenderFrame();
-        }
+        this.controller.endRenderFrame();
 
         gl.glFlush();
     }
@@ -194,10 +175,5 @@ public class Viewer implements GLEventListener {
             this.frameData = frameData;
 	}
     }
-
-    public void setController(Controller controller) {
-        this.controller = controller;
-        //this.window.addKeyListener(controller);
-	//this.window.addMouseListener(controller);
-    }
+    
 }
