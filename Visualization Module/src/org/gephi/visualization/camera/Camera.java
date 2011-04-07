@@ -152,12 +152,13 @@ public class Camera {
     public Mat4f viewMatrix() {
         Vec3f right = rightVector();
         Mat4f mat = new Mat4f();
-        for (int i = 0; i < 4; ++i) {
+        for (int i = 0; i < 3; ++i) {
             mat.set(i, 0, right.get(i));
             mat.set(i, 1, this.up.get(i));
             mat.set(i, 2, this.front.get(i));
             mat.set(i, 3, this.position.get(i));
         }
+        mat.set(3, 3, 1.0f);
         return mat;
     }
 

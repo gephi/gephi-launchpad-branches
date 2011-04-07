@@ -95,7 +95,7 @@ public class Model implements Runnable, WorkspaceListener {
 
             final Graph graph;
             synchronized(this.graphModelLock) {
-                graph = this.graphModel.getGraphVisible();
+                graph = this.graphModel.getGraph();
             }
 
             Vec3f min = new Vec3f();

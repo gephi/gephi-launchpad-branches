@@ -105,7 +105,7 @@ public class View implements GLEventListener {
         gl.glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
         gl.glClearDepth(1.0);
 
-        //gl.glEnable(GL.GL_DEPTH_TEST);
+        gl.glEnable(GL.GL_DEPTH_TEST);
 
         boolean init = this.pipeline.init(gl);
 
@@ -137,22 +137,7 @@ public class View implements GLEventListener {
 
         this.controller.beginRenderFrame();
 
-        // OpenGL Test
-
-        Camera camera = new Camera(glad.getWidth(), glad.getHeight(), 0.1f, 10.0f);
-        camera.lookAt(new Vec3f(0.0f, 0.0f, -5.0f), new Vec3f(), Vec3f.Y_AXIS);
-
-        FrameData frameData2 = new FrameData(true);
-        NodesArray nodesArray = frameData2.getNodesArray();
-        nodesArray.add(new Vec3f(), 3.0f, new Vec4f(1.0f, 0.0f, 0.0f, 1.0f));
-
-        frameData2.setCamera(camera);
-
-        this.pipeline.draw(gl, frameData2);
-
-        // OpenGL Test
-
-        //this.pipeline.draw(gl, frameData);
+        this.pipeline.draw(gl, frameData);
 
         this.controller.endRenderFrame();
 

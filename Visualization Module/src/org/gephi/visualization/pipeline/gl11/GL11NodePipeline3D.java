@@ -41,7 +41,6 @@ import org.gephi.visualization.pipeline.Pipeline;
 public class GL11NodePipeline3D implements Pipeline {
 
     private int smallerSphere;
-    
     private static final int numLods = 5;
 
     public GL11NodePipeline3D() {
@@ -81,24 +80,17 @@ public class GL11NodePipeline3D implements Pipeline {
         final GLU glu = new GLUgl2();
 
         final Camera camera = frameData.getCamera();
-        gl2.glMatrixMode(GL2.GL_PROJECTION_MATRIX);
+        gl2.glMatrixMode(GL2.GL_PROJECTION);
+
+        float[] matrix = new float[16];
+        camera.projectiveMatrix().getColumnMajorData(matrix);
+        gl2.glLoadMatrixf(matrix, 0);
+
+        gl2.glMatrixMode(GL2.GL_MODELVIEW);
         gl2.glLoadIdentity();
-        final float aspect = camera.imageWidth()/camera.imageHeight();
-        glu.gluPerspective(60.0f, aspect, camera.near(), camera.far());
 
-        gl2.glMatrixMode(GL2.GL_MODELVIEW_MATRIX);
-        gl2.glLoadIdentity();
-
-        final Vec3f position = camera.position();
-        final Vec3f front = camera.frontVector();
-        final Vec3f up = camera.upVector();
-
-        final Vec3f center = camera.position();
-        center.add(front);
-        
-        glu.gluLookAt(position.x(), position.y(), position.z(),
-                      center.x(), center.y(), center.z(),
-                      up.x(), up.y(), up.z());
+        camera.viewMatrix().getColumnMajorData(matrix);
+        gl2.glLoadMatrixf(matrix, 0);
 
         final NodesArray nodes = frameData.getNodesArray();
         final int numNodes = nodes.size();
@@ -114,13 +106,8 @@ public class GL11NodePipeline3D implements Pipeline {
             gl2.glTranslatef(nodePos.x(), nodePos.y(), nodePos.z());
             gl2.glScalef(nodeSize, nodeSize, nodeSize);
 
-//            final float distance = nodePos.dot(front);
-//            final float heightAtDistance = distance * (float)Math.tan(camera.fov()/2.0);
-//            final float approxSize = (nodeSize * camera.imageHeight()) / (4.0f * heightAtDistance);
-
-//            float level = 8.0f;
+            // TODO: set lod using some heuristic
             int lod = 0;
-//            for (; lod < (numLods-1) && level < approxSize; ++lod, level *= 2.0f) { /* Empty */ }
 
             gl2.glCallList(this.smallerSphere + lod);
 
@@ -130,7 +117,9 @@ public class GL11NodePipeline3D implements Pipeline {
 
     @Override
     public void dispose(GL gl) {
-        // Empty block
+        if (!gl.isGL2()) return;
+        
+        gl.getGL2().glDeleteLists(this.smallerSphere, numLods);
     }
 
 }
