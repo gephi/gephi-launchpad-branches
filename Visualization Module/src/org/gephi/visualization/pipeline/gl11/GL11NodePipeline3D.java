@@ -107,7 +107,7 @@ public class GL11NodePipeline3D implements Pipeline {
             gl2.glScalef(nodeSize, nodeSize, nodeSize);
 
             // TODO: set lod using some heuristic
-            int lod = 0;
+            int lod = 4;
 
             gl2.glCallList(this.smallerSphere + lod);
 

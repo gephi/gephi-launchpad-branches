@@ -109,7 +109,7 @@ class NodesArray2D extends NodesArray {
     @Override
     public Vec4f getColorOf(int i) {
         int s = 3*i;
-        return new Vec4f(this.positions.get(s), this.positions.get(s+1), this.positions.get(s+2), 1.0f);
+        return new Vec4f(this.colors.get(s), this.colors.get(s+1), this.colors.get(s+2), 1.0f);
     }
 
     @Override
