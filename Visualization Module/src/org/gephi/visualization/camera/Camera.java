@@ -149,6 +149,13 @@ public class Camera {
         return this.fovy;
     }
 
+    public float distanceFrom(Vec3f point) {
+        this.front.normalize();
+        Vec3f pnt = point.copy();
+        pnt.sub(this.position);
+        return pnt.dot(this.front);
+    }
+
     public Mat4f viewMatrix() {
         Vec3f right = rightVector();
         Mat4f mat = new Mat4f();

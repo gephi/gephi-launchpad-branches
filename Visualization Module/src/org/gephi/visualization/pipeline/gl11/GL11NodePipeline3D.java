@@ -63,7 +63,7 @@ public class GL11NodePipeline3D implements Pipeline {
 
         for (int i = 0; i < GL11NodePipeline3D.numLods; ++i) {
             gl2.glNewList(this.smallerSphere + i, GL2.GL_COMPILE);
-                glu.gluSphere(quad, 0.5, 4 << i, 2 << i);
+                glu.gluSphere(quad, 1.0, 4 << i, 2 << i);
             gl2.glEndList();
         }
 
@@ -107,7 +107,15 @@ public class GL11NodePipeline3D implements Pipeline {
             gl2.glScalef(nodeSize, nodeSize, nodeSize);
 
             // TODO: set lod using some heuristic
-            int lod = 4;
+
+            final float dist = camera.distanceFrom(nodePos);
+            final float h = (float) (dist * Math.tan(camera.fov() / 2.0));
+            final float approxSize = (h * camera.imageHeight())/(2.0f * nodeSize);
+
+            final float log2Size = (float) (Math.log(approxSize) / Math.log(2.0));
+
+            int lod = log2Size < 0.0 ? 0 : (int) log2Size;
+            lod = lod >= numLods ? numLods - 1 : lod;
 
             gl2.glCallList(this.smallerSphere + lod);
 

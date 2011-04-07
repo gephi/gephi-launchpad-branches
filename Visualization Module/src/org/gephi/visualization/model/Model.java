@@ -106,13 +106,13 @@ public class Model implements Runnable, WorkspaceListener {
 
                 final NodeData nodeData = n.getNodeData();
 
-                min.setX(Math.min(min.x(), nodeData.x()));
-                min.setY(Math.min(min.y(), nodeData.y()));
-                min.setZ(Math.min(min.z(), nodeData.z()));
+                min.setX(Math.min(min.x(), nodeData.x() - nodeData.getSize()));
+                min.setY(Math.min(min.y(), nodeData.y() - nodeData.getSize()));
+                min.setZ(Math.min(min.z(), nodeData.z() - nodeData.getSize()));
 
-                max.setX(Math.max(max.x(), nodeData.x()));
-                max.setY(Math.max(max.y(), nodeData.y()));
-                max.setZ(Math.max(max.z(), nodeData.z()));
+                max.setX(Math.max(max.x(), nodeData.x() + nodeData.getSize()));
+                max.setY(Math.max(max.y(), nodeData.y() + nodeData.getSize()));
+                max.setZ(Math.max(max.z(), nodeData.z() + nodeData.getSize()));
             }
 
             final float centerX = 0.5f * (max.x() + min.x());
