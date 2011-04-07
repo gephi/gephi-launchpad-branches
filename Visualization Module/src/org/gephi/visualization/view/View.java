@@ -24,14 +24,19 @@ package org.gephi.visualization.view;
 import com.jogamp.opengl.util.FPSAnimator;
 import java.awt.Component;
 import javax.media.opengl.GL;
-import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLCapabilities;
 import javax.media.opengl.GLEventListener;
 import javax.media.opengl.GLProfile;
 import javax.media.opengl.awt.GLCanvas;
+import org.gephi.lib.gleem.linalg.Vec3f;
+import org.gephi.lib.gleem.linalg.Vec4f;
+import org.gephi.visualization.camera.Camera;
 import org.gephi.visualization.controller.Controller;
 import org.gephi.visualization.data.FrameData;
+import org.gephi.visualization.data.NodesArray;
+import org.gephi.visualization.pipeline.Pipeline;
+import org.gephi.visualization.pipeline.gl11.GL11Pipeline3D;
 
 /**
  *
@@ -48,9 +53,7 @@ public class View implements GLEventListener {
     private FrameData frameData = null;
     final private Object frameDataLock;
 
-    // Start OpenGL testing code
-    int angle = 0;
-    // End OpenGL testing code
+    private Pipeline pipeline;
 
     static { GLProfile.initSingleton(true); }
 
@@ -72,6 +75,8 @@ public class View implements GLEventListener {
 	this.canvas.addMouseListener(controller);
         this.canvas.addMouseMotionListener(controller);
         this.canvas.addMouseWheelListener(controller);
+
+        this.pipeline = new GL11Pipeline3D();
     }
     
     public Component getCanvas() {
@@ -97,19 +102,23 @@ public class View implements GLEventListener {
 
         // TODO: change initialization code based on config files
 
-        gl.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        gl.glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
         gl.glClearDepth(1.0);
 
-        // Start OpenGL testing code
-        GL2 gl2 = gl.getGL2();
-        gl2.glMatrixMode(GL2.GL_PROJECTION);
-        gl2.glLoadIdentity();
-        gl2.glOrtho(-1.0, 1.0, -1.0, 1.0, -1.0, 1.0);
-        // End OpenGL testing
+        //gl.glEnable(GL.GL_DEPTH_TEST);
+
+        boolean init = this.pipeline.init(gl);
+
+        if (!init) {
+            gl.glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
+        }
     }
 
     @Override
     public void dispose(GLAutoDrawable glad) {
+        GL gl = glad.getGL();
+
+        this.pipeline.dispose(gl);
     }
 
     @Override
@@ -127,26 +136,23 @@ public class View implements GLEventListener {
         }
 
         this.controller.beginRenderFrame();
-        
-        // TODO: Rendering code
 
-        // Start OpenGL testing code
-        GL2 gl2 = gl.getGL2();
+        // OpenGL Test
 
-        gl2.glMatrixMode(GL2.GL_MODELVIEW);
-        gl2.glLoadIdentity();
-        gl2.glRotatef(angle, 0.0f, 0.0f, 1.0f);
+        Camera camera = new Camera(glad.getWidth(), glad.getHeight(), 0.1f, 10.0f);
+        camera.lookAt(new Vec3f(0.0f, 0.0f, -5.0f), new Vec3f(), Vec3f.Y_AXIS);
 
-        gl2.glColor3f(1.0f, 1.0f, 1.0f);
-        gl2.glBegin(GL2.GL_POLYGON);
-            gl2.glVertex2f(-0.5f, -0.5f);
-            gl2.glVertex2f(0.5f, -0.5f);
-            gl2.glVertex2f(0.5f, 0.5f);
-            gl2.glVertex2f(-0.5f, 0.5f);
-        gl2.glEnd();
-        angle++;
-        // End OpenGL testing code
+        FrameData frameData2 = new FrameData(true);
+        NodesArray nodesArray = frameData2.getNodesArray();
+        nodesArray.add(new Vec3f(), 3.0f, new Vec4f(1.0f, 0.0f, 0.0f, 1.0f));
 
+        frameData2.setCamera(camera);
+
+        this.pipeline.draw(gl, frameData2);
+
+        // OpenGL Test
+
+        //this.pipeline.draw(gl, frameData);
 
         this.controller.endRenderFrame();
 

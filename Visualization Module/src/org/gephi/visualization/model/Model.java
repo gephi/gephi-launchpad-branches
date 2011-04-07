@@ -25,6 +25,8 @@ import org.gephi.graph.api.Graph;
 import org.gephi.graph.api.GraphController;
 import org.gephi.graph.api.GraphModel;
 import org.gephi.graph.api.Node;
+import org.gephi.graph.api.NodeData;
+import org.gephi.lib.gleem.linalg.Vec3f;
 import org.gephi.project.api.ProjectController;
 import org.gephi.project.api.Workspace;
 import org.gephi.project.api.WorkspaceListener;
@@ -87,18 +89,43 @@ public class Model implements Runnable, WorkspaceListener {
             long beginFrameTime = System.currentTimeMillis();
 
             this.controller.beginUpdateFrame();
-            Camera camera = this.controller.getCurrentCamera();
+            Camera camera = new Camera(this.controller.getWidth(), this.controller.getHeight(), 0.1f, 10.0f);
             
-            final FrameData frameData = new FrameData(camera, true);
+            final FrameData frameData = new FrameData(true);
 
             final Graph graph;
             synchronized(this.graphModelLock) {
                 graph = this.graphModel.getGraphVisible();
             }
 
+            Vec3f min = new Vec3f();
+            Vec3f max = new Vec3f();
+
             for(Node n : graph.getNodes()) {
                 frameData.getNodesArray().add(n);
+
+                final NodeData nodeData = n.getNodeData();
+
+                min.setX(Math.min(min.x(), nodeData.x()));
+                min.setY(Math.min(min.y(), nodeData.y()));
+                min.setZ(Math.min(min.z(), nodeData.z()));
+
+                max.setX(Math.max(max.x(), nodeData.x()));
+                max.setY(Math.max(max.y(), nodeData.y()));
+                max.setZ(Math.max(max.z(), nodeData.z()));
             }
+
+            final float centerX = 0.5f * (max.x() + min.x());
+            final float centerY = 0.5f * (max.y() + min.y());
+            final float dY = 0.5f * (max.y() - min.y());
+
+            float d = dY / (float)Math.tan(0.5 * camera.fov());
+
+            final Vec3f origin = new Vec3f(centerX, centerY, min.z() - d*1.1f);
+            camera.lookAt(origin, new Vec3f(centerX, centerY, min.z()), Vec3f.Y_AXIS);
+            camera.setClipPlanes(d, max.z() - min.z() + d*1.2f);
+
+            frameData.setCamera(camera);
 
             this.controller.endUpdateFrame();
             this.viewer.setCurrentFrameData(frameData);
@@ -128,7 +155,6 @@ public class Model implements Runnable, WorkspaceListener {
         synchronized(this.graphModelLock) {
             this.workspaceSelected = true;
             this.graphModel = gc.getModel(workspace);
-            this.controller.initCamera(this.graphModel);
         }
         
         startUpdate();
@@ -167,5 +193,4 @@ public class Model implements Runnable, WorkspaceListener {
             this.thread = null;
         }
     }
-
 }

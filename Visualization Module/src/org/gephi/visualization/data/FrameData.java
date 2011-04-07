@@ -30,10 +30,14 @@ import org.gephi.visualization.camera.Camera;
 public final class FrameData {
 
     final private NodesArray nodes;
-    final private Camera camera;
+    private Camera camera;
 
-    public FrameData(Camera camera, boolean is3D) {
+    public FrameData(boolean is3D) {
         this.nodes = NodesArray.create(is3D);
+        this.camera = null;
+    }
+    
+    public void setCamera(Camera camera) {
         this.camera = camera;
     }
 

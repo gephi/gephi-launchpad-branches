@@ -37,6 +37,7 @@ public abstract class NodesArray {
     public abstract int size();
 
     public abstract void add(Node node);
+    public abstract void add(Vec3f position, float size, Vec4f color);
     public abstract void addAll(Node[] nodes);
     public abstract void addAll(Collection<? extends Node> nodes);
 

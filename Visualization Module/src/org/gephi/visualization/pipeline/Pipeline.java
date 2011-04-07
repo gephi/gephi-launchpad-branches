@@ -21,11 +21,20 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 
 package org.gephi.visualization.pipeline;
 
+import javax.media.opengl.GL;
+import org.gephi.visualization.data.FrameData;
+
 /**
  * 
  *
  * @author Antonio Patriarca <antoniopatriarca@gmail.com>
  */
-public class Pipeline {
+public interface Pipeline {
 
+    public boolean init(GL gl);
+
+    public void draw(GL gl, FrameData frameData);
+
+    public void dispose(GL gl);
+    
 }

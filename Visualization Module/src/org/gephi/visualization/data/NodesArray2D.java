@@ -112,4 +112,18 @@ class NodesArray2D extends NodesArray {
         return new Vec4f(this.positions.get(s), this.positions.get(s+1), this.positions.get(s+2), 1.0f);
     }
 
+    @Override
+    public void add(Vec3f position, float size, Vec4f color) {
+        this.positions.add(position.x());
+        this.positions.add(position.y());
+
+        this.sizes.add(size);
+
+        this.colors.add(color.x());
+        this.colors.add(color.y());
+        this.colors.add(color.z());
+
+        ++this.size;
+    }
+
 }

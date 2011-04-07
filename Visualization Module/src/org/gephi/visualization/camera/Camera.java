@@ -94,7 +94,9 @@ public class Camera {
 
     public void lookAt(Vec3f center, Vec3f up) {
         this.front.sub(center, this.position);
+        this.front.normalize();
         this.up = up.copy();
+        this.up.normalize();
     }
 
     public void lookAt(Vec3f position, Vec3f center, Vec3f up) {

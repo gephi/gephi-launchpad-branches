@@ -19,37 +19,39 @@ You should have received a copy of the GNU Affero General Public License
 along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package org.gephi.visualization.pipeline;
+package org.gephi.visualization.pipeline.gl11;
 
-import org.gephi.visualization.framebuffer.FrameBuffer;
-import java.util.Arrays;
 import javax.media.opengl.GL;
 import org.gephi.visualization.data.FrameData;
+import org.gephi.visualization.pipeline.Pipeline;
 
 /**
- * Part of the Visualization Pipeline. Subclasses of this class may contains 
- * the code to visualize nodes, edges or labels or implements some 
- * post-processing effect.
- * 
+ * 3D pipeline based on OpenGL 1.1
+ *
  * @author Antonio Patriarca <antoniopatriarca@gmail.com>
  */
-public abstract class Stage {
+public class GL11Pipeline3D implements Pipeline {
 
-    protected final FrameBuffer[] inputs;
-    protected final FrameBuffer[] targets;
+    final GL11NodePipeline3D nodePipeline;
 
-    protected Stage(FrameBuffer[] inputs, FrameBuffer[] targets) {
-        this.inputs = Arrays.copyOf(inputs, inputs.length);
-        this.targets = Arrays.copyOf(targets, targets.length);
+    public GL11Pipeline3D() {
+        this.nodePipeline = new GL11NodePipeline3D();
     }
 
+    @Override
     public boolean init(GL gl) {
-        return true;
+        return this.nodePipeline.init(gl);
     }
 
+    @Override
+    public void draw(GL gl, FrameData frameData) {
+        this.nodePipeline.draw(gl, frameData);
+    }
+
+    @Override
     public void dispose(GL gl) {
-        // empty block
+        this.nodePipeline.dispose(gl);
     }
 
-    public abstract void draw(GL gl, final FrameData frameData, int frameNumber);
+
 }

@@ -29,11 +29,6 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
-import org.gephi.graph.api.GraphModel;
-import org.gephi.graph.api.Node;
-import org.gephi.graph.api.NodeData;
-import org.gephi.lib.gleem.linalg.Vec3f;
-import org.gephi.visualization.camera.Camera;
 
 /**
  *
@@ -41,19 +36,24 @@ import org.gephi.visualization.camera.Camera;
  */
 public class Controller implements KeyListener, MouseListener, MouseMotionListener, MouseWheelListener {
 
-    private Camera camera;
+    private int width, height;
 
     public Controller() {
-        // Random values..
-        this.camera = new Camera(800, 600, 0.1f, 10.0f);
+        this.width = 1;
+        this.height = 1;
     }
 
-    public Camera getCurrentCamera() {
-        return this.camera;
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
     }
 
     public void resize(int width, int height) {
-        this.camera.setImageSize(width, height);
+        this.width = width;
+        this.height = height;
     }
 
     public void beginUpdateFrame() {
@@ -114,33 +114,6 @@ public class Controller implements KeyListener, MouseListener, MouseMotionListen
 
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
-    }
-
-    public void initCamera(GraphModel model) {
-        Vec3f min = new Vec3f();
-        Vec3f max = new Vec3f();
-
-        for (Node n : model.getGraph().getNodes()) {
-            NodeData nodeData = n.getNodeData();
-
-            min.setX(Math.min(min.x(), nodeData.x()));
-            min.setY(Math.min(min.y(), nodeData.y()));
-            min.setZ(Math.min(min.z(), nodeData.z()));
-
-            max.setX(Math.max(max.x(), nodeData.x()));
-            max.setY(Math.max(max.y(), nodeData.y()));
-            max.setZ(Math.max(max.z(), nodeData.z()));
-        }
-
-        float centerX = 0.5f * (max.x() + min.x());
-        float centerY = 0.5f * (max.y() + min.y());
-        float dY = 0.5f * (max.y() - min.y());
-
-        float d = dY / (float)Math.tan(0.5 * this.camera.fov());
-
-        Vec3f origin = new Vec3f(centerX, centerY, min.z() - d*1.1f);
-        this.camera.lookAt(origin, new Vec3f(centerX, centerY, min.z()), Vec3f.Y_AXIS);
-        this.camera.setClipPlanes(d, max.z() - min.z() + d*1.2f);
     }
 
 }
