@@ -33,6 +33,7 @@ import org.gephi.project.api.WorkspaceListener;
 import org.gephi.visualization.camera.Camera;
 import org.gephi.visualization.controller.Controller;
 import org.gephi.visualization.data.FrameData;
+import org.gephi.visualization.geometry.AABB;
 import org.gephi.visualization.view.View;
 import org.openide.util.Lookup;
 
@@ -88,46 +89,30 @@ public class Model implements Runnable, WorkspaceListener {
         while (true) {
             long beginFrameTime = System.currentTimeMillis();
 
-            this.controller.beginUpdateFrame();
-            Camera camera = new Camera(this.controller.getWidth(), this.controller.getHeight(), 0.1f, 10.0f);
+            Camera camera = this.controller.beginUpdateFrame();
             
-            final FrameData frameData = new FrameData(true);
+            final FrameData frameData = new FrameData(true, camera);
 
             final Graph graph;
             synchronized(this.graphModelLock) {
                 graph = this.graphModel.getGraph();
             }
 
-            Vec3f min = new Vec3f();
-            Vec3f max = new Vec3f();
-
-            for(Node n : graph.getNodes()) {
+            AABB box = null;
+            for (Node n : graph.getNodes()) {
                 frameData.getNodesArray().add(n);
 
-                final NodeData nodeData = n.getNodeData();
-
-                min.setX(Math.min(min.x(), nodeData.x() - nodeData.getSize()));
-                min.setY(Math.min(min.y(), nodeData.y() - nodeData.getSize()));
-                min.setZ(Math.min(min.z(), nodeData.z() - nodeData.getSize()));
-
-                max.setX(Math.max(max.x(), nodeData.x() + nodeData.getSize()));
-                max.setY(Math.max(max.y(), nodeData.y() + nodeData.getSize()));
-                max.setZ(Math.max(max.z(), nodeData.z() + nodeData.getSize()));
+                NodeData nd = n.getNodeData();
+                Vec3f p = new Vec3f(nd.x(), nd.y(), nd.z());
+                Vec3f s = new Vec3f(nd.getSize(), nd.getSize(), nd.getSize());
+                if (box == null) {
+                    box = new AABB(p, s);
+                } else {
+                    box.addPoint(p, s);
+                }
             }
 
-            final float centerX = 0.5f * (max.x() + min.x());
-            final float centerY = 0.5f * (max.y() + min.y());
-            final float dY = 0.5f * (max.y() - min.y());
-
-            float d = dY / (float)Math.tan(0.5 * camera.fov());
-
-            final Vec3f origin = new Vec3f(centerX, centerY, min.z() - d*1.1f);
-            camera.lookAt(origin, new Vec3f(centerX, centerY, min.z()), Vec3f.Y_AXIS);
-            camera.setClipPlanes(d, max.z() - min.z() + d*1.2f);
-
-            frameData.setCamera(camera);
-
-            this.controller.endUpdateFrame();
+            this.controller.endUpdateFrame(box);
             this.viewer.setCurrentFrameData(frameData);
             
             long endFrameTime = System.currentTimeMillis();

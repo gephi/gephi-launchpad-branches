@@ -29,6 +29,9 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import org.gephi.lib.gleem.linalg.Vec3f;
+import org.gephi.visualization.camera.Camera;
+import org.gephi.visualization.geometry.AABB;
 
 /**
  *
@@ -36,32 +39,23 @@ import java.awt.event.MouseWheelListener;
  */
 public class Controller implements KeyListener, MouseListener, MouseMotionListener, MouseWheelListener {
 
-    private int width, height;
+    private Camera camera;
 
     public Controller() {
-        this.width = 1;
-        this.height = 1;
-    }
-
-    public int getWidth() {
-        return width;
-    }
-
-    public int getHeight() {
-        return height;
+        // Random values
+        this.camera = new Camera(300, 300, 0.1f, 100.0f);
     }
 
     public void resize(int width, int height) {
-        this.width = width;
-        this.height = height;
+        this.camera.setImageSize(width, height);
     }
 
-    public void beginUpdateFrame() {
-
+    public Camera beginUpdateFrame() {
+        return new Camera(this.camera);
     }
 
-    public void endUpdateFrame() {
-
+    public void endUpdateFrame(AABB box) {
+        centerCamera(box);
     }
 
     public void beginRenderFrame() {
@@ -114,6 +108,21 @@ public class Controller implements KeyListener, MouseListener, MouseMotionListen
 
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
+    }
+
+    private void centerCamera(AABB box) {
+        if (box == null) return;
+
+        final Vec3f center = box.center();
+        final Vec3f scale = box.scale();
+        final Vec3f minVec = box.minVec();
+        final Vec3f maxVec = box.maxVec();
+
+        float d = scale.y() / (float)Math.tan(0.5 * camera.fov());
+
+        final Vec3f origin = new Vec3f(center.x(), center.y(), minVec.z() - d*1.1f);
+        camera.lookAt(origin, center, Vec3f.Y_AXIS);
+        camera.setClipPlanes(d, maxVec.z() - minVec.z() + d*1.2f);
     }
 
 }

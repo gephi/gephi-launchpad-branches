@@ -106,8 +106,6 @@ public class GL11NodePipeline3D implements Pipeline {
             gl2.glTranslatef(nodePos.x(), nodePos.y(), nodePos.z());
             gl2.glScalef(nodeSize, nodeSize, nodeSize);
 
-            // TODO: set lod using some heuristic
-
             final float dist = camera.distanceFrom(nodePos);
             final float h = (float) (dist * Math.tan(camera.fov() / 2.0));
             final float approxSize = (h * camera.imageHeight())/(2.0f * nodeSize);

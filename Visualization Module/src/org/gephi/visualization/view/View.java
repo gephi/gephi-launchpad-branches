@@ -29,12 +29,8 @@ import javax.media.opengl.GLCapabilities;
 import javax.media.opengl.GLEventListener;
 import javax.media.opengl.GLProfile;
 import javax.media.opengl.awt.GLCanvas;
-import org.gephi.lib.gleem.linalg.Vec3f;
-import org.gephi.lib.gleem.linalg.Vec4f;
-import org.gephi.visualization.camera.Camera;
 import org.gephi.visualization.controller.Controller;
 import org.gephi.visualization.data.FrameData;
-import org.gephi.visualization.data.NodesArray;
 import org.gephi.visualization.pipeline.Pipeline;
 import org.gephi.visualization.pipeline.gl11.GL11Pipeline3D;
 
@@ -151,14 +147,11 @@ public class View implements GLEventListener {
         int h2 = h == 0 ? 1 : h;
 
         gl.glViewport(0, 0, w, h2);
-
-        if (this.controller != null) {
-            this.controller.resize(w, h2);
-        }
     }
 
     public void updateSize(int x, int y, int w, int h) {
         this.canvas.setBounds(x, y, w, h);
+        this.controller.resize(w, h);
     }
 
     public void setCurrentFrameData(FrameData frameData) {

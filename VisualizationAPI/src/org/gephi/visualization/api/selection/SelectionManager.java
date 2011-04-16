@@ -1,5 +1,5 @@
 /*
-Copyright 2008-2010 Gephi
+Copyright 2008-2011 Gephi
 Authors : Antonio Patriarca <antoniopatriarca@gmail.com>
 Website : http://www.gephi.org
 
@@ -26,7 +26,7 @@ import org.gephi.graph.api.Node;
 
 /**
  *
- * @author Antonio Patriarca
+ * @author Antonio Patriarca <antoniopatriarca@gmail.com>
  */
 public interface SelectionManager {
 
