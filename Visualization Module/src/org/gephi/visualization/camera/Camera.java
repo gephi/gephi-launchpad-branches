@@ -21,12 +21,13 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 
 package org.gephi.visualization.camera;
 
+import org.gephi.lib.gleem.linalg.Mat3f;
 import org.gephi.lib.gleem.linalg.Mat4f;
 import org.gephi.lib.gleem.linalg.Rotf;
 import org.gephi.lib.gleem.linalg.Vec3f;
 
 /**
- *
+ * Class representing a camera. Enables basic camera movement.
  *
  * @author Antonio Patriarca <antoniopatriarca@gmail.com>
  */
@@ -34,15 +35,20 @@ public class Camera {
     
     private Vec3f front, up;
     private Vec3f position;
+    private Vec3f orbitCenter;
 
     private float imageWidth, imageHeight, fovy, near, far;
 
     private float scaleFactor;
 
+    private static final float MIN_ORBIT = 200.0f;
+    private static final float MAX_ORBIT = 2000.0f;
+    private static final float MAX_FOVY = 3.0f;
+
     public Camera(int width, int height, float near, float far) {
         this.imageWidth = width;
         this.imageHeight = height;
-        this.fovy = (float) Math.toRadians(60.0);
+        this.fovy = 1.0f;
         this.near = near;
         this.far = far;
         this.scaleFactor = 1.0f;
@@ -73,7 +79,7 @@ public class Camera {
         this.position = newPos.copy();
     }
 
-    public void translateOf(Vec3f v) {
+    public void translate(Vec3f v) {
         this.position.add(v);
     }
 
@@ -179,5 +185,69 @@ public class Camera {
             mat.set(2, 3, (2.0f * this.far * this.near)/(this.near - this.far));
             mat.set(3, 2, -1.0f);
         return mat;
+    }
+
+    public void startTranslation() {}
+
+    public void updateTranslation(float horizontal, float vertical) {
+        float ratio = (float) Math.sqrt((1 - Math.cos(fovy)) / (1 - Math.cos(1.0)));
+        Vec3f horizontalTranslation = rightVector().times(horizontal * ratio);
+        Vec3f verticalTranslation = this.up.times(vertical * ratio);
+        Vec3f translation = new Vec3f();
+        translation.add(horizontalTranslation, verticalTranslation);
+        Vec3f result = new Vec3f();
+        Mat3f rotationMatrix = new Mat3f();
+        rotationMatrix.setCol(0, this.rightVector());
+        rotationMatrix.setCol(1, this.up);
+        rotationMatrix.setCol(2, this.front);
+        rotationMatrix.invert();
+        rotationMatrix.xformVec(translation, result);
+        translate(result);
+    }
+
+    public void finishTranslation() {}
+
+    private float orbitRadius(float modifier) {
+        return (MIN_ORBIT + (MAX_ORBIT - MIN_ORBIT) * modifier) * fovy;
+    }
+
+    /**
+     * Initialize orbiting around a center point.
+     * @param orbitModifier must be a value between 0.0 and 1.0.
+     */
+    public void startOrbit(float orbitModifier) {
+        orbitCenter = new Vec3f(position).addScaled(orbitRadius(orbitModifier), front);
+    }
+
+    public void updateOrbit(float x, float y) {
+        Vec3f fromCenter = new Vec3f();
+        fromCenter.sub(position, orbitCenter);
+
+        Mat3f rotationMatrix = new Mat3f();
+        float sx = (float) Math.sin(y);
+        float sy = (float) Math.sin(x);
+        float cx = (float) Math.cos(y);
+        float cy = (float) Math.cos(x);
+        rotationMatrix.setCol(0, new Vec3f(cy, sx * sy, -cx * sy));
+        rotationMatrix.setCol(1, new Vec3f(0, cx, sx));
+        rotationMatrix.setCol(2, new Vec3f(sy, -sx * cy, cx * cy));
+        Vec3f v = new Vec3f();
+        Vec3f u = new Vec3f(up);
+        u.add(fromCenter);
+        Vec3f ur = new Vec3f();
+        rotationMatrix.xformVec(fromCenter, v);
+        rotationMatrix.xformVec(u, ur);
+
+        ur.sub(v);
+
+        v.add(orbitCenter);
+        position = v;
+        lookAt(orbitCenter, ur);
+    }
+
+    public void finishOrbit() {}
+
+    public void zoom(float by) {
+        fovy = (float) Math.min(fovy * Math.exp(by), MAX_FOVY);
     }
 }

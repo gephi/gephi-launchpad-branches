@@ -23,6 +23,7 @@ package org.gephi.visualization.view;
 
 import com.jogamp.opengl.util.FPSAnimator;
 import java.awt.Component;
+import java.awt.Dimension;
 import javax.media.opengl.GL;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLCapabilities;
@@ -147,6 +148,10 @@ public class View implements GLEventListener {
         int h2 = h == 0 ? 1 : h;
 
         gl.glViewport(0, 0, w, h2);
+    }
+
+    public Dimension getDimension() {
+        return this.canvas.getSize();
     }
 
     public void updateSize(int x, int y, int w, int h) {

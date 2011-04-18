@@ -32,6 +32,7 @@ import java.awt.event.MouseWheelListener;
 import org.gephi.lib.gleem.linalg.Vec3f;
 import org.gephi.visualization.camera.Camera;
 import org.gephi.visualization.geometry.AABB;
+import org.gephi.visualization.view.View;
 
 /**
  *
@@ -40,10 +41,23 @@ import org.gephi.visualization.geometry.AABB;
 public class Controller implements KeyListener, MouseListener, MouseMotionListener, MouseWheelListener {
 
     private Camera camera;
+    private MotionManager motionManager;
+
+    private boolean centered;
+
+    // TODO remove
+    private static Controller instance;
 
     public Controller() {
         // Random values
-        this.camera = new Camera(300, 300, 0.1f, 100.0f);
+        this.camera = new Camera(300, 300, 100f, 10000.0f);
+        this.motionManager = new MotionManager();
+        instance = this;
+    }
+
+    // TODO temporary before a suitable architecture is created
+    public static Controller getInstance() {
+        return instance;
     }
 
     public void resize(int width, int height) {
@@ -51,10 +65,16 @@ public class Controller implements KeyListener, MouseListener, MouseMotionListen
     }
 
     public Camera beginUpdateFrame() {
-        return new Camera(this.camera);
+        return this.camera;
+        //return new Camera(this.camera);
     }
 
     public void endUpdateFrame(AABB box) {
+        // center on first update. TODO - move from endUpdateFrame to special centering method that will be called just once from the Model
+        if (centered || box == null) {
+            return;
+        }
+        centered = true;
         centerCamera(box);
     }
 
@@ -84,10 +104,12 @@ public class Controller implements KeyListener, MouseListener, MouseMotionListen
 
     @Override
     public void mousePressed(MouseEvent e) {
+        motionManager.mousePressed(e);
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
+        motionManager.mouseReleased(e);
     }
 
     @Override
@@ -100,14 +122,17 @@ public class Controller implements KeyListener, MouseListener, MouseMotionListen
 
     @Override
     public void mouseDragged(MouseEvent e) {
+        motionManager.mouseDragged(e);
     }
 
     @Override
     public void mouseMoved(MouseEvent e) {
+        motionManager.mouseMoved(e);
     }
 
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
+        motionManager.mouseWheelMoved(e);
     }
 
     private void centerCamera(AABB box) {
@@ -122,7 +147,16 @@ public class Controller implements KeyListener, MouseListener, MouseMotionListen
 
         final Vec3f origin = new Vec3f(center.x(), center.y(), minVec.z() - d*1.1f);
         camera.lookAt(origin, center, Vec3f.Y_AXIS);
-        camera.setClipPlanes(d, maxVec.z() - minVec.z() + d*1.2f);
+        //camera.setClipPlanes(d, maxVec.z() - minVec.z() + d*1.2f);
+    }
+
+    // TODO - create a better architecture containing class or leave here?
+    public Camera getCamera() {
+        return camera;
+    }
+    // TODO - create a better architecture containing class or leave here?
+    public MotionManager getMotionManager() {
+        return motionManager;
     }
 
 }
