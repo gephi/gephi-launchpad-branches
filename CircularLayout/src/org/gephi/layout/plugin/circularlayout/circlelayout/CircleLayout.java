@@ -26,12 +26,13 @@ THE POSSIBILITY OF SUCH DAMAGE.
  */
 package org.gephi.layout.plugin.circularlayout.circlelayout;
 
+
+import org.gephi.layout.plugin.circularlayout.nodecomparator.BasicNodeComparator;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Collections;
 import java.util.List;
-import org.gephi.graph.api.Graph;
 import org.gephi.graph.api.DirectedGraph;
 import org.gephi.graph.api.HierarchicalGraph;
 import org.gephi.graph.api.GraphModel;
@@ -154,17 +155,17 @@ public class CircleLayout extends AbstractLayout implements Layout {
             List nodesList = Arrays.asList(nodes);
             Collections.shuffle(nodesList);
         } else if (this.enumNodeplacement == PlacementEnum.Degree) {
-            Arrays.sort(nodes, new DegreeComparator());
-        } else if (this.enumNodeplacement == PlacementEnum.Indegree){
-            Arrays.sort(nodes, new InDegreeComparator());
-        } else if (this.enumNodeplacement == PlacementEnum.Outdegree){
-            Arrays.sort(nodes, new OutDegreeComparator());
-        } else if (this.enumNodeplacement == PlacementEnum.Mutual){
-            Arrays.sort(nodes, new MutualDegreeComparator());
-        } else if (this.enumNodeplacement == PlacementEnum.Children){
-            Arrays.sort(nodes, new ChildrenComparator());
-        } else if (this.enumNodeplacement == PlacementEnum.Descendents){
-            Arrays.sort(nodes, new DescendantComparator());
+            Arrays.sort(nodes, new BasicNodeComparator(graph, nodes,"Degree", false));
+        } else if (this.enumNodeplacement == PlacementEnum.Indegree) {
+            Arrays.sort(nodes, new BasicNodeComparator(graph, nodes,"InDegree", false));
+        } else if (this.enumNodeplacement == PlacementEnum.Outdegree) {
+            Arrays.sort(nodes, new BasicNodeComparator(graph, nodes,"OutDegree", false));
+        } else if (this.enumNodeplacement == PlacementEnum.Mutual) {
+            Arrays.sort(nodes, new BasicNodeComparator(graph, nodes,"MutualDegree", false));
+        } else if (this.enumNodeplacement == PlacementEnum.Children) {
+            Arrays.sort(nodes, new BasicNodeComparator(graph, nodes,"Children", false));
+        } else if (this.enumNodeplacement == PlacementEnum.Descendents) {
+            Arrays.sort(nodes, new BasicNodeComparator(graph, nodes,"Descendent", false));
         }
 
 
@@ -299,75 +300,4 @@ public class CircleLayout extends AbstractLayout implements Layout {
     }
 
 
-
-        class DegreeComparator implements Comparator<Object> {
-        @Override
-        public int compare(Object o1, Object o2) {
-            int f1 = graph.getDegree((Node) o1);
-            int f2 = graph.getDegree((Node) o2);
-            return f2 - f1;
-        }
-    }
-
-    class InDegreeComparator implements Comparator<Object> {
-        @Override
-        public int compare(Object o1, Object o2) {
-            GraphController graphController = Lookup.getDefault().lookup(GraphController.class);
-            GraphModel objGraphModel = graphController.getModel();
-            DirectedGraph objGraph = objGraphModel.getDirectedGraph();
-            int f1 = objGraph.getInDegree((Node) o1);
-            int f2 = objGraph.getInDegree((Node) o2);
-            return f2 - f1;
-        }
-    }
-
-    class OutDegreeComparator implements Comparator<Object> {
-        @Override
-        public int compare(Object o1, Object o2) {
-            GraphController graphController = Lookup.getDefault().lookup(GraphController.class);
-            GraphModel objGraphModel = graphController.getModel();
-            DirectedGraph objGraph = objGraphModel.getDirectedGraph();
-            int f1 = objGraph.getOutDegree((Node) o1);
-            int f2 = objGraph.getOutDegree((Node) o2);
-            return f2 - f1;
-        }
-    }
-
-
-    class MutualDegreeComparator implements Comparator<Object> {
-        @Override
-        public int compare(Object o1, Object o2) {
-            GraphController graphController = Lookup.getDefault().lookup(GraphController.class);
-            GraphModel objGraphModel = graphController.getModel();
-            DirectedGraph objGraph = objGraphModel.getDirectedGraph();
-            int f1 = objGraph.getMutualDegree((Node) o1);
-            int f2 = objGraph.getMutualDegree((Node) o2);
-            return f2 - f1;
-        }
-    }
-
-
-    class ChildrenComparator implements Comparator<Object> {
-        @Override
-        public int compare(Object o1, Object o2) {
-            GraphController graphController = Lookup.getDefault().lookup(GraphController.class);
-            GraphModel objGraphModel = graphController.getModel();
-            HierarchicalGraph objGraph = objGraphModel.getHierarchicalGraph();
-            int f1 = objGraph.getChildrenCount((Node) o1);
-            int f2 = objGraph.getChildrenCount((Node) o2);
-            return f2 - f1;
-        }
-    }
-
-    class DescendantComparator implements Comparator<Object> {
-        @Override
-        public int compare(Object o1, Object o2) {
-            GraphController graphController = Lookup.getDefault().lookup(GraphController.class);
-            GraphModel objGraphModel = graphController.getModel();
-            HierarchicalGraph objGraph = objGraphModel.getHierarchicalGraph();
-            int f1 = objGraph.getDescendantCount((Node) o1);
-            int f2 = objGraph.getDescendantCount((Node) o2);
-            return f2 - f1;
-        }
-    }
 }

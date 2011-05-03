@@ -24,40 +24,20 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
 THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.gephi.layout.plugin.circularlayout.abstractcombo;
+package org.gephi.layout.plugin.circularlayout.radialaxislayout;
 
-import java.beans.PropertyEditorSupport;
-import java.util.Set;
+import org.gephi.layout.plugin.circularlayout.abstractcombo.AbstractComboBoxEditor;
 import java.util.Map;
-import java.util.Map.Entry;
+
 /**
  *
  * @author Matt
  */
-public abstract class AbstractComboBoxEditor extends PropertyEditorSupport {
-    public Map ComboValues;
+public class RotationComboBoxEditor extends AbstractComboBoxEditor {
 
-    @Override
-    public String[] getTags()
-    {
-        return (String[]) ComboValues.values().toArray(new String[0]);
+
+    public RotationComboBoxEditor() {
+        Map options = RadialAxisLayout.getRotationEnumMap();
+        super.ComboValues = options;
     }
-
-
-    @Override
-    public String getAsText() {
-        return (String) ComboValues.get(getValue());
-    }
-
-    @Override
-    public void setAsText(String s) {
-        Set<java.util.Map.Entry<java.lang.Enum,java.lang.String>> Entries = ComboValues.entrySet();
-        for (Map.Entry<Enum, String>Entry: Entries) {
-            if (Entry.getValue() == null ? s == null : Entry.getValue().equals(s)) {
-                setValue(Entry.getKey());
-            }
-        }
-    }
-
-
-};
+}

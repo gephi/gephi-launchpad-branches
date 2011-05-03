@@ -26,6 +26,8 @@ THE POSSIBILITY OF SUCH DAMAGE.
  */
 package org.gephi.layout.plugin.circularlayout.dualcirclelayout;
 
+
+import org.gephi.layout.plugin.circularlayout.nodecomparator.BasicNodeComparator;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Arrays;
@@ -143,17 +145,17 @@ public class DualCircleLayout extends AbstractLayout implements Layout {
             List nodesList = Arrays.asList(nodes);
             Collections.shuffle(nodesList);
         } else if (this.attribute == AttributeEnum.Degree) {
-            Arrays.sort(nodes, new DegreeComparator());
-        } else if (this.attribute == AttributeEnum.Indegree){
-            Arrays.sort(nodes, new InDegreeComparator());
-        } else if (this.attribute == AttributeEnum.Outdegree){
-            Arrays.sort(nodes, new OutDegreeComparator());
-        } else if (this.attribute == AttributeEnum.Mutual){
-            Arrays.sort(nodes, new MutualDegreeComparator());
-        } else if (this.attribute == AttributeEnum.Children){
-            Arrays.sort(nodes, new ChildrenComparator());
-        } else if (this.attribute == AttributeEnum.Descendents){
-            Arrays.sort(nodes, new DescendantComparator());
+            Arrays.sort(nodes, new BasicNodeComparator(graph, nodes,"Degree", false));
+        } else if (this.attribute == AttributeEnum.Indegree) {
+            Arrays.sort(nodes, new BasicNodeComparator(graph, nodes,"InDegree", false));
+        } else if (this.attribute == AttributeEnum.Outdegree) {
+            Arrays.sort(nodes, new BasicNodeComparator(graph, nodes,"OutDegree", false));
+        } else if (this.attribute == AttributeEnum.Mutual) {
+            Arrays.sort(nodes, new BasicNodeComparator(graph, nodes,"MutualDegree", false));
+        } else if (this.attribute == AttributeEnum.Children) {
+            Arrays.sort(nodes, new BasicNodeComparator(graph, nodes,"Children", false));
+        } else if (this.attribute == AttributeEnum.Descendents) {
+            Arrays.sort(nodes, new BasicNodeComparator(graph, nodes,"Descendent", false));
         }
 
         for (Node n : nodes) {
@@ -329,76 +331,6 @@ public class DualCircleLayout extends AbstractLayout implements Layout {
         return coOrds;
     }
 
-    class DegreeComparator implements Comparator<Object> {
-        @Override
-        public int compare(Object o1, Object o2) {
-            int f1 = graph.getDegree((Node) o1);
-            int f2 = graph.getDegree((Node) o2);
-            return f2 - f1;
-        }
-    }
-
-    class InDegreeComparator implements Comparator<Object> {
-        @Override
-        public int compare(Object o1, Object o2) {
-            GraphController graphController = Lookup.getDefault().lookup(GraphController.class);
-            GraphModel objGraphModel = graphController.getModel();
-            DirectedGraph objGraph = objGraphModel.getDirectedGraph();
-            int f1 = objGraph.getInDegree((Node) o1);
-            int f2 = objGraph.getInDegree((Node) o2);
-            return f2 - f1;
-        }
-    }
-
-    class OutDegreeComparator implements Comparator<Object> {
-        @Override
-        public int compare(Object o1, Object o2) {
-            GraphController graphController = Lookup.getDefault().lookup(GraphController.class);
-            GraphModel objGraphModel = graphController.getModel();
-            DirectedGraph objGraph = objGraphModel.getDirectedGraph();
-            int f1 = objGraph.getOutDegree((Node) o1);
-            int f2 = objGraph.getOutDegree((Node) o2);
-            return f2 - f1;
-        }
-    }
-
-
-    class MutualDegreeComparator implements Comparator<Object> {
-        @Override
-        public int compare(Object o1, Object o2) {
-            GraphController graphController = Lookup.getDefault().lookup(GraphController.class);
-            GraphModel objGraphModel = graphController.getModel();
-            DirectedGraph objGraph = objGraphModel.getDirectedGraph();
-            int f1 = objGraph.getMutualDegree((Node) o1);
-            int f2 = objGraph.getMutualDegree((Node) o2);
-            return f2 - f1;
-        }
-    }
-
-
-    class ChildrenComparator implements Comparator<Object> {
-        @Override
-        public int compare(Object o1, Object o2) {
-            GraphController graphController = Lookup.getDefault().lookup(GraphController.class);
-            GraphModel objGraphModel = graphController.getModel();
-            HierarchicalGraph objGraph = objGraphModel.getHierarchicalGraph();
-            int f1 = objGraph.getChildrenCount((Node) o1);
-            int f2 = objGraph.getChildrenCount((Node) o2);
-            return f2 - f1;
-        }
-    }
-
-    class DescendantComparator implements Comparator<Object> {
-        @Override
-        public int compare(Object o1, Object o2) {
-            GraphController graphController = Lookup.getDefault().lookup(GraphController.class);
-            GraphModel objGraphModel = graphController.getModel();
-            HierarchicalGraph objGraph = objGraphModel.getHierarchicalGraph();
-            int f1 = objGraph.getDescendantCount((Node) o1);
-            int f2 = objGraph.getDescendantCount((Node) o2);
-            return f2 - f1;
-        }
-    }
 }
 
 

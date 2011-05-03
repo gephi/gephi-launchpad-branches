@@ -24,40 +24,65 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
 THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.gephi.layout.plugin.circularlayout.abstractcombo;
+package org.gephi.layout.plugin.circularlayout.radialaxislayout;
 
-import java.beans.PropertyEditorSupport;
-import java.util.Set;
-import java.util.Map;
-import java.util.Map.Entry;
+import javax.swing.Icon;
+import javax.swing.JPanel;
+import org.gephi.layout.spi.Layout;
+import org.gephi.layout.spi.LayoutBuilder;
+import org.gephi.layout.spi.LayoutUI;
+import org.openide.util.NbBundle;
+import org.openide.util.lookup.ServiceProvider;
+
 /**
  *
  * @author Matt
  */
-public abstract class AbstractComboBoxEditor extends PropertyEditorSupport {
-    public Map ComboValues;
+@ServiceProvider(service = LayoutBuilder.class)
+public class RadialAxisLayoutBuilder implements LayoutBuilder {
+
+    private RadialAxisLayoutUI ui = new RadialAxisLayoutUI();
 
     @Override
-    public String[] getTags()
-    {
-        return (String[]) ComboValues.values().toArray(new String[0]);
-    }
-
-
-    @Override
-    public String getAsText() {
-        return (String) ComboValues.get(getValue());
+    public String getName() {
+        return NbBundle.getMessage(RadialAxisLayoutBuilder.class, "RadialAxisLayoutUI.name");
     }
 
     @Override
-    public void setAsText(String s) {
-        Set<java.util.Map.Entry<java.lang.Enum,java.lang.String>> Entries = ComboValues.entrySet();
-        for (Map.Entry<Enum, String>Entry: Entries) {
-            if (Entry.getValue() == null ? s == null : Entry.getValue().equals(s)) {
-                setValue(Entry.getKey());
-            }
+    public Layout buildLayout() {
+        return new RadialAxisLayout(this, 500.0, false);
+    }
+
+    @Override
+    public LayoutUI getUI() {
+        return ui;
+    }
+
+    private static class RadialAxisLayoutUI implements LayoutUI {
+
+        @Override
+        public String getDescription() {
+            return NbBundle.getMessage(RadialAxisLayoutBuilder.class, "RadialAxisLayoutUI.description");
+        }
+
+        @Override
+        public Icon getIcon() {
+            return null;
+        }
+
+        @Override
+        public JPanel getSimplePanel(Layout layout) {
+            return null;
+        }
+
+        @Override
+        public int getQualityRank() {
+            return -1;
+        }
+
+        @Override
+        public int getSpeedRank() {
+            return -1;
         }
     }
-
-
-};
+}
