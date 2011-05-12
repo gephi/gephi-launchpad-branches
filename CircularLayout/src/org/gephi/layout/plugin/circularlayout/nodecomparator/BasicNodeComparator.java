@@ -52,7 +52,6 @@ import org.gephi.graph.api.Node;
                     java.lang.Comparable c2 = (java.lang.Comparable) result2;
                     rv = c1.compareTo(c2);
                 } else if (c.isPrimitive()) {
-                    System.out.println("c.isPrimitive");
                     long f1 = ((Number) result1).longValue();
                     long f2 = ((Number) result2).longValue();
                     if (f1 == f2) {

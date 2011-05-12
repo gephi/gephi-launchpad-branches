@@ -31,6 +31,10 @@ import org.gephi.layout.plugin.circularlayout.nodecomparator.BasicNodeComparator
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.EnumMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Iterator;
 import org.gephi.graph.api.DirectedGraph;
 import org.gephi.graph.api.HierarchicalGraph;
 import org.gephi.graph.api.GraphModel;
@@ -44,8 +48,6 @@ import org.gephi.layout.spi.LayoutBuilder;
 import org.gephi.layout.spi.LayoutProperty;
 import org.openide.util.NbBundle;
 import org.openide.util.Lookup;
-import java.util.EnumMap;
-import java.util.Map;
 
 /**
  *
@@ -109,16 +111,15 @@ public class RadialAxisLayout extends AbstractLayout implements Layout {
 
     @Override
     public void goAlgo() {
-        //Determine Radius of Circle
         graph = graphModel.getGraphVisible();
         float[] nodeCoords = new float[2];
-        ArrayList<Integer> ALlayers = new ArrayList<Integer>();
+        Map<Integer, Integer> MapLayers = new LinkedHashMap<Integer, Integer>();
+        List<Node> NodeList = new ArrayList<Node>();
         double tmptotallength = 0;
         double tmplength = 0;
         double maxlength = 0;
         double theta;
 
-        //determine Node placement
         Node[] nodes = graph.getNodes().toArray();
 
         if (this.enumNodeplacement == PlacementEnum.Degree) {
@@ -134,23 +135,25 @@ public class RadialAxisLayout extends AbstractLayout implements Layout {
         } else if (this.enumNodeplacement == PlacementEnum.Descendents) {
             Arrays.sort(nodes, new BasicNodeComparator(graph, nodes,"Descendent", true));
         }
-
         int i = 0;
+        int lastlayer = 0;
         for (Node n : nodes) {
             if (n.getNodeData().getLayoutData() == null || !(n.getNodeData().getLayoutData() instanceof RadialAxisLayerLayoutData)) {
                 n.getNodeData().setLayoutData(new RadialAxisLayerLayoutData());
             }
             RadialAxisLayerLayoutData layoutData = n.getNodeData().getLayoutData();
             layoutData.layer = getLayerAttribute(n, this.enumNodeplacement);
-            if (i == 0) {
-                ALlayers.add(layoutData.layer);
+            if (i == 0 || i == (nodes.length)) {
+                MapLayers.put(layoutData.layer,i);
+                lastlayer = layoutData.layer;
             } else {
-                Object layers[] = ALlayers.toArray();
-                if (((Integer) layers[(layers.length - 1)]).intValue() != layoutData.layer) {
+                if (lastlayer != layoutData.layer) {
                     tmptotallength = 0;
-                    ALlayers.add(layoutData.layer);
+                    MapLayers.put(layoutData.layer,i);
+                    lastlayer = layoutData.layer;
                 }
             }
+            NodeList.add(n);
             tmplength = n.getNodeData().getRadius() * 2;
             tmptotallength += tmplength;
             if (tmplength > maxlength) {
@@ -159,21 +162,46 @@ public class RadialAxisLayout extends AbstractLayout implements Layout {
             layoutData.distance = tmptotallength;
             i++;
         }
-        double tmpcirc = (ALlayers.size() * maxlength * 1.2);
+        double tmpcirc = (MapLayers.size() * maxlength * 1.2);
         double tmpradius = tmpcirc / TWO_PI;
-        theta = (TWO_PI / ALlayers.size());
+        theta = (TWO_PI / MapLayers.size());
 
         if (this.enumNodePlacementDirection == RotationEnum.CW) {
             theta = -theta;
         }
 
-        for (Node n : nodes) {
+        int previousindex = 0;
+        int currentindex = 0;
+        i = 0;
+        Iterator it = MapLayers.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry<Integer, Integer> currentpairs = (Map.Entry<Integer, Integer>)it.next();
+            currentindex = currentpairs.getValue();
+            if (currentindex > previousindex) {
+                System.out.println("Have a range from " + previousindex + " to " +currentindex);
+                System.out.println("Should return " + (currentindex - previousindex));
+                List<Node> shortnodes = NodeList.subList(previousindex,currentindex);
+                System.out.println("Returned " + shortnodes.size() );
+                for (Node n : shortnodes) {
+                    RadialAxisLayerLayoutData layoutData = n.getNodeData().getLayoutData();
+                    nodeCoords = this.cartCoors((layoutData.distance + tmpradius) * 1.2, i, theta);
+                    n.getNodeData().setX(nodeCoords[0]);
+                    n.getNodeData().setY(nodeCoords[1]);
+                }
+            }
+            previousindex = currentindex;
+            i++;
+        }
+
+        List<Node> shortnodes = NodeList.subList(previousindex,nodes.length);
+        System.out.println("Returned " + shortnodes.size() );
+        for (Node n : shortnodes) {
             RadialAxisLayerLayoutData layoutData = n.getNodeData().getLayoutData();
-            System.out.println(layoutData.distance);
-            nodeCoords = this.cartCoors((layoutData.distance + tmpradius) * 1.2, ALlayers.indexOf(layoutData.layer), theta);
+            nodeCoords = this.cartCoors((layoutData.distance + tmpradius) * 1.2, i, theta);
             n.getNodeData().setX(nodeCoords[0]);
             n.getNodeData().setY(nodeCoords[1]);
         }
+
         converged = true;
     }
 
