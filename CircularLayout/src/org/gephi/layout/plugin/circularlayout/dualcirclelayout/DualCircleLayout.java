@@ -31,11 +31,8 @@ import org.gephi.layout.plugin.circularlayout.nodecomparator.BasicNodeComparator
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.Collections;
 import org.gephi.graph.api.Graph;
-import org.gephi.graph.api.DirectedGraph;
-import org.gephi.graph.api.HierarchicalGraph;
 import org.gephi.graph.api.GraphModel;
 import org.gephi.graph.api.GraphController;
 import org.gephi.graph.api.Node;

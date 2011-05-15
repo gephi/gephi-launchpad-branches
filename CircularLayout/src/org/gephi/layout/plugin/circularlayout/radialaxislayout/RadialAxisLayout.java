@@ -26,13 +26,11 @@ THE POSSIBILITY OF SUCH DAMAGE.
  */
 package org.gephi.layout.plugin.circularlayout.radialaxislayout;
 
-
 import org.gephi.layout.plugin.circularlayout.nodecomparator.BasicNodeComparator;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.EnumMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Iterator;
 import org.gephi.graph.api.DirectedGraph;
@@ -41,7 +39,6 @@ import org.gephi.graph.api.GraphModel;
 import org.gephi.graph.api.GraphController;
 import org.gephi.graph.api.Graph;
 import org.gephi.graph.api.Node;
-import org.gephi.graph.spi.LayoutData;
 import org.gephi.layout.plugin.AbstractLayout;
 import org.gephi.layout.spi.Layout;
 import org.gephi.layout.spi.LayoutBuilder;
@@ -59,13 +56,21 @@ public class RadialAxisLayout extends AbstractLayout implements Layout {
     private boolean converged;
     private Enum enumNodeplacement;
     private Enum enumNodePlacementDirection;
+    private Enum enumKnockdown;
+    private Enum enumSparNodePlacement;
+    private Boolean boolKnockdownSpars = false;
+    private Boolean boolSparOrderingDirection = false;
+    private Boolean boolSparSpiral = true;
+    private Integer intSparCount = 3;
     static final double TWO_PI = (2 * Math.PI);
 
     public RadialAxisLayout(LayoutBuilder layoutBuilder, double diameter, boolean boolfixeddiameter) {
         super(layoutBuilder);
     }
 
+
     private enum PlacementEnum {
+
         Degree,
         Indegree,
         Outdegree,
@@ -103,6 +108,21 @@ public class RadialAxisLayout extends AbstractLayout implements Layout {
         return map;
     }
 
+    private enum KnockDownRangeEnum {
+
+        TOP,
+        MIDDLE,
+        BOTTOM;
+    }
+
+    public static Map getKnockDownRangeEnumMap() {
+        Map<KnockDownRangeEnum, String> map = new EnumMap<KnockDownRangeEnum, String>(KnockDownRangeEnum.class);
+        map.put(KnockDownRangeEnum.TOP, NbBundle.getMessage(RadialAxisLayout.class, "RadialAxisLayout.KnockDownRange.TOP"));
+        map.put(KnockDownRangeEnum.MIDDLE, NbBundle.getMessage(RadialAxisLayout.class, "RadialAxisLayout.KnockDownRange.MIDDLE"));
+        map.put(KnockDownRangeEnum.BOTTOM, NbBundle.getMessage(RadialAxisLayout.class, "RadialAxisLayout.KnockDownRange.BOTTOM"));
+        return map;
+    }
+
     @Override
     public void initAlgo() {
         converged = false;
@@ -113,93 +133,144 @@ public class RadialAxisLayout extends AbstractLayout implements Layout {
     public void goAlgo() {
         graph = graphModel.getGraphVisible();
         float[] nodeCoords = new float[2];
-        Map<Integer, Integer> MapLayers = new LinkedHashMap<Integer, Integer>();
+        ArrayList<Integer> ArrayLayers = new ArrayList<Integer>();
         List<Node> NodeList = new ArrayList<Node>();
-        double tmptotallength = 0;
-        double tmplength = 0;
         double maxlength = 0;
+        double minlength = 0;
+        double tmpradius = 0;
+        double doArrayEnd = 0;
+        double tmpcirc = 0;
         double theta;
 
         Node[] nodes = graph.getNodes().toArray();
-
+        double nodecount = nodes.length;
         if (this.enumNodeplacement == PlacementEnum.Degree) {
-            Arrays.sort(nodes, new BasicNodeComparator(graph, nodes,"Degree", true));
+            Arrays.sort(nodes, new BasicNodeComparator(graph, nodes, "Degree", true));
         } else if (this.enumNodeplacement == PlacementEnum.Indegree) {
-            Arrays.sort(nodes, new BasicNodeComparator(graph, nodes,"InDegree", true));
+            Arrays.sort(nodes, new BasicNodeComparator(graph, nodes, "InDegree", true));
         } else if (this.enumNodeplacement == PlacementEnum.Outdegree) {
-            Arrays.sort(nodes, new BasicNodeComparator(graph, nodes,"OutDegree", true));
+            Arrays.sort(nodes, new BasicNodeComparator(graph, nodes, "OutDegree", true));
         } else if (this.enumNodeplacement == PlacementEnum.Mutual) {
-            Arrays.sort(nodes, new BasicNodeComparator(graph, nodes,"MutualDegree", true));
+            Arrays.sort(nodes, new BasicNodeComparator(graph, nodes, "MutualDegree", true));
         } else if (this.enumNodeplacement == PlacementEnum.Children) {
-            Arrays.sort(nodes, new BasicNodeComparator(graph, nodes,"Children", true));
+            Arrays.sort(nodes, new BasicNodeComparator(graph, nodes, "Children", true));
         } else if (this.enumNodeplacement == PlacementEnum.Descendents) {
-            Arrays.sort(nodes, new BasicNodeComparator(graph, nodes,"Descendent", true));
+            Arrays.sort(nodes, new BasicNodeComparator(graph, nodes, "Descendent", true));
         }
         int i = 0;
         int lastlayer = 0;
+        int currentlayer = 0;
+
         for (Node n : nodes) {
-            if (n.getNodeData().getLayoutData() == null || !(n.getNodeData().getLayoutData() instanceof RadialAxisLayerLayoutData)) {
-                n.getNodeData().setLayoutData(new RadialAxisLayerLayoutData());
-            }
-            RadialAxisLayerLayoutData layoutData = n.getNodeData().getLayoutData();
-            layoutData.layer = getLayerAttribute(n, this.enumNodeplacement);
-            if (i == 0 || i == (nodes.length)) {
-                MapLayers.put(layoutData.layer,i);
-                lastlayer = layoutData.layer;
+            currentlayer = getLayerAttribute(n, this.enumNodeplacement);
+            if (i == 0) {
+                lastlayer = currentlayer;
+                ArrayLayers.add(Integer.valueOf(i));
+            } else if (i == (nodes.length - 1)) {
+                ArrayLayers.add(Integer.valueOf(i));
+                ArrayLayers.add(Integer.valueOf(i + 1));
             } else {
-                if (lastlayer != layoutData.layer) {
-                    tmptotallength = 0;
-                    MapLayers.put(layoutData.layer,i);
-                    lastlayer = layoutData.layer;
+                if (lastlayer != currentlayer) {
+                    lastlayer = currentlayer;
+                    ArrayLayers.add(Integer.valueOf(i));
                 }
             }
-            NodeList.add(n);
-            tmplength = n.getNodeData().getRadius() * 2;
-            tmptotallength += tmplength;
+            double tmplength = n.getNodeData().getRadius() * 2;
             if (tmplength > maxlength) {
                 maxlength = tmplength;
             }
-            layoutData.distance = tmptotallength;
+            if (tmplength < minlength || minlength == 0) {
+                maxlength = tmplength;
+            }
+            NodeList.add(n);
+
             i++;
         }
-        double tmpcirc = (MapLayers.size() * maxlength * 1.2);
-        double tmpradius = tmpcirc / TWO_PI;
-        theta = (TWO_PI / MapLayers.size());
+        doArrayEnd = ArrayLayers.size() - 1;
+        tmpcirc = (doArrayEnd * maxlength);
+        tmpradius = tmpcirc / TWO_PI;
+
+        theta = (TWO_PI / doArrayEnd);
+
+        if (this.boolKnockdownSpars && (doArrayEnd / this.getSparCount() > 1)) {
+            theta = (TWO_PI / this.getSparCount());
+            tmpcirc = (this.getSparCount() * maxlength * 1.2);
+            tmpradius = tmpcirc / TWO_PI;
+            double doHigh = 0;
+            double doLow = 0;
+            double doDiff = doArrayEnd - this.getSparCount();
+            if (this.enumKnockdown == KnockDownRangeEnum.TOP) {
+                doLow = this.getSparCount();
+                doHigh = doArrayEnd;
+            } else if (this.enumKnockdown == KnockDownRangeEnum.BOTTOM) {
+                doLow = 1;
+                doHigh = doDiff + 1;
+            } else {
+                double doRemain = this.getSparCount() / 2;
+                double doMod = this.getSparCount() % 2;
+                doLow = doRemain + 1;
+                doHigh = 0;
+                if (doMod == 0) {
+                    doHigh = doArrayEnd - (doRemain - 1);
+                } else {
+                    doHigh = doArrayEnd - doRemain;
+                }
+            }
+            ArrayLayers.subList((int) doLow, (int) doHigh).clear();
+        }
 
         if (this.enumNodePlacementDirection == RotationEnum.CW) {
             theta = -theta;
         }
 
-        int previousindex = 0;
-        int currentindex = 0;
+
+        Integer previousindex = 0;
+        Integer currentindex = 0;
         i = 0;
-        Iterator it = MapLayers.entrySet().iterator();
+        Iterator it = ArrayLayers.iterator();
         while (it.hasNext()) {
-            Map.Entry<Integer, Integer> currentpairs = (Map.Entry<Integer, Integer>)it.next();
-            currentindex = currentpairs.getValue();
+            currentindex = (Integer) it.next();
             if (currentindex > previousindex) {
-                System.out.println("Have a range from " + previousindex + " to " +currentindex);
-                System.out.println("Should return " + (currentindex - previousindex));
-                List<Node> shortnodes = NodeList.subList(previousindex,currentindex);
-                System.out.println("Returned " + shortnodes.size() );
+                Node[] shortnodes = NodeList.subList(previousindex, currentindex).toArray(new Node[0]);
+                
+                if ((this.enumSparNodePlacement != this.enumNodeplacement) || (!this.boolSparOrderingDirection)) {
+                    if (this.enumSparNodePlacement == PlacementEnum.Degree) {
+                        Arrays.sort(shortnodes, new BasicNodeComparator(graph, nodes, "Degree", this.boolSparOrderingDirection));
+                    } else if (this.enumSparNodePlacement == PlacementEnum.Indegree) {
+                        Arrays.sort(shortnodes, new BasicNodeComparator(graph, nodes, "InDegree", this.boolSparOrderingDirection));
+                    } else if (this.enumSparNodePlacement == PlacementEnum.Outdegree) {
+                        Arrays.sort(shortnodes, new BasicNodeComparator(graph, nodes, "OutDegree", this.boolSparOrderingDirection));
+                    } else if (this.enumSparNodePlacement == PlacementEnum.Mutual) {
+                        Arrays.sort(shortnodes, new BasicNodeComparator(graph, nodes, "MutualDegree", this.boolSparOrderingDirection));
+                    } else if (this.enumSparNodePlacement == PlacementEnum.Children) {
+                        Arrays.sort(shortnodes, new BasicNodeComparator(graph, nodes, "Children", this.boolSparOrderingDirection));
+                    } else if (this.enumSparNodePlacement == PlacementEnum.Descendents) {
+                        Arrays.sort(shortnodes, new BasicNodeComparator(graph, nodes, "Descendent", this.boolSparOrderingDirection));
+                    }
+                }
+                double tmptotallength = tmpradius;
+                double thetainc = 0;
                 for (Node n : shortnodes) {
-                    RadialAxisLayerLayoutData layoutData = n.getNodeData().getLayoutData();
-                    nodeCoords = this.cartCoors((layoutData.distance + tmpradius) * 1.2, i, theta);
+                    double tmplength = n.getNodeData().getRadius(); 
+                    if (this.boolSparSpiral) {
+                        tmptotallength += tmplength*0.6;
+                        System.out.println("thetatInc " + (thetainc));
+                        System.out.println("ArrayEnd " + (nodecount));
+                        System.out.println("ratio " + (thetainc/nodecount));
+                        nodeCoords = this.cartCoors(tmptotallength, i+(thetainc/nodecount), theta);
+                        tmptotallength += tmplength*0.6;   
+                    } else {
+                        tmptotallength += tmplength* 1.2;                        
+                        nodeCoords = this.cartCoors(tmptotallength, i, theta);
+                    }
+                    tmptotallength += tmplength* 1.2;
                     n.getNodeData().setX(nodeCoords[0]);
                     n.getNodeData().setY(nodeCoords[1]);
+                    thetainc++;
                 }
             }
             previousindex = currentindex;
             i++;
-        }
-
-        List<Node> shortnodes = NodeList.subList(previousindex,nodes.length);
-        System.out.println("Returned " + shortnodes.size() );
-        for (Node n : shortnodes) {
-            RadialAxisLayerLayoutData layoutData = n.getNodeData().getLayoutData();
-            nodeCoords = this.cartCoors((layoutData.distance + tmpradius) * 1.2, i, theta);
-            n.getNodeData().setX(nodeCoords[0]);
-            n.getNodeData().setY(nodeCoords[1]);
         }
 
         converged = true;
@@ -230,6 +301,42 @@ public class RadialAxisLayout extends AbstractLayout implements Layout {
                     "Node Placement",
                     NbBundle.getMessage(RadialAxisLayout.class, "RadialAxisLayout.NodePlacement.Direction.desc"),
                     "getNodePlacementDirection", "setNodePlacementDirection", RotationComboBoxEditor.class));
+            properties.add(LayoutProperty.createProperty(
+                    this, Enum.class,
+                    NbBundle.getMessage(RadialAxisLayout.class, "RadialAxisLayout.Spars.NodeOrdering.name"),
+                    "Node Placement",
+                    NbBundle.getMessage(RadialAxisLayout.class, "RadialAxisLayout.Spars.NodeOrdering.desc"),
+                    "getSparNodePlacement", "setSparNodePlacement", LayoutComboBoxEditor.class));
+            properties.add(LayoutProperty.createProperty(
+                    this, Boolean.class,
+                    NbBundle.getMessage(RadialAxisLayout.class, "RadialAxisLayout.Spars.SparOrderingDirection.name"),
+                    "Node Placement",
+                    NbBundle.getMessage(RadialAxisLayout.class, "RadialAxisLayout.Spars.SparOrderingDirection.desc"),
+                    "isSparOrderingDirection", "setSparOrderingDirection"));
+            properties.add(LayoutProperty.createProperty(
+                    this, Boolean.class,
+                    NbBundle.getMessage(RadialAxisLayout.class, "RadialAxisLayout.Spars.Spiral.name"),
+                    "Node Placement",
+                    NbBundle.getMessage(RadialAxisLayout.class, "RadialAxisLayout.Spars.Spiral.desc"),
+                    "isSparSpiral", "setSparSpiral"));               
+            properties.add(LayoutProperty.createProperty(
+                    this, Boolean.class,
+                    NbBundle.getMessage(RadialAxisLayout.class, "RadialAxisLayout.KnockdownSpars.name"),
+                    "Axis/Spar Control",
+                    NbBundle.getMessage(RadialAxisLayout.class, "RadialAxisLayout.KnockdownSpars.desc"),
+                    "isKnockdownSpars", "setKnockdownSpars"));
+            properties.add(LayoutProperty.createProperty(
+                    this, Integer.class,
+                    NbBundle.getMessage(RadialAxisLayout.class, "RadialAxisLayout.SparCount.name"),
+                    "Axis/Spar Control",
+                    NbBundle.getMessage(RadialAxisLayout.class, "RadialAxisLayout.SparCount.desc"),
+                    "getSparCount", "setSparCount"));
+            properties.add(LayoutProperty.createProperty(
+                    this, Enum.class,
+                    NbBundle.getMessage(RadialAxisLayout.class, "RadialAxisLayout.KnockdownSpars.Range.name"),
+                    "Axis/Spar Control",
+                    NbBundle.getMessage(RadialAxisLayout.class, "RadialAxisLayout.KnockdownSpars.Range.desc"),
+                    "getKnockDownRange", "setKnockDownRange", KnockDownSparRange.class));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -240,6 +347,12 @@ public class RadialAxisLayout extends AbstractLayout implements Layout {
     public void resetPropertiesValues() {
         setNodePlacement(PlacementEnum.Degree);
         setNodePlacementDirection(RotationEnum.CCW);
+        setSparSpiral(false);
+        setKnockdownSpars(false);
+        setSparOrderingDirection(false);
+        setKnockDownRange(KnockDownRangeEnum.MIDDLE);
+        setSparCount(3);
+        setSparNodePlacement(PlacementEnum.Degree);
     }
 
     public void setNodePlacement(Enum enumNodeplacement) {
@@ -258,6 +371,54 @@ public class RadialAxisLayout extends AbstractLayout implements Layout {
         this.enumNodePlacementDirection = enumNodePlacementDirection;
     }
 
+    public Boolean isKnockdownSpars() {
+        return this.boolKnockdownSpars;
+    }
+
+    public void setKnockdownSpars(Boolean boolKnockdownSpars) {
+        this.boolKnockdownSpars = boolKnockdownSpars;
+    }
+    
+    public Boolean isSparOrderingDirection() {
+        return this.boolSparOrderingDirection;
+    }
+    
+    public void setSparOrderingDirection(Boolean boolSparOrderingDirection) {
+        this.boolSparOrderingDirection = boolSparOrderingDirection;
+    }
+        
+    public void setKnockDownRange(Enum enumKnockdown) {
+        this.enumKnockdown = enumKnockdown;
+    }
+
+    public Enum getKnockDownRange() {
+        return this.enumKnockdown;
+    }
+
+    public Integer getSparCount() {
+        return this.intSparCount;
+    }
+
+    public void setSparCount(Integer intSparCount) {
+        this.intSparCount = intSparCount;
+    }
+
+    public void setSparNodePlacement(Enum enumSparNodePlacement) {
+        this.enumSparNodePlacement = enumSparNodePlacement;
+    }
+
+    public Enum getSparNodePlacement() {
+        return this.enumSparNodePlacement;
+    }
+    
+    public void setSparSpiral(Boolean boolSparSpiral) {
+        this.boolSparSpiral = boolSparSpiral;
+    }
+
+    public Boolean isSparSpiral() {
+        return this.boolSparSpiral;
+    }
+    
     public int getLayerAttribute(Node n, Enum Placement) {
         int layout = 0;
         if (Placement == PlacementEnum.Degree) {
@@ -266,7 +427,7 @@ public class RadialAxisLayout extends AbstractLayout implements Layout {
             GraphController graphController = Lookup.getDefault().lookup(GraphController.class);
             GraphModel objGraphModel = graphController.getModel();
             DirectedGraph objGraph = objGraphModel.getDirectedGraph();
-            layout = objGraph.getInDegree( n);
+            layout = objGraph.getInDegree(n);
         } else if (Placement == PlacementEnum.Outdegree) {
             GraphController graphController = Lookup.getDefault().lookup(GraphController.class);
             GraphModel objGraphModel = graphController.getModel();
@@ -291,17 +452,10 @@ public class RadialAxisLayout extends AbstractLayout implements Layout {
         return layout;
     }
 
-    private float[] cartCoors(double radius, int whichInt, double theta) {
+    private float[] cartCoors(double radius, double whichInt, double theta) {
         float[] coOrds = new float[2];
         coOrds[0] = (float) (radius * (Math.cos((theta * whichInt) + (Math.PI / 2))));
         coOrds[1] = (float) (radius * (Math.sin((theta * whichInt) + (Math.PI / 2))));
         return coOrds;
-    }
-
-    public class RadialAxisLayerLayoutData implements LayoutData {
-        //Data
-
-        public int layer = 0;
-        public double distance = 0;
     }
 }

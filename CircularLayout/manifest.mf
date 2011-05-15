@@ -2,5 +2,5 @@ Manifest-Version: 1.0
 AutoUpdate-Show-In-Client: true
 OpenIDE-Module: org.gephi.layout.plugin.circularlayout
 OpenIDE-Module-Localizing-Bundle: org/gephi/layout/plugin/circularlayout/Bundle.properties
-OpenIDE-Module-Specification-Version: 0.4
+OpenIDE-Module-Specification-Version: 0.5
 
