@@ -31,7 +31,8 @@ import org.gephi.layout.plugin.circularlayout.nodecomparator.BasicNodeComparator
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.TreeMap;
+import java.util.Map;
 import org.gephi.graph.api.Graph;
 import org.gephi.graph.api.GraphModel;
 import org.gephi.graph.api.GraphController;
@@ -40,12 +41,13 @@ import org.gephi.layout.plugin.AbstractLayout;
 import org.gephi.layout.spi.Layout;
 import org.gephi.layout.spi.LayoutBuilder;
 import org.gephi.layout.spi.LayoutProperty;
+import org.gephi.data.attributes.api.AttributeColumn;
+import org.gephi.data.attributes.api.AttributeController;
+import org.gephi.data.attributes.api.AttributeModel;
 import org.openide.util.NbBundle;
 import org.openide.util.Lookup;
 import javax.swing.JOptionPane;
 
-import java.util.Map;
-import java.util.EnumMap;
 
 /**
  *
@@ -58,53 +60,38 @@ public class DualCircleLayout extends AbstractLayout implements Layout {
     private boolean highdegreeoutside;
     private int secondarynodecount;
     static double TWO_PI = (2 * Math.PI);
-    private Enum enumNodePlacementDirection;
-    private Enum attribute;
+    private String strNodePlacementDirection;
+    private String attribute;
 
 
-    private enum AttributeEnum {
-        NodeID,
-        Random,
-        Degree,
-        Indegree,
-        Outdegree,
-        Mutual,
-        Children,
-        Descendents;
-    }
-
-    private enum RotationEnum {
-        CCW,
-        CW;
-    }
-
-    public static Map getRotationEnumMap() {
-        Map<RotationEnum, String> map = new EnumMap<RotationEnum, String>(RotationEnum.class);
-        map.put(RotationEnum.CCW, NbBundle.getMessage(DualCircleLayout.class, "DualCircleLayout.NodePlacement.CCW"));
-        map.put(RotationEnum.CW, NbBundle.getMessage(DualCircleLayout.class, "DualCircleLayout.NodePlacement.CW"));
-        return map;
-    }
-
-
-
-    public static Map getAttributeEnumMap() {
+     public static Map getAttributeMap() {
         GraphController graphController = Lookup.getDefault().lookup(GraphController.class);
         GraphModel objGraphModel = graphController.getModel();
-        Map<AttributeEnum, String> map = new EnumMap<AttributeEnum, String>(AttributeEnum.class);
-        map.put(AttributeEnum.NodeID, NbBundle.getMessage(DualCircleLayout.class, "DualCircleLayout.NodePlacement.NodeID.name"));
-        map.put(AttributeEnum.Random, NbBundle.getMessage(DualCircleLayout.class, "DualCircleLayout.NodePlacement.Random.name"));
-        map.put(AttributeEnum.Degree, NbBundle.getMessage(DualCircleLayout.class, "DualCircleLayout.NodePlacement.Degree.name"));
-
+        Map<String, String> map = new TreeMap<String, String>();
+        map.put("NodeID", NbBundle.getMessage(DualCircleLayout.class, "DualCircleLayout.NodePlacement.NodeID.name"));
+        map.put("Degree", NbBundle.getMessage(DualCircleLayout.class, "DualCircleLayout.NodePlacement.Degree.name"));
         if (objGraphModel.isDirected()) {
-            map.put(AttributeEnum.Indegree, NbBundle.getMessage(DualCircleLayout.class, "DualCircleLayout.NodePlacement.InDegree.name"));
-            map.put(AttributeEnum.Outdegree, NbBundle.getMessage(DualCircleLayout.class, "DualCircleLayout.NodePlacement.OutDegree.name"));
-            map.put(AttributeEnum.Mutual, NbBundle.getMessage(DualCircleLayout.class, "DualCircleLayout.NodePlacement.Mutual.name"));
+            map.put("InDegree", NbBundle.getMessage(DualCircleLayout.class, "DualCircleLayout.NodePlacement.InDegree.name"));
+            map.put("OutDegree", NbBundle.getMessage(DualCircleLayout.class, "DualCircleLayout.NodePlacement.OutDegree.name"));
+            map.put("MutualDegree", NbBundle.getMessage(DualCircleLayout.class, "DualCircleLayout.NodePlacement.Mutual.name"));
         } else if (objGraphModel.isHierarchical()) {
-            map.put(AttributeEnum.Children, NbBundle.getMessage(DualCircleLayout.class, "DualCircleLayout.NodePlacement.Children.name"));
-            map.put(AttributeEnum.Descendents, NbBundle.getMessage(DualCircleLayout.class, "DualCircleLayout.NodePlacement.Descendents.name"));
+            map.put("ChildrenCount", NbBundle.getMessage(DualCircleLayout.class, "DualCircleLayout.NodePlacement.Children.name"));
+            map.put("DescendantCount", NbBundle.getMessage(DualCircleLayout.class, "DualCircleLayout.NodePlacement.Descendents.name"));
+        }
+        AttributeModel attModel = Lookup.getDefault().lookup(AttributeController.class).getModel();
+        for (AttributeColumn c : attModel.getNodeTable().getColumns()) {
+           map.put(c.getTitle()+"-Att", c.getTitle()+" (Attribute)");
         }
         return map;
     }
+
+    public static Map getRotationMap() {
+        Map<String, String> map = new TreeMap<String, String>();
+        map.put("CCW", NbBundle.getMessage(DualCircleLayout.class, "DualCircleLayout.NodePlacement.CCW"));
+        map.put("CW", NbBundle.getMessage(DualCircleLayout.class, "DualCircleLayout.NodePlacement.CW"));
+        return map;
+    }
+
 
 
     public DualCircleLayout(LayoutBuilder layoutBuilder, int secondarynodecount) {
@@ -132,27 +119,14 @@ public class DualCircleLayout extends AbstractLayout implements Layout {
         double primary_scale = 1;
         double secondary_scale = 1;
         double correct_theta = 0;
-        if (this.enumNodePlacementDirection == RotationEnum.CW) {
+        if (this.strNodePlacementDirection.equals("CW")) {
             twopi = -twopi;
         }
         Node[] nodes = graph.getNodes().toArray();
-        if (this.attribute == AttributeEnum.NodeID) {
+        if (this.attribute.equals("NodeID")) {
             //Do nothing
-        } else if (this.attribute == AttributeEnum.Random) {
-            List nodesList = Arrays.asList(nodes);
-            Collections.shuffle(nodesList);
-        } else if (this.attribute == AttributeEnum.Degree) {
-            Arrays.sort(nodes, new BasicNodeComparator(graph, nodes,"Degree", false));
-        } else if (this.attribute == AttributeEnum.Indegree) {
-            Arrays.sort(nodes, new BasicNodeComparator(graph, nodes,"InDegree", false));
-        } else if (this.attribute == AttributeEnum.Outdegree) {
-            Arrays.sort(nodes, new BasicNodeComparator(graph, nodes,"OutDegree", false));
-        } else if (this.attribute == AttributeEnum.Mutual) {
-            Arrays.sort(nodes, new BasicNodeComparator(graph, nodes,"MutualDegree", false));
-        } else if (this.attribute == AttributeEnum.Children) {
-            Arrays.sort(nodes, new BasicNodeComparator(graph, nodes,"Children", false));
-        } else if (this.attribute == AttributeEnum.Descendents) {
-            Arrays.sort(nodes, new BasicNodeComparator(graph, nodes,"Descendent", false));
+        } else if (getAttributeMap().containsKey(this.attribute)) {
+            Arrays.sort(nodes, new BasicNodeComparator(graph, nodes, this.attribute, true));
         }
 
         for (Node n : nodes) {
@@ -249,13 +223,13 @@ public class DualCircleLayout extends AbstractLayout implements Layout {
                     NbBundle.getMessage(DualCircleLayout.class, "DualCircleLayout.InnerNodeCount.desc"),
                     "getInnerNodeCount", "setInnerNodeCount"));
             properties.add(LayoutProperty.createProperty(
-                    this, Enum.class,
+                    this, String.class,
                     NbBundle.getMessage(DualCircleLayout.class, "DualCircleLayout.attribue.name"),
                      "Node Placement",
                     NbBundle.getMessage(DualCircleLayout.class, "DualCircleLayout.attribue.desc"),
                     "getAttribute", "setAttribute",LayoutComboBoxEditor.class));
             properties.add(LayoutProperty.createProperty(
-                    this, Enum.class,
+                    this, String.class,
                     NbBundle.getMessage(DualCircleLayout.class, "DualCircleLayout.NodePlacement.Direction.name"),
                     "Node Placement",
                     NbBundle.getMessage(DualCircleLayout.class, "DualCircleLayout.NodePlacement.Direction.desc"),
@@ -270,8 +244,8 @@ public class DualCircleLayout extends AbstractLayout implements Layout {
     public void resetPropertiesValues() {
         setInnerNodeCount(4);
         setHighDegreeOutside(false);
-        setNodePlacementDirection(RotationEnum.CCW);
-        setAttribute(AttributeEnum.Degree);
+        setNodePlacementDirection("CCW");
+        setAttribute("NodeID");
     }
 
     public void setInnerNodeCount(Integer intsecondarynodecount) {
@@ -305,19 +279,19 @@ public class DualCircleLayout extends AbstractLayout implements Layout {
         this.highdegreeoutside = highdegreeoutside;
     }
 
-    public Enum getNodePlacementDirection() {
-        return this.enumNodePlacementDirection;
+    public String getNodePlacementDirection() {
+        return this.strNodePlacementDirection;
     }
 
-    public void setNodePlacementDirection(Enum enumNodePlacementDirection) {
-        this.enumNodePlacementDirection = enumNodePlacementDirection;
+    public void setNodePlacementDirection(String strNodePlacementDirection) {
+        this.strNodePlacementDirection = strNodePlacementDirection;
     }
 
-    public Enum getAttribute() {
+    public String getAttribute() {
         return this.attribute;
     }
 
-    public void setAttribute(Enum attribute) {
+    public void setAttribute(String attribute) {
         this.attribute = attribute;
     }
 

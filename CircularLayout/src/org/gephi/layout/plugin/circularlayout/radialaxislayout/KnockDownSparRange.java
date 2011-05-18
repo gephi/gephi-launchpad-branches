@@ -35,7 +35,7 @@ import java.util.Map;
 public class KnockDownSparRange extends AbstractComboBoxEditor {
 
     public KnockDownSparRange() {
-        Map options = RadialAxisLayout.getKnockDownRangeEnumMap();
+        Map options = RadialAxisLayout.getKnockDownRangeMap();
         super.ComboValues = options;
     }
 }

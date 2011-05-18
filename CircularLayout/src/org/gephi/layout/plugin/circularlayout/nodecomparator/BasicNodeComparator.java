@@ -67,7 +67,6 @@ import org.gephi.graph.api.Node;
             } catch (Exception nsme) {
                 System.out.println("Error " + nsme);
             }
-
             return rv * getSortOrder();
         }
 

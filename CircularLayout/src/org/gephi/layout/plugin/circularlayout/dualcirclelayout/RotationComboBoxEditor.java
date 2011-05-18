@@ -37,7 +37,7 @@ public class RotationComboBoxEditor extends AbstractComboBoxEditor {
 
         
     public RotationComboBoxEditor() {
-        Map options = DualCircleLayout.getRotationEnumMap();
+        Map options = DualCircleLayout.getRotationMap();
         super.ComboValues = options;
     }
 }

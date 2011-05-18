@@ -51,8 +51,8 @@ public abstract class AbstractComboBoxEditor extends PropertyEditorSupport {
 
     @Override
     public void setAsText(String s) {
-        Set<java.util.Map.Entry<java.lang.Enum,java.lang.String>> Entries = ComboValues.entrySet();
-        for (Map.Entry<Enum, String>Entry: Entries) {
+        Set<java.util.Map.Entry<java.lang.String,java.lang.String>> Entries = ComboValues.entrySet();
+        for (Map.Entry<String, String>Entry: Entries) {
             if (Entry.getValue() == null ? s == null : Entry.getValue().equals(s)) {
                 setValue(Entry.getKey());
             }

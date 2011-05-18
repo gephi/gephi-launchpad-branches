@@ -30,8 +30,8 @@ import org.gephi.layout.plugin.circularlayout.nodecomparator.BasicNodeComparator
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.EnumMap;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.Iterator;
 import org.gephi.graph.api.DirectedGraph;
 import org.gephi.graph.api.HierarchicalGraph;
@@ -43,6 +43,9 @@ import org.gephi.layout.plugin.AbstractLayout;
 import org.gephi.layout.spi.Layout;
 import org.gephi.layout.spi.LayoutBuilder;
 import org.gephi.layout.spi.LayoutProperty;
+import org.gephi.data.attributes.api.AttributeColumn;
+import org.gephi.data.attributes.api.AttributeController;
+import org.gephi.data.attributes.api.AttributeModel;
 import org.openide.util.NbBundle;
 import org.openide.util.Lookup;
 
@@ -54,14 +57,14 @@ public class RadialAxisLayout extends AbstractLayout implements Layout {
 
     private Graph graph;
     private boolean converged;
-    private Enum enumNodeplacement;
-    private Enum enumNodePlacementDirection;
-    private Enum enumKnockdown;
-    private Enum enumSparNodePlacement;
-    private Boolean boolKnockdownSpars = false;
-    private Boolean boolSparOrderingDirection = false;
-    private Boolean boolSparSpiral = true;
-    private Integer intSparCount = 3;
+    private String strNodeplacement;
+    private String strNodePlacementDirection;
+    private String strKnockdown;
+    private String strSparNodePlacement;
+    private Boolean boolKnockdownSpars;
+    private Boolean boolSparOrderingDirection;
+    private Boolean boolSparSpiral;
+    private Integer intSparCount;
     static final double TWO_PI = (2 * Math.PI);
 
     public RadialAxisLayout(LayoutBuilder layoutBuilder, double diameter, boolean boolfixeddiameter) {
@@ -69,57 +72,38 @@ public class RadialAxisLayout extends AbstractLayout implements Layout {
     }
 
 
-    private enum PlacementEnum {
-
-        Degree,
-        Indegree,
-        Outdegree,
-        Mutual,
-        Children,
-        Descendents;
-    }
-
-    public static Map getPlacementEnumMap() {
+    public static Map getPlacementMap() {
         GraphController graphController = Lookup.getDefault().lookup(GraphController.class);
         GraphModel objGraphModel = graphController.getModel();
-        Map<PlacementEnum, String> map = new EnumMap<PlacementEnum, String>(PlacementEnum.class);
-        map.put(PlacementEnum.Degree, NbBundle.getMessage(RadialAxisLayout.class, "RadialAxisLayout.NodePlacement.Degree.name"));
+        Map<String, String> map = new TreeMap<String, String>();
+        map.put("Degree", NbBundle.getMessage(RadialAxisLayout.class, "RadialAxisLayout.NodePlacement.Degree.name"));
         if (objGraphModel.isDirected()) {
-            map.put(PlacementEnum.Indegree, NbBundle.getMessage(RadialAxisLayout.class, "RadialAxisLayout.NodePlacement.InDegree.name"));
-            map.put(PlacementEnum.Outdegree, NbBundle.getMessage(RadialAxisLayout.class, "RadialAxisLayout.NodePlacement.OutDegree.name"));
-            map.put(PlacementEnum.Mutual, NbBundle.getMessage(RadialAxisLayout.class, "RadialAxisLayout.NodePlacement.Mutual.name"));
+            map.put("InDegree", NbBundle.getMessage(RadialAxisLayout.class, "RadialAxisLayout.NodePlacement.InDegree.name"));
+            map.put("OutDegree", NbBundle.getMessage(RadialAxisLayout.class, "RadialAxisLayout.NodePlacement.OutDegree.name"));
+            map.put("MutualDegree", NbBundle.getMessage(RadialAxisLayout.class, "RadialAxisLayout.NodePlacement.Mutual.name"));
         } else if (objGraphModel.isHierarchical()) {
-            map.put(PlacementEnum.Children, NbBundle.getMessage(RadialAxisLayout.class, "RadialAxisLayout.NodePlacement.Children.name"));
-            map.put(PlacementEnum.Descendents, NbBundle.getMessage(RadialAxisLayout.class, "RadialAxisLayout.NodePlacement.Descendents.name"));
+            map.put("ChildrenCount", NbBundle.getMessage(RadialAxisLayout.class, "RadialAxisLayout.NodePlacement.Children.name"));
+            map.put("DescendantCount", NbBundle.getMessage(RadialAxisLayout.class, "RadialAxisLayout.NodePlacement.Descendents.name"));
+        }
+        AttributeModel attModel = Lookup.getDefault().lookup(AttributeController.class).getModel();
+        for (AttributeColumn c : attModel.getNodeTable().getColumns()) {
+           map.put(c.getTitle()+"-Att", c.getTitle()+" (Attribute)");
         }
         return map;
     }
 
-    private enum RotationEnum {
-
-        CCW,
-        CW;
-    }
-
-    public static Map getRotationEnumMap() {
-        Map<RotationEnum, String> map = new EnumMap<RotationEnum, String>(RotationEnum.class);
-        map.put(RotationEnum.CCW, NbBundle.getMessage(RadialAxisLayout.class, "RadialAxisLayout.NodePlacement.CCW"));
-        map.put(RotationEnum.CW, NbBundle.getMessage(RadialAxisLayout.class, "RadialAxisLayout.NodePlacement.CW"));
+    public static Map getRotationMap() {
+        Map<String, String> map = new TreeMap<String, String>();
+        map.put("CCW", NbBundle.getMessage(RadialAxisLayout.class, "RadialAxisLayout.NodePlacement.CCW"));
+        map.put("CW", NbBundle.getMessage(RadialAxisLayout.class, "RadialAxisLayout.NodePlacement.CW"));
         return map;
     }
 
-    private enum KnockDownRangeEnum {
-
-        TOP,
-        MIDDLE,
-        BOTTOM;
-    }
-
-    public static Map getKnockDownRangeEnumMap() {
-        Map<KnockDownRangeEnum, String> map = new EnumMap<KnockDownRangeEnum, String>(KnockDownRangeEnum.class);
-        map.put(KnockDownRangeEnum.TOP, NbBundle.getMessage(RadialAxisLayout.class, "RadialAxisLayout.KnockDownRange.TOP"));
-        map.put(KnockDownRangeEnum.MIDDLE, NbBundle.getMessage(RadialAxisLayout.class, "RadialAxisLayout.KnockDownRange.MIDDLE"));
-        map.put(KnockDownRangeEnum.BOTTOM, NbBundle.getMessage(RadialAxisLayout.class, "RadialAxisLayout.KnockDownRange.BOTTOM"));
+    public static Map getKnockDownRangeMap() {
+        Map<String, String> map = new TreeMap<String, String>();
+        map.put("TOP", NbBundle.getMessage(RadialAxisLayout.class, "RadialAxisLayout.KnockDownRange.TOP"));
+        map.put("MIDDLE", NbBundle.getMessage(RadialAxisLayout.class, "RadialAxisLayout.KnockDownRange.MIDDLE"));
+        map.put("BOTTOM", NbBundle.getMessage(RadialAxisLayout.class, "RadialAxisLayout.KnockDownRange.BOTTOM"));
         return map;
     }
 
@@ -144,25 +128,15 @@ public class RadialAxisLayout extends AbstractLayout implements Layout {
 
         Node[] nodes = graph.getNodes().toArray();
         double nodecount = nodes.length;
-        if (this.enumNodeplacement == PlacementEnum.Degree) {
-            Arrays.sort(nodes, new BasicNodeComparator(graph, nodes, "Degree", true));
-        } else if (this.enumNodeplacement == PlacementEnum.Indegree) {
-            Arrays.sort(nodes, new BasicNodeComparator(graph, nodes, "InDegree", true));
-        } else if (this.enumNodeplacement == PlacementEnum.Outdegree) {
-            Arrays.sort(nodes, new BasicNodeComparator(graph, nodes, "OutDegree", true));
-        } else if (this.enumNodeplacement == PlacementEnum.Mutual) {
-            Arrays.sort(nodes, new BasicNodeComparator(graph, nodes, "MutualDegree", true));
-        } else if (this.enumNodeplacement == PlacementEnum.Children) {
-            Arrays.sort(nodes, new BasicNodeComparator(graph, nodes, "Children", true));
-        } else if (this.enumNodeplacement == PlacementEnum.Descendents) {
-            Arrays.sort(nodes, new BasicNodeComparator(graph, nodes, "Descendent", true));
+        if (getPlacementMap().containsKey(this.strNodeplacement)) {
+            Arrays.sort(nodes, new BasicNodeComparator(graph, nodes, this.strNodeplacement, true));
         }
         int i = 0;
         int lastlayer = 0;
         int currentlayer = 0;
 
         for (Node n : nodes) {
-            currentlayer = getLayerAttribute(n, this.enumNodeplacement);
+            currentlayer = getLayerAttribute(n, this.strNodeplacement);
             if (i == 0) {
                 lastlayer = currentlayer;
                 ArrayLayers.add(Integer.valueOf(i));
@@ -199,10 +173,10 @@ public class RadialAxisLayout extends AbstractLayout implements Layout {
             double doHigh = 0;
             double doLow = 0;
             double doDiff = doArrayEnd - this.getSparCount();
-            if (this.enumKnockdown == KnockDownRangeEnum.TOP) {
+            if ("TOP".equals(this.strKnockdown)) {
                 doLow = this.getSparCount();
                 doHigh = doArrayEnd;
-            } else if (this.enumKnockdown == KnockDownRangeEnum.BOTTOM) {
+            } else if ("BOTTOM".equals(this.strKnockdown)) {
                 doLow = 1;
                 doHigh = doDiff + 1;
             } else {
@@ -219,7 +193,7 @@ public class RadialAxisLayout extends AbstractLayout implements Layout {
             ArrayLayers.subList((int) doLow, (int) doHigh).clear();
         }
 
-        if (this.enumNodePlacementDirection == RotationEnum.CW) {
+        if ("CW".equals(this.strNodePlacementDirection)) {
             theta = -theta;
         }
 
@@ -233,19 +207,9 @@ public class RadialAxisLayout extends AbstractLayout implements Layout {
             if (currentindex > previousindex) {
                 Node[] shortnodes = NodeList.subList(previousindex, currentindex).toArray(new Node[0]);
                 
-                if ((this.enumSparNodePlacement != this.enumNodeplacement) || (!this.boolSparOrderingDirection)) {
-                    if (this.enumSparNodePlacement == PlacementEnum.Degree) {
-                        Arrays.sort(shortnodes, new BasicNodeComparator(graph, nodes, "Degree", this.boolSparOrderingDirection));
-                    } else if (this.enumSparNodePlacement == PlacementEnum.Indegree) {
-                        Arrays.sort(shortnodes, new BasicNodeComparator(graph, nodes, "InDegree", this.boolSparOrderingDirection));
-                    } else if (this.enumSparNodePlacement == PlacementEnum.Outdegree) {
-                        Arrays.sort(shortnodes, new BasicNodeComparator(graph, nodes, "OutDegree", this.boolSparOrderingDirection));
-                    } else if (this.enumSparNodePlacement == PlacementEnum.Mutual) {
-                        Arrays.sort(shortnodes, new BasicNodeComparator(graph, nodes, "MutualDegree", this.boolSparOrderingDirection));
-                    } else if (this.enumSparNodePlacement == PlacementEnum.Children) {
-                        Arrays.sort(shortnodes, new BasicNodeComparator(graph, nodes, "Children", this.boolSparOrderingDirection));
-                    } else if (this.enumSparNodePlacement == PlacementEnum.Descendents) {
-                        Arrays.sort(shortnodes, new BasicNodeComparator(graph, nodes, "Descendent", this.boolSparOrderingDirection));
+                if ((!this.strNodeplacement.equals(this.strSparNodePlacement)) || (!this.boolSparOrderingDirection)) {
+                    if (getPlacementMap().containsKey(this.strSparNodePlacement)) {
+                        Arrays.sort(shortnodes, new BasicNodeComparator(graph, shortnodes, this.strSparNodePlacement, this.boolSparOrderingDirection));
                     }
                 }
                 double tmptotallength = tmpradius;
@@ -254,9 +218,6 @@ public class RadialAxisLayout extends AbstractLayout implements Layout {
                     double tmplength = n.getNodeData().getRadius(); 
                     if (this.boolSparSpiral) {
                         tmptotallength += tmplength*0.6;
-                        System.out.println("thetatInc " + (thetainc));
-                        System.out.println("ArrayEnd " + (nodecount));
-                        System.out.println("ratio " + (thetainc/nodecount));
                         nodeCoords = this.cartCoors(tmptotallength, i+(thetainc/nodecount), theta);
                         tmptotallength += tmplength*0.6;   
                     } else {
@@ -290,19 +251,19 @@ public class RadialAxisLayout extends AbstractLayout implements Layout {
         List<LayoutProperty> properties = new ArrayList<LayoutProperty>();
         try {
             properties.add(LayoutProperty.createProperty(
-                    this, Enum.class,
+                    this, String.class,
                     NbBundle.getMessage(RadialAxisLayout.class, "RadialAxisLayout.NodePlacement.NodeOrdering.name"),
                     "Node Placement",
                     NbBundle.getMessage(RadialAxisLayout.class, "RadialAxisLayout.NodePlacement.NodeOrdering.desc"),
                     "getNodePlacement", "setNodePlacement", LayoutComboBoxEditor.class));
             properties.add(LayoutProperty.createProperty(
-                    this, Enum.class,
+                    this, String.class,
                     NbBundle.getMessage(RadialAxisLayout.class, "RadialAxisLayout.NodePlacement.Direction.name"),
                     "Node Placement",
                     NbBundle.getMessage(RadialAxisLayout.class, "RadialAxisLayout.NodePlacement.Direction.desc"),
                     "getNodePlacementDirection", "setNodePlacementDirection", RotationComboBoxEditor.class));
             properties.add(LayoutProperty.createProperty(
-                    this, Enum.class,
+                    this, String.class,
                     NbBundle.getMessage(RadialAxisLayout.class, "RadialAxisLayout.Spars.NodeOrdering.name"),
                     "Node Placement",
                     NbBundle.getMessage(RadialAxisLayout.class, "RadialAxisLayout.Spars.NodeOrdering.desc"),
@@ -332,7 +293,7 @@ public class RadialAxisLayout extends AbstractLayout implements Layout {
                     NbBundle.getMessage(RadialAxisLayout.class, "RadialAxisLayout.SparCount.desc"),
                     "getSparCount", "setSparCount"));
             properties.add(LayoutProperty.createProperty(
-                    this, Enum.class,
+                    this, String.class,
                     NbBundle.getMessage(RadialAxisLayout.class, "RadialAxisLayout.KnockdownSpars.Range.name"),
                     "Axis/Spar Control",
                     NbBundle.getMessage(RadialAxisLayout.class, "RadialAxisLayout.KnockdownSpars.Range.desc"),
@@ -345,30 +306,30 @@ public class RadialAxisLayout extends AbstractLayout implements Layout {
 
     @Override
     public void resetPropertiesValues() {
-        setNodePlacement(PlacementEnum.Degree);
-        setNodePlacementDirection(RotationEnum.CCW);
+        setNodePlacement("Degree");
+        setNodePlacementDirection("CCW");
         setSparSpiral(false);
         setKnockdownSpars(false);
         setSparOrderingDirection(false);
-        setKnockDownRange(KnockDownRangeEnum.MIDDLE);
+        setKnockDownRange("MIDDLE");
         setSparCount(3);
-        setSparNodePlacement(PlacementEnum.Degree);
+        setSparNodePlacement("Degree");
     }
 
-    public void setNodePlacement(Enum enumNodeplacement) {
-        this.enumNodeplacement = enumNodeplacement;
+    public void setNodePlacement(String strNodeplacement) {
+        this.strNodeplacement = strNodeplacement;
     }
 
-    public Enum getNodePlacement() {
-        return this.enumNodeplacement;
+    public String getNodePlacement() {
+        return this.strNodeplacement;
     }
 
-    public Enum getNodePlacementDirection() {
-        return this.enumNodePlacementDirection;
+    public String getNodePlacementDirection() {
+        return this.strNodePlacementDirection;
     }
 
-    public void setNodePlacementDirection(Enum enumNodePlacementDirection) {
-        this.enumNodePlacementDirection = enumNodePlacementDirection;
+    public void setNodePlacementDirection(String strNodePlacementDirection) {
+        this.strNodePlacementDirection = strNodePlacementDirection;
     }
 
     public Boolean isKnockdownSpars() {
@@ -385,14 +346,15 @@ public class RadialAxisLayout extends AbstractLayout implements Layout {
     
     public void setSparOrderingDirection(Boolean boolSparOrderingDirection) {
         this.boolSparOrderingDirection = boolSparOrderingDirection;
+
     }
         
-    public void setKnockDownRange(Enum enumKnockdown) {
-        this.enumKnockdown = enumKnockdown;
+    public void setKnockDownRange(String strKnockdown) {
+        this.strKnockdown = strKnockdown;
     }
 
-    public Enum getKnockDownRange() {
-        return this.enumKnockdown;
+    public String getKnockDownRange() {
+        return this.strKnockdown;
     }
 
     public Integer getSparCount() {
@@ -403,12 +365,12 @@ public class RadialAxisLayout extends AbstractLayout implements Layout {
         this.intSparCount = intSparCount;
     }
 
-    public void setSparNodePlacement(Enum enumSparNodePlacement) {
-        this.enumSparNodePlacement = enumSparNodePlacement;
+    public void setSparNodePlacement(String strSparNodePlacement) {
+        this.strSparNodePlacement = strSparNodePlacement;
     }
 
-    public Enum getSparNodePlacement() {
-        return this.enumSparNodePlacement;
+    public String getSparNodePlacement() {
+        return this.strSparNodePlacement;
     }
     
     public void setSparSpiral(Boolean boolSparSpiral) {
@@ -419,31 +381,31 @@ public class RadialAxisLayout extends AbstractLayout implements Layout {
         return this.boolSparSpiral;
     }
     
-    public int getLayerAttribute(Node n, Enum Placement) {
+    public int getLayerAttribute(Node n, String Placement) {
         int layout = 0;
-        if (Placement == PlacementEnum.Degree) {
+        if (Placement.equals("Degree")) {
             layout = graph.getDegree(n);
-        } else if (Placement == PlacementEnum.Indegree) {
+        } else if (Placement.equals("Indegree")) {
             GraphController graphController = Lookup.getDefault().lookup(GraphController.class);
             GraphModel objGraphModel = graphController.getModel();
             DirectedGraph objGraph = objGraphModel.getDirectedGraph();
             layout = objGraph.getInDegree(n);
-        } else if (Placement == PlacementEnum.Outdegree) {
+        } else if (Placement.equals("Outdegree")) {
             GraphController graphController = Lookup.getDefault().lookup(GraphController.class);
             GraphModel objGraphModel = graphController.getModel();
             DirectedGraph objGraph = objGraphModel.getDirectedGraph();
             layout = objGraph.getOutDegree(n);
-        } else if (Placement == PlacementEnum.Mutual) {
+        } else if (Placement.equals("Mutual")) {
             GraphController graphController = Lookup.getDefault().lookup(GraphController.class);
             GraphModel objGraphModel = graphController.getModel();
             DirectedGraph objGraph = objGraphModel.getDirectedGraph();
             layout = objGraph.getMutualDegree(n);
-        } else if (Placement == PlacementEnum.Children) {
+        } else if (Placement.equals("Children")) {
             GraphController graphController = Lookup.getDefault().lookup(GraphController.class);
             GraphModel objGraphModel = graphController.getModel();
             HierarchicalGraph objGraph = objGraphModel.getHierarchicalGraph();
             layout = objGraph.getChildrenCount(n);
-        } else if (Placement == PlacementEnum.Descendents) {
+        } else if (Placement.equals("Descendents")) {
             GraphController graphController = Lookup.getDefault().lookup(GraphController.class);
             GraphModel objGraphModel = graphController.getModel();
             HierarchicalGraph objGraph = objGraphModel.getHierarchicalGraph();

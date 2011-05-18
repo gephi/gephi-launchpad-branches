@@ -32,6 +32,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.TreeMap;
+import java.util.Map;
 import org.gephi.graph.api.GraphModel;
 import org.gephi.graph.api.GraphController;
 import org.gephi.graph.api.Graph;
@@ -40,10 +42,11 @@ import org.gephi.layout.plugin.AbstractLayout;
 import org.gephi.layout.spi.Layout;
 import org.gephi.layout.spi.LayoutBuilder;
 import org.gephi.layout.spi.LayoutProperty;
+import org.gephi.data.attributes.api.AttributeColumn;
+import org.gephi.data.attributes.api.AttributeController;
+import org.gephi.data.attributes.api.AttributeModel;
 import org.openide.util.NbBundle;
 import org.openide.util.Lookup;
-import java.util.EnumMap;
-import java.util.Map;
 
 
 /**
@@ -56,9 +59,9 @@ public class CircleLayout extends AbstractLayout implements Layout {
     private boolean converged;
     private double diameter;
     private boolean boolfixeddiameter;
-    private Enum enumNodeplacement;
+    private String strNodeplacement;
     private boolean boolNoOverlap = true;
-    private Enum enumNodePlacementDirection;
+    private String strNodePlacementDirection;
     static final double TWO_PI = (2 * Math.PI);
 
     public CircleLayout(LayoutBuilder layoutBuilder, double diameter, boolean boolfixeddiameter) {
@@ -78,35 +81,34 @@ public class CircleLayout extends AbstractLayout implements Layout {
         Descendents;
     }
 
-    public static Map getPlacementEnumMap() {
+      public static Map getPlacementMap() {
         GraphController graphController = Lookup.getDefault().lookup(GraphController.class);
         GraphModel objGraphModel = graphController.getModel();
-        Map<PlacementEnum, String> map = new EnumMap<PlacementEnum, String>(PlacementEnum.class);
-        map.put(PlacementEnum.NodeID, NbBundle.getMessage(CircleLayout.class, "CircleLayout.NodePlacement.NodeID.name"));
-        map.put(PlacementEnum.Random, NbBundle.getMessage(CircleLayout.class, "CircleLayout.NodePlacement.Random.name"));
-        map.put(PlacementEnum.Degree, NbBundle.getMessage(CircleLayout.class, "CircleLayout.NodePlacement.Degree.name"));
+        Map<String, String> map = new TreeMap<String, String>();
+        map.put("NodeID", NbBundle.getMessage(CircleLayout.class, "CircleLayout.NodePlacement.NodeID.name"));
+        map.put("Degree", NbBundle.getMessage(CircleLayout.class, "CircleLayout.NodePlacement.Degree.name"));
         if (objGraphModel.isDirected()) {
-            map.put(PlacementEnum.Indegree, NbBundle.getMessage(CircleLayout.class, "CircleLayout.NodePlacement.InDegree.name"));
-            map.put(PlacementEnum.Outdegree, NbBundle.getMessage(CircleLayout.class, "CircleLayout.NodePlacement.OutDegree.name"));
-            map.put(PlacementEnum.Mutual, NbBundle.getMessage(CircleLayout.class, "CircleLayout.NodePlacement.Mutual.name"));
+            map.put("InDegree", NbBundle.getMessage(CircleLayout.class, "CircleLayout.NodePlacement.InDegree.name"));
+            map.put("OutDegree", NbBundle.getMessage(CircleLayout.class, "CircleLayout.NodePlacement.OutDegree.name"));
+            map.put("MutualDegree", NbBundle.getMessage(CircleLayout.class, "CircleLayout.NodePlacement.Mutual.name"));
         } else if (objGraphModel.isHierarchical()) {
-            map.put(PlacementEnum.Children, NbBundle.getMessage(CircleLayout.class, "CircleLayout.NodePlacement.Children.name"));
-            map.put(PlacementEnum.Descendents, NbBundle.getMessage(CircleLayout.class, "CircleLayout.NodePlacement.Descendents.name"));
+            map.put("ChildrenCount", NbBundle.getMessage(CircleLayout.class, "CircleLayout.NodePlacement.Children.name"));
+            map.put("DescendantCount", NbBundle.getMessage(CircleLayout.class, "CircleLayout.NodePlacement.Descendents.name"));
+        }
+        AttributeModel attModel = Lookup.getDefault().lookup(AttributeController.class).getModel();
+        for (AttributeColumn c : attModel.getNodeTable().getColumns()) {
+           map.put(c.getTitle()+"-Att", c.getTitle()+" (Attribute)");
         }
         return map;
     }
 
-        private enum RotationEnum {
-        CCW,
-        CW;
-    }
-
-    public static Map getRotationEnumMap() {
-        Map<RotationEnum, String> map = new EnumMap<RotationEnum, String>(RotationEnum.class);
-        map.put(RotationEnum.CCW, NbBundle.getMessage(CircleLayout.class, "CircleLayout.NodePlacement.CCW"));
-        map.put(RotationEnum.CW, NbBundle.getMessage(CircleLayout.class, "CircleLayout.NodePlacement.CW"));
+    public static Map getRotationMap() {
+        Map<String, String> map = new TreeMap<String, String>();
+        map.put("CCW", NbBundle.getMessage(CircleLayout.class, "CircleLayout.NodePlacement.CCW"));
+        map.put("CW", NbBundle.getMessage(CircleLayout.class, "CircleLayout.NodePlacement.CW"));
         return map;
     }
+
 
 
     @Override
@@ -146,29 +148,17 @@ public class CircleLayout extends AbstractLayout implements Layout {
         //determine Node placement
         Node[] nodes = graph.getNodes().toArray();
         
-        if (this.enumNodeplacement == PlacementEnum.NodeID) {
+        if (this.strNodeplacement.equals("NodeID")) {
             //Do nothing
-        } else if (this.enumNodeplacement == PlacementEnum.Random) {
-            List nodesList = Arrays.asList(nodes);
-            Collections.shuffle(nodesList);
-        } else if (this.enumNodeplacement == PlacementEnum.Degree) {
-            Arrays.sort(nodes, new BasicNodeComparator(graph, nodes,"Degree", false));
-        } else if (this.enumNodeplacement == PlacementEnum.Indegree) {
-            Arrays.sort(nodes, new BasicNodeComparator(graph, nodes,"InDegree", false));
-        } else if (this.enumNodeplacement == PlacementEnum.Outdegree) {
-            Arrays.sort(nodes, new BasicNodeComparator(graph, nodes,"OutDegree", false));
-        } else if (this.enumNodeplacement == PlacementEnum.Mutual) {
-            Arrays.sort(nodes, new BasicNodeComparator(graph, nodes,"MutualDegree", false));
-        } else if (this.enumNodeplacement == PlacementEnum.Children) {
-            Arrays.sort(nodes, new BasicNodeComparator(graph, nodes,"Children", false));
-        } else if (this.enumNodeplacement == PlacementEnum.Descendents) {
-            Arrays.sort(nodes, new BasicNodeComparator(graph, nodes,"Descendent", false));
+        } else if (getPlacementMap().containsKey(this.strNodeplacement)) {
+            Arrays.sort(nodes, new BasicNodeComparator(graph, nodes, this.strNodeplacement, true));
         }
 
 
-        if (this.enumNodePlacementDirection == RotationEnum.CW) {
+        if ("CW".equals(this.strNodePlacementDirection)) {
             theta = -theta;
         }
+        
         for (Node n : nodes) {
             if (this.boolNoOverlap) {
                 noderadius = (n.getNodeData().getRadius());
@@ -211,13 +201,13 @@ public class CircleLayout extends AbstractLayout implements Layout {
                     NbBundle.getMessage(CircleLayout.class, "CircleLayout.Diameter.desc"),
                     "getDiameter", "setDiameter"));
             properties.add(LayoutProperty.createProperty(
-                    this, Enum.class,
+                    this, String.class,
                     NbBundle.getMessage(CircleLayout.class, "CircleLayout.NodePlacement.NodeOrdering.name"),
                     "Node Placement",
                     NbBundle.getMessage(CircleLayout.class, "CircleLayout.NodePlacement.NodeOrdering.desc"),
                     "getNodePlacement", "setNodePlacement", LayoutComboBoxEditor.class));
             properties.add(LayoutProperty.createProperty(
-                    this, Enum.class,
+                    this, String.class,
                     NbBundle.getMessage(CircleLayout.class, "CircleLayout.NodePlacement.Direction.name"),
                     "Node Placement",
                     NbBundle.getMessage(CircleLayout.class, "CircleLayout.NodePlacement.Direction.desc"),
@@ -238,17 +228,17 @@ public class CircleLayout extends AbstractLayout implements Layout {
     public void resetPropertiesValues() {
         setDiameter(500.0);
         setBoolFixedDiameter(false);
-        setNodePlacement(PlacementEnum.NodeID);
+        setNodePlacement("NodeID");
         setNodePlacementNoOverlap(true);
-        setNodePlacementDirection(RotationEnum.CCW);
+        setNodePlacementDirection("CCW");
     }
 
-    public void setNodePlacement(Enum enumNodeplacement) {
-        this.enumNodeplacement = enumNodeplacement;
+    public void setNodePlacement(String strNodeplacement) {
+        this.strNodeplacement = strNodeplacement;
     }
 
-    public Enum getNodePlacement() {
-        return this.enumNodeplacement;
+    public String getNodePlacement() {
+        return this.strNodeplacement;
     }
 
     public void setBoolFixedDiameter(Boolean boolfixeddiameter) {
@@ -270,12 +260,12 @@ public class CircleLayout extends AbstractLayout implements Layout {
         return diameter;
     }
 
-    public Enum getNodePlacementDirection() {
-        return this.enumNodePlacementDirection;
+    public String getNodePlacementDirection() {
+        return this.strNodePlacementDirection;
     }
 
-    public void setNodePlacementDirection(Enum enumNodePlacementDirection) {
-        this.enumNodePlacementDirection = enumNodePlacementDirection;
+    public void setNodePlacementDirection(String strNodePlacementDirection) {
+        this.strNodePlacementDirection = strNodePlacementDirection;
     }
 
     public boolean isNodePlacementNoOverlap() {

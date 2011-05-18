@@ -35,7 +35,7 @@ import java.util.Map;
 public class LayoutComboBoxEditor extends AbstractComboBoxEditor {
 
     public LayoutComboBoxEditor() {
-        Map options = RadialAxisLayout.getPlacementEnumMap();
+        Map options = RadialAxisLayout.getPlacementMap();
         super.ComboValues = options;
     }
 }
