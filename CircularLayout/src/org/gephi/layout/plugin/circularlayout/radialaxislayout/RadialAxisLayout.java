@@ -252,51 +252,51 @@ public class RadialAxisLayout extends AbstractLayout implements Layout {
         try {
             properties.add(LayoutProperty.createProperty(
                     this, String.class,
-                    NbBundle.getMessage(RadialAxisLayout.class, "RadialAxisLayout.NodePlacement.NodeOrdering.name"),
-                    "Node Placement",
-                    NbBundle.getMessage(RadialAxisLayout.class, "RadialAxisLayout.NodePlacement.NodeOrdering.desc"),
+                    NbBundle.getMessage(getClass(), "RadialAxisLayout.NodePlacement.NodeOrdering.name"),
+                    NbBundle.getMessage(getClass(), "RadialAxisLayout.Category.Placement.name"),
+                    NbBundle.getMessage(getClass(), "RadialAxisLayout.NodePlacement.NodeOrdering.desc"),
                     "getNodePlacement", "setNodePlacement", LayoutComboBoxEditor.class));
             properties.add(LayoutProperty.createProperty(
                     this, String.class,
-                    NbBundle.getMessage(RadialAxisLayout.class, "RadialAxisLayout.NodePlacement.Direction.name"),
-                    "Node Placement",
-                    NbBundle.getMessage(RadialAxisLayout.class, "RadialAxisLayout.NodePlacement.Direction.desc"),
+                    NbBundle.getMessage(getClass(), "RadialAxisLayout.NodePlacement.Direction.name"),
+                    NbBundle.getMessage(getClass(), "RadialAxisLayout.Category.Placement.name"),
+                    NbBundle.getMessage(getClass(), "RadialAxisLayout.NodePlacement.Direction.desc"),
                     "getNodePlacementDirection", "setNodePlacementDirection", RotationComboBoxEditor.class));
             properties.add(LayoutProperty.createProperty(
                     this, String.class,
-                    NbBundle.getMessage(RadialAxisLayout.class, "RadialAxisLayout.Spars.NodeOrdering.name"),
-                    "Node Placement",
-                    NbBundle.getMessage(RadialAxisLayout.class, "RadialAxisLayout.Spars.NodeOrdering.desc"),
+                    NbBundle.getMessage(getClass(), "RadialAxisLayout.Spars.NodeOrdering.name"),
+                    NbBundle.getMessage(getClass(), "RadialAxisLayout.Category.Placement.name"),
+                    NbBundle.getMessage(getClass(), "RadialAxisLayout.Spars.NodeOrdering.desc"),
                     "getSparNodePlacement", "setSparNodePlacement", LayoutComboBoxEditor.class));
             properties.add(LayoutProperty.createProperty(
                     this, Boolean.class,
-                    NbBundle.getMessage(RadialAxisLayout.class, "RadialAxisLayout.Spars.SparOrderingDirection.name"),
-                    "Node Placement",
-                    NbBundle.getMessage(RadialAxisLayout.class, "RadialAxisLayout.Spars.SparOrderingDirection.desc"),
+                    NbBundle.getMessage(getClass(), "RadialAxisLayout.Spars.SparOrderingDirection.name"),
+                    NbBundle.getMessage(getClass(), "RadialAxisLayout.Category.Placement.name"),
+                    NbBundle.getMessage(getClass(), "RadialAxisLayout.Spars.SparOrderingDirection.desc"),
                     "isSparOrderingDirection", "setSparOrderingDirection"));
             properties.add(LayoutProperty.createProperty(
                     this, Boolean.class,
-                    NbBundle.getMessage(RadialAxisLayout.class, "RadialAxisLayout.Spars.Spiral.name"),
-                    "Node Placement",
-                    NbBundle.getMessage(RadialAxisLayout.class, "RadialAxisLayout.Spars.Spiral.desc"),
+                    NbBundle.getMessage(getClass(), "RadialAxisLayout.Spars.Spiral.name"),
+                    NbBundle.getMessage(getClass(), "RadialAxisLayout.Category.Placement.name"),
+                    NbBundle.getMessage(getClass(), "RadialAxisLayout.Spars.Spiral.desc"),
                     "isSparSpiral", "setSparSpiral"));               
             properties.add(LayoutProperty.createProperty(
                     this, Boolean.class,
-                    NbBundle.getMessage(RadialAxisLayout.class, "RadialAxisLayout.KnockdownSpars.name"),
-                    "Axis/Spar Control",
-                    NbBundle.getMessage(RadialAxisLayout.class, "RadialAxisLayout.KnockdownSpars.desc"),
+                    NbBundle.getMessage(getClass(), "RadialAxisLayout.KnockdownSpars.name"),
+                    NbBundle.getMessage(getClass(), "RadialAxisLayout.Category.SparControl.name"),
+                    NbBundle.getMessage(getClass(), "RadialAxisLayout.KnockdownSpars.desc"),
                     "isKnockdownSpars", "setKnockdownSpars"));
             properties.add(LayoutProperty.createProperty(
                     this, Integer.class,
-                    NbBundle.getMessage(RadialAxisLayout.class, "RadialAxisLayout.SparCount.name"),
-                    "Axis/Spar Control",
-                    NbBundle.getMessage(RadialAxisLayout.class, "RadialAxisLayout.SparCount.desc"),
+                    NbBundle.getMessage(getClass(), "RadialAxisLayout.SparCount.name"),
+                    NbBundle.getMessage(getClass(), "RadialAxisLayout.Category.SparControl.name"),
+                    NbBundle.getMessage(getClass(), "RadialAxisLayout.SparCount.desc"),
                     "getSparCount", "setSparCount"));
             properties.add(LayoutProperty.createProperty(
                     this, String.class,
-                    NbBundle.getMessage(RadialAxisLayout.class, "RadialAxisLayout.KnockdownSpars.Range.name"),
-                    "Axis/Spar Control",
-                    NbBundle.getMessage(RadialAxisLayout.class, "RadialAxisLayout.KnockdownSpars.Range.desc"),
+                    NbBundle.getMessage(getClass(), "RadialAxisLayout.KnockdownSpars.Range.name"),
+                    NbBundle.getMessage(getClass(), "RadialAxisLayout.Category.SparControl.name"),
+                    NbBundle.getMessage(getClass(), "RadialAxisLayout.KnockdownSpars.Range.desc"),
                     "getKnockDownRange", "setKnockDownRange", KnockDownSparRange.class));
         } catch (Exception e) {
             e.printStackTrace();

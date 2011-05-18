@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Arrays;
 import java.util.TreeMap;
 import java.util.Map;
+import java.util.Collections;
 import org.gephi.graph.api.Graph;
 import org.gephi.graph.api.GraphModel;
 import org.gephi.graph.api.GraphController;
@@ -124,9 +125,10 @@ public class DualCircleLayout extends AbstractLayout implements Layout {
         }
         Node[] nodes = graph.getNodes().toArray();
         if (this.attribute.equals("NodeID")) {
-            //Do nothing
+            //Should reverse it...
+            //TODO need to figure out new language around sort stuff (High degree outside circle doesn't work)
         } else if (getAttributeMap().containsKey(this.attribute)) {
-            Arrays.sort(nodes, new BasicNodeComparator(graph, nodes, this.attribute, true));
+            Arrays.sort(nodes, new BasicNodeComparator(graph, nodes, this.attribute, false));
         }
 
         for (Node n : nodes) {
@@ -212,27 +214,27 @@ public class DualCircleLayout extends AbstractLayout implements Layout {
         try {
             properties.add(LayoutProperty.createProperty(
                     this, Boolean.class,
-                    NbBundle.getMessage(DualCircleLayout.class, "DualCircleLayout.HighDegreeOutside.name"),
-                    null,
-                    NbBundle.getMessage(DualCircleLayout.class, "DualCircleLayout.HighDegreeOutside.desc"),
+                    NbBundle.getMessage(getClass(), "DualCircleLayout.HighDegreeOutside.name"),
+                    NbBundle.getMessage(getClass(), "DualCircleLayout.Category.NodePlacement.name"),
+                    NbBundle.getMessage(getClass(), "DualCircleLayout.HighDegreeOutside.desc"),
                     "isHighDegreeOutside", "setHighDegreeOutside"));
             properties.add(LayoutProperty.createProperty(
                     this, Integer.class,
-                    NbBundle.getMessage(DualCircleLayout.class, "DualCircleLayout.InnerNodeCount.name"),
-                    null,
-                    NbBundle.getMessage(DualCircleLayout.class, "DualCircleLayout.InnerNodeCount.desc"),
+                    NbBundle.getMessage(getClass(), "DualCircleLayout.InnerNodeCount.name"),
+                    NbBundle.getMessage(getClass(), "DualCircleLayout.Category.NodePlacement.name"),
+                    NbBundle.getMessage(getClass(), "DualCircleLayout.InnerNodeCount.desc"),
                     "getInnerNodeCount", "setInnerNodeCount"));
             properties.add(LayoutProperty.createProperty(
                     this, String.class,
-                    NbBundle.getMessage(DualCircleLayout.class, "DualCircleLayout.attribue.name"),
-                     "Node Placement",
-                    NbBundle.getMessage(DualCircleLayout.class, "DualCircleLayout.attribue.desc"),
+                    NbBundle.getMessage(getClass(), "DualCircleLayout.attribue.name"),
+                    NbBundle.getMessage(getClass(), "DualCircleLayout.Category.Sorting.name"),
+                    NbBundle.getMessage(getClass(), "DualCircleLayout.attribue.desc"),
                     "getAttribute", "setAttribute",LayoutComboBoxEditor.class));
             properties.add(LayoutProperty.createProperty(
                     this, String.class,
-                    NbBundle.getMessage(DualCircleLayout.class, "DualCircleLayout.NodePlacement.Direction.name"),
-                    "Node Placement",
-                    NbBundle.getMessage(DualCircleLayout.class, "DualCircleLayout.NodePlacement.Direction.desc"),
+                    NbBundle.getMessage(getClass(), "DualCircleLayout.NodePlacement.Direction.name"),
+                    NbBundle.getMessage(getClass(), "DualCircleLayout.Category.NodePlacement.name"),
+                    NbBundle.getMessage(getClass(), "DualCircleLayout.NodePlacement.Direction.desc"),
                     "getNodePlacementDirection", "setNodePlacementDirection", RotationComboBoxEditor.class));
         } catch (Exception e) {
             e.printStackTrace();
@@ -254,13 +256,13 @@ public class DualCircleLayout extends AbstractLayout implements Layout {
         graph = objGraphModel.getGraphVisible();
         if (intsecondarynodecount > graph.getNodeCount()) {
             JOptionPane.showMessageDialog(null,
-                NbBundle.getMessage(DualCircleLayout.class, "DualCircleLayout.setInnerNodeCount.TooHigh.message"),
-                NbBundle.getMessage(DualCircleLayout.class, "DualCircleLayout.setInnerNodeCount.TooHigh.title"),
+                NbBundle.getMessage(getClass(), "DualCircleLayout.setInnerNodeCount.TooHigh.message"),
+                NbBundle.getMessage(getClass(), "DualCircleLayout.setInnerNodeCount.TooHigh.title"),
                  JOptionPane.WARNING_MESSAGE);
         } else if (intsecondarynodecount < 1) {
             JOptionPane.showMessageDialog(null,
-                NbBundle.getMessage(DualCircleLayout.class, "DualCircleLayout.setInnerNodeCount.TooLow.message"),
-                NbBundle.getMessage(DualCircleLayout.class, "DualCircleLayout.setInnerNodeCount.TooLow.title"),
+                NbBundle.getMessage(getClass(), "DualCircleLayout.setInnerNodeCount.TooLow.message"),
+                NbBundle.getMessage(getClass(), "DualCircleLayout.setInnerNodeCount.TooLow.title"),
                  JOptionPane.WARNING_MESSAGE);        } else {
             //TODO: add node count check to do boundary checking on user input
             this.secondarynodecount = intsecondarynodecount;
