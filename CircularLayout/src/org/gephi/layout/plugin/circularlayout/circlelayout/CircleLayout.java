@@ -28,9 +28,9 @@ package org.gephi.layout.plugin.circularlayout.circlelayout;
 
 
 import org.gephi.layout.plugin.circularlayout.nodecomparator.BasicNodeComparator;
+import org.gephi.layout.plugin.circularlayout.nodedatacomparator.BasicNodeDataComparator;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.TreeMap;
 import java.util.Map;
@@ -149,7 +149,9 @@ public class CircleLayout extends AbstractLayout implements Layout {
         Node[] nodes = graph.getNodes().toArray();
         
         if (this.strNodeplacement.equals("NodeID")) {
-            //Do nothing
+            Arrays.sort(nodes, new BasicNodeDataComparator(nodes, "NodeID", false));
+        } else if (this.strNodeplacement.endsWith("-Att")) {
+            Arrays.sort(nodes, new BasicNodeDataComparator(nodes, this.strNodeplacement.substring(0,this.strNodeplacement.length()-4), false));
         } else if (getPlacementMap().containsKey(this.strNodeplacement)) {
             Arrays.sort(nodes, new BasicNodeComparator(graph, nodes, this.strNodeplacement, false));
         }

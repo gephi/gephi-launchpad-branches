@@ -28,12 +28,12 @@ package org.gephi.layout.plugin.circularlayout.dualcirclelayout;
 
 
 import org.gephi.layout.plugin.circularlayout.nodecomparator.BasicNodeComparator;
+import org.gephi.layout.plugin.circularlayout.nodedatacomparator.BasicNodeDataComparator;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Arrays;
 import java.util.TreeMap;
 import java.util.Map;
-import java.util.Collections;
 import org.gephi.graph.api.Graph;
 import org.gephi.graph.api.GraphModel;
 import org.gephi.graph.api.GraphController;
@@ -124,12 +124,15 @@ public class DualCircleLayout extends AbstractLayout implements Layout {
             twopi = -twopi;
         }
         Node[] nodes = graph.getNodes().toArray();
-        if (this.attribute.equals("NodeID")) {
-            //Should reverse it...
+       if (this.attribute.equals("NodeID")) {
+            Arrays.sort(nodes, new BasicNodeDataComparator(nodes, "NodeID", false));
             //TODO need to figure out new language around sort stuff (High degree outside circle doesn't work)
+        } else if (this.attribute.endsWith("-Att")) {
+            Arrays.sort(nodes, new BasicNodeDataComparator(nodes, this.attribute.substring(0,this.attribute.length()-4), false));
         } else if (getAttributeMap().containsKey(this.attribute)) {
             Arrays.sort(nodes, new BasicNodeComparator(graph, nodes, this.attribute, false));
         }
+
 
         for (Node n : nodes) {
             if (index < this.secondarynodecount) {

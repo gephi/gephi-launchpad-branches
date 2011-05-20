@@ -27,6 +27,7 @@ THE POSSIBILITY OF SUCH DAMAGE.
 package org.gephi.layout.plugin.circularlayout.radialaxislayout;
 
 import org.gephi.layout.plugin.circularlayout.nodecomparator.BasicNodeComparator;
+import org.gephi.layout.plugin.circularlayout.nodedatacomparator.BasicNodeDataComparator;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -128,15 +129,22 @@ public class RadialAxisLayout extends AbstractLayout implements Layout {
 
         Node[] nodes = graph.getNodes().toArray();
         double nodecount = nodes.length;
-        if (getPlacementMap().containsKey(this.strNodeplacement)) {
+
+       if (this.strNodeplacement.equals("NodeID")) {
+            Arrays.sort(nodes, new BasicNodeDataComparator(nodes, "NodeID", true));
+        } else if (this.strNodeplacement.endsWith("-Att")) {
+            Arrays.sort(nodes, new BasicNodeDataComparator(nodes, this.strNodeplacement.substring(0,this.strNodeplacement.length()-4), true));
+        } else if (getPlacementMap().containsKey(this.strNodeplacement)) {
             Arrays.sort(nodes, new BasicNodeComparator(graph, nodes, this.strNodeplacement, true));
-        }
+        }        
+        
         int i = 0;
-        int lastlayer = 0;
-        int currentlayer = 0;
+        Object lastlayer = null;
+        Object currentlayer = null;
 
         for (Node n : nodes) {
             currentlayer = getLayerAttribute(n, this.strNodeplacement);
+
             if (i == 0) {
                 lastlayer = currentlayer;
                 ArrayLayers.add(Integer.valueOf(i));
@@ -157,7 +165,6 @@ public class RadialAxisLayout extends AbstractLayout implements Layout {
                 maxlength = tmplength;
             }
             NodeList.add(n);
-
             i++;
         }
         doArrayEnd = ArrayLayers.size() - 1;
@@ -206,22 +213,25 @@ public class RadialAxisLayout extends AbstractLayout implements Layout {
             currentindex = (Integer) it.next();
             if (currentindex > previousindex) {
                 Node[] shortnodes = NodeList.subList(previousindex, currentindex).toArray(new Node[0]);
-                
                 if ((!this.strNodeplacement.equals(this.strSparNodePlacement)) || (!this.boolSparOrderingDirection)) {
-                    if (getPlacementMap().containsKey(this.strSparNodePlacement)) {
+                     if (this.strSparNodePlacement.equals("NodeID")) {
+                        Arrays.sort(shortnodes, new BasicNodeDataComparator(shortnodes, "NodeID", this.boolSparOrderingDirection));
+                    } else if (this.strSparNodePlacement.endsWith("-Att")) {
+                        Arrays.sort(shortnodes, new BasicNodeDataComparator(shortnodes, this.strSparNodePlacement.substring(0, this.strSparNodePlacement.length() - 4), this.boolSparOrderingDirection));
+                    } else if (getPlacementMap().containsKey(this.strSparNodePlacement)) {
                         Arrays.sort(shortnodes, new BasicNodeComparator(graph, shortnodes, this.strSparNodePlacement, this.boolSparOrderingDirection));
-                    }
+                    } 
                 }
                 double tmptotallength = tmpradius;
                 double thetainc = 0;
                 for (Node n : shortnodes) {
-                    double tmplength = n.getNodeData().getRadius(); 
+                    double tmplength = n.getNodeData().getRadius();
+                    if (thetainc!=0) {
+                        tmptotallength += tmplength*1.2;
+                    }
                     if (this.boolSparSpiral) {
-                        tmptotallength += tmplength*0.6;
                         nodeCoords = this.cartCoors(tmptotallength, i+(thetainc/nodecount), theta);
-                        tmptotallength += tmplength*0.6;   
                     } else {
-                        tmptotallength += tmplength* 1.2;                        
                         nodeCoords = this.cartCoors(tmptotallength, i, theta);
                     }
                     tmptotallength += tmplength* 1.2;
@@ -381,35 +391,40 @@ public class RadialAxisLayout extends AbstractLayout implements Layout {
         return this.boolSparSpiral;
     }
     
-    public int getLayerAttribute(Node n, String Placement) {
-        int layout = 0;
-        if (Placement.equals("Degree")) {
+    public Object getLayerAttribute(Node n, String Placement) {
+        Object layout = null;
+        if (Placement.equals("NodeID")) {
+            layout = n.getNodeData().getId();
+        } else if (Placement.equals("Degree")) {
             layout = graph.getDegree(n);
-        } else if (Placement.equals("Indegree")) {
+        } else if (Placement.equals("InDegree")) {
             GraphController graphController = Lookup.getDefault().lookup(GraphController.class);
             GraphModel objGraphModel = graphController.getModel();
             DirectedGraph objGraph = objGraphModel.getDirectedGraph();
             layout = objGraph.getInDegree(n);
-        } else if (Placement.equals("Outdegree")) {
+        } else if (Placement.equals("OutDegree")) {
             GraphController graphController = Lookup.getDefault().lookup(GraphController.class);
             GraphModel objGraphModel = graphController.getModel();
             DirectedGraph objGraph = objGraphModel.getDirectedGraph();
             layout = objGraph.getOutDegree(n);
-        } else if (Placement.equals("Mutual")) {
+        } else if (Placement.equals("MutualDegree")) {
             GraphController graphController = Lookup.getDefault().lookup(GraphController.class);
             GraphModel objGraphModel = graphController.getModel();
             DirectedGraph objGraph = objGraphModel.getDirectedGraph();
             layout = objGraph.getMutualDegree(n);
-        } else if (Placement.equals("Children")) {
+        } else if (Placement.equals("ChildrenCount")) {
             GraphController graphController = Lookup.getDefault().lookup(GraphController.class);
             GraphModel objGraphModel = graphController.getModel();
             HierarchicalGraph objGraph = objGraphModel.getHierarchicalGraph();
             layout = objGraph.getChildrenCount(n);
-        } else if (Placement.equals("Descendents")) {
+        } else if (Placement.equals("DescendantCount")) {
             GraphController graphController = Lookup.getDefault().lookup(GraphController.class);
             GraphModel objGraphModel = graphController.getModel();
             HierarchicalGraph objGraph = objGraphModel.getHierarchicalGraph();
             layout = objGraph.getDescendantCount(n);
+        } else {
+            Placement = Placement.substring(0, Placement.length() - 4);
+            layout = n.getNodeData().getAttributes().getValue(Placement);
         }
         return layout;
     }
