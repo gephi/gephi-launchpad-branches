@@ -38,12 +38,12 @@ public final class GraphTopComponent extends TopComponent {
         initComponents();
         setName(NbBundle.getMessage(GraphTopComponent.class, "CTL_GraphTopComponent"));
         setToolTipText(NbBundle.getMessage(GraphTopComponent.class, "HINT_GraphTopComponent"));
-//        setIcon(ImageUtilities.loadImage(ICON_PATH, true));
+//      setIcon(ImageUtilities.loadImage(ICON_PATH, true));
 
         JPopupMenu.setDefaultLightWeightPopupEnabled(false);
         ToolTipManager.sharedInstance().setLightWeightPopupEnabled(false);
 
-        this.controller = new Controller();
+        this.controller = Controller.getInstance();
         this.view = new View(this.controller);
         this.dataManager = new Model(this.controller, this.view, 33);
         

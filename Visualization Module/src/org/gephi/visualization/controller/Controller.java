@@ -33,6 +33,7 @@ import org.gephi.lib.gleem.linalg.Vec3f;
 import org.gephi.visualization.camera.Camera;
 import org.gephi.visualization.geometry.AABB;
 import org.gephi.visualization.view.View;
+import org.openide.util.Lookup;
 
 /**
  *
@@ -41,22 +42,22 @@ import org.gephi.visualization.view.View;
 public class Controller implements KeyListener, MouseListener, MouseMotionListener, MouseWheelListener {
 
     private Camera camera;
-    private MotionManager motionManager;
+    private MotionManager3D motionManager;
+
+    private static Controller instance;
 
     private boolean centered;
 
-    // TODO remove
-    private static Controller instance;
-
-    public Controller() {
+    private Controller() {
         // Random values
         this.camera = new Camera(300, 300, 100f, 10000.0f);
-        this.motionManager = new MotionManager();
-        instance = this;
+        this.motionManager = new MotionManager3D();
     }
 
-    // TODO temporary before a suitable architecture is created
-    public static Controller getInstance() {
+    public synchronized static Controller getInstance() {
+        if (instance == null) {
+            instance = new Controller();
+        }
         return instance;
     }
 
@@ -64,26 +65,21 @@ public class Controller implements KeyListener, MouseListener, MouseMotionListen
         this.camera.setImageSize(width, height);
     }
 
-    public Camera beginUpdateFrame() {
+    public Camera getCamera() {
         return this.camera;
-        //return new Camera(this.camera);
+
     }
 
-    public void endUpdateFrame(AABB box) {
-        // center on first update. TODO - move from endUpdateFrame to special centering method that will be called just once from the Model
-        if (centered || box == null) {
-            return;
-        }
-        centered = true;
-        centerCamera(box);
+    public void beginUpdateFrame() {
+    }
+
+    public void endUpdateFrame() {
     }
 
     public void beginRenderFrame() {
-
     }
 
     public void endRenderFrame() {
-        
     }
 
     @Override
@@ -135,8 +131,10 @@ public class Controller implements KeyListener, MouseListener, MouseMotionListen
         motionManager.mouseWheelMoved(e);
     }
 
-    private void centerCamera(AABB box) {
-        if (box == null) return;
+    public void centerCamera(AABB box) {
+        if (centered || box == null) {
+            return;
+        }
 
         final Vec3f center = box.center();
         final Vec3f scale = box.scale();
@@ -148,14 +146,11 @@ public class Controller implements KeyListener, MouseListener, MouseMotionListen
         final Vec3f origin = new Vec3f(center.x(), center.y(), minVec.z() - d*1.1f);
         camera.lookAt(origin, center, Vec3f.Y_AXIS);
         //camera.setClipPlanes(d, maxVec.z() - minVec.z() + d*1.2f);
+        centered = true;
     }
 
     // TODO - create a better architecture containing class or leave here?
-    public Camera getCamera() {
-        return camera;
-    }
-    // TODO - create a better architecture containing class or leave here?
-    public MotionManager getMotionManager() {
+    public MotionManager3D getMotionManager() {
         return motionManager;
     }
 
