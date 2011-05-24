@@ -21,13 +21,15 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 
 package org.gephi.visualization.selection;
 
+import org.gephi.visualization.api.selection.CameraBridge;
+import org.gephi.visualization.api.selection.Shape;
 import java.util.Collection;
 import java.util.List;
 import org.gephi.graph.api.Graph;
 import org.gephi.graph.api.Node;
-import org.gephi.visualization.camera.Camera;
+import org.gephi.visualization.api.selection.NodeContainer;
 
-public class Octree {
+public class Octree implements NodeContainer {
 
     private final Octant root = null;
 
@@ -39,17 +41,14 @@ public class Octree {
         this.graph = graph;
     }
 
-    public void rebuild() {
+    @Override
+    public void rebuild() {}
 
-    }
+    @Override
+    public void addToSelection(CameraBridge camera, Shape shape) {}
 
-    public void addToSelection(Camera camera, Shape shape) {}
-
-    public void removeFromSelection(Camera camera, Shape shape) {}
-
-    public Collection<Node> getSelectedNodes() {
-        return null;
-    }
+    @Override
+    public void removeFromSelection(CameraBridge camera, Shape shape) {}
 
 }
 

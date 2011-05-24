@@ -21,6 +21,7 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 
 package org.gephi.visualization.camera;
 
+import java.awt.Dimension;
 import org.gephi.lib.gleem.linalg.Mat3f;
 import org.gephi.lib.gleem.linalg.Mat4f;
 import org.gephi.lib.gleem.linalg.Rotf;
@@ -39,8 +40,6 @@ public class Camera {
 
     private float imageWidth, imageHeight, fovy, near, far;
 
-    private float scaleFactor;
-
     private static final float MIN_ORBIT = 200.0f;
     private static final float MAX_ORBIT = 2000.0f;
     private static final float MAX_FOVY = 3.0f;
@@ -51,7 +50,6 @@ public class Camera {
         this.fovy = 1.0f;
         this.near = near;
         this.far = far;
-        this.scaleFactor = 1.0f;
 
         this.position = new Vec3f();
         this.front = new Vec3f(0.0f, 0.0f, -1.0f);
@@ -70,9 +68,9 @@ public class Camera {
         this.up = camera.up.copy();
     }
 
-    public void setImageSize(int width, int height) {
-        this.imageWidth = width;
-        this.imageHeight = height;
+    public void setImageSize(Dimension size) {
+        this.imageWidth = size.width;
+        this.imageHeight = size.height;
     }
 
     public void moveTo(Vec3f newPos) {

@@ -21,12 +21,29 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 
 package org.gephi.visualization.selection;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import javax.swing.event.ChangeListener;
 import org.gephi.graph.api.Edge;
+import org.gephi.graph.api.Graph;
 import org.gephi.graph.api.Node;
+import org.gephi.visualization.api.selection.NodeContainer;
 import org.gephi.visualization.api.selection.SelectionManager;
 
 public class StandardSelectionManager implements SelectionManager {
+
+    private NodeContainer nodeContainer;
+    private Collection<Node> selectedNodes;
+
+    public void setGraph(Graph graph) {
+        nodeContainer = new Octree(graph);
+        selectedNodes = new ArrayList<Node>();
+    }
+
+    @Override
+    public Collection<Node> getSelectedNodes() {
+        return selectedNodes;
+    }
 
     @Override
     public void addChangeListener(ChangeListener changeListener) {

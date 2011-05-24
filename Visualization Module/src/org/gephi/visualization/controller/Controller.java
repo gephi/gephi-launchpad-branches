@@ -22,6 +22,7 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 package org.gephi.visualization.controller;
 
 
+import java.awt.Dimension;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -32,8 +33,6 @@ import java.awt.event.MouseWheelListener;
 import org.gephi.lib.gleem.linalg.Vec3f;
 import org.gephi.visualization.camera.Camera;
 import org.gephi.visualization.geometry.AABB;
-import org.gephi.visualization.view.View;
-import org.openide.util.Lookup;
 
 /**
  *
@@ -48,10 +47,13 @@ public class Controller implements KeyListener, MouseListener, MouseMotionListen
 
     private boolean centered;
 
+    private Dimension viewSize;
+
     private Controller() {
         // Random values
         this.camera = new Camera(300, 300, 100f, 10000.0f);
         this.motionManager = new MotionManager3D();
+        this.viewSize = new Dimension();
     }
 
     public synchronized static Controller getInstance() {
@@ -62,12 +64,16 @@ public class Controller implements KeyListener, MouseListener, MouseMotionListen
     }
 
     public void resize(int width, int height) {
-        this.camera.setImageSize(width, height);
+        this.viewSize = new Dimension(width, height);
+        this.camera.setImageSize(viewSize);
+    }
+
+    public Dimension getViewDimensions() {
+        return viewSize;
     }
 
     public Camera getCamera() {
         return this.camera;
-
     }
 
     public void beginUpdateFrame() {
