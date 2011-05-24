@@ -20,6 +20,7 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.gephi.visualization.api.selection;
 
+import java.util.Collection;
 import javax.swing.event.ChangeListener;
 import org.gephi.graph.api.Edge;
 import org.gephi.graph.api.Node;
@@ -29,6 +30,8 @@ import org.gephi.graph.api.Node;
  * @author Antonio Patriarca <antoniopatriarca@gmail.com>
  */
 public interface SelectionManager {
+
+    Collection<Node> getSelectedNodes();
 
     void addChangeListener(ChangeListener changeListener);
 

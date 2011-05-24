@@ -26,7 +26,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import javax.swing.SwingUtilities;
 import org.gephi.visualization.api.MotionManager;
-import org.gephi.visualization.components.GraphTopComponent;
 
 public class MotionManager3D implements MotionManager {
 
@@ -44,7 +43,7 @@ public class MotionManager3D implements MotionManager {
         if (SwingUtilities.isLeftMouseButton(e)) {
             Controller.getInstance().getCamera().startTranslation();
         } else if (SwingUtilities.isRightMouseButton(e)) {
-            Dimension viewDimension = GraphTopComponent.getDefault().getView().getDimension();
+            Dimension viewDimension = Controller.getInstance().getViewDimensions();
             int dx = e.getX() - viewDimension.width / 2;
             int dy = e.getY() - viewDimension.height / 2;
             float orbitModifier = (float) (Math.sqrt(dx * dx + dy * dy) / Math.sqrt(viewDimension.width * viewDimension.width / 4 + viewDimension.height * viewDimension.height / 4));

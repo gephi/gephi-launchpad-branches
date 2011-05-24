@@ -128,11 +128,6 @@ public final class GraphTopComponent extends TopComponent {
         return getDefault();
     }
 
-    // TODO - create a better architecture containing class or leave here?
-    public View getView() {
-        return view;
-    }
-
     @Override
     public int getPersistenceType() {
         return TopComponent.PERSISTENCE_ALWAYS;

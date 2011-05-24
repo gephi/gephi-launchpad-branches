@@ -1,6 +1,6 @@
 /*
 Copyright 2008-2011 Gephi
-Authors : Antonio Patriarca <antoniopatriarca@gmail.com>
+Authors : Vojtech Bardiovsky <vojtech.bardiovsky@gmail.com>
 Website : http://www.gephi.org
 
 This file is part of Gephi.
@@ -19,8 +19,25 @@ You should have received a copy of the GNU Affero General Public License
 along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package org.gephi.visualization.selection;
+package org.gephi.visualization.apiimpl.selection;
 
-public interface Shape {
+import java.awt.Point;
+import org.gephi.visualization.api.selection.CameraBridge;
+import org.gephi.visualization.api.selection.Shape;
+
+/**
+ * Class representing a rectangular shape.
+ *
+ * @author Vojtech Bardiovsky
+ */
+public class Rectangle implements Shape {
+
+    public Ellipsoid getBoundingEllipsoid(CameraBridge cameraBridge) {
+        return null;
+    }
+
+    public boolean isInside(Point point) {
+        return false;
+    }
 
 }
