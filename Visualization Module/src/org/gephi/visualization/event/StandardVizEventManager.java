@@ -1,6 +1,6 @@
 /*
 Copyright 2008-2011 Gephi
-Authors : Antonio Patriarca <antoniopatriarca@gmail.com>
+Authors : Vojtech Bardiovsky <vojtech.bardiovsky@gmail.com>
 Website : http://www.gephi.org
 
 This file is part of Gephi.
@@ -19,77 +19,97 @@ You should have received a copy of the GNU Affero General Public License
 along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package org.gephi.visualization;
+package org.gephi.visualization.event;
 
 import org.gephi.visualization.api.event.VizEvent.Type;
 import org.gephi.visualization.api.event.VizEventListener;
 import org.gephi.visualization.api.event.VizEventManager;
 
-/**
- * Null implementation of VizEventManager used to provide a visualization event
- * manager which does nothing when there aren't other visualization event
- * manager available.
- *
- * @author Antonio Patriarca <antoniopatriarca@gmail.com>
- */
-class NullVizEventManager implements VizEventManager {
+public class StandardVizEventManager implements VizEventManager {
 
-    public NullVizEventManager() {
-    }
-
+    @Override
     public void startDrag() {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    @Override
     public void drag() {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    @Override
     public void stopDrag() {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    @Override
     public void mouseLeftPress() {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    @Override
     public void mouseRightPress() {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    @Override
     public void mouseMiddlePress() {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    @Override
     public void mouseLeftClick() {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    @Override
     public void mouseRightClick() {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    @Override
     public void mouseMiddleClick() {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    @Override
     public void mouseMove() {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    @Override
     public void mouseLeftPressing() {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    @Override
     public void mouseReleased() {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    @Override
     public void addListener(VizEventListener listener) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    @Override
     public void addListener(VizEventListener[] listeners) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    @Override
     public void removeListener(VizEventListener listener) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    @Override
     public void removeListener(VizEventListener[] listeners) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    @Override
     public boolean hasListeners(Type type) {
-        return false;
-    }
-
-    public void initArchitecture() {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
 }

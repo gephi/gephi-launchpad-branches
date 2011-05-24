@@ -34,11 +34,11 @@ public interface SelectionManager {
 
     void blockSelection(boolean block);
 
-    void centerOnNode(Node node);
-
     void disableSelection();
 
     int getMouseSelectionDiameter();
+
+    public void centerOnNode(Node node);
 
     boolean isBlocked();
 

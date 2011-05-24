@@ -21,6 +21,7 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 
 package org.gephi.visualization.model;
 
+import javax.annotation.Generated;
 import org.gephi.graph.api.Graph;
 import org.gephi.graph.api.GraphController;
 import org.gephi.graph.api.GraphModel;
@@ -84,11 +85,11 @@ public class Model implements Runnable, WorkspaceListener {
 
     @Override
     public void run() {
-
+        Camera camera = this.controller.getCamera();
         while (true) {
             long beginFrameTime = System.currentTimeMillis();
 
-            Camera camera = this.controller.beginUpdateFrame();
+            this.controller.beginUpdateFrame();
             
             this.bridge.beginFrame(camera);
 
@@ -110,8 +111,9 @@ public class Model implements Runnable, WorkspaceListener {
                     box.addPoint(p, s);
                 }
             }
+            this.controller.centerCamera(box);
 
-            this.controller.endUpdateFrame(box);
+            this.controller.endUpdateFrame();
             this.bridge.endFrame();
             
             long endFrameTime = System.currentTimeMillis();

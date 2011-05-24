@@ -40,12 +40,12 @@ public final class GraphTopComponent extends TopComponent {
         initComponents();
         setName(NbBundle.getMessage(GraphTopComponent.class, "CTL_GraphTopComponent"));
         setToolTipText(NbBundle.getMessage(GraphTopComponent.class, "HINT_GraphTopComponent"));
-//        setIcon(ImageUtilities.loadImage(ICON_PATH, true));
+//      setIcon(ImageUtilities.loadImage(ICON_PATH, true));
 
         JPopupMenu.setDefaultLightWeightPopupEnabled(false);
         ToolTipManager.sharedInstance().setLightWeightPopupEnabled(false);
 
-        this.controller = new Controller();
+        this.controller = Controller.getInstance();
         this.frameDataBridge = new FrameDataBridge();
         this.view = new View(this.controller, this.frameDataBridge);
         this.dataManager = new Model(this.controller, this.frameDataBridge, 33);
@@ -126,6 +126,11 @@ public final class GraphTopComponent extends TopComponent {
                 "There seem to be multiple components with the '" + PREFERRED_ID
                 + "' ID. That is a potential source of errors and unexpected behavior.");
         return getDefault();
+    }
+
+    // TODO - create a better architecture containing class or leave here?
+    public View getView() {
+        return view;
     }
 
     @Override

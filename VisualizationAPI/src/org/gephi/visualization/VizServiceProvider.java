@@ -22,8 +22,8 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 package org.gephi.visualization;
 
 import org.gephi.visualization.api.selection.SelectionManager;
-import org.gephi.visualization.apiimpl.VizConfig;
-import org.gephi.visualization.apiimpl.VizEventManager;
+import org.gephi.visualization.api.config.VizConfig;
+import org.gephi.visualization.api.event.VizEventManager;
 
 /**
  * Static class which gives access to several services provided by the 

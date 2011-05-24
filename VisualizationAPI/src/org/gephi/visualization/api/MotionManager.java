@@ -1,6 +1,6 @@
 /*
 Copyright 2008-2011 Gephi
-Authors : Mathieu Bastian <mathieu.bastian@gephi.org>
+Authors : Vojtech Bardiovsky <vojtech.bardiovsky@gmail.com>
 Website : http://www.gephi.org
 
 This file is part of Gephi.
@@ -18,17 +18,22 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 */
-package org.gephi.visualization.apiimpl;
 
-import java.util.EventListener;
+package org.gephi.visualization.api;
 
-/**
- *
- * @author Mathieu Bastian
- */
-public interface VizEventListener extends EventListener {
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
 
-    public void handleEvent(VizEvent event);
+public interface MotionManager {
 
-    public VizEvent.Type getType();
+    public void mousePressed(MouseEvent e);
+
+    public void mouseDragged(MouseEvent e);
+
+    public void mouseReleased(MouseEvent e);
+
+    public void mouseMoved(MouseEvent e);
+
+    public void mouseWheelMoved(MouseWheelEvent e);
+
 }
