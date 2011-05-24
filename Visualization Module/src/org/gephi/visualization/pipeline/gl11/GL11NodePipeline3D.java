@@ -30,7 +30,7 @@ import org.gephi.lib.gleem.linalg.Vec3f;
 import org.gephi.lib.gleem.linalg.Vec4f;
 import org.gephi.visualization.camera.Camera;
 import org.gephi.visualization.data.FrameData;
-import org.gephi.visualization.data.NodesArray;
+import org.gephi.visualization.data.buffer.VizNodeBuffer;
 import org.gephi.visualization.pipeline.Pipeline;
 
 /**
@@ -79,7 +79,7 @@ public class GL11NodePipeline3D implements Pipeline {
         final GL2 gl2 = gl.getGL2();
         final GLU glu = new GLUgl2();
 
-        final Camera camera = frameData.getCamera();
+        final Camera camera = frameData.camera();
         gl2.glMatrixMode(GL2.GL_PROJECTION);
 
         float[] matrix = new float[16];
@@ -92,23 +92,22 @@ public class GL11NodePipeline3D implements Pipeline {
         camera.viewMatrix().getColumnMajorData(matrix);
         gl2.glLoadMatrixf(matrix, 0);
 
-        final NodesArray nodes = frameData.getNodesArray();
-        final int numNodes = nodes.size();
-        for (int i = 0; i < numNodes; ++i) {
+        final VizNodeBuffer nodeBuffer = frameData.nodeBuffer();
+        for (; !nodeBuffer.isEndOfBuffer(); nodeBuffer.advance()) {
             gl2.glPushMatrix();
 
-            final Vec3f nodePos = nodes.getPositionOf(i);
-            final float nodeSize = nodes.getSizeOf(i);
-            final Vec4f nodeColor = nodes.getColorOf(i);
+            Vec3f position = nodeBuffer.position();
+            float size = nodeBuffer.size();
+            Vec4f color = nodeBuffer.color();
 
-            gl2.glColor4f(nodeColor.x(), nodeColor.y(), nodeColor.z(), nodeColor.w());
+            gl2.glColor4f(color.x(), color.y(), color.z(), color.w());
 
-            gl2.glTranslatef(nodePos.x(), nodePos.y(), nodePos.z());
-            gl2.glScalef(nodeSize, nodeSize, nodeSize);
+            gl2.glTranslatef(position.x(), position.y(), position.z());
+            gl2.glScalef(size, size, size);
 
-            final float dist = camera.distanceFrom(nodePos);
+            final float dist = camera.projectedDistanceFrom(position);
             final float h = (float) (dist * Math.tan(camera.fov() / 2.0));
-            final float approxSize = (h * camera.imageHeight())/(2.0f * nodeSize);
+            final float approxSize = (h * camera.imageHeight()) / (2.0f * size);
 
             final float log2Size = (float) (Math.log(approxSize) / Math.log(2.0));
 

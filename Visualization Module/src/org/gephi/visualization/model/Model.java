@@ -32,9 +32,8 @@ import org.gephi.project.api.Workspace;
 import org.gephi.project.api.WorkspaceListener;
 import org.gephi.visualization.camera.Camera;
 import org.gephi.visualization.controller.Controller;
-import org.gephi.visualization.data.FrameData;
+import org.gephi.visualization.data.FrameDataBridgeIn;
 import org.gephi.visualization.geometry.AABB;
-import org.gephi.visualization.view.View;
 import org.openide.util.Lookup;
 
 /**
@@ -47,14 +46,14 @@ public class Model implements Runnable, WorkspaceListener {
     private boolean isRunning;
     private int frameDuration;
 
-    private Controller controller;
-    private View viewer;
+    final private Controller controller;
+    final private FrameDataBridgeIn bridge;
 
     private boolean workspaceSelected;
     private GraphModel graphModel;
     final private Object graphModelLock;
 
-    public Model(Controller controller, View viewer, int frameDuration) {
+    public Model(Controller controller, FrameDataBridgeIn bridge, int frameDuration) {
         this.thread = null;
         this.frameDuration = frameDuration;
 
@@ -65,7 +64,7 @@ public class Model implements Runnable, WorkspaceListener {
         this.graphModelLock = new Object();
 
         this.controller = controller;
-        this.viewer = viewer;
+        this.bridge = bridge;
 
         ProjectController pc = Lookup.getDefault().lookup(ProjectController.class);
         pc.addWorkspaceListener(this);
@@ -91,7 +90,7 @@ public class Model implements Runnable, WorkspaceListener {
 
             Camera camera = this.controller.beginUpdateFrame();
             
-            final FrameData frameData = new FrameData(true, camera);
+            this.bridge.beginFrame(camera);
 
             final Graph graph;
             synchronized(this.graphModelLock) {
@@ -100,7 +99,7 @@ public class Model implements Runnable, WorkspaceListener {
 
             AABB box = null;
             for (Node n : graph.getNodes()) {
-                frameData.getNodesArray().add(n);
+                this.bridge.add(n);
 
                 NodeData nd = n.getNodeData();
                 Vec3f p = new Vec3f(nd.x(), nd.y(), nd.z());
@@ -113,7 +112,7 @@ public class Model implements Runnable, WorkspaceListener {
             }
 
             this.controller.endUpdateFrame(box);
-            this.viewer.setCurrentFrameData(frameData);
+            this.bridge.endFrame();
             
             long endFrameTime = System.currentTimeMillis();
 

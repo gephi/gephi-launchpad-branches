@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 import javax.swing.JPopupMenu;
 import javax.swing.ToolTipManager;
 import org.gephi.visualization.controller.Controller;
+import org.gephi.visualization.data.FrameDataBridge;
 import org.gephi.visualization.model.Model;
 import org.gephi.visualization.view.View;
 import org.openide.util.NbBundle;
@@ -33,6 +34,7 @@ public final class GraphTopComponent extends TopComponent {
     private final View view;
     private final Model dataManager;
     private final Controller controller;
+    private final FrameDataBridge frameDataBridge;
 
     public GraphTopComponent() {
         initComponents();
@@ -44,8 +46,9 @@ public final class GraphTopComponent extends TopComponent {
         ToolTipManager.sharedInstance().setLightWeightPopupEnabled(false);
 
         this.controller = new Controller();
-        this.view = new View(this.controller);
-        this.dataManager = new Model(this.controller, this.view, 33);
+        this.frameDataBridge = new FrameDataBridge();
+        this.view = new View(this.controller, this.frameDataBridge);
+        this.dataManager = new Model(this.controller, this.frameDataBridge, 33);
         
         final Component canvas = this.view.getCanvas();
 

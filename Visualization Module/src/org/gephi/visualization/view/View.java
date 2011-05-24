@@ -22,7 +22,10 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 package org.gephi.visualization.view;
 
 import com.jogamp.opengl.util.FPSAnimator;
+import com.jogamp.opengl.util.awt.TextRenderer;
+import java.awt.Color;
 import java.awt.Component;
+import java.awt.Font;
 import javax.media.opengl.GL;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLCapabilities;
@@ -31,11 +34,14 @@ import javax.media.opengl.GLProfile;
 import javax.media.opengl.awt.GLCanvas;
 import org.gephi.visualization.controller.Controller;
 import org.gephi.visualization.data.FrameData;
+import org.gephi.visualization.data.FrameDataBridgeOut;
 import org.gephi.visualization.pipeline.Pipeline;
+import org.gephi.visualization.pipeline.gl11.GL11EdgesLayout3D;
+import org.gephi.visualization.pipeline.gl11.GL11NodesLayout3D;
 import org.gephi.visualization.pipeline.gl11.GL11Pipeline3D;
 
 /**
- *
+ * Class which controls the rendering loop.
  *
  * @author Antonio Patriarca <antoniopatriarca@gmail.com>
  */
@@ -44,19 +50,20 @@ public class View implements GLEventListener {
     private GLCanvas canvas;
     private FPSAnimator animator;
 
-    private Controller controller;
+    final private Controller controller;
+    final private FrameDataBridgeOut bridge;
 
     private FrameData frameData = null;
-    final private Object frameDataLock;
 
     private Pipeline pipeline;
 
+    private int countNulls = 0;
+
     static { GLProfile.initSingleton(true); }
 
-    public View(Controller controller) {
-        this.frameDataLock = new Object();
-
+    public View(Controller controller, FrameDataBridgeOut bridge) {
         this.controller = controller;
+        this.bridge = bridge;
 
         final GLCapabilities caps = new GLCapabilities(GLProfile.getDefault());
         caps.setDoubleBuffered(true);
@@ -73,6 +80,8 @@ public class View implements GLEventListener {
         this.canvas.addMouseWheelListener(controller);
 
         this.pipeline = new GL11Pipeline3D();
+        this.bridge.setLayout(new GL11NodesLayout3D());
+        this.bridge.setLayout(new GL11EdgesLayout3D());
     }
     
     public Component getCanvas() {
@@ -123,11 +132,10 @@ public class View implements GLEventListener {
 
         gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
 
-        FrameData currentFrameData;
-        synchronized (this.frameDataLock) {
-            currentFrameData = this.frameData;
-        }
-        if (currentFrameData == null) {
+        this.frameData = this.bridge.updateCurrent();
+
+        if (this.frameData == null) {
+            ++countNulls;
             return;
         }
 
@@ -152,12 +160,6 @@ public class View implements GLEventListener {
     public void updateSize(int x, int y, int w, int h) {
         this.canvas.setBounds(x, y, w, h);
         this.controller.resize(w, h);
-    }
-
-    public void setCurrentFrameData(FrameData frameData) {
-        synchronized (this.frameDataLock) {
-            this.frameData = frameData;
-	}
     }
     
 }

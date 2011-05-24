@@ -19,40 +19,23 @@ You should have received a copy of the GNU Affero General Public License
 along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package org.gephi.visualization.data;
+package org.gephi.visualization.data.layout;
 
-import java.util.Collection;
+import java.nio.ByteBuffer;
 import org.gephi.graph.api.Node;
 import org.gephi.lib.gleem.linalg.Vec3f;
 import org.gephi.lib.gleem.linalg.Vec4f;
 
 /**
- * A NodesArray contains the nodes
+ * Interface which controls how nodes are stored in the buffers.
  *
  * @author Antonio Patriarca <antoniopatriarca@gmail.com>
  */
-public abstract class NodesArray {
+public interface VizNodeLayout extends VizLayout<Node> {
 
-    public abstract void ensureCapacity(int minCapacity);
-    public abstract int size();
+    public Vec3f position(ByteBuffer b);
+    public float size(ByteBuffer b);
+    public Vec4f color(ByteBuffer b);
+    public boolean isSelected(ByteBuffer b);
 
-    public abstract void add(Node node);
-    public abstract void add(Vec3f position, float size, Vec4f color);
-    public abstract void addAll(Node[] nodes);
-    public abstract void addAll(Collection<? extends Node> nodes);
-
-    public abstract Vec3f getPositionOf(int i);
-    public abstract float getSizeOf(int i);
-    public abstract Vec4f getColorOf(int i);
-
-    public static NodesArray create(boolean is3D) {
-        if (is3D) return new NodesArray3D();
-        else return new NodesArray2D();
-    }
-
-    public static NodesArray create(boolean is3D, int initialCapacity) {
-        if (is3D) return new NodesArray3D(initialCapacity);
-        else return new NodesArray2D(initialCapacity);
-    }
-    
 }

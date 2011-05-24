@@ -149,7 +149,7 @@ public class Camera {
         return this.fovy;
     }
 
-    public float distanceFrom(Vec3f point) {
+    public float projectedDistanceFrom(Vec3f point) {
         this.front.normalize();
         Vec3f pnt = point.copy();
         pnt.sub(this.position);

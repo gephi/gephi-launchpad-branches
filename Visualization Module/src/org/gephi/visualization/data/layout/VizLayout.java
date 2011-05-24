@@ -19,32 +19,20 @@ You should have received a copy of the GNU Affero General Public License
 along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package org.gephi.visualization.framebuffer;
+package org.gephi.visualization.data.layout;
+
+import java.nio.ByteBuffer;
 
 /**
- * Class used to set the properties of a new frame buffer.
+ * Generic interface which controls how some data is stored in a buffer.
  *
- * @author Antonio Patriarca <antoniopatriarca@gmail.com>
+ * Antonio Patriarca <antoniopatriarca@gmail.com>
  */
-public class FrameBufferProperties {
+public interface VizLayout<T> {
 
-    private int width, height;
+    public int suggestedBlockSize();
+    
+    public boolean add(ByteBuffer b, T e);
 
-    private int renderTargetNumbers;
-    private boolean useDepthBuffer;
-    private boolean useStencilBuffer;
-
-    public boolean readable;
-
-    public FrameBufferProperties(int width, int height) {
-        this.width = width;
-        this.height = height;
-
-        this.renderTargetNumbers = 1;
-        this.useDepthBuffer = true;
-        this.useStencilBuffer = false;
-
-        this.readable = false;
-    }
-
+    public boolean advance(ByteBuffer b);
 }

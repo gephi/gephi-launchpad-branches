@@ -22,27 +22,45 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 package org.gephi.visualization.data;
 
 import org.gephi.visualization.camera.Camera;
+import org.gephi.visualization.data.buffer.VizEdgeBuffer;
+import org.gephi.visualization.data.buffer.VizNodeBuffer;
+import org.gephi.visualization.data.layout.VizEdgeLayout;
+import org.gephi.visualization.data.layout.VizNodeLayout;
 
 /**
+ * Class used to get the current graph data in View.
  *
- * @author Antonio Patriarca <antoniopatriarca@gmail.com>
+ * Antonio Patriarca <antoniopatriarca@gmail.com>
  */
-public final class FrameData {
+public class FrameData {
 
-    final private NodesArray nodes;
-    final private Camera camera;
+    private final Camera camera;
+    private final VizNodeBuffer nodeBuffer;
+    private final VizEdgeBuffer edgeBuffer;
 
-    public FrameData(boolean is3D, Camera camera) {
-        this.nodes = NodesArray.create(is3D);
-        this.camera = new Camera(camera);
+    FrameData(Camera camera, VizNodeBuffer nodeBuffer, VizEdgeBuffer edgeBuffer) {
+        this.camera = camera;
+        this.nodeBuffer = nodeBuffer;
+        this.edgeBuffer = edgeBuffer;
     }
 
-    public NodesArray getNodesArray() {
-        return this.nodes;
-    }
-
-    public Camera getCamera() {
+    public Camera camera() {
         return this.camera;
     }
 
+    public VizNodeBuffer nodeBuffer() {
+        return this.nodeBuffer;
+    }
+
+    public VizNodeLayout nodeLayout() {
+        return (VizNodeLayout) this.nodeBuffer.layout();
+    }
+
+    public VizEdgeBuffer edgeBuffer() {
+        return this.edgeBuffer;
+    }
+
+    public VizEdgeLayout edgeLayout() {
+        return (VizEdgeLayout) this.edgeBuffer.layout();
+    }
 }
