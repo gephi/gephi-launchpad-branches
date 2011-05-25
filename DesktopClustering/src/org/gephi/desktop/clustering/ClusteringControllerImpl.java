@@ -40,7 +40,6 @@ import org.gephi.project.api.ProjectController;
 import org.gephi.utils.longtask.spi.LongTask;
 import org.gephi.utils.longtask.api.LongTaskErrorHandler;
 import org.gephi.utils.longtask.api.LongTaskExecutor;
-import org.gephi.visualization.VizServiceProvider;
 import org.gephi.visualization.api.selection.SelectionManager;
 import org.openide.awt.StatusDisplayer;
 import org.openide.util.Lookup;
@@ -117,7 +116,7 @@ public class ClusteringControllerImpl implements ClusteringController {
     }
 
     public void selectCluster(Cluster cluster) {
-        SelectionManager selectionManager = VizServiceProvider.getSelectionManager();
+        SelectionManager selectionManager = Lookup.getDefault().lookup(SelectionManager.class);
         selectionManager.resetSelection();
         selectionManager.selectNodes(cluster.getNodes());
     }

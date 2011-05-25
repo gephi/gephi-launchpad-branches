@@ -26,9 +26,12 @@ import org.gephi.graph.api.Edge;
 import org.gephi.graph.api.Node;
 
 /**
+ * Manager for handling selection queries.
  *
  * @author Antonio Patriarca <antoniopatriarca@gmail.com>
+ * @author Vojtech Bardiovsky <vojtech.bardiovsky@gmail.com>
  */
+
 public interface SelectionManager {
 
     Collection<Node> getSelectedNodes();

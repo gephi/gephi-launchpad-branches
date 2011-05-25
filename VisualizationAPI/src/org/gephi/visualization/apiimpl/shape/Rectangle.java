@@ -19,8 +19,9 @@ You should have received a copy of the GNU Affero General Public License
 along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package org.gephi.visualization.apiimpl.selection;
+package org.gephi.visualization.apiimpl.shape;
 
+import java.awt.Dimension;
 import java.awt.Point;
 import org.gephi.visualization.api.selection.CameraBridge;
 import org.gephi.visualization.api.selection.Shape;
@@ -32,11 +33,22 @@ import org.gephi.visualization.api.selection.Shape;
  */
 public class Rectangle implements Shape {
 
+    private final Point origin;
+    private final Dimension dimension;
+
+    public Rectangle(Point origin, Dimension dimension) {
+        this.origin = origin;
+        this.dimension = dimension;
+    }
+
     public Ellipsoid getBoundingEllipsoid(CameraBridge cameraBridge) {
         return null;
     }
 
     public boolean isInside(Point point) {
+        // Normal vector for first edge
+        int nvx = dimension.width;
+        int nvy = dimension.height;
         return false;
     }
 

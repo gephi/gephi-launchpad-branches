@@ -45,8 +45,6 @@ public class Controller implements KeyListener, MouseListener, MouseMotionListen
 
     private static Controller instance;
 
-    private boolean centered;
-
     private Dimension viewSize;
 
     private Controller() {
@@ -138,10 +136,6 @@ public class Controller implements KeyListener, MouseListener, MouseMotionListen
     }
 
     public void centerCamera(AABB box) {
-        if (centered || box == null) {
-            return;
-        }
-
         final Vec3f center = box.center();
         final Vec3f scale = box.scale();
         final Vec3f minVec = box.minVec();
@@ -152,7 +146,6 @@ public class Controller implements KeyListener, MouseListener, MouseMotionListen
         final Vec3f origin = new Vec3f(center.x(), center.y(), minVec.z() - d*1.1f);
         camera.lookAt(origin, center, Vec3f.Y_AXIS);
         //camera.setClipPlanes(d, maxVec.z() - minVec.z() + d*1.2f);
-        centered = true;
     }
 
     // TODO - create a better architecture containing class or leave here?

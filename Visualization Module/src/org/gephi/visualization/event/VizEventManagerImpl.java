@@ -25,7 +25,7 @@ import org.gephi.visualization.api.event.VizEvent.Type;
 import org.gephi.visualization.api.event.VizEventListener;
 import org.gephi.visualization.api.event.VizEventManager;
 
-public class StandardVizEventManager implements VizEventManager {
+public class VizEventManagerImpl implements VizEventManager {
 
     @Override
     public void startDrag() {

@@ -29,8 +29,10 @@ import org.gephi.graph.api.Graph;
 import org.gephi.graph.api.Node;
 import org.gephi.visualization.api.selection.NodeContainer;
 import org.gephi.visualization.api.selection.SelectionManager;
+import org.openide.util.lookup.ServiceProvider;
 
-public class StandardSelectionManager implements SelectionManager {
+@ServiceProvider(service = SelectionManager.class)
+public class SelectionManagerImpl implements SelectionManager {
 
     private NodeContainer nodeContainer;
     private Collection<Node> selectedNodes;

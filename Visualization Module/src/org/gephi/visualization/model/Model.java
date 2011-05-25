@@ -47,6 +47,8 @@ public class Model implements Runnable, WorkspaceListener {
     private boolean isRunning;
     private int frameDuration;
 
+    private boolean centered;
+
     final private Controller controller;
     final private FrameDataBridgeIn bridge;
 
@@ -86,6 +88,7 @@ public class Model implements Runnable, WorkspaceListener {
     @Override
     public void run() {
         Camera camera = this.controller.getCamera();
+
         while (true) {
             long beginFrameTime = System.currentTimeMillis();
 
@@ -98,20 +101,29 @@ public class Model implements Runnable, WorkspaceListener {
                 graph = this.graphModel.getGraph();
             }
 
-            AABB box = null;
-            for (Node n : graph.getNodes()) {
-                this.bridge.add(n);
-
-                NodeData nd = n.getNodeData();
-                Vec3f p = new Vec3f(nd.x(), nd.y(), nd.z());
-                Vec3f s = new Vec3f(nd.getSize(), nd.getSize(), nd.getSize());
-                if (box == null) {
-                    box = new AABB(p, s);
-                } else {
-                    box.addPoint(p, s);
+            // TODO remove from here - must be done only when the graph is
+            // initialised to a new graph
+            if (graph != null && !centered) {
+                AABB box = null;
+                for (Node n : graph.getNodes()) {
+                    NodeData nd = n.getNodeData();
+                    Vec3f p = new Vec3f(nd.x(), nd.y(), nd.z());
+                    Vec3f s = new Vec3f(nd.getSize(), nd.getSize(), nd.getSize());
+                    if (box == null) {
+                        box = new AABB(p, s);
+                    } else {
+                        box.addPoint(p, s);
+                    }
+                }
+                if (box != null) {
+                    this.controller.centerCamera(box);
+                    this.centered = true;
                 }
             }
-            this.controller.centerCamera(box);
+
+            for (Node n : graph.getNodes()) {
+                this.bridge.add(n);
+            }
 
             this.controller.endUpdateFrame();
             this.bridge.endFrame();
