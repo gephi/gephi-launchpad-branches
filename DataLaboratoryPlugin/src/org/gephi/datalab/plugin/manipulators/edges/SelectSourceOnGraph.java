@@ -24,8 +24,9 @@ import javax.swing.Icon;
 import org.gephi.datalab.spi.ManipulatorUI;
 import org.gephi.graph.api.Edge;
 import org.gephi.graph.api.Node;
-import org.gephi.visualization.VizServiceProvider;
+import org.gephi.visualization.api.selection.SelectionManager;
 import org.openide.util.ImageUtilities;
+import org.openide.util.Lookup;
 import org.openide.util.NbBundle;
 
 /**
@@ -42,7 +43,7 @@ public class SelectSourceOnGraph extends BasicEdgesManipulator {
 
     public void execute() {
         Node source = clickedEdge.getSource();
-        VizServiceProvider.getSelectionManager().centerOnNode(source);
+        Lookup.getDefault().lookup(SelectionManager.class).centerOnNode(source);
     }
 
     public String getName() {

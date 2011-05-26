@@ -33,7 +33,7 @@ import org.gephi.graph.api.GraphView;
 import org.gephi.utils.progress.Progress;
 import org.gephi.utils.progress.ProgressTicket;
 import org.gephi.utils.progress.ProgressTicketProvider;
-import org.gephi.visualization.VizServiceProvider;
+import org.gephi.visualization.api.selection.SelectionManager;
 import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
 
@@ -148,8 +148,9 @@ public class FilterThread extends Thread {
 //        System.out.println("#Nodes: " + result.getNodeCount());
 //        System.out.println("#Edges: " + result.getEdgeCount());
         if (running) {
-            VizServiceProvider.getSelectionManager().selectNodes(result.getNodes().toArray());
-            VizServiceProvider.getSelectionManager().selectEdges(result.getEdges().toArray());
+            SelectionManager selectionManager = Lookup.getDefault().lookup(SelectionManager.class);
+            selectionManager.selectNodes(result.getNodes().toArray());
+            selectionManager.selectEdges(result.getEdges().toArray());
             GraphView view = result.getView();
             model.setCurrentResult(view);
         } else {

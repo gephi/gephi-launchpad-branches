@@ -21,13 +21,16 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 
 package org.gephi.visualization;
 
+import org.openide.util.lookup.ServiceProvider;
+
 /**
  * Null implementation of VizModel used to provide a visualization model
  * which does nothing when there aren't other visualization models available.
  *
  * @author Antonio Patriarca <antoniopatriarca@gmail.com>
  */
-class NullVizModel implements VizModel {
+@ServiceProvider(service = VizModel.class)
+public class NullVizModel implements VizModel {
 
     public NullVizModel() {
     }

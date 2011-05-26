@@ -32,7 +32,7 @@ import org.gephi.preview.api.supervisors.EdgeSupervisor;
 import org.gephi.preview.api.supervisors.GlobalEdgeSupervisor;
 import org.gephi.preview.updaters.LabelFontAdjuster;
 import org.gephi.preview.updaters.LabelShortener;
-import org.gephi.visualization.VizServiceProvider;
+import org.gephi.visualization.VizModel;
 import org.openide.util.Lookup;
 
 /**
@@ -78,7 +78,7 @@ public abstract class EdgeSupervisorImpl implements EdgeSupervisor {
             weight += Math.abs(min) + 1;
         }
 
-        float metaEdgeScale = VizServiceProvider.getVizModel().getMetaEdgeScale();
+        float metaEdgeScale = Lookup.getDefault().lookup(VizModel.class).getMetaEdgeScale();
         if (edge.getMetaEdge() && metaEdgeScale != 0.0f) {
             weight *= metaEdgeScale;
         }

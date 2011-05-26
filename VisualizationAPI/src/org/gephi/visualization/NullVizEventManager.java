@@ -24,6 +24,7 @@ package org.gephi.visualization;
 import org.gephi.visualization.api.event.VizEvent.Type;
 import org.gephi.visualization.api.event.VizEventListener;
 import org.gephi.visualization.api.event.VizEventManager;
+import org.openide.util.lookup.ServiceProvider;
 
 /**
  * Null implementation of VizEventManager used to provide a visualization event
@@ -32,7 +33,8 @@ import org.gephi.visualization.api.event.VizEventManager;
  *
  * @author Antonio Patriarca <antoniopatriarca@gmail.com>
  */
-class NullVizEventManager implements VizEventManager {
+@ServiceProvider(service = VizEventManager.class)
+public class NullVizEventManager implements VizEventManager {
 
     public NullVizEventManager() {
     }

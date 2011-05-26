@@ -29,8 +29,8 @@ import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import org.gephi.ui.utils.UIUtils;
-import org.gephi.visualization.VizServiceProvider;
 import org.gephi.visualization.api.selection.SelectionManager;
+import org.openide.util.Lookup;
 import org.openide.util.NbBundle;
 
 /**
@@ -44,7 +44,7 @@ public class SelectionBar extends javax.swing.JPanel {
     /** Creates new form SelectionBar */
     public SelectionBar() {
         initComponents();
-        VizServiceProvider.getSelectionManager().addChangeListener(new ChangeListener() {
+        Lookup.getDefault().lookup(SelectionManager.class).addChangeListener(new ChangeListener() {
 
             public void stateChanged(ChangeEvent e) {
                 refresh();
@@ -70,14 +70,14 @@ public class SelectionBar extends javax.swing.JPanel {
 
     public JPopupMenu createPopup() {
 
-        SelectionManager manager = VizServiceProvider.getSelectionManager();
+        SelectionManager manager = Lookup.getDefault().lookup(SelectionManager.class);
         final MouseSelectionPopupPanel popupPanel = new MouseSelectionPopupPanel();
         popupPanel.setDiameter(manager.getMouseSelectionDiameter());
         popupPanel.setProportionnalToZoom(manager.isMouseSelectionZoomProportionnal());
         popupPanel.setChangeListener(new ChangeListener() {
 
             public void stateChanged(ChangeEvent e) {
-                SelectionManager manager = VizServiceProvider.getSelectionManager();
+                SelectionManager manager = Lookup.getDefault().lookup(SelectionManager.class);
                 manager.setMouseSelectionDiameter(popupPanel.getDiameter());
                 manager.setMouseSelectionZoomProportionnal(popupPanel.isProportionnalToZoom());
             }
@@ -89,7 +89,7 @@ public class SelectionBar extends javax.swing.JPanel {
     }
 
     public void refresh() {
-        SelectionManager manager = VizServiceProvider.getSelectionManager();
+        SelectionManager manager = Lookup.getDefault().lookup(SelectionManager.class);
         if (manager.isSelectionEnabled()) {
             if (manager.isRectangleSelection()) {
                 mouseSelection = false;

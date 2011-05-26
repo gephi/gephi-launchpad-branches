@@ -51,7 +51,7 @@ import org.gephi.utils.progress.ProgressTicketProvider;
 import org.gephi.project.api.Workspace;
 import org.gephi.project.api.WorkspaceInformation;
 import org.gephi.project.api.WorkspaceListener;
-import org.gephi.visualization.VizServiceProvider;
+import org.gephi.visualization.api.selection.SelectionManager;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.ServiceProvider;
 import org.openide.util.lookup.ServiceProviders;
@@ -226,7 +226,7 @@ public class FilterControllerImpl implements FilterController, PropertyExecutor 
             filterThread.setRootQuery((AbstractQueryImpl) query);
             filterThread.start();
         } else {
-            VizServiceProvider.getSelectionManager().selectNodes(null);
+            Lookup.getDefault().lookup(SelectionManager.class).selectNodes(null);
         }
     }
 

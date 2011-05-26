@@ -23,8 +23,9 @@ package org.gephi.datalab.plugin.manipulators.nodes;
 import javax.swing.Icon;
 import org.gephi.datalab.spi.ManipulatorUI;
 import org.gephi.graph.api.Node;
-import org.gephi.visualization.VizServiceProvider;
+import org.gephi.visualization.api.selection.SelectionManager;
 import org.openide.util.ImageUtilities;
+import org.openide.util.Lookup;
 import org.openide.util.NbBundle;
 
 /**
@@ -39,7 +40,7 @@ public class SelectOnGraph extends BasicNodesManipulator {
     }
 
     public void execute() {
-        VizServiceProvider.getSelectionManager().centerOnNode(node);
+        Lookup.getDefault().lookup(SelectionManager.class).centerOnNode(node);
     }
 
     public String getName() {
