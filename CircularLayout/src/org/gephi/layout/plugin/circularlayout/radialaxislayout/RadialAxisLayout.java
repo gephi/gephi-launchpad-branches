@@ -40,6 +40,7 @@ import org.gephi.graph.api.GraphModel;
 import org.gephi.graph.api.GraphController;
 import org.gephi.graph.api.Graph;
 import org.gephi.graph.api.Node;
+import org.gephi.graph.spi.LayoutData;
 import org.gephi.layout.plugin.AbstractLayout;
 import org.gephi.layout.spi.Layout;
 import org.gephi.layout.spi.LayoutBuilder;
@@ -111,18 +112,16 @@ public class RadialAxisLayout extends AbstractLayout implements Layout {
     @Override
     public void initAlgo() {
         converged = false;
-        graph = graphModel.getGraphVisible();
+        this.graph = graphModel.getGraphVisible();
     }
 
     @Override
     public void goAlgo() {
-        graph = graphModel.getGraphVisible();
+        graph.readLock();
         float[] nodeCoords = new float[2];
         ArrayList<Integer> ArrayLayers = new ArrayList<Integer>();
         List<Node> NodeList = new ArrayList<Node>();
-        double maxlength = 0;
-        double minlength = 0;
-        double tmpradius = 0;
+        double radius = 0;
         double doArrayEnd = 0;
         double tmpcirc = 0;
         double theta;
@@ -136,81 +135,67 @@ public class RadialAxisLayout extends AbstractLayout implements Layout {
             Arrays.sort(nodes, new BasicNodeDataComparator(nodes, this.strNodeplacement.substring(0,this.strNodeplacement.length()-4), true));
         } else if (getPlacementMap().containsKey(this.strNodeplacement)) {
             Arrays.sort(nodes, new BasicNodeComparator(graph, nodes, this.strNodeplacement, true));
-        }        
-        
+        }
+
         int i = 0;
         Object lastlayer = null;
         Object currentlayer = null;
 
         for (Node n : nodes) {
             currentlayer = getLayerAttribute(n, this.strNodeplacement);
-
             if (i == 0) {
                 lastlayer = currentlayer;
                 ArrayLayers.add(Integer.valueOf(i));
-            } else if (i == (nodes.length - 1)) {
+            }
+            if (i == nodecount-1) {
                 ArrayLayers.add(Integer.valueOf(i));
-                ArrayLayers.add(Integer.valueOf(i + 1));
-            } else {
-                if (lastlayer != currentlayer) {
-                    lastlayer = currentlayer;
-                    ArrayLayers.add(Integer.valueOf(i));
-                }
-            }
-            double tmplength = n.getNodeData().getRadius() * 2;
-            if (tmplength > maxlength) {
-                maxlength = tmplength;
-            }
-            if (tmplength < minlength || minlength == 0) {
-                maxlength = tmplength;
+            }             
+            if (lastlayer != currentlayer) {
+                lastlayer = currentlayer;
+                ArrayLayers.add(Integer.valueOf(i));
             }
             NodeList.add(n);
             i++;
         }
-        doArrayEnd = ArrayLayers.size() - 1;
-        tmpcirc = (doArrayEnd * maxlength);
-        tmpradius = tmpcirc / TWO_PI;
 
-        theta = (TWO_PI / doArrayEnd);
-
-        if (this.boolKnockdownSpars && (doArrayEnd / this.getSparCount() > 1)) {
-            theta = (TWO_PI / this.getSparCount());
-            tmpcirc = (this.getSparCount() * maxlength * 1.2);
-            tmpradius = tmpcirc / TWO_PI;
+        doArrayEnd = ArrayLayers.size();   
+        if (this.boolKnockdownSpars && (doArrayEnd - this.getSparCount() > 1)) {
             double doHigh = 0;
             double doLow = 0;
             double doDiff = doArrayEnd - this.getSparCount();
             if ("TOP".equals(this.strKnockdown)) {
                 doLow = this.getSparCount();
-                doHigh = doArrayEnd;
+                doHigh = doArrayEnd-1;
             } else if ("BOTTOM".equals(this.strKnockdown)) {
                 doLow = 1;
-                doHigh = doDiff + 1;
+                doHigh = doDiff;
             } else {
                 double doRemain = this.getSparCount() / 2;
                 double doMod = this.getSparCount() % 2;
-                doLow = doRemain + 1;
+                doLow = doRemain+1;
                 doHigh = 0;
                 if (doMod == 0) {
-                    doHigh = doArrayEnd - (doRemain - 1);
-                } else {
                     doHigh = doArrayEnd - doRemain;
+                } else {
+                    doHigh = doArrayEnd - doRemain-1;
                 }
             }
             ArrayLayers.subList((int) doLow, (int) doHigh).clear();
+            doArrayEnd = this.getSparCount();
         }
 
-        if ("CW".equals(this.strNodePlacementDirection)) {
-            theta = -theta;
-        }
-
-
+        double circ = 0;
         Integer previousindex = 0;
         Integer currentindex = 0;
-        i = 0;
+        List<Node> SparBaseList = new ArrayList<Node>();
+        int group = 0;      
         Iterator it = ArrayLayers.iterator();
+        GroupLayoutData posData;
         while (it.hasNext()) {
             currentindex = (Integer) it.next();
+            if (!it.hasNext()) {
+                currentindex++;
+            }            
             if (currentindex > previousindex) {
                 Node[] shortnodes = NodeList.subList(previousindex, currentindex).toArray(new Node[0]);
                 if ((!this.strNodeplacement.equals(this.strSparNodePlacement)) || (!this.boolSparOrderingDirection)) {
@@ -222,28 +207,76 @@ public class RadialAxisLayout extends AbstractLayout implements Layout {
                         Arrays.sort(shortnodes, new BasicNodeComparator(graph, shortnodes, this.strSparNodePlacement, this.boolSparOrderingDirection));
                     } 
                 }
-                double tmptotallength = tmpradius;
-                double thetainc = 0;
+                int order = 0;
                 for (Node n : shortnodes) {
-                    double tmplength = n.getNodeData().getRadius();
-                    if (thetainc!=0) {
-                        tmptotallength += tmplength*1.2;
+                    if (n.getNodeData().getLayoutData() == null || !(n.getNodeData().getLayoutData() instanceof GroupLayoutData)) {
+                        posData = new GroupLayoutData();
+                        posData.group = group;
+                        posData.order = order;
+                        n.getNodeData().setLayoutData(posData);
                     }
-                    if (this.boolSparSpiral) {
-                        nodeCoords = this.cartCoors(tmptotallength, i+(thetainc/nodecount), theta);
-                    } else {
-                        nodeCoords = this.cartCoors(tmptotallength, i, theta);
+                    if (order==0) {
+                        double noderadius = n.getNodeData().getRadius();
+                        circ += noderadius*2;
+                        SparBaseList.add(n);
                     }
-                    tmptotallength += tmplength* 1.2;
-                    n.getNodeData().setX(nodeCoords[0]);
-                    n.getNodeData().setY(nodeCoords[1]);
-                    thetainc++;
+                    order++;
                 }
+                group++;
             }
             previousindex = currentindex;
-            i++;
         }
 
+        tmpcirc = (circ * 1.2);
+        radius = tmpcirc / TWO_PI;
+        theta = (TWO_PI / tmpcirc);
+        double thetainc = TWO_PI/group;
+        
+        if ("CW".equals(this.strNodePlacementDirection)) {
+            theta = -theta;
+        }
+
+        GroupLayoutData position = null;
+        double tmpspartheta;
+        double lasttheta = 0;
+        group = 0;
+        double[] ArraySparLength = new double[(int)doArrayEnd];
+        double[] ArraySparTheta = new double[(int)doArrayEnd];
+        for (Node n : SparBaseList){
+            double noderadius = (n.getNodeData().getRadius());
+            double noderadian = (theta * noderadius * 1.2);
+            ArraySparTheta[group] = lasttheta + noderadian;
+            ArraySparLength[group] = noderadius * 1.2;     
+            nodeCoords = this.cartCoors(radius, 1, lasttheta + noderadian);
+            n.getNodeData().setX(nodeCoords[0]);
+            n.getNodeData().setY(nodeCoords[1]);       
+            lasttheta += (noderadian * 2);
+            group++;
+        }
+        
+        double tmpsparlength;
+        for (Node n : NodeList) {
+            if (n.getNodeData().getLayoutData() != null) {
+                position = n.getNodeData().getLayoutData();
+            }
+            if (position.order != 0 ) {
+                tmpsparlength = ArraySparLength[position.group];
+                tmpspartheta = ArraySparTheta[position.group];
+
+                double noderadius = (n.getNodeData().getRadius());
+                if (this.boolSparSpiral) {
+                    nodeCoords = this.cartCoors(tmpsparlength+radius+(noderadius*1.2), 1, tmpspartheta+(position.order*(thetainc/nodecount)));
+                } else {
+                    nodeCoords = this.cartCoors(tmpsparlength+radius+(noderadius*1.2), 1, tmpspartheta);
+                }
+                n.getNodeData().setX(nodeCoords[0]);
+                n.getNodeData().setY(nodeCoords[1]);
+                ArraySparLength[position.group] = tmpsparlength + noderadius * 1.2 *2;
+            }
+
+              n.getNodeData().setLayoutData(null);
+        }
+        graph.readUnlock();
         converged = true;
     }
 
@@ -435,4 +468,10 @@ public class RadialAxisLayout extends AbstractLayout implements Layout {
         coOrds[1] = (float) (radius * (Math.sin((theta * whichInt) + (Math.PI / 2))));
         return coOrds;
     }
+   
+    public class GroupLayoutData implements LayoutData {
+        public int group = 0;
+        public int order = 0;
+    }
+
 }
