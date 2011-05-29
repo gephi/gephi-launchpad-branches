@@ -8,7 +8,6 @@ package org.gephi.layout.plugin.circularlayout.nodedatacomparator;
 
 import java.util.Comparator;
 import java.lang.reflect.Method;
-import org.gephi.graph.api.Graph;
 import org.gephi.graph.api.Node;
 import org.gephi.graph.api.NodeData;
 /**

@@ -68,6 +68,7 @@ public class RadialAxisLayout extends AbstractLayout implements Layout {
     private Boolean boolSparSpiral;
     private Integer intSparCount;
     static final double TWO_PI = (2 * Math.PI);
+    private Boolean boolNormalizeNode;
 
     public RadialAxisLayout(LayoutBuilder layoutBuilder, double diameter, boolean boolfixeddiameter) {
         super(layoutBuilder);
@@ -122,7 +123,7 @@ public class RadialAxisLayout extends AbstractLayout implements Layout {
         ArrayList<Integer> ArrayLayers = new ArrayList<Integer>();
         List<Node> NodeList = new ArrayList<Node>();
         double radius = 0;
-        double doArrayEnd = 0;
+        double SparArrayCount = 0;
         double tmpcirc = 0;
         double theta;
 
@@ -142,6 +143,9 @@ public class RadialAxisLayout extends AbstractLayout implements Layout {
         Object currentlayer = null;
 
         for (Node n : nodes) {
+            if (this.boolNormalizeNode) {
+                n.getNodeData().setSize(5);
+            }     
             currentlayer = getLayerAttribute(n, this.strNodeplacement);
             if (i == 0) {
                 lastlayer = currentlayer;
@@ -157,15 +161,16 @@ public class RadialAxisLayout extends AbstractLayout implements Layout {
             NodeList.add(n);
             i++;
         }
-
-        doArrayEnd = ArrayLayers.size();   
-        if (this.boolKnockdownSpars && (doArrayEnd - this.getSparCount() > 1)) {
+        nodes = null;
+        
+        SparArrayCount = ArrayLayers.size();   
+        if (this.boolKnockdownSpars && (SparArrayCount - this.getSparCount() > 1)) {
             double doHigh = 0;
             double doLow = 0;
-            double doDiff = doArrayEnd - this.getSparCount();
+            double doDiff = SparArrayCount - this.getSparCount();
             if ("TOP".equals(this.strKnockdown)) {
                 doLow = this.getSparCount();
-                doHigh = doArrayEnd-1;
+                doHigh = SparArrayCount-1;
             } else if ("BOTTOM".equals(this.strKnockdown)) {
                 doLow = 1;
                 doHigh = doDiff;
@@ -175,19 +180,21 @@ public class RadialAxisLayout extends AbstractLayout implements Layout {
                 doLow = doRemain+1;
                 doHigh = 0;
                 if (doMod == 0) {
-                    doHigh = doArrayEnd - doRemain;
+                    doHigh = SparArrayCount - doRemain;
                 } else {
-                    doHigh = doArrayEnd - doRemain-1;
+                    doHigh = SparArrayCount - doRemain-1;
                 }
             }
             ArrayLayers.subList((int) doLow, (int) doHigh).clear();
-            doArrayEnd = this.getSparCount();
+            SparArrayCount = this.getSparCount();
         }
 
         double circ = 0;
         Integer previousindex = 0;
         Integer currentindex = 0;
         List<Node> SparBaseList = new ArrayList<Node>();
+        double[] SparNodeCount = new double[(int)SparArrayCount];
+        
         int group = 0;      
         Iterator it = ArrayLayers.iterator();
         GroupLayoutData posData;
@@ -195,18 +202,20 @@ public class RadialAxisLayout extends AbstractLayout implements Layout {
             currentindex = (Integer) it.next();
             if (!it.hasNext()) {
                 currentindex++;
-            }            
+            }
             if (currentindex > previousindex) {
                 Node[] shortnodes = NodeList.subList(previousindex, currentindex).toArray(new Node[0]);
-                if ((!this.strNodeplacement.equals(this.strSparNodePlacement)) || (!this.boolSparOrderingDirection)) {
-                     if (this.strSparNodePlacement.equals("NodeID")) {
-                        Arrays.sort(shortnodes, new BasicNodeDataComparator(shortnodes, "NodeID", this.boolSparOrderingDirection));
-                    } else if (this.strSparNodePlacement.endsWith("-Att")) {
-                        Arrays.sort(shortnodes, new BasicNodeDataComparator(shortnodes, this.strSparNodePlacement.substring(0, this.strSparNodePlacement.length() - 4), this.boolSparOrderingDirection));
-                    } else if (getPlacementMap().containsKey(this.strSparNodePlacement)) {
-                        Arrays.sort(shortnodes, new BasicNodeComparator(graph, shortnodes, this.strSparNodePlacement, this.boolSparOrderingDirection));
-                    } 
+                if (this.strSparNodePlacement.equals("NodeID")) {
+                    Arrays.sort(shortnodes, new BasicNodeDataComparator(shortnodes, "NodeID", this.boolSparOrderingDirection));
+                } else if (this.strSparNodePlacement.endsWith("-Att")) {
+                    Arrays.sort(shortnodes, new BasicNodeDataComparator(shortnodes, this.strSparNodePlacement.substring(0, this.strSparNodePlacement.length() - 4), this.boolSparOrderingDirection));
+                } else if (getPlacementMap().containsKey(this.strSparNodePlacement)) {
+                    Arrays.sort(shortnodes, new BasicNodeComparator(graph, shortnodes, this.strSparNodePlacement, this.boolSparOrderingDirection));
                 }
+
+                NodeList.removeAll(Arrays.asList(shortnodes));
+                NodeList.addAll(previousindex,Arrays.asList(shortnodes));
+                SparNodeCount[group]=shortnodes.length;
                 int order = 0;
                 for (Node n : shortnodes) {
                     if (n.getNodeData().getLayoutData() == null || !(n.getNodeData().getLayoutData() instanceof GroupLayoutData)) {
@@ -240,8 +249,8 @@ public class RadialAxisLayout extends AbstractLayout implements Layout {
         double tmpspartheta;
         double lasttheta = 0;
         group = 0;
-        double[] ArraySparLength = new double[(int)doArrayEnd];
-        double[] ArraySparTheta = new double[(int)doArrayEnd];
+        double[] ArraySparLength = new double[(int)SparArrayCount];
+        double[] ArraySparTheta = new double[(int)SparArrayCount];
         for (Node n : SparBaseList){
             double noderadius = (n.getNodeData().getRadius());
             double noderadian = (theta * noderadius * 1.2);
@@ -265,7 +274,7 @@ public class RadialAxisLayout extends AbstractLayout implements Layout {
 
                 double noderadius = (n.getNodeData().getRadius());
                 if (this.boolSparSpiral) {
-                    nodeCoords = this.cartCoors(tmpsparlength+radius+(noderadius*1.2), 1, tmpspartheta+(position.order*(thetainc/nodecount)));
+                    nodeCoords = this.cartCoors(tmpsparlength+radius+(noderadius*1.2), 1, tmpspartheta+(position.order*(thetainc/SparNodeCount[position.group])));
                 } else {
                     nodeCoords = this.cartCoors(tmpsparlength+radius+(noderadius*1.2), 1, tmpspartheta);
                 }
@@ -341,6 +350,12 @@ public class RadialAxisLayout extends AbstractLayout implements Layout {
                     NbBundle.getMessage(getClass(), "RadialAxisLayout.Category.SparControl.name"),
                     NbBundle.getMessage(getClass(), "RadialAxisLayout.KnockdownSpars.Range.desc"),
                     "getKnockDownRange", "setKnockDownRange", KnockDownSparRange.class));
+            properties.add(LayoutProperty.createProperty(
+                    this, Boolean.class,
+                    NbBundle.getMessage(getClass(), "RadialAxisLayout.NormalizeNode.name"),
+                    NbBundle.getMessage(getClass(), "RadialAxisLayout.Category.NormalizeNode.name"),
+                    NbBundle.getMessage(getClass(), "RadialAxisLayout.NormalizeNode.desc"),
+                    "isNormalizeNode", "setNormalizeNode"));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -351,6 +366,7 @@ public class RadialAxisLayout extends AbstractLayout implements Layout {
     public void resetPropertiesValues() {
         setNodePlacement("Degree");
         setNodePlacementDirection("CCW");
+        setNormalizeNode(false);
         setSparSpiral(false);
         setKnockdownSpars(false);
         setSparOrderingDirection(false);
@@ -422,6 +438,13 @@ public class RadialAxisLayout extends AbstractLayout implements Layout {
 
     public Boolean isSparSpiral() {
         return this.boolSparSpiral;
+    }
+    
+    public Boolean isNormalizeNode() {
+        return this.boolNormalizeNode;
+    }
+    public void setNormalizeNode(Boolean boolNormalizeNode) {
+        this.boolNormalizeNode = boolNormalizeNode;
     }
     
     public Object getLayerAttribute(Node n, String Placement) {
