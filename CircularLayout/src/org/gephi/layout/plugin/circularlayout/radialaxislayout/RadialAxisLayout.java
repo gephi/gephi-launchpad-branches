@@ -68,7 +68,9 @@ public class RadialAxisLayout extends AbstractLayout implements Layout {
     private Boolean boolSparSpiral;
     private Integer intSparCount;
     static final double TWO_PI = (2 * Math.PI);
-    private Boolean boolNormalizeNode;
+    private Boolean boolResizeNode;
+    private Integer intNodeSize;
+    private Double dScalingWidth;
 
     public RadialAxisLayout(LayoutBuilder layoutBuilder, double diameter, boolean boolfixeddiameter) {
         super(layoutBuilder);
@@ -143,9 +145,9 @@ public class RadialAxisLayout extends AbstractLayout implements Layout {
         Object currentlayer = null;
 
         for (Node n : nodes) {
-            if (this.boolNormalizeNode) {
-                n.getNodeData().setSize(5);
-            }     
+            if (this.boolResizeNode) {
+                n.getNodeData().setSize(this.intNodeSize);
+            }
             currentlayer = getLayerAttribute(n, this.strNodeplacement);
             if (i == 0) {
                 lastlayer = currentlayer;
@@ -236,7 +238,7 @@ public class RadialAxisLayout extends AbstractLayout implements Layout {
             previousindex = currentindex;
         }
 
-        tmpcirc = (circ * 1.2);
+        tmpcirc = (circ * this.dScalingWidth);
         radius = tmpcirc / TWO_PI;
         theta = (TWO_PI / tmpcirc);
         double thetainc = TWO_PI/group;
@@ -253,9 +255,9 @@ public class RadialAxisLayout extends AbstractLayout implements Layout {
         double[] ArraySparTheta = new double[(int)SparArrayCount];
         for (Node n : SparBaseList){
             double noderadius = (n.getNodeData().getRadius());
-            double noderadian = (theta * noderadius * 1.2);
+            double noderadian = (theta * noderadius * this.dScalingWidth);
             ArraySparTheta[group] = lasttheta + noderadian;
-            ArraySparLength[group] = noderadius * 1.2;     
+            ArraySparLength[group] = noderadius * this.dScalingWidth;     
             nodeCoords = this.cartCoors(radius, 1, lasttheta + noderadian);
             n.getNodeData().setX(nodeCoords[0]);
             n.getNodeData().setY(nodeCoords[1]);       
@@ -274,13 +276,13 @@ public class RadialAxisLayout extends AbstractLayout implements Layout {
 
                 double noderadius = (n.getNodeData().getRadius());
                 if (this.boolSparSpiral) {
-                    nodeCoords = this.cartCoors(tmpsparlength+radius+(noderadius*1.2), 1, tmpspartheta+(position.order*(thetainc/SparNodeCount[position.group])));
+                    nodeCoords = this.cartCoors(tmpsparlength+radius+(noderadius*this.dScalingWidth), 1, tmpspartheta+(position.order*(thetainc/SparNodeCount[position.group])));
                 } else {
-                    nodeCoords = this.cartCoors(tmpsparlength+radius+(noderadius*1.2), 1, tmpspartheta);
+                    nodeCoords = this.cartCoors(tmpsparlength+radius+(noderadius*this.dScalingWidth), 1, tmpspartheta);
                 }
                 n.getNodeData().setX(nodeCoords[0]);
                 n.getNodeData().setY(nodeCoords[1]);
-                ArraySparLength[position.group] = tmpsparlength + noderadius * 1.2 *2;
+                ArraySparLength[position.group] = tmpsparlength + noderadius * this.dScalingWidth * 2;
             }
 
               n.getNodeData().setLayoutData(null);
@@ -301,61 +303,79 @@ public class RadialAxisLayout extends AbstractLayout implements Layout {
     @Override
     public LayoutProperty[] getProperties() {
         List<LayoutProperty> properties = new ArrayList<LayoutProperty>();
+        final String PLACEMENT_CATEGORY = NbBundle.getMessage(getClass(), "RadialAxisLayout.Category.Placement.name");
+        final String SPARCONTROL_CATEGORY = NbBundle.getMessage(getClass(), "RadialAxisLayout.Category.SparControl.name");
+        final String LAYOUTTUNING_CATEGORY = NbBundle.getMessage(getClass(), "RadialAxisLayout.Category.LayoutTuning.name");
+
         try {
             properties.add(LayoutProperty.createProperty(
                     this, String.class,
                     NbBundle.getMessage(getClass(), "RadialAxisLayout.NodePlacement.NodeOrdering.name"),
-                    NbBundle.getMessage(getClass(), "RadialAxisLayout.Category.Placement.name"),
+                    PLACEMENT_CATEGORY,
                     NbBundle.getMessage(getClass(), "RadialAxisLayout.NodePlacement.NodeOrdering.desc"),
                     "getNodePlacement", "setNodePlacement", LayoutComboBoxEditor.class));
             properties.add(LayoutProperty.createProperty(
                     this, String.class,
                     NbBundle.getMessage(getClass(), "RadialAxisLayout.NodePlacement.Direction.name"),
-                    NbBundle.getMessage(getClass(), "RadialAxisLayout.Category.Placement.name"),
+                    PLACEMENT_CATEGORY,
                     NbBundle.getMessage(getClass(), "RadialAxisLayout.NodePlacement.Direction.desc"),
                     "getNodePlacementDirection", "setNodePlacementDirection", RotationComboBoxEditor.class));
             properties.add(LayoutProperty.createProperty(
                     this, String.class,
                     NbBundle.getMessage(getClass(), "RadialAxisLayout.Spars.NodeOrdering.name"),
-                    NbBundle.getMessage(getClass(), "RadialAxisLayout.Category.Placement.name"),
+                    PLACEMENT_CATEGORY,
                     NbBundle.getMessage(getClass(), "RadialAxisLayout.Spars.NodeOrdering.desc"),
                     "getSparNodePlacement", "setSparNodePlacement", LayoutComboBoxEditor.class));
             properties.add(LayoutProperty.createProperty(
                     this, Boolean.class,
                     NbBundle.getMessage(getClass(), "RadialAxisLayout.Spars.SparOrderingDirection.name"),
-                    NbBundle.getMessage(getClass(), "RadialAxisLayout.Category.Placement.name"),
+                    PLACEMENT_CATEGORY,
                     NbBundle.getMessage(getClass(), "RadialAxisLayout.Spars.SparOrderingDirection.desc"),
                     "isSparOrderingDirection", "setSparOrderingDirection"));
             properties.add(LayoutProperty.createProperty(
                     this, Boolean.class,
                     NbBundle.getMessage(getClass(), "RadialAxisLayout.Spars.Spiral.name"),
-                    NbBundle.getMessage(getClass(), "RadialAxisLayout.Category.Placement.name"),
+                    PLACEMENT_CATEGORY,
                     NbBundle.getMessage(getClass(), "RadialAxisLayout.Spars.Spiral.desc"),
                     "isSparSpiral", "setSparSpiral"));               
             properties.add(LayoutProperty.createProperty(
                     this, Boolean.class,
                     NbBundle.getMessage(getClass(), "RadialAxisLayout.KnockdownSpars.name"),
-                    NbBundle.getMessage(getClass(), "RadialAxisLayout.Category.SparControl.name"),
+                    SPARCONTROL_CATEGORY,
                     NbBundle.getMessage(getClass(), "RadialAxisLayout.KnockdownSpars.desc"),
                     "isKnockdownSpars", "setKnockdownSpars"));
             properties.add(LayoutProperty.createProperty(
                     this, Integer.class,
                     NbBundle.getMessage(getClass(), "RadialAxisLayout.SparCount.name"),
-                    NbBundle.getMessage(getClass(), "RadialAxisLayout.Category.SparControl.name"),
+                    SPARCONTROL_CATEGORY,
                     NbBundle.getMessage(getClass(), "RadialAxisLayout.SparCount.desc"),
                     "getSparCount", "setSparCount"));
             properties.add(LayoutProperty.createProperty(
                     this, String.class,
                     NbBundle.getMessage(getClass(), "RadialAxisLayout.KnockdownSpars.Range.name"),
-                    NbBundle.getMessage(getClass(), "RadialAxisLayout.Category.SparControl.name"),
+                    SPARCONTROL_CATEGORY,
                     NbBundle.getMessage(getClass(), "RadialAxisLayout.KnockdownSpars.Range.desc"),
                     "getKnockDownRange", "setKnockDownRange", KnockDownSparRange.class));
+            
+            properties.add(LayoutProperty.createProperty(
+                    this, Double.class,
+                    NbBundle.getMessage(getClass(), "RadialAxisLayout.LayoutTuning.ScalingWidth.name"),
+                    LAYOUTTUNING_CATEGORY,
+                    NbBundle.getMessage(getClass(), "RadialAxisLayout.LayoutTuning.ScalingWidth.desc"),
+                    "getScalingWidth", "setScalingWidth"));
+            
             properties.add(LayoutProperty.createProperty(
                     this, Boolean.class,
-                    NbBundle.getMessage(getClass(), "RadialAxisLayout.NormalizeNode.name"),
-                    NbBundle.getMessage(getClass(), "RadialAxisLayout.Category.NormalizeNode.name"),
-                    NbBundle.getMessage(getClass(), "RadialAxisLayout.NormalizeNode.desc"),
-                    "isNormalizeNode", "setNormalizeNode"));
+                    NbBundle.getMessage(getClass(), "RadialAxisLayout.LayoutTuning.ResizeNode.name"),
+                    LAYOUTTUNING_CATEGORY,
+                    NbBundle.getMessage(getClass(), "RadialAxisLayout.LayoutTuning.ResizeNode.desc"),
+                    "isResizeNode", "setResizeNode"));
+            properties.add(LayoutProperty.createProperty(
+                    this, Integer.class,
+                    NbBundle.getMessage(getClass(), "RadialAxisLayout.LayoutTuning.NodeSize.name"),
+                    LAYOUTTUNING_CATEGORY,
+                    NbBundle.getMessage(getClass(), "RadialAxisLayout.LayoutTuning.NodeSize.desc"),
+                    "getNodeSize", "setNodeSize"));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -366,13 +386,15 @@ public class RadialAxisLayout extends AbstractLayout implements Layout {
     public void resetPropertiesValues() {
         setNodePlacement("Degree");
         setNodePlacementDirection("CCW");
-        setNormalizeNode(false);
         setSparSpiral(false);
         setKnockdownSpars(false);
         setSparOrderingDirection(false);
         setKnockDownRange("MIDDLE");
         setSparCount(3);
         setSparNodePlacement("Degree");
+        setResizeNode(false);
+        setNodeSize(5);
+        setScalingWidth(1.2);
     }
 
     public void setNodePlacement(String strNodeplacement) {
@@ -440,11 +462,29 @@ public class RadialAxisLayout extends AbstractLayout implements Layout {
         return this.boolSparSpiral;
     }
     
-    public Boolean isNormalizeNode() {
-        return this.boolNormalizeNode;
+    public Boolean isResizeNode() {
+        return this.boolResizeNode;
     }
-    public void setNormalizeNode(Boolean boolNormalizeNode) {
-        this.boolNormalizeNode = boolNormalizeNode;
+
+    public void setResizeNode(Boolean boolResizeNode) {
+        this.boolResizeNode = boolResizeNode;
+    }
+
+    public Integer getNodeSize() {
+        return this.intNodeSize;
+    }
+
+    public void setNodeSize(Integer intNodeSize) {
+        this.intNodeSize = intNodeSize;
+    }
+    
+    
+    public Double getScalingWidth() {
+        return this.dScalingWidth;
+    }
+    
+    public void setScalingWidth(Double dScalingWidth) {
+        this.dScalingWidth = dScalingWidth;
     }
     
     public Object getLayerAttribute(Node n, String Placement) {
@@ -491,7 +531,7 @@ public class RadialAxisLayout extends AbstractLayout implements Layout {
         coOrds[1] = (float) (radius * (Math.sin((theta * whichInt) + (Math.PI / 2))));
         return coOrds;
     }
-   
+  
     public class GroupLayoutData implements LayoutData {
         public int group = 0;
         public int order = 0;

@@ -189,35 +189,37 @@ public class CircleLayout extends AbstractLayout implements Layout {
     @Override
     public LayoutProperty[] getProperties() {
         List<LayoutProperty> properties = new ArrayList<LayoutProperty>();
+        final String PLACEMENT_CATEGORY = NbBundle.getMessage(getClass(), "CircleLayout.Category.CircleProperties.name");
+        final String SPARCONTROL_CATEGORY = NbBundle.getMessage(getClass(), "CircleLayout.Category.NodePlacement.name");
         try {
             properties.add(LayoutProperty.createProperty(
                     this, Boolean.class,
                     NbBundle.getMessage(getClass(), "CircleLayout.BoolFixedDiameter.name"),
-                    NbBundle.getMessage(getClass(), "CircleLayout.Category.CircleProperties.name"),
+                    PLACEMENT_CATEGORY,
                     NbBundle.getMessage(getClass(), "CircleLayout.BoolFixedDiameter.desc"),
                     "isBoolFixedDiameter", "setBoolFixedDiameter"));
             properties.add(LayoutProperty.createProperty(
                     this, Double.class,
                     NbBundle.getMessage(getClass(), "CircleLayout.Diameter.name"),
-                    NbBundle.getMessage(getClass(), "CircleLayout.Category.CircleProperties.name"),
+                    PLACEMENT_CATEGORY,
                     NbBundle.getMessage(getClass(), "CircleLayout.Diameter.desc"),
                     "getDiameter", "setDiameter"));
             properties.add(LayoutProperty.createProperty(
                     this, String.class,
                     NbBundle.getMessage(getClass(), "CircleLayout.NodePlacement.NodeOrdering.name"),
-                    NbBundle.getMessage(getClass(), "CircleLayout.Category.NodePlacement.name"),
+                    PLACEMENT_CATEGORY,
                     NbBundle.getMessage(getClass(), "CircleLayout.NodePlacement.NodeOrdering.desc"),
                     "getNodePlacement", "setNodePlacement", LayoutComboBoxEditor.class));
             properties.add(LayoutProperty.createProperty(
                     this, String.class,
                     NbBundle.getMessage(getClass(), "CircleLayout.NodePlacement.Direction.name"),
-                    NbBundle.getMessage(getClass(), "CircleLayout.Category.NodePlacement.name"),
+                    SPARCONTROL_CATEGORY,
                     NbBundle.getMessage(getClass(), "CircleLayout.NodePlacement.Direction.desc"),
                     "getNodePlacementDirection", "setNodePlacementDirection", RotationComboBoxEditor.class));
             properties.add(LayoutProperty.createProperty(
                     this, Boolean.class,
                     NbBundle.getMessage(getClass(), "CircleLayout.NodePlacement.NoOverlap.name"),
-                    NbBundle.getMessage(getClass(), "CircleLayout.Category.NodePlacement.name"),
+                    SPARCONTROL_CATEGORY,
                     NbBundle.getMessage(getClass(), "CircleLayout.NodePlacement.NoOverlap.desc"),
                     "isNodePlacementNoOverlap", "setNodePlacementNoOverlap"));
         } catch (Exception e) {
