@@ -31,8 +31,8 @@ public interface NodeContainer {
 
     public void rebuild();
 
-    public void addToSelection(CameraBridge camera, Shape shape);
+    public void addToSelection(Shape shape);
 
-    public void removeFromSelection(CameraBridge camera, Shape shape);
+    public void removeFromSelection(Shape shape);
 
 }

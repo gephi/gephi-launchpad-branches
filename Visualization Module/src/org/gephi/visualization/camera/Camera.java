@@ -175,13 +175,13 @@ public class Camera {
 
     public Mat4f projectiveMatrix() {
         Mat4f mat = new Mat4f();
-            float aspect = imageWidth/imageHeight;
-            float f = (float) (1.0 / Math.tan(this.fovy / 2.0));
-            mat.set(0, 0, f/aspect);
-            mat.set(1, 1, f);
-            mat.set(2, 2, (this.far + this.near)/(this.near - this.far));
-            mat.set(2, 3, (2.0f * this.far * this.near)/(this.near - this.far));
-            mat.set(3, 2, -1.0f);
+        float aspect = imageWidth/imageHeight;
+        float f = (float) (1.0 / Math.tan(this.fovy / 2.0));
+        mat.set(0, 0, f/aspect);
+        mat.set(1, 1, f);
+        mat.set(2, 2, (this.far + this.near)/(this.near - this.far));
+        mat.set(2, 3, (2.0f * this.far * this.near)/(this.near - this.far));
+        mat.set(3, 2, -1.0f);
         return mat;
     }
 

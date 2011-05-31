@@ -21,47 +21,19 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 
 package org.gephi.visualization.api.selection;
 
-import java.awt.Point;
-
 public interface Shape {
 
+    void setCameraBridge(CameraBridge cameraBridge);
+
     /**
-     * Returns ellipsoid that is a superset of intersection of the shape
-     * projected into space and frustum given by the camera.
+     * Returns true if given 3D coordinate point is inside the projection
+     * frustum.
      */
-    Ellipsoid getBoundingEllipsoid(CameraBridge cameraBridge);
+    boolean isInside3D(float x, float y, float z);
 
     /**
      * Returns true if given 2D screen coordinate point is inside the shape.
      */
-    boolean isInside(Point point);
-
-    public class Ellipsoid {
-        private final float center, a, b, c;
-
-        public Ellipsoid(float center, float a, float b, float c) {
-            this.center = center;
-            this.a = a;
-            this.b = b;
-            this.c = c;
-        }
-
-        public float getA() {
-            return a;
-        }
-
-        public float getB() {
-            return b;
-        }
-
-        public float getC() {
-            return c;
-        }
-
-        public float getCenter() {
-            return center;
-        }
-
-    }
+    boolean isInside2D(int x, int y);
 
 }
