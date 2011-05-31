@@ -21,6 +21,7 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 
 package org.gephi.visualization.api.selection;
 
+import java.awt.Point;
 import org.gephi.lib.gleem.linalg.Mat4f;
 import org.gephi.lib.gleem.linalg.Vec3f;
 /**
@@ -52,5 +53,7 @@ public interface CameraBridge {
     public Mat4f viewMatrix();
 
     public Mat4f projectiveMatrix();
+
+    public Point projectPoint(float x, float y, float z);
 
 }

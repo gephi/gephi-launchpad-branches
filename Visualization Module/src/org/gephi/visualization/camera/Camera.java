@@ -22,10 +22,12 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 package org.gephi.visualization.camera;
 
 import java.awt.Dimension;
+import java.awt.Point;
 import org.gephi.lib.gleem.linalg.Mat3f;
 import org.gephi.lib.gleem.linalg.Mat4f;
 import org.gephi.lib.gleem.linalg.Rotf;
 import org.gephi.lib.gleem.linalg.Vec3f;
+import org.gephi.lib.gleem.linalg.Vec4f;
 
 /**
  * Class representing a camera. Enables basic camera movement.
@@ -37,6 +39,10 @@ public class Camera {
     private Vec3f front, up;
     private Vec3f position;
     private Vec3f orbitCenter;
+
+    private Mat4f projectiveMatrix;
+    private Mat4f modelviewMatrix;
+    private boolean recomputeMatrix = true;
 
     private float imageWidth, imageHeight, fovy, near, far;
 
@@ -71,20 +77,24 @@ public class Camera {
     public void setImageSize(Dimension size) {
         this.imageWidth = size.width;
         this.imageHeight = size.height;
+        requireRecomputeMatrix();
     }
 
     public void moveTo(Vec3f newPos) {
         this.position = newPos.copy();
+        requireRecomputeMatrix();
     }
 
     public void translate(Vec3f v) {
         this.position.add(v);
+        requireRecomputeMatrix();
     }
 
     public void rotate(Vec3f axis, float angle) {
         Rotf rot = new Rotf(axis, angle);
         this.front = rot.rotateVector(this.front);
         this.up = rot.rotateVector(up);
+        requireRecomputeMatrix();
     }
 
     public void rotate(Vec3f origin, Vec3f axis, float angle) {
@@ -94,6 +104,7 @@ public class Camera {
 
         Vec3f diff = this.position.minus(origin);
         this.position.add(origin, rot.rotateVector(diff));
+        requireRecomputeMatrix();
     }
 
     public void lookAt(Vec3f center, Vec3f up) {
@@ -101,6 +112,7 @@ public class Camera {
         this.front.normalize();
         this.up = up.copy();
         this.up.normalize();
+        requireRecomputeMatrix();
     }
 
     public void lookAt(Vec3f position, Vec3f center, Vec3f up) {
@@ -110,11 +122,13 @@ public class Camera {
 
     public void setFov(float fov) {
         this.fovy = fov;
+        requireRecomputeMatrix();
     }
 
     public void setClipPlanes(float near, float far) {
         this.near = near;
         this.far = far;
+        requireRecomputeMatrix();
     }
 
     public Vec3f frontVector() {
@@ -160,42 +174,74 @@ public class Camera {
         return pnt.dot(this.front);
     }
 
+    /**
+     * Returns the model-view matrix.
+     */
     public Mat4f viewMatrix() {
-        Vec3f right = rightVector();
-        Mat4f mat = new Mat4f();
-        for (int i = 0; i < 3; ++i) {
-            mat.set(i, 0, right.get(i));
-            mat.set(i, 1, this.up.get(i));
-            mat.set(i, 2, this.front.get(i));
-            mat.set(i, 3, this.position.get(i));
+        if (recomputeMatrix) {
+            Vec3f right = rightVector();
+            Mat4f mat = new Mat4f();
+            for (int i = 0; i < 3; ++i) {
+                mat.set(i, 0, right.get(i));
+                mat.set(i, 1, this.up.get(i));
+                mat.set(i, 2, this.front.get(i));
+                mat.set(i, 3, this.position.get(i));
+            }
+            mat.set(3, 3, 1.0f);
+            modelviewMatrix = mat;
         }
-        mat.set(3, 3, 1.0f);
-        return mat;
+        return modelviewMatrix;
     }
 
+    /**
+     * Returns the projective matrix.
+     */
     public Mat4f projectiveMatrix() {
-        Mat4f mat = new Mat4f();
-        float aspect = imageWidth/imageHeight;
-        float f = (float) (1.0 / Math.tan(this.fovy / 2.0));
-        mat.set(0, 0, f/aspect);
-        mat.set(1, 1, f);
-        mat.set(2, 2, (this.far + this.near)/(this.near - this.far));
-        mat.set(2, 3, (2.0f * this.far * this.near)/(this.near - this.far));
-        mat.set(3, 2, -1.0f);
-        return mat;
+        if (recomputeMatrix) {
+            Mat4f mat = new Mat4f();
+            float aspect = imageWidth/imageHeight;
+            float f = (float) (1.0 / Math.tan(this.fovy / 2.0));
+            mat.set(0, 0, f/aspect);
+            mat.set(1, 1, f);
+            mat.set(2, 2, (this.far + this.near)/(this.near - this.far));
+            mat.set(2, 3, (2.0f * this.far * this.near)/(this.near - this.far));
+            mat.set(3, 2, -1.0f);
+            projectiveMatrix = mat;
+        }
+        return projectiveMatrix;
+    }
+
+    /**
+     * Returns the given point as it will appear on the screen.
+     */
+    public Point projectPoint(float x, float y, float z) {
+        Vec4f point = new Vec4f(x, y, z, 0);
+        Vec4f screenPoint = new Vec4f();
+        Mat4f projMatrix = projectiveMatrix();
+        Mat4f viewMatrix = viewMatrix();
+        // multiply by modelview and projection matrices
+        viewMatrix.xformVec(point, screenPoint);
+        projMatrix.xformVec(screenPoint, point);
+        // to NDC
+        point.scale(1 / point.w());
+        // to screen
+        int px = (int) ((point.get(1) + 1) * imageWidth / 2);
+        int py = (int) ((point.get(2) + 1) * imageHeight / 2);
+        return new Point(px, py);
     }
 
     public void startTranslation() {}
 
     public void updateTranslation(float horizontal, float vertical) {
         float ratio = (float) Math.sqrt((1 - Math.cos(fovy)) / (1 - Math.cos(1.0)));
-        Vec3f horizontalTranslation = rightVector().times(horizontal * ratio);
+        Vec3f rightVector = rightVector();
+        Vec3f horizontalTranslation = rightVector.times(horizontal * ratio);
         Vec3f verticalTranslation = this.up.times(vertical * ratio);
         Vec3f translation = new Vec3f();
         translation.add(horizontalTranslation, verticalTranslation);
         Vec3f result = new Vec3f();
         Mat3f rotationMatrix = new Mat3f();
-        rotationMatrix.setCol(0, this.rightVector());
+        rotationMatrix.setCol(0, rightVector);
         rotationMatrix.setCol(1, this.up);
         rotationMatrix.setCol(2, this.front);
         rotationMatrix.invert();
@@ -239,13 +285,17 @@ public class Camera {
         ur.sub(v);
 
         v.add(orbitCenter);
-        position = v;
+        moveTo(v);
         lookAt(orbitCenter, ur);
     }
 
     public void finishOrbit() {}
 
     public void zoom(float by) {
-        fovy = (float) Math.min(fovy * Math.exp(by), MAX_FOVY);
+        setFov((float) Math.min(fovy * Math.exp(by), MAX_FOVY));
+    }
+
+    public void requireRecomputeMatrix() {
+        recomputeMatrix = true;
     }
 }

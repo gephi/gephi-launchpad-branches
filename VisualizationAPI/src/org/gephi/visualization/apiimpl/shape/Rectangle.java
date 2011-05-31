@@ -49,23 +49,8 @@ public class Rectangle implements Shape {
     }
 
     public boolean isInside3D(float x, float y, float z) {
-        // TODO this is for test only and extremely inefficient
-        // TODO after optimization this can be moved to an abstract superclass
-        Vec4f point = new Vec4f(x, y, z, 0);
-        Vec4f screenPoint = new Vec4f();
-        Mat4f projMatrix = cameraBridge.projectiveMatrix();
-        Mat4f viewMatrix = cameraBridge.viewMatrix();
-        float width = cameraBridge.imageWidth();
-        float height = cameraBridge.imageHeight();
-        // multiply by modelview and projection matrices
-        viewMatrix.xformVec(point, screenPoint);
-        projMatrix.xformVec(screenPoint, point);
-        // to NDC
-        point.scale(1 / point.w());
-        // to screen
-        int px = (int) ((point.get(1) + 1) * width / 2);
-        int py = (int) ((point.get(2) + 1) * height / 2);
-        return isInside2D(px, py);
+        Point point = cameraBridge.projectPoint(x, y, z);
+        return isInside2D(point.x, point.y);
     }
 
     public boolean isInside2D(int x, int y) {
