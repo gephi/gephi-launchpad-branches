@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+OpenIDE-Module-Localizing-Bundle: org/gephi/Bundle.properties
+OpenIDE-Module-Layer: org/gephi/layer.xml
+OpenIDE-Module-Specification-Version: 1.0
+OpenIDE-Module-Implementation-Version: 1.0-20110531
+OpenIDE-Module-Build-Version: 201105311327
+OpenIDE-Module: org.gephi.gephi.graph.api
+OpenIDE-Module-Public-Packages: -
+OpenIDE-Module-Requires: org.openide.modules.ModuleFormat1
+OpenIDE-Module-Display-Category: org.gephi
+OpenIDE-Module-Name: Graph API
+OpenIDE-Module-Short-Description: <undefined>
+OpenIDE-Module-Long-Description: <undefined>
+OpenIDE-Module-Module-Dependencies:  org.netbeans.api.annotations.comm
+ on/1 > 1.8.1
+
