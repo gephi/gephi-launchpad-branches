@@ -23,12 +23,16 @@ package org.gephi.visualization.selection;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import org.gephi.graph.api.Edge;
 import org.gephi.graph.api.Graph;
 import org.gephi.graph.api.Node;
+import org.gephi.visualization.api.config.VizConfig;
 import org.gephi.visualization.api.selection.NodeContainer;
 import org.gephi.visualization.api.selection.SelectionManager;
+import org.openide.util.Lookup;
 import org.openide.util.lookup.ServiceProvider;
 
 @ServiceProvider(service = SelectionManager.class)
@@ -36,6 +40,10 @@ public class SelectionManagerImpl implements SelectionManager {
 
     private NodeContainer nodeContainer;
     private Collection<Node> selectedNodes;
+
+    private boolean blocked;
+
+    private List<ChangeListener> listeners = new ArrayList<ChangeListener>();
 
     public void setGraph(Graph graph) {
         nodeContainer = new Octree(graph);
@@ -49,7 +57,7 @@ public class SelectionManagerImpl implements SelectionManager {
 
     @Override
     public void addChangeListener(ChangeListener changeListener) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        listeners.add(changeListener);
     }
 
     @Override
@@ -84,12 +92,13 @@ public class SelectionManagerImpl implements SelectionManager {
 
     @Override
     public boolean isDirectMouseSelection() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        VizConfig vizConfig = Lookup.getDefault().lookup(VizConfig.class);
+        return vizConfig.isSelectionEnable() && !vizConfig.isRectangleSelection() && !vizConfig.isDraggingEnable();
     }
 
     @Override
     public boolean isDraggingEnabled() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return Lookup.getDefault().lookup(VizConfig.class).isDraggingEnable();
     }
 
     @Override
@@ -99,12 +108,13 @@ public class SelectionManagerImpl implements SelectionManager {
 
     @Override
     public boolean isRectangleSelection() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        VizConfig vizConfig = Lookup.getDefault().lookup(VizConfig.class);
+        return vizConfig.isSelectionEnable() && vizConfig.isRectangleSelection();
     }
 
     @Override
     public boolean isSelectionEnabled() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return Lookup.getDefault().lookup(VizConfig.class).isSelectionEnable();
     }
 
     @Override
@@ -114,7 +124,7 @@ public class SelectionManagerImpl implements SelectionManager {
 
     @Override
     public void removeChangeListener(ChangeListener changeListener) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        listeners.remove(changeListener);
     }
 
     @Override
@@ -143,23 +153,53 @@ public class SelectionManagerImpl implements SelectionManager {
     }
 
     @Override
-    public void setCustomSelection() {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public void setDraggingEnable(boolean dragging) {
+        Lookup.getDefault().lookup(VizConfig.class).setMouseSelectionUpdateWhileDragging(!dragging);
+        fireChangeEvent();
+    }
+
+    @Override
+    public void setRectangleSelection() {
+        VizConfig vizConfig = Lookup.getDefault().lookup(VizConfig.class);
+        vizConfig.setRectangleSelection(true);
+        vizConfig.setDraggingEnable(false);
+        vizConfig.setCustomSelection(false);
+        vizConfig.setSelectionEnable(true);
+        this.blocked = false;
+        fireChangeEvent();
     }
 
     @Override
     public void setDirectMouseSelection() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public void setDraggingEnable(boolean dragging) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        VizConfig vizConfig = Lookup.getDefault().lookup(VizConfig.class);
+        vizConfig.setRectangleSelection(false);
+        vizConfig.setSelectionEnable(true);
+        vizConfig.setDraggingEnable(false);
+        vizConfig.setCustomSelection(false);
+        this.blocked = false;
+        fireChangeEvent();
     }
 
     @Override
     public void setDraggingMouseSelection() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        VizConfig vizConfig = Lookup.getDefault().lookup(VizConfig.class);
+        vizConfig.setRectangleSelection(false);
+        vizConfig.setDraggingEnable(true);
+        vizConfig.setMouseSelectionUpdateWhileDragging(false);
+        vizConfig.setSelectionEnable(true);
+        vizConfig.setCustomSelection(false);
+        this.blocked = false;
+        fireChangeEvent();
+    }
+
+    @Override
+    public void setCustomSelection() {
+        VizConfig vizConfig = Lookup.getDefault().lookup(VizConfig.class);
+        vizConfig.setSelectionEnable(false);
+        vizConfig.setDraggingEnable(false);
+        vizConfig.setCustomSelection(true);
+        //this.blocked = true;
+        fireChangeEvent();
     }
 
     @Override
@@ -173,13 +213,15 @@ public class SelectionManagerImpl implements SelectionManager {
     }
 
     @Override
-    public void setRectangleSelection() {
+    public void setSelectionUpdateWhileDragging(boolean selectionUpdateWhileDragging) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    @Override
-    public void setSelectionUpdateWhileDragging(boolean selectionUpdateWhileDragging) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    private void fireChangeEvent() {
+        ChangeEvent evt = new ChangeEvent(this);
+        for (ChangeListener l : listeners) {
+            l.stateChanged(evt);
+        }
     }
 
 }

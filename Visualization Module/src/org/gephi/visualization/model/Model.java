@@ -47,8 +47,6 @@ public class Model implements Runnable, WorkspaceListener {
     private boolean isRunning;
     private int frameDuration;
 
-    private boolean centered;
-
     final private Controller controller;
     final private FrameDataBridgeIn bridge;
 
@@ -101,10 +99,9 @@ public class Model implements Runnable, WorkspaceListener {
                 graph = this.graphModel.getGraph();
             }
 
-            // TODO remove from here - must be done only when the graph is
-            // initialised to a new graph
-            if (graph != null && !centered) {
-                AABB box = null;
+            // TODO only do when controller needs this
+            AABB box = null;
+            if (graph != null) {
                 for (Node n : graph.getNodes()) {
                     NodeData nd = n.getNodeData();
                     Vec3f p = new Vec3f(nd.x(), nd.y(), nd.z());
@@ -114,10 +111,7 @@ public class Model implements Runnable, WorkspaceListener {
                     } else {
                         box.addPoint(p, s);
                     }
-                }
-                if (box != null) {
-                    this.controller.centerCamera(box);
-                    this.centered = true;
+                    this.bridge.add(n);
                 }
             }
 
@@ -125,7 +119,7 @@ public class Model implements Runnable, WorkspaceListener {
                 this.bridge.add(n);
             }
 
-            this.controller.endUpdateFrame();
+            this.controller.endUpdateFrame(box);
             this.bridge.endFrame();
             
             long endFrameTime = System.currentTimeMillis();

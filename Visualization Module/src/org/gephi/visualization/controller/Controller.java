@@ -31,6 +31,7 @@ import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import org.gephi.lib.gleem.linalg.Vec3f;
+import org.gephi.visualization.api.MotionManager;
 import org.gephi.visualization.camera.Camera;
 import org.gephi.visualization.geometry.AABB;
 
@@ -41,11 +42,14 @@ import org.gephi.visualization.geometry.AABB;
 public class Controller implements KeyListener, MouseListener, MouseMotionListener, MouseWheelListener {
 
     private Camera camera;
-    private MotionManager3D motionManager;
+    private MotionManager motionManager;
 
     private static Controller instance;
 
     private Dimension viewSize;
+
+    private boolean centerGraph = true;
+    private boolean centerZero;
 
     private Controller() {
         // Random values
@@ -74,10 +78,34 @@ public class Controller implements KeyListener, MouseListener, MouseMotionListen
         return this.camera;
     }
 
+    public MotionManager getMotionManager() {
+        return motionManager;
+    }
+
     public void beginUpdateFrame() {
     }
 
-    public void endUpdateFrame() {
+    public void endUpdateFrame(AABB box) {
+        if (box == null) {
+            return;
+        }
+        if (centerGraph) {
+            final Vec3f center = box.center();
+            final Vec3f scale = box.scale();
+            final Vec3f minVec = box.minVec();
+            final Vec3f maxVec = box.maxVec();
+
+            float d = scale.y() / (float)Math.tan(0.5 * camera.fov());
+
+            final Vec3f origin = new Vec3f(center.x(), center.y(), minVec.z() - d*1.1f);
+            camera.lookAt(origin, center, Vec3f.Y_AXIS);
+            //camera.setClipPlanes(d, maxVec.z() - minVec.z() + d*1.2f);
+            centerGraph = false;
+        }
+        if (centerZero) {
+
+            centerZero = false;
+        }
     }
 
     public void beginRenderFrame() {
@@ -135,22 +163,12 @@ public class Controller implements KeyListener, MouseListener, MouseMotionListen
         motionManager.mouseWheelMoved(e);
     }
 
-    public void centerCamera(AABB box) {
-        final Vec3f center = box.center();
-        final Vec3f scale = box.scale();
-        final Vec3f minVec = box.minVec();
-        final Vec3f maxVec = box.maxVec();
-
-        float d = scale.y() / (float)Math.tan(0.5 * camera.fov());
-
-        final Vec3f origin = new Vec3f(center.x(), center.y(), minVec.z() - d*1.1f);
-        camera.lookAt(origin, center, Vec3f.Y_AXIS);
-        //camera.setClipPlanes(d, maxVec.z() - minVec.z() + d*1.2f);
+    public void centerOnGraph() {
+        centerGraph = true;
     }
 
-    // TODO - create a better architecture containing class or leave here?
-    public MotionManager3D getMotionManager() {
-        return motionManager;
+    public void centerOnZero() {
+        centerZero = true;
     }
 
 }

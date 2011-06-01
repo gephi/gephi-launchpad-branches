@@ -6,9 +6,21 @@ package org.gephi.visualization.components;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.FlowLayout;
 import java.util.logging.Logger;
+import javax.swing.JComponent;
+import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
+import javax.swing.SwingUtilities;
 import javax.swing.ToolTipManager;
+import javax.swing.UIManager;
+import org.gephi.project.api.ProjectController;
+import org.gephi.project.api.Workspace;
+import org.gephi.project.api.WorkspaceListener;
+import org.gephi.tools.api.ToolController;
+import org.gephi.ui.utils.UIUtils;
+import org.gephi.visualization.api.config.VizConfig;
+import org.gephi.visualization.apiimpl.PropertiesBarAddon;
 import org.gephi.visualization.controller.Controller;
 import org.gephi.visualization.data.FrameDataBridge;
 import org.gephi.visualization.model.Model;
@@ -18,6 +30,7 @@ import org.openide.windows.TopComponent;
 import org.openide.windows.WindowManager;
 //import org.openide.util.ImageUtilities;
 import org.netbeans.api.settings.ConvertAsProperties;
+import org.openide.util.Lookup;
 
 /**
  * Top component which displays something.
@@ -49,7 +62,11 @@ public final class GraphTopComponent extends TopComponent {
         this.frameDataBridge = new FrameDataBridge();
         this.view = new View(this.controller, this.frameDataBridge);
         this.dataManager = new Model(this.controller, this.frameDataBridge, 33);
-        
+
+        //Init
+        //initCollapsePanel();
+        initToolPanels();
+
         final Component canvas = this.view.getCanvas();
 
         WindowManager.getDefault().invokeWhenUIReady(new Runnable() {
@@ -107,6 +124,95 @@ public final class GraphTopComponent extends TopComponent {
             instance = new GraphTopComponent();
         }
         return instance;
+    }
+
+    private SelectionToolbar selectionToolbar;
+    private ActionsToolbar actionsToolbar;
+    private JComponent toolbar;
+    private JComponent propertiesBar;
+    private AddonsBar addonsBar;
+
+    private void initToolPanels() {
+        ToolController tc = Lookup.getDefault().lookup(ToolController.class);
+        if (tc != null) {
+            VizConfig vizConfig = Lookup.getDefault().lookup(VizConfig.class);
+            if (vizConfig.isToolbar()) {
+                JPanel westPanel = new JPanel(new BorderLayout(0, 0));
+                if (UIUtils.isAquaLookAndFeel()) {
+                    westPanel.setBackground(UIManager.getColor("NbExplorerView.background"));
+                }
+
+                toolbar = tc.getToolbar();
+                if (toolbar != null) {
+                    westPanel.add(toolbar, BorderLayout.CENTER);
+                }
+                selectionToolbar = new SelectionToolbar();
+                actionsToolbar = new ActionsToolbar();
+
+                westPanel.add(selectionToolbar, BorderLayout.NORTH);
+                westPanel.add(actionsToolbar, BorderLayout.SOUTH);
+                add(westPanel, BorderLayout.WEST);
+            }
+
+            if (vizConfig.isPropertiesbar()) {
+                JPanel northBar = new JPanel(new BorderLayout());
+                if (UIUtils.isAquaLookAndFeel()) {
+                    northBar.setBackground(UIManager.getColor("NbExplorerView.background"));
+                }
+                propertiesBar = tc.getPropertiesBar();
+                if (propertiesBar != null) {
+                    northBar.add(propertiesBar, BorderLayout.CENTER);
+                }
+                addonsBar = new AddonsBar();
+                for (PropertiesBarAddon addon : Lookup.getDefault().lookupAll(PropertiesBarAddon.class)) {
+                    addonsBar.add(addon.getComponent());
+                }
+                northBar.add(addonsBar, BorderLayout.EAST);
+                add(northBar, BorderLayout.NORTH);
+            }
+        }
+
+        //Workspace events
+        ProjectController projectController = Lookup.getDefault().lookup(ProjectController.class);
+        projectController.addWorkspaceListener(new WorkspaceListener() {
+
+            @Override
+            public void initialize(Workspace workspace) {
+            }
+
+            @Override
+            public void select(Workspace workspace) {
+                toolbar.setEnabled(true);
+                propertiesBar.setEnabled(true);
+                actionsToolbar.setEnabled(true);
+                selectionToolbar.setEnabled(true);
+                addonsBar.setEnabled(true);
+            }
+
+            @Override
+            public void unselect(Workspace workspace) {
+            }
+
+            @Override
+            public void close(Workspace workspace) {
+            }
+
+            @Override
+            public void disable() {
+                toolbar.setEnabled(false);
+                propertiesBar.setEnabled(false);
+                actionsToolbar.setEnabled(false);
+                selectionToolbar.setEnabled(false);
+                addonsBar.setEnabled(false);
+            }
+        });
+
+        boolean hasWorkspace = projectController.getCurrentWorkspace() != null;
+        toolbar.setEnabled(hasWorkspace);
+        propertiesBar.setEnabled(hasWorkspace);
+        actionsToolbar.setEnabled(hasWorkspace);
+        selectionToolbar.setEnabled(hasWorkspace);
+        addonsBar.setEnabled(hasWorkspace);
     }
 
     /**
@@ -185,4 +291,25 @@ public final class GraphTopComponent extends TopComponent {
     protected String preferredID() {
         return PREFERRED_ID;
     }
+
+    private static class AddonsBar extends JPanel {
+        
+        public AddonsBar() {
+            super(new FlowLayout(FlowLayout.RIGHT, 0, 0));
+        }
+
+        @Override
+        public void setEnabled(final boolean enabled) {
+            SwingUtilities.invokeLater(new Runnable() {
+
+                @Override
+                public void run() {
+                    for (Component c : getComponents()) {
+                        c.setEnabled(enabled);
+                    }
+                }
+            });
+        }
+    }
+
 }
