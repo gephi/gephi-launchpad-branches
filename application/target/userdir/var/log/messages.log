@@ -1,5 +1,5 @@
 -------------------------------------------------------------------------------
->Log Session: Tuesday, May 31, 2011 7:08:49 PM IST
+>Log Session: Wednesday, June 1, 2011 5:09:50 PM IST
 >System Info: 
   Product Version         = Gephi 201104080000
   Operating System        = Linux version 2.6.32-31-generic running on i386
@@ -8,18 +8,18 @@
   Java Home               = /usr/lib/jvm/java-6-sun-1.6.0.24/jre
   System Locale; Encoding = en_US (gephi); UTF-8
   Home Directory          = /home/keheliya
-  Current Directory       = /home/keheliya/Projects/gephi/gephi/application
-  User Directory          = /home/keheliya/Projects/gephi/gephi/application/target/userdir
-  Installation            = /home/keheliya/Projects/gephi/gephi/application/target/gephi/bin
-                            /home/keheliya/Projects/gephi/gephi/application/target/gephi/gephi
-                            /home/keheliya/Projects/gephi/gephi/application/target/gephi/platform
-                            /home/keheliya/Projects/gephi/gephi/application/target/gephi/etc
-                            /home/keheliya/Projects/gephi/gephi/application/target/gephi/platform
+  Current Directory       = /home/keheliya/Projects/gephibzr/gephimaven/gephi/application
+  User Directory          = /home/keheliya/Projects/gephibzr/gephimaven/gephi/application/target/userdir
+  Installation            = /home/keheliya/Projects/gephibzr/gephimaven/gephi/application/target/gephi/bin
+                            /home/keheliya/Projects/gephibzr/gephimaven/gephi/application/target/gephi/gephi
+                            /home/keheliya/Projects/gephibzr/gephimaven/gephi/application/target/gephi/platform
+                            /home/keheliya/Projects/gephibzr/gephimaven/gephi/application/target/gephi/etc
+                            /home/keheliya/Projects/gephibzr/gephimaven/gephi/application/target/gephi/platform
   Boot & Ext. Classpath   = /usr/lib/jvm/java-6-sun-1.6.0.24/jre/lib/resources.jar:/usr/lib/jvm/java-6-sun-1.6.0.24/jre/lib/rt.jar:/usr/lib/jvm/java-6-sun-1.6.0.24/jre/lib/sunrsasign.jar:/usr/lib/jvm/java-6-sun-1.6.0.24/jre/lib/jsse.jar:/usr/lib/jvm/java-6-sun-1.6.0.24/jre/lib/jce.jar:/usr/lib/jvm/java-6-sun-1.6.0.24/jre/lib/charsets.jar:/usr/lib/jvm/java-6-sun-1.6.0.24/jre/lib/modules/jdk.boot.jar:/usr/lib/jvm/java-6-sun-1.6.0.24/jre/classes:/usr/lib/jvm/java-6-sun-1.6.0.24/jre/lib/ext/sunpkcs11.jar:/usr/lib/jvm/java-6-sun-1.6.0.24/jre/lib/ext/localedata.jar:/usr/lib/jvm/java-6-sun-1.6.0.24/jre/lib/ext/dnsns.jar:/usr/lib/jvm/java-6-sun-1.6.0.24/jre/lib/ext/sunjce_provider.jar
-  Application Classpath   = /home/keheliya/Projects/gephi/gephi/application/target/gephi/platform/lib/boot.jar:/home/keheliya/Projects/gephi/gephi/application/target/gephi/platform/lib/org-openide-modules.jar:/home/keheliya/Projects/gephi/gephi/application/target/gephi/platform/lib/org-openide-util.jar:/home/keheliya/Projects/gephi/gephi/application/target/gephi/platform/lib/org-openide-util-lookup.jar:/usr/lib/jvm/java-6-sun/lib/dt.jar:/usr/lib/jvm/java-6-sun/lib/tools.jar
-  Startup Classpath       = /home/keheliya/Projects/gephi/gephi/application/target/gephi/platform/core/org-openide-filesystems.jar:/home/keheliya/Projects/gephi/gephi/application/target/gephi/platform/core/core.jar:/home/keheliya/Projects/gephi/gephi/application/target/gephi/bin/../gephi/core/locale/core_gephi.jar
+  Application Classpath   = /home/keheliya/Projects/gephibzr/gephimaven/gephi/application/target/gephi/platform/lib/boot.jar:/home/keheliya/Projects/gephibzr/gephimaven/gephi/application/target/gephi/platform/lib/org-openide-modules.jar:/home/keheliya/Projects/gephibzr/gephimaven/gephi/application/target/gephi/platform/lib/org-openide-util.jar:/home/keheliya/Projects/gephibzr/gephimaven/gephi/application/target/gephi/platform/lib/org-openide-util-lookup.jar:/usr/lib/jvm/java-6-sun/lib/dt.jar:/usr/lib/jvm/java-6-sun/lib/tools.jar
+  Startup Classpath       = /home/keheliya/Projects/gephibzr/gephimaven/gephi/application/target/gephi/platform/core/org-openide-filesystems.jar:/home/keheliya/Projects/gephibzr/gephimaven/gephi/application/target/gephi/platform/core/core.jar:/home/keheliya/Projects/gephibzr/gephimaven/gephi/application/target/gephi/bin/../gephi/core/locale/core_gephi.jar
 -------------------------------------------------------------------------------
-WARNING [org.netbeans.core.projects.cache]: Inefficient to include an empty layer in a module: jar:file:/home/keheliya/Projects/gephi/gephi/application/target/gephi/gephi/modules/org-gephi-gephi-graph-api.jar!/org/gephi/layer.xml
+WARNING [org.netbeans.core.projects.cache]: Inefficient to include an empty layer in a module: jar:file:/home/keheliya/Projects/gephibzr/gephimaven/gephi/application/target/gephi/gephi/modules/org-gephi-gephi-graph-api.jar!/org/gephi/layer.xml
 INFO [org.netbeans.core.startup.NbEvents]: Turning on modules:
 	org.openide.util.lookup [8.6.1 201104080000]
 	org.openide.util [8.14.1 201104080000]
@@ -74,19 +74,19 @@ Input arguments:
 	-Djdk.home=/usr/lib/jvm/java-6-sun
 	-Dnetbeans.system_http_proxy=DIRECT
 	-Dnetbeans.system_http_non_proxy_hosts=
-	-Dnetbeans.dirs=/home/keheliya/Projects/gephi/gephi/application/target/gephi/bin/../bin:/home/keheliya/Projects/gephi/gephi/application/target/gephi/bin/../gephi:/home/keheliya/Projects/gephi/gephi/application/target/gephi/bin/../platform:/home/keheliya/Projects/gephi/gephi/application/target/gephi/bin/../etc:
-	-Dnetbeans.home=/home/keheliya/Projects/gephi/gephi/application/target/gephi/platform
+	-Dnetbeans.dirs=/home/keheliya/Projects/gephibzr/gephimaven/gephi/application/target/gephi/bin/../bin:/home/keheliya/Projects/gephibzr/gephimaven/gephi/application/target/gephi/bin/../gephi:/home/keheliya/Projects/gephibzr/gephimaven/gephi/application/target/gephi/bin/../platform:/home/keheliya/Projects/gephibzr/gephimaven/gephi/application/target/gephi/bin/../etc:
+	-Dnetbeans.home=/home/keheliya/Projects/gephibzr/gephimaven/gephi/application/target/gephi/platform
 	-Xms24m
 	-Xmx64m
 	-Dnetbeans.logger.console=true
 	-ea
 	-XX:+HeapDumpOnOutOfMemoryError
-	-XX:HeapDumpPath=/home/keheliya/Projects/gephi/gephi/application/target/userdir/var/log/heapdump.hprof
+	-XX:HeapDumpPath=/home/keheliya/Projects/gephibzr/gephimaven/gephi/application/target/userdir/var/log/heapdump.hprof
 Compiler: HotSpot Tiered Compilers
 Heap memory usage: initial 24.0MB maximum 56.9MB
 Non heap memory usage: initial 18.2MB maximum 112.0MB
-Garbage collector: PS Scavenge (Collections=8 Total time spent=0s)
+Garbage collector: PS Scavenge (Collections=7 Total time spent=0s)
 Garbage collector: PS MarkSweep (Collections=0 Total time spent=0s)
-Classes: loaded=3629 total loaded=3629 unloaded 0
+Classes: loaded=3645 total loaded=3645 unloaded 0
 INFO [org.netbeans.core.ui.warmup.DiagnosticTask]: Total memory 3,161,694,208
 INFO [null]: Total physical memory 3,161,694,208
