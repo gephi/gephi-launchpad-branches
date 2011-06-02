@@ -1,7 +1,0 @@
-/home/keheliya/Projects/gephibzr/gephimaven/gephi/application/target/gephi/platform=1306928385000
-/home/keheliya/Projects/gephibzr/gephimaven/gephi/application/target/gephi/bin/../bin=1306928385000
-/home/keheliya/Projects/gephibzr/gephimaven/gephi/application/target/gephi/bin/../gephi=1306928385000
-/home/keheliya/Projects/gephibzr/gephimaven/gephi/application/target/gephi/bin/../platform=1306928385000
-/home/keheliya/Projects/gephibzr/gephimaven/gephi/application/target/gephi/bin/../etc=1306928385000
-/home/keheliya/Projects/gephibzr/gephimaven/gephi/application/target/userdir=1306928385000
-crc=7

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module codename="org.netbeans.swing.plaf">
-    <module_version install_time="1306849109340" last="true" origin="installer" specification_version="1.19.1">
+    <module_version install_time="1306957430820" last="true" origin="installer" specification_version="1.19.1">
         <file crc="4198966476" name="config/Modules/org-netbeans-swing-plaf.xml"/>
         <file crc="1427924878" name="modules/org-netbeans-swing-plaf.jar"/>
     </module_version>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module codename="org.netbeans.libs.jna/1">
-    <module_version install_time="1306849108006" last="true" origin="installer" specification_version="1.13.1">
+    <module_version install_time="1306957426646" last="true" origin="installer" specification_version="1.13.1">
         <file crc="1637808577" name="config/Modules/org-netbeans-libs-jna.xml"/>
         <file crc="2281843019" name="modules/ext/jna-3.2.7.jar"/>
         <file crc="2933637261" name="modules/lib/amd64/Linux/libjnidispatch.so"/>

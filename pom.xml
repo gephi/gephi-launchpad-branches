@@ -8,6 +8,7 @@
     <packaging>pom</packaging>
 
     <name>Gephi Project</name>
+  
 
     <repositories>
         <!--
@@ -43,6 +44,8 @@
                         <brandingToken>${brandingToken}</brandingToken>
                         <cluster>${brandingToken}</cluster>
                         <useOSGiDependencies>true</useOSGiDependencies>
+                        <keystore>${maven.nbm.sign.keystore}</keystore>
+                    <keystorealias>${maven.nbm.sign.alias}</keystorealias>
                     </configuration>
                 </plugin>
                 <plugin>
@@ -78,6 +81,7 @@
         <module>branding</module>
         <module>application</module>
     <module>gephi-graph-api</module>
+    <module>batik</module>
   </modules>
     <reporting>
         <plugins>
@@ -93,5 +97,7 @@
     <properties>
         <netbeans.version>RELEASE70</netbeans.version>
         <brandingToken>gephi</brandingToken>
+        <maven.nbm.sign.keystore>nbproject/private/keystore.ks</maven.nbm.sign.keystore>
+        <maven.nbm.sign.alias>gephi</maven.nbm.sign.alias>
     </properties>
 </project>
