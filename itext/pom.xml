@@ -8,10 +8,10 @@
   </parent>
 
     <groupId>org.gephi.lib</groupId>
-    <artifactId>beansbinding</artifactId>
+    <artifactId>itext</artifactId>
     <packaging>nbm</packaging>
 
-    <name>BeansBinding Wrapper</name>
+    <name>iText Wrapper</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -31,6 +31,11 @@
                 <enabled>false</enabled>
             </snapshots>
         </repository>
+        <repository>
+      <id>itextpdf.com</id>
+      <name>Maven Repository for iText</name>
+      <url>http://maven.itextpdf.com/</url>
+    </repository>
     </repositories>
 
     <dependencies>
@@ -39,11 +44,12 @@
             <artifactId>org-netbeans-api-annotations-common</artifactId>
             <version>RELEASE70</version>
         </dependency>
-       <dependency>
-    <groupId>net.java.dev.beansbinding</groupId>
-    <artifactId>beansbinding</artifactId>
-    <version>1.2.1</version>
-</dependency>
+        <dependency>
+      <groupId>com.itextpdf</groupId>
+      <artifactId>itextpdf</artifactId>
+      <version>5.0.2</version>
+      <scope>compile</scope>
+    </dependency>
     </dependencies>
 
     <build>
@@ -55,14 +61,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <publicPackages>
-                        <publicPackage>org.jdesktop.beansbinding</publicPackage>
-                        <publicPackage>org.jdesktop.beansbinding.ext</publicPackage>
-                        <publicPackage>org.jdesktop.el.*</publicPackage>
-                        <publicPackage>org.jdesktop.observablecollections</publicPackage>
-                        <publicPackage>org.jdesktop.swingbinding</publicPackage>
-                        <publicPackage>org.jdesktop.swingbinding.adapters</publicPackage>
-                        <publicPackage>org.jdesktop.swingbinding.impl</publicPackage>
-                        <publicPackage>org.netbeans.api.annotations.common</publicPackage>
+                        <publicPackage>com.itextpdf.text.*</publicPackage>
                     </publicPackages>
                 </configuration>
             </plugin>
@@ -89,5 +88,5 @@
             </plugin>
         </plugins>
     </build>
-    <version>1.2.1</version>
+    <version>5.0.1</version>
 </project>

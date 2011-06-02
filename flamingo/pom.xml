@@ -7,11 +7,11 @@
     <version>1.0-SNAPSHOT</version>
   </parent>
 
-    <groupId>org.gephi.lib</groupId>
-    <artifactId>beansbinding</artifactId>
+    <groupId>org.gephi.lib.</groupId>
+    <artifactId>flamingo</artifactId>
     <packaging>nbm</packaging>
 
-    <name>BeansBinding Wrapper</name>
+    <name>Flamingo Wrapper</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -40,9 +40,9 @@
             <version>RELEASE70</version>
         </dependency>
        <dependency>
-    <groupId>net.java.dev.beansbinding</groupId>
-    <artifactId>beansbinding</artifactId>
-    <version>1.2.1</version>
+    <groupId>com.github.insubstantial</groupId>
+    <artifactId>flamingo</artifactId>
+    <version>6.2</version>
 </dependency>
     </dependencies>
 
@@ -55,14 +55,19 @@
                 <extensions>true</extensions>
                 <configuration>
                     <publicPackages>
-                        <publicPackage>org.jdesktop.beansbinding</publicPackage>
-                        <publicPackage>org.jdesktop.beansbinding.ext</publicPackage>
-                        <publicPackage>org.jdesktop.el.*</publicPackage>
-                        <publicPackage>org.jdesktop.observablecollections</publicPackage>
-                        <publicPackage>org.jdesktop.swingbinding</publicPackage>
-                        <publicPackage>org.jdesktop.swingbinding.adapters</publicPackage>
-                        <publicPackage>org.jdesktop.swingbinding.impl</publicPackage>
-                        <publicPackage>org.netbeans.api.annotations.common</publicPackage>
+                        <publicPackage>org.pushingpixels.flamingo.api.bcb</publicPackage>
+                        <publicPackage>org.pushingpixels.flamingo.api.bcb.core</publicPackage>
+                        <publicPackage>org.pushingpixels.flamingo.api.common.*</publicPackage>
+                        <publicPackage>org.pushingpixels.flamingo.api.ribbon</publicPackage>
+                        <publicPackage>org.pushingpixels.flamingo.api.ribbon.resize</publicPackage>
+                        <publicPackage>org.pushingpixels.flamingo.api.svg</publicPackage>
+                        <publicPackage>org.pushingpixels.flamingo.internal.ui.bcb</publicPackage>
+                        <publicPackage>org.pushingpixels.flamingo.internal.ui.common</publicPackage>
+                        <publicPackage>org.pushingpixels.flamingo.internal.ui.common.popup</publicPackage>
+                        <publicPackage>org.pushingpixels.flamingo.internal.ui.ribbon</publicPackage>
+                        <publicPackage>org.pushingpixels.flamingo.internal.ui.ribbon.appmenu</publicPackage>
+                        <publicPackage>org.pushingpixels.flamingo.internal.utils</publicPackage>
+                        <publicPackage>org.pushingpixels.trident.*</publicPackage>
                     </publicPackages>
                 </configuration>
             </plugin>
@@ -89,5 +94,5 @@
             </plugin>
         </plugins>
     </build>
-    <version>1.2.1</version>
+    <version>5.0.1</version>
 </project>

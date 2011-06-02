@@ -83,7 +83,9 @@
         <module>gephi-graph-api</module>
         <module>batik</module>
         <module>beansbinding</module>
-    </modules>
+    <module>flamingo</module>
+    <module>itext</module>
+  </modules>
     <reporting>
         <plugins>
             <plugin>

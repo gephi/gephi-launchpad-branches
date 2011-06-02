@@ -1,0 +1,3 @@
+Manifest-Version: 1.0
+OpenIDE-Module-Localizing-Bundle: org/gephi/lib/itext/Bundle.properties
+OpenIDE-Module-Layer: org/gephi/lib/itext/layer.xml

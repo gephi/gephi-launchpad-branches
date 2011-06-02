@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<module codename="org.openide.text">
-    <module_version install_time="1306997795341" last="true" origin="installer" specification_version="6.36.1">
-        <file crc="2441864466" name="config/ModuleAutoDeps/org-openide-text.xml"/>
-        <file crc="1795978028" name="config/Modules/org-openide-text.xml"/>
-        <file crc="1555795994" name="modules/org-openide-text.jar"/>
-    </module_version>
-</module>
