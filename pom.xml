@@ -45,7 +45,7 @@
                         <cluster>${brandingToken}</cluster>
                         <useOSGiDependencies>true</useOSGiDependencies>
                         <keystore>${maven.nbm.sign.keystore}</keystore>
-                    <keystorealias>${maven.nbm.sign.alias}</keystorealias>
+                        <keystorealias>${maven.nbm.sign.alias}</keystorealias>
                     </configuration>
                 </plugin>
                 <plugin>
@@ -58,11 +58,11 @@
                         <target>1.6</target>
                     </configuration>
                 </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>2.3.1</version>
-            </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>2.3.1</version>
+                </plugin>
             </plugins>
         </pluginManagement>
         <plugins>
@@ -80,9 +80,10 @@
     <modules>
         <module>branding</module>
         <module>application</module>
-    <module>gephi-graph-api</module>
-    <module>batik</module>
-  </modules>
+        <module>gephi-graph-api</module>
+        <module>batik</module>
+        <module>beansbinding</module>
+    </modules>
     <reporting>
         <plugins>
             <plugin>

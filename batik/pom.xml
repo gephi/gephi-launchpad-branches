@@ -38,7 +38,7 @@
         <dependency>
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-netbeans-api-annotations-common</artifactId>
-            <version>RELEASE691</version>
+            <version>RELEASE70</version>
         </dependency>
         <dependency>
             <groupId>org.apache.xmlgraphics</groupId>

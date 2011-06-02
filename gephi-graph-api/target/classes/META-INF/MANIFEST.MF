@@ -3,7 +3,7 @@ OpenIDE-Module-Localizing-Bundle: org/gephi/Bundle.properties
 OpenIDE-Module-Layer: org/gephi/layer.xml
 OpenIDE-Module-Specification-Version: 1.0
 OpenIDE-Module-Implementation-Version: 1.0-20110602
-OpenIDE-Module-Build-Version: 201106011943
+OpenIDE-Module-Build-Version: 201106020656
 OpenIDE-Module: org.gephi.gephi.graph.api
 OpenIDE-Module-Public-Packages: -
 OpenIDE-Module-Requires: org.openide.modules.ModuleFormat1

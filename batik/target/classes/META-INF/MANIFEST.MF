@@ -4,8 +4,8 @@ OpenIDE-Module-Localizing-Bundle: org/gephi/lib/batik/Bundle.propertie
 OpenIDE-Module-Layer: org/gephi/lib/batik/layer.xml
 OpenIDE-Module-Specification-Version: 1.7
 OpenIDE-Module-Implementation-Version: 1.7
-OpenIDE-Module-Build-Version: 201106011944
-OpenIDE-Module: org.gephi.lib.batik/1
+OpenIDE-Module-Build-Version: 201106020656
+OpenIDE-Module: org.gephi.lib.batik
 OpenIDE-Module-Public-Packages: org.apache.batik.**, org.apache.fop.**
  , org.w3c.css.sac.*, org.w3c.css.sac.helpers.*, org.w3c.dom.**
 OpenIDE-Module-Requires: org.openide.modules.ModuleFormat1
@@ -30,5 +30,5 @@ Class-Path: ext/org.apache.xmlgraphics/batik-anim-1.7.jar ext/org.apac
  pache.avalon.framework/avalon-framework-impl-4.3.1.jar ext/org.apache
  .xmlgraphics/batik-svggen-1.7.jar
 OpenIDE-Module-Module-Dependencies: org.netbeans.api.annotations.commo
- n/1 > 1.5.1
+ n/1 > 1.8.1
 
