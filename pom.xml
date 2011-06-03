@@ -91,6 +91,7 @@
     <module>javamail</module>
     <module>jcalendar</module>    
     <module>JFreeChart</module>
+    <module>JodaWrapper</module>
   </modules>
     <reporting>
         <plugins>
