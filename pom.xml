@@ -83,13 +83,14 @@
         <module>gephi-graph-api</module>
         <module>batik</module>
         <module>beansbinding</module>
+        <module>CommonsCompress</module>
+    <module>Commons.Codec</module>
     <module>flamingo</module>
     <module>itext</module>
     <module>javacsv</module>
     <module>javamail</module>
-    <module>jcalendar</module>
-    <module>CommonsCompress</module>
-    <module>Commons.Codec</module>
+    <module>jcalendar</module>    
+    <module>JFreeChart</module>
   </modules>
     <reporting>
         <plugins>
