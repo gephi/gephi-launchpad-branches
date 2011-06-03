@@ -23,9 +23,6 @@ package org.gephi.visualization.apiimpl.shape;
 
 import java.awt.Dimension;
 import java.awt.Point;
-import org.gephi.lib.gleem.linalg.Mat4f;
-import org.gephi.lib.gleem.linalg.Vec4f;
-import org.gephi.visualization.api.selection.CameraBridge;
 import org.gephi.visualization.api.selection.Shape;
 
 /**
@@ -33,33 +30,38 @@ import org.gephi.visualization.api.selection.Shape;
  *
  * @author Vojtech Bardiovsky
  */
-public class Rectangle implements Shape {
+public class Rectangle extends AbstractShape {
 
-    private final Point origin;
-    private final Dimension dimension;
-    private CameraBridge cameraBridge;
+    Point origin, opposite;
+
+    public Rectangle(Point origin, Point opposite) {
+        this.origin = origin;
+        this.opposite = opposite;
+    }
 
     /**
      * @param origin Top left corner of the rectangle.
      * @param dimension Dimensions of the rectangle.
      */
     public Rectangle(Point origin, Dimension dimension) {
-        this.origin = origin;
-        this.dimension = dimension;
-    }
-
-    public boolean isInside3D(float x, float y, float z) {
-        Point point = cameraBridge.projectPoint(x, y, z);
-        return isInside2D(point.x, point.y);
+        this(origin, new Point(origin.x + dimension.width, origin.y + dimension.height));
     }
 
     public boolean isInside2D(int x, int y) {
-        return x >= origin.x && x <= origin.x + dimension.width &&
-               y >= origin.y && y <= origin.y + dimension.height;
+        return ((x >= origin.x && x <= opposite.x) || (x <= origin.x && x >= opposite.x)) &&
+               ((y >= origin.y && y <= opposite.y) || (y <= origin.y && y >= opposite.y));
     }
 
-    public void setCameraBridge(CameraBridge cameraBridge) {
-        this.cameraBridge = cameraBridge;
+    public static Rectangle initRectangle(int x, int y) {
+        return new Rectangle(new Point(x, y), new Dimension(0, 0));
+    }
+
+    public Shape continuousUpdate(int x, int y) {
+        return new Rectangle(origin, new Point(x, y));
+    }
+
+    public Shape singleUpdate(int x, int y) {
+        return initRectangle(x, y);
     }
 
 }

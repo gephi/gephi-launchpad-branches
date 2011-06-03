@@ -169,7 +169,7 @@ public interface VizConfig {
 
     boolean isBlending();
 
-    boolean isCameraControlEnable();
+    boolean isCameraControlEnabled();
 
     boolean isCleanDeletedModels();
 
@@ -213,7 +213,7 @@ public interface VizConfig {
 
     boolean isDisableLOD();
 
-    boolean isDraggingEnable();
+    boolean isDraggingEnabled();
 
     boolean isEnableAutoSelect();
 
@@ -245,7 +245,7 @@ public interface VizConfig {
 
     boolean isReduceFpsWhenMouseOut();
 
-    boolean isSelectionEnable();
+    boolean isSelectionEnabled();
 
     boolean isShowArrows();
 

@@ -122,7 +122,7 @@ public class VizConfigImpl implements VizConfig {
         return blending;
     }
 
-    public boolean isCameraControlEnable() {
+    public boolean isCameraControlEnabled() {
         return cameraControlEnable;
     }
 
@@ -226,7 +226,7 @@ public class VizConfigImpl implements VizConfig {
         return defaultShowEdges;
     }
 
-    public boolean isDraggingEnable() {
+    public boolean isDraggingEnabled() {
         return draggingEnable;
     }
 
@@ -306,7 +306,7 @@ public class VizConfigImpl implements VizConfig {
         return rectangleSelectionColor;
     }
 
-    public boolean isSelectionEnable() {
+    public boolean isSelectionEnabled() {
         return selectionEnable;
     }
 

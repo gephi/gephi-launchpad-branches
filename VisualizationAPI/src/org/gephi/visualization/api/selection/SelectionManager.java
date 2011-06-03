@@ -36,6 +36,10 @@ public interface SelectionManager {
 
     Collection<Node> getSelectedNodes();
 
+    void addSelection(Shape shape);
+
+    void removeSelection(Shape shape);
+
     void addChangeListener(ChangeListener changeListener);
 
     void blockSelection(boolean block);
