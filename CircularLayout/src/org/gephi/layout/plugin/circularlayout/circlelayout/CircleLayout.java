@@ -119,7 +119,6 @@ public class CircleLayout extends AbstractLayout implements Layout {
 
     @Override
     public void goAlgo() {
-        //Determine Radius of Circle
         graph = graphModel.getGraphVisible();
         float[] nodeCoords = new float[2];
         double tmpcirc = 0;
