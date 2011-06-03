@@ -88,6 +88,7 @@
     <module>javacsv</module>
     <module>javamail</module>
     <module>jcalendar</module>
+    <module>CommonsCompress</module>
   </modules>
     <reporting>
         <plugins>
