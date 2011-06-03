@@ -19,25 +19,29 @@ You should have received a copy of the GNU Affero General Public License
 along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package org.gephi.visualization.api.selection;
+package org.gephi.visualization.apiimpl.shape;
 
-public interface Shape {
+import java.awt.Point;
+import org.gephi.visualization.api.selection.CameraBridge;
+import org.gephi.visualization.api.selection.Shape;
 
-    void setCameraBridge(CameraBridge cameraBridge);
+/**
+ * Abstract class for shapes that can be defined by two points (e.g. rectangle
+ * is defined by origin corner and opposite corner).
+ *
+ * @author Vojtech Bardiovsky
+ */
+public abstract class AbstractShape implements Shape {
 
-    /**
-     * Returns true if given 3D coordinate point is inside the projection
-     * frustum.
-     */
-    boolean isInside3D(float x, float y, float z);
+    protected CameraBridge cameraBridge;
 
-    /**
-     * Returns true if given 2D screen coordinate point is inside the shape.
-     */
-    boolean isInside2D(int x, int y);
+    public void setCameraBridge(CameraBridge cameraBridge) {
+        this.cameraBridge = cameraBridge;
+    }
 
-    Shape singleUpdate(int x, int y);
-
-    Shape continuousUpdate(int x, int y);
+    public boolean isInside3D(float x, float y, float z) {
+        Point point = cameraBridge.projectPoint(x, y, z);
+        return isInside2D(point.x, point.y);
+    }
 
 }

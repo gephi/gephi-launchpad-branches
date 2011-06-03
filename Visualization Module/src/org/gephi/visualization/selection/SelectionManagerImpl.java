@@ -32,6 +32,7 @@ import org.gephi.graph.api.Node;
 import org.gephi.visualization.api.config.VizConfig;
 import org.gephi.visualization.api.selection.NodeContainer;
 import org.gephi.visualization.api.selection.SelectionManager;
+import org.gephi.visualization.api.selection.Shape;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.ServiceProvider;
 
@@ -53,6 +54,16 @@ public class SelectionManagerImpl implements SelectionManager {
     @Override
     public Collection<Node> getSelectedNodes() {
         return selectedNodes;
+    }
+
+    @Override
+    public void addSelection(Shape shape) {
+        nodeContainer.addToSelection(shape);
+    }
+
+    @Override
+    public void removeSelection(Shape shape) {
+        nodeContainer.removeFromSelection(shape);
     }
 
     @Override
@@ -93,12 +104,12 @@ public class SelectionManagerImpl implements SelectionManager {
     @Override
     public boolean isDirectMouseSelection() {
         VizConfig vizConfig = Lookup.getDefault().lookup(VizConfig.class);
-        return vizConfig.isSelectionEnable() && !vizConfig.isRectangleSelection() && !vizConfig.isDraggingEnable();
+        return vizConfig.isSelectionEnabled() && !vizConfig.isRectangleSelection() && !vizConfig.isDraggingEnabled();
     }
 
     @Override
     public boolean isDraggingEnabled() {
-        return Lookup.getDefault().lookup(VizConfig.class).isDraggingEnable();
+        return Lookup.getDefault().lookup(VizConfig.class).isDraggingEnabled();
     }
 
     @Override
@@ -109,12 +120,12 @@ public class SelectionManagerImpl implements SelectionManager {
     @Override
     public boolean isRectangleSelection() {
         VizConfig vizConfig = Lookup.getDefault().lookup(VizConfig.class);
-        return vizConfig.isSelectionEnable() && vizConfig.isRectangleSelection();
+        return vizConfig.isSelectionEnabled() && vizConfig.isRectangleSelection();
     }
 
     @Override
     public boolean isSelectionEnabled() {
-        return Lookup.getDefault().lookup(VizConfig.class).isSelectionEnable();
+        return Lookup.getDefault().lookup(VizConfig.class).isSelectionEnabled();
     }
 
     @Override

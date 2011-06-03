@@ -104,7 +104,8 @@ public final class Octree implements NodeContainer {
         if (fullyInside) {
             Iterator<Node> iterator = octant.getAllNodes();
             while (iterator.hasNext()) {
-                // process iterator.next();
+                // TODO for testing only
+                iterator.next().getNodeData().setColor(0, 255, 255);
             }
         } else {
             if (octant.hasChildren()) {
@@ -114,7 +115,8 @@ public final class Octree implements NodeContainer {
             } else {
                 Iterator<Node> iterator = octant.getNodes();
                 while (iterator.hasNext()) {
-                    // process iterator.next();
+                    // TODO for testing only
+                    iterator.next().getNodeData().setColor(0, 255, 255);
                 }
             }
         }
