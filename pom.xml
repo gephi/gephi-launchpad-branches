@@ -89,6 +89,7 @@
     <module>javamail</module>
     <module>jcalendar</module>
     <module>CommonsCompress</module>
+    <module>Commons.Codec</module>
   </modules>
     <reporting>
         <plugins>
