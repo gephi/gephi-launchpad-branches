@@ -19,39 +19,22 @@ You should have received a copy of the GNU Affero General Public License
 along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package org.gephi.visualization.pipeline.gl11;
+package org.gephi.visualization.view.pipeline;
 
 import javax.media.opengl.GL;
 import org.gephi.visualization.data.FrameData;
-import org.gephi.visualization.pipeline.Pipeline;
 
 /**
- * 3D pipeline based on OpenGL 1.1
+ * 
  *
  * @author Antonio Patriarca <antoniopatriarca@gmail.com>
  */
-public class GL11Pipeline3D implements Pipeline {
+public interface Pipeline {
 
-    final GL11NodePipeline3D nodePipeline;
+    public boolean init(GL gl);
 
-    public GL11Pipeline3D() {
-        this.nodePipeline = new GL11NodePipeline3D();
-    }
+    public void draw(GL gl, FrameData frameData);
 
-    @Override
-    public boolean init(GL gl) {
-        return this.nodePipeline.init(gl);
-    }
-
-    @Override
-    public void draw(GL gl, FrameData frameData) {
-        this.nodePipeline.draw(gl, frameData);
-    }
-
-    @Override
-    public void dispose(GL gl) {
-        this.nodePipeline.dispose(gl);
-    }
-
-
+    public void dispose(GL gl);
+    
 }

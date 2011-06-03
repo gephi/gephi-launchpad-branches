@@ -33,10 +33,10 @@ import javax.media.opengl.awt.GLCanvas;
 import org.gephi.visualization.controller.Controller;
 import org.gephi.visualization.data.FrameData;
 import org.gephi.visualization.data.FrameDataBridgeOut;
-import org.gephi.visualization.pipeline.Pipeline;
-import org.gephi.visualization.pipeline.gl11.GL11EdgesLayout3D;
-import org.gephi.visualization.pipeline.gl11.GL11NodesLayout3D;
-import org.gephi.visualization.pipeline.gl11.GL11Pipeline3D;
+import org.gephi.visualization.view.pipeline.Pipeline;
+import org.gephi.visualization.view.pipeline.gl11.GL11EdgesLayout3D;
+import org.gephi.visualization.view.pipeline.gl11.GL11NodesLayout3D;
+import org.gephi.visualization.view.pipeline.gl11.GL11Pipeline3D;
 
 /**
  * Class which controls the rendering loop.

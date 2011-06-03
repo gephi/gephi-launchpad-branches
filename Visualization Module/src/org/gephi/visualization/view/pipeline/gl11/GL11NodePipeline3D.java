@@ -19,7 +19,7 @@ You should have received a copy of the GNU Affero General Public License
 along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package org.gephi.visualization.pipeline.gl11;
+package org.gephi.visualization.view.pipeline.gl11;
 
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
@@ -31,7 +31,7 @@ import org.gephi.lib.gleem.linalg.Vec4f;
 import org.gephi.visualization.camera.Camera;
 import org.gephi.visualization.data.FrameData;
 import org.gephi.visualization.data.buffer.VizNodeBuffer;
-import org.gephi.visualization.pipeline.Pipeline;
+import org.gephi.visualization.view.pipeline.Pipeline;
 
 /**
  * 3D Node pipeline using OpenGL 1.1

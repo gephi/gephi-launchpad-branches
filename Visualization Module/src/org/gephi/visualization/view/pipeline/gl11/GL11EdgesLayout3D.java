@@ -19,7 +19,7 @@ You should have received a copy of the GNU Affero General Public License
 along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package org.gephi.visualization.pipeline.gl11;
+package org.gephi.visualization.view.pipeline.gl11;
 
 import java.nio.ByteBuffer;
 import org.gephi.graph.api.Edge;
