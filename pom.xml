@@ -85,6 +85,9 @@
         <module>beansbinding</module>
     <module>flamingo</module>
     <module>itext</module>
+    <module>javacsv</module>
+    <module>javamail</module>
+    <module>jcalendar</module>
   </modules>
     <reporting>
         <plugins>

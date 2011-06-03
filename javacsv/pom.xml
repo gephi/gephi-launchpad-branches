@@ -2,16 +2,15 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-    <artifactId>gephi</artifactId>
-    <groupId>org.gephi</groupId>
-    <version>1.0-SNAPSHOT</version>
-  </parent>
+        <artifactId>gephi</artifactId>
+        <groupId>org.gephi</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
 
-    <groupId>org.gephi.lib</groupId>
-    <artifactId>beansbinding</artifactId>   
+    <groupId>org.gephi.lib.</groupId>
+    <artifactId>javacsv</artifactId>
+    <version>2.0</version>
     <packaging>nbm</packaging>
-
-    <name>BeansBinding Wrapper</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -39,11 +38,11 @@
             <artifactId>org-netbeans-api-annotations-common</artifactId>
             <version>RELEASE70</version>
         </dependency>
-       <dependency>
-    <groupId>net.java.dev.beansbinding</groupId>
-    <artifactId>beansbinding</artifactId>
-    <version>1.2.1</version>
-</dependency>
+        <dependency>
+            <groupId>net.sourceforge.javacsv</groupId>
+            <artifactId>javacsv</artifactId>
+            <version>2.0</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -55,14 +54,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <publicPackages>
-                        <publicPackage>org.jdesktop.beansbinding</publicPackage>
-                        <publicPackage>org.jdesktop.beansbinding.ext</publicPackage>
-                        <publicPackage>org.jdesktop.el.*</publicPackage>
-                        <publicPackage>org.jdesktop.observablecollections</publicPackage>
-                        <publicPackage>org.jdesktop.swingbinding</publicPackage>
-                        <publicPackage>org.jdesktop.swingbinding.adapters</publicPackage>
-                        <publicPackage>org.jdesktop.swingbinding.impl</publicPackage>
-                        <publicPackage>org.netbeans.api.annotations.common</publicPackage>
+                        <publicPackage>com.csvreader</publicPackage>
                     </publicPackages>
                 </configuration>
             </plugin>
@@ -89,5 +81,5 @@
             </plugin>
         </plugins>
     </build>
-    <version>1.2.1</version>
+    <name>JavaCSV Wrapper</name>
 </project>

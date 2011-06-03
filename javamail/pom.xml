@@ -7,11 +7,12 @@
     <version>1.0-SNAPSHOT</version>
   </parent>
 
-    <groupId>org.gephi.lib</groupId>
-    <artifactId>beansbinding</artifactId>   
+    <groupId>org.gephi.lib.</groupId>
+    <artifactId>javamail</artifactId>
+    <version>1.0</version>
     <packaging>nbm</packaging>
 
-    <name>BeansBinding Wrapper</name>
+    <name>JavaMail Wrapper</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -31,6 +32,12 @@
                 <enabled>false</enabled>
             </snapshots>
         </repository>
+        <repository>
+          <id>maven2-repository.dev.java.net</id>
+          <name>Java.net Repository for Maven</name>
+          <url>http://download.java.net/maven/2/</url>
+          <layout>default</layout>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -39,10 +46,10 @@
             <artifactId>org-netbeans-api-annotations-common</artifactId>
             <version>RELEASE70</version>
         </dependency>
-       <dependency>
-    <groupId>net.java.dev.beansbinding</groupId>
-    <artifactId>beansbinding</artifactId>
-    <version>1.2.1</version>
+        <dependency>
+  <groupId>com.sun.mail</groupId>
+  <artifactId>dsn</artifactId>
+  <version>1.4.3</version>
 </dependency>
     </dependencies>
 
@@ -55,14 +62,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <publicPackages>
-                        <publicPackage>org.jdesktop.beansbinding</publicPackage>
-                        <publicPackage>org.jdesktop.beansbinding.ext</publicPackage>
-                        <publicPackage>org.jdesktop.el.*</publicPackage>
-                        <publicPackage>org.jdesktop.observablecollections</publicPackage>
-                        <publicPackage>org.jdesktop.swingbinding</publicPackage>
-                        <publicPackage>org.jdesktop.swingbinding.adapters</publicPackage>
-                        <publicPackage>org.jdesktop.swingbinding.impl</publicPackage>
-                        <publicPackage>org.netbeans.api.annotations.common</publicPackage>
+                        <publicPackage>javax.mail.*</publicPackage>
                     </publicPackages>
                 </configuration>
             </plugin>
@@ -89,5 +89,4 @@
             </plugin>
         </plugins>
     </build>
-    <version>1.2.1</version>
 </project>
