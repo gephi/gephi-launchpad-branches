@@ -37,6 +37,7 @@ import org.gephi.visualization.view.pipeline.Pipeline;
 import org.gephi.visualization.view.pipeline.gl11.GL11EdgesLayout3D;
 import org.gephi.visualization.view.pipeline.gl11.GL11NodesLayout3D;
 import org.gephi.visualization.view.pipeline.gl11.GL11Pipeline3D;
+import org.gephi.visualization.view.pipeline.gl11.GL11UILayout;
 
 /**
  * Class which controls the rendering loop.
@@ -80,6 +81,7 @@ public class View implements GLEventListener {
         this.pipeline = new GL11Pipeline3D();
         this.bridge.setLayout(new GL11NodesLayout3D());
         this.bridge.setLayout(new GL11EdgesLayout3D());
+        this.bridge.setLayout(new GL11UILayout());
     }
     
     public Component getCanvas() {

@@ -19,29 +19,25 @@ You should have received a copy of the GNU Affero General Public License
 along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package org.gephi.visualization.api.selection;
+package org.gephi.visualization.view.ui;
 
-import java.util.List;
-import org.gephi.visualization.api.view.ui.UIPrimitive;
+import org.gephi.lib.gleem.linalg.Vec4f;
 
-public interface Shape {
+/**
+ * Class which defines how UIPrimitives are rendered.
+ *
+ * Antonio Patriarca <antoniopatriarca@gmail.com>
+ */
+public class UIStyle {
 
-    void setCameraBridge(CameraBridge cameraBridge);
+    public final Vec4f fillColor;
+    public final Vec4f borderColor;
 
-    /**
-     * Returns true if given 3D coordinate point is inside the projection
-     * frustum.
-     */
-    boolean isInside3D(float x, float y, float z);
+    public float borderWidth;
 
-    /**
-     * Returns true if given 2D screen coordinate point is inside the shape.
-     */
-    boolean isInside2D(int x, int y);
+    public UIStyle() {
+        this.fillColor = new Vec4f();
+        this.borderColor = new Vec4f();
+    }
 
-    Shape singleUpdate(int x, int y);
-
-    Shape continuousUpdate(int x, int y);
-
-    public UIPrimitive getUIPrimitive();
 }

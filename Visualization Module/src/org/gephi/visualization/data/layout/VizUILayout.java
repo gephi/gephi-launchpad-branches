@@ -19,29 +19,23 @@ You should have received a copy of the GNU Affero General Public License
 along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package org.gephi.visualization.api.selection;
+package org.gephi.visualization.data.layout;
 
-import java.util.List;
+import java.nio.ByteBuffer;
+import org.gephi.visualization.api.selection.Shape;
 import org.gephi.visualization.api.view.ui.UIPrimitive;
+import org.gephi.visualization.utils.Pair;
+import org.gephi.visualization.view.ui.UIStyle;
 
-public interface Shape {
+/**
+ * Interface which controls how UI shapes are stored in the buffers.
+ *
+ * @author Antonio Patriarca <antoniopatriarca@gmail.com>
+ */
+public interface VizUILayout extends VizLayout<Pair<Shape, UIStyle>> {
 
-    void setCameraBridge(CameraBridge cameraBridge);
+    public UIPrimitive.Shape shape(ByteBuffer b);
+    public float[] data(ByteBuffer b);
+    public UIStyle style(ByteBuffer b);
 
-    /**
-     * Returns true if given 3D coordinate point is inside the projection
-     * frustum.
-     */
-    boolean isInside3D(float x, float y, float z);
-
-    /**
-     * Returns true if given 2D screen coordinate point is inside the shape.
-     */
-    boolean isInside2D(int x, int y);
-
-    Shape singleUpdate(int x, int y);
-
-    Shape continuousUpdate(int x, int y);
-
-    public UIPrimitive getUIPrimitive();
 }

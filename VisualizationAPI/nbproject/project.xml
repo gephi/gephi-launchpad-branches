@@ -61,8 +61,10 @@
                 <package>org.gephi.visualization.api.config</package>
                 <package>org.gephi.visualization.api.event</package>
                 <package>org.gephi.visualization.api.selection</package>
+                <package>org.gephi.visualization.api.view.ui</package>
                 <package>org.gephi.visualization.apiimpl</package>
-                <package>org.gephi.visualization.apiimpl.selection</package>
+                <package>org.gephi.visualization.apiimpl.config</package>
+                <package>org.gephi.visualization.apiimpl.shape</package>
             </public-packages>
         </data>
     </configuration>

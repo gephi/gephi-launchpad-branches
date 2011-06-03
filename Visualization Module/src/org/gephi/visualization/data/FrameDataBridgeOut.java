@@ -23,6 +23,7 @@ package org.gephi.visualization.data;
 
 import org.gephi.visualization.data.layout.VizEdgeLayout;
 import org.gephi.visualization.data.layout.VizNodeLayout;
+import org.gephi.visualization.data.layout.VizUILayout;
 
 /**
  * Interface used by View to retrieve frame data from Model.
@@ -35,5 +36,6 @@ public interface FrameDataBridgeOut {
 
     public void setLayout(VizNodeLayout layout);
     public void setLayout(VizEdgeLayout layout);
+    public void setLayout(VizUILayout layout);
     
 }

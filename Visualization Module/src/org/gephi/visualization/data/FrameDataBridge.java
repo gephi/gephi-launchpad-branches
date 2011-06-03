@@ -25,10 +25,13 @@ import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 import org.gephi.graph.api.Edge;
 import org.gephi.graph.api.Node;
+import org.gephi.visualization.api.selection.Shape;
 import org.gephi.visualization.camera.Camera;
 import org.gephi.visualization.data.FrameData;
 import org.gephi.visualization.data.layout.VizEdgeLayout;
 import org.gephi.visualization.data.layout.VizNodeLayout;
+import org.gephi.visualization.data.layout.VizUILayout;
+import org.gephi.visualization.view.ui.UIStyle;
 
 /**
  * Class used to exchange frame data information between Model and View.
@@ -39,6 +42,7 @@ public class FrameDataBridge implements FrameDataBridgeIn, FrameDataBridgeOut {
 
     private VizNodeLayout nodeLayout;
     private VizEdgeLayout edgeLayout;
+    private VizUILayout uiLayout;
 
     private final Queue<FrameDataBuilder> waitingQueue;
     private FrameDataBuilder currentBuilder;
@@ -73,7 +77,7 @@ public class FrameDataBridge implements FrameDataBridgeIn, FrameDataBridgeOut {
         this.currentBuilder = this.waitingQueue.poll();
 
         if (this.currentBuilder == null) {
-            this.currentBuilder = new FrameDataBuilder(this.nodeLayout, this.edgeLayout);
+            this.currentBuilder = new FrameDataBuilder(this.nodeLayout, this.edgeLayout, this.uiLayout);
         }
 
         this.currentBuilder.setCamera(camera);
@@ -94,6 +98,13 @@ public class FrameDataBridge implements FrameDataBridgeIn, FrameDataBridgeOut {
     }
 
     @Override
+    public void add(Shape shape, UIStyle style) {
+        if (this.isUpdating) {
+            this.currentBuilder.add(shape, style);
+        }
+    }
+
+    @Override
     public void endFrame() {
         if (!this.isUpdating) return;
 
@@ -101,7 +112,7 @@ public class FrameDataBridge implements FrameDataBridgeIn, FrameDataBridgeOut {
             if (this.newFrameData != null &&
                     this.newFrameData.nodeLayout() == this.nodeLayout &&
                     this.newFrameData.edgeLayout() == this.edgeLayout) {
-                FrameDataBuilder newBuilder = new FrameDataBuilder(this.newFrameData.nodeBuffer(), this.newFrameData.edgeBuffer());
+                FrameDataBuilder newBuilder = new FrameDataBuilder(this.newFrameData.nodeBuffer(), this.newFrameData.edgeBuffer(), this.newFrameData.uiBuffer());
                 this.waitingQueue.offer(newBuilder);
             }
             this.newFrameData = this.currentBuilder.createFrameData();
@@ -126,6 +137,13 @@ public class FrameDataBridge implements FrameDataBridgeIn, FrameDataBridgeOut {
     }
 
     @Override
+    public void setLayout(VizUILayout layout) {
+        synchronized(this.lock) {
+            this.uiLayout = layout;
+        }
+    }
+
+    @Override
     public FrameData updateCurrent() {
         synchronized(this.lock) {
             if (this.newFrameData == null) {
@@ -140,7 +158,7 @@ public class FrameDataBridge implements FrameDataBridgeIn, FrameDataBridgeOut {
                 if (this.oldFrameData != null &&
                     this.oldFrameData.nodeLayout() == this.nodeLayout &&
                     this.oldFrameData.edgeLayout() == this.edgeLayout) {
-                    FrameDataBuilder newBuilder = new FrameDataBuilder(this.oldFrameData.nodeBuffer(), this.oldFrameData.edgeBuffer());
+                    FrameDataBuilder newBuilder = new FrameDataBuilder(this.oldFrameData.nodeBuffer(), this.oldFrameData.edgeBuffer(), this.oldFrameData.uiBuffer());
                     this.waitingQueue.offer(newBuilder);
                 }
 

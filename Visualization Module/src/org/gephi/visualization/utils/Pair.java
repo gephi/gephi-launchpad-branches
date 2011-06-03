@@ -19,29 +19,31 @@ You should have received a copy of the GNU Affero General Public License
 along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package org.gephi.visualization.api.selection;
+package org.gephi.visualization.utils;
 
-import java.util.List;
-import org.gephi.visualization.api.view.ui.UIPrimitive;
+/**
+ * Class representing a pair of value to be used with generics requiring a 
+ * single type.
+ *
+ * Antonio Patriarca <antoniopatriarca@gmail.com>
+ */
+public class Pair<F, S> {
+    public final F first;
+    public final S second;
 
-public interface Shape {
 
-    void setCameraBridge(CameraBridge cameraBridge);
+    private Pair(F first, S second) {
+        this.first = first;
+        this.second = second;
+    }
 
-    /**
-     * Returns true if given 3D coordinate point is inside the projection
-     * frustum.
-     */
-    boolean isInside3D(float x, float y, float z);
 
-    /**
-     * Returns true if given 2D screen coordinate point is inside the shape.
-     */
-    boolean isInside2D(int x, int y);
+    public static <F, S> Pair<F, S> of(F first, S second) {
+        return new Pair<F, S>(first, second);
+    }
 
-    Shape singleUpdate(int x, int y);
-
-    Shape continuousUpdate(int x, int y);
-
-    public UIPrimitive getUIPrimitive();
+    @Override
+    public String toString() {
+        return "(" + first + ", " + second + ')';
+    }
 }

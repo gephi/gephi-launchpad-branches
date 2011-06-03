@@ -24,8 +24,10 @@ package org.gephi.visualization.data;
 import org.gephi.visualization.camera.Camera;
 import org.gephi.visualization.data.buffer.VizEdgeBuffer;
 import org.gephi.visualization.data.buffer.VizNodeBuffer;
+import org.gephi.visualization.data.buffer.VizUIBuffer;
 import org.gephi.visualization.data.layout.VizEdgeLayout;
 import org.gephi.visualization.data.layout.VizNodeLayout;
+import org.gephi.visualization.data.layout.VizUILayout;
 
 /**
  * Class used to get the current graph data in View.
@@ -37,11 +39,13 @@ public class FrameData {
     private final Camera camera;
     private final VizNodeBuffer nodeBuffer;
     private final VizEdgeBuffer edgeBuffer;
+    private final VizUIBuffer uiBuffer;
 
-    FrameData(Camera camera, VizNodeBuffer nodeBuffer, VizEdgeBuffer edgeBuffer) {
+    FrameData(Camera camera, VizNodeBuffer nodeBuffer, VizEdgeBuffer edgeBuffer, VizUIBuffer uiBuffer) {
         this.camera = camera;
         this.nodeBuffer = nodeBuffer;
         this.edgeBuffer = edgeBuffer;
+        this.uiBuffer = uiBuffer;
     }
 
     public Camera camera() {
@@ -62,5 +66,13 @@ public class FrameData {
 
     public VizEdgeLayout edgeLayout() {
         return (VizEdgeLayout) this.edgeBuffer.layout();
+    }
+
+    public VizUIBuffer uiBuffer() {
+        return this.uiBuffer;
+    }
+
+    public VizUILayout uiLayout() {
+        return (VizUILayout) this.uiBuffer.layout();
     }
 }

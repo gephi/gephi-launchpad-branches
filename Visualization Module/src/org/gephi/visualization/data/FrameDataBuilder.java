@@ -23,12 +23,17 @@ package org.gephi.visualization.data;
 
 import org.gephi.graph.api.Edge;
 import org.gephi.graph.api.Node;
+import org.gephi.visualization.api.selection.Shape;
 import org.gephi.visualization.camera.Camera;
 import org.gephi.visualization.data.buffer.VizBufferBuilder;
 import org.gephi.visualization.data.buffer.VizEdgeBuffer;
 import org.gephi.visualization.data.buffer.VizNodeBuffer;
+import org.gephi.visualization.data.buffer.VizUIBuffer;
 import org.gephi.visualization.data.layout.VizEdgeLayout;
 import org.gephi.visualization.data.layout.VizNodeLayout;
+import org.gephi.visualization.data.layout.VizUILayout;
+import org.gephi.visualization.utils.Pair;
+import org.gephi.visualization.view.ui.UIStyle;
 
 /**
  * Class used to create FrameData objects.
@@ -40,17 +45,20 @@ public class FrameDataBuilder {
     private Camera camera;
     private final VizBufferBuilder<Node> nodeBufferBuilder;
     private final VizBufferBuilder<Edge> edgeBufferBuilder;
+    private final VizBufferBuilder<Pair<Shape, UIStyle>> uiBufferBuilder;
 
-    public FrameDataBuilder(VizNodeLayout nodeLayout, VizEdgeLayout edgeLayout) {
+    public FrameDataBuilder(VizNodeLayout nodeLayout, VizEdgeLayout edgeLayout, VizUILayout uiLayout) {
         this.camera = null;
         this.nodeBufferBuilder = new VizBufferBuilder<Node>(nodeLayout);
         this.edgeBufferBuilder = new VizBufferBuilder<Edge>(edgeLayout);
+        this.uiBufferBuilder = new VizBufferBuilder<Pair<Shape, UIStyle>>(uiLayout);
     }
 
-    public FrameDataBuilder(VizNodeBuffer nodeBuffer, VizEdgeBuffer edgeBuffer) {
+    public FrameDataBuilder(VizNodeBuffer nodeBuffer, VizEdgeBuffer edgeBuffer, VizUIBuffer uiBuffer) {
         this.camera = null;
         this.nodeBufferBuilder = new VizBufferBuilder<Node>(nodeBuffer);
         this.edgeBufferBuilder = new VizBufferBuilder<Edge>(edgeBuffer);
+        this.uiBufferBuilder = new VizBufferBuilder<Pair<Shape, UIStyle>>(uiBuffer);
     }
 
     public void setCamera(Camera camera) {
@@ -65,10 +73,15 @@ public class FrameDataBuilder {
         this.edgeBufferBuilder.add(edge);
     }
 
+    public void add(Shape shape, UIStyle style) {
+        this.uiBufferBuilder.add(Pair.of(shape, style));
+    }
+
     public FrameData createFrameData() {
         VizNodeBuffer nodeBuffer = VizNodeBuffer.wrap(this.nodeBufferBuilder.createVizBuffer());
         VizEdgeBuffer edgeBuffer = VizEdgeBuffer.wrap(this.edgeBufferBuilder.createVizBuffer());
+        VizUIBuffer uiBuffer = VizUIBuffer.wrap(this.uiBufferBuilder.createVizBuffer());
 
-        return new FrameData(camera, nodeBuffer, edgeBuffer);
+        return new FrameData(camera, nodeBuffer, edgeBuffer, uiBuffer);
     }
 }

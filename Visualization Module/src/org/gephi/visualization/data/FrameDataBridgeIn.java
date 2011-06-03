@@ -23,7 +23,9 @@ package org.gephi.visualization.data;
 
 import org.gephi.graph.api.Edge;
 import org.gephi.graph.api.Node;
+import org.gephi.visualization.api.selection.Shape;
 import org.gephi.visualization.camera.Camera;
+import org.gephi.visualization.view.ui.UIStyle;
 
 /**
  * Interface used by Model to send frame data to View.
@@ -37,6 +39,8 @@ public interface FrameDataBridgeIn {
     public void add(Node node);
 
     public void add(Edge edge);
+
+    public void add(Shape shape, UIStyle style);
 
     public void endFrame();
 

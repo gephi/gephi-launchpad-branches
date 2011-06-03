@@ -23,7 +23,12 @@ package org.gephi.visualization.apiimpl.shape;
 
 import java.awt.Dimension;
 import java.awt.Point;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import org.gephi.lib.gleem.linalg.Vec2f;
 import org.gephi.visualization.api.selection.Shape;
+import org.gephi.visualization.api.view.ui.UIPrimitive;
 
 /**
  * Class representing a rectangular shape.
@@ -62,6 +67,10 @@ public class Rectangle extends AbstractShape {
 
     public Shape singleUpdate(int x, int y) {
         return initRectangle(x, y);
+    }
+
+    public UIPrimitive getUIPrimitive() {
+        return UIPrimitive.orientedQuad(new Vec2f((float)origin.x, (float)origin.y), new Vec2f((float)opposite.x, (float)opposite.y));
     }
 
 }

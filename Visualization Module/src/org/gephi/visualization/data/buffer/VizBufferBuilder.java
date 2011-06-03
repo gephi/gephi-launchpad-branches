@@ -84,7 +84,7 @@ public class VizBufferBuilder<T> {
         this.buffers = newBuffers;
         this.currentBuffer = 0;
 
-        return new VizBuffer(this.layout, Collections.unmodifiableList(oldBuffers));
+        return new VizBuffer<T>(this.layout, Collections.unmodifiableList(oldBuffers));
     }
 
     public void add(T e) {

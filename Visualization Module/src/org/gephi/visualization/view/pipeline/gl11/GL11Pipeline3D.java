@@ -33,24 +33,28 @@ import org.gephi.visualization.view.pipeline.Pipeline;
 public class GL11Pipeline3D implements Pipeline {
 
     final GL11NodePipeline3D nodePipeline;
+    final GL11UIPipeline uiPipeline;
 
     public GL11Pipeline3D() {
         this.nodePipeline = new GL11NodePipeline3D();
+        this.uiPipeline = new GL11UIPipeline();
     }
 
     @Override
     public boolean init(GL gl) {
-        return this.nodePipeline.init(gl);
+        return this.nodePipeline.init(gl) && this.uiPipeline.init(gl);
     }
 
     @Override
     public void draw(GL gl, FrameData frameData) {
         this.nodePipeline.draw(gl, frameData);
+        this.uiPipeline.draw(gl, frameData);
     }
 
     @Override
     public void dispose(GL gl) {
         this.nodePipeline.dispose(gl);
+        this.uiPipeline.dispose(gl);
     }
 
 

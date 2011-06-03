@@ -21,6 +21,7 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 
 package org.gephi.visualization.model;
 
+import java.awt.Point;
 import javax.annotation.Generated;
 import org.gephi.graph.api.Graph;
 import org.gephi.graph.api.GraphController;
@@ -28,13 +29,17 @@ import org.gephi.graph.api.GraphModel;
 import org.gephi.graph.api.Node;
 import org.gephi.graph.api.NodeData;
 import org.gephi.lib.gleem.linalg.Vec3f;
+import org.gephi.lib.gleem.linalg.Vec4f;
 import org.gephi.project.api.ProjectController;
 import org.gephi.project.api.Workspace;
 import org.gephi.project.api.WorkspaceListener;
+import org.gephi.visualization.api.selection.Shape;
+import org.gephi.visualization.apiimpl.shape.Rectangle;
 import org.gephi.visualization.camera.Camera;
 import org.gephi.visualization.controller.Controller;
 import org.gephi.visualization.data.FrameDataBridgeIn;
 import org.gephi.visualization.geometry.AABB;
+import org.gephi.visualization.view.ui.UIStyle;
 import org.openide.util.Lookup;
 
 /**
@@ -118,6 +123,14 @@ public class Model implements Runnable, WorkspaceListener {
             for (Node n : graph.getNodes()) {
                 this.bridge.add(n);
             }
+
+            // ui test
+            Shape shape = new Rectangle(new Point(10, 10), new Point(100, 100));
+            UIStyle style = new UIStyle();
+            style.fillColor.set(0.0f, 0.0f, 1.0f, 0.3f);
+            style.borderColor.set(0.0f, 0.0f, 1.0f, 1.0f);
+            style.borderWidth = 3.0f;
+            this.bridge.add(shape, style);
 
             this.controller.endUpdateFrame(box);
             this.bridge.endFrame();
