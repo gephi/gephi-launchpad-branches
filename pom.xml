@@ -92,6 +92,7 @@
     <module>jcalendar</module>    
     <module>JFreeChart</module>
     <module>JodaWrapper</module>
+    <module>SwingX</module>
   </modules>
     <reporting>
         <plugins>
