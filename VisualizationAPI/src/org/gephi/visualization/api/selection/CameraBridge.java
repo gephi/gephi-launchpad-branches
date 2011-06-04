@@ -23,32 +23,13 @@ package org.gephi.visualization.api.selection;
 
 import java.awt.Point;
 import org.gephi.lib.gleem.linalg.Mat4f;
-import org.gephi.lib.gleem.linalg.Vec3f;
 /**
  * Interface for accessing visualization data crucial to frustum intersection 
- * computing.
+ * computing. Uses only readonly information from the camera.
  *
  * @author Vojtech Bardiovsky
  */
 public interface CameraBridge {
-
-    public Vec3f frontVector();
-
-    public Vec3f upVector();
-
-    public Vec3f rightVector();
-
-    public Vec3f position();
-
-    public float imageWidth();
-
-    public float imageHeight();
-
-    public float near();
-
-    public float far();
-
-    public float fov();
 
     public Mat4f viewMatrix();
 

@@ -39,6 +39,7 @@ import org.gephi.visualization.camera.Camera;
 import org.gephi.visualization.controller.Controller;
 import org.gephi.visualization.data.FrameDataBridgeIn;
 import org.gephi.visualization.geometry.AABB;
+import org.gephi.visualization.utils.Pair;
 import org.gephi.visualization.view.ui.UIStyle;
 import org.openide.util.Lookup;
 
@@ -124,13 +125,9 @@ public class Model implements Runnable, WorkspaceListener {
                 this.bridge.add(n);
             }
 
-            // ui test
-            Shape shape = new Rectangle(new Point(10, 10), new Point(100, 100));
-            UIStyle style = new UIStyle();
-            style.fillColor.set(0.0f, 0.0f, 1.0f, 0.3f);
-            style.borderColor.set(0.0f, 0.0f, 1.0f, 1.0f);
-            style.borderWidth = 3.0f;
-            this.bridge.add(shape, style);
+            for (Pair<Shape, UIStyle> pair : this.controller.getShapes()) {
+                this.bridge.add(pair.first, pair.second);
+            }
 
             this.controller.endUpdateFrame(box);
             this.bridge.endFrame();

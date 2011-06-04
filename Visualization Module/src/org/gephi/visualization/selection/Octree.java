@@ -29,7 +29,9 @@ import org.gephi.graph.api.Graph;
 import org.gephi.graph.api.Node;
 import org.gephi.graph.api.NodeData;
 import org.gephi.graph.api.NodeIterator;
+import org.gephi.visualization.api.selection.CameraBridge;
 import org.gephi.visualization.api.selection.NodeContainer;
+import org.gephi.visualization.controller.Controller;
 
 public final class Octree implements NodeContainer {
 
@@ -88,8 +90,9 @@ public final class Octree implements NodeContainer {
         float[][] cornerNodes = octant.getCornerCoordinates();
         boolean intersecting = false;
         boolean fullyInside = true;
+        CameraBridge cameraBridge = Controller.getInstance().getCameraBridge();
         for (int i = 0; i < cornerNodes.length; i++) {
-            if (shape.isInside3D(cornerNodes[i][0], cornerNodes[i][1], cornerNodes[i][2])) {
+            if (shape.isInside3D(cornerNodes[i][0], cornerNodes[i][1], cornerNodes[i][2], cameraBridge)) {
                 intersecting = true;
             } else {
                 fullyInside = false;
@@ -194,7 +197,7 @@ class Octant {
      */
     public float[][] getCornerCoordinates() {
         float[][] coordinates = new float[8][3];
-        for (int i = 0; i < octants.length; i++) {
+        for (int i = 0; i < 8; i++) {
             coordinates[i][0] = x + (i & 1) * size;
             coordinates[i][1] = y + (i & 2) * size;
             coordinates[i][2] = z + (i & 4) * size;

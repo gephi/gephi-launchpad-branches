@@ -33,13 +33,7 @@ import org.gephi.visualization.api.selection.Shape;
  */
 public abstract class AbstractShape implements Shape {
 
-    protected CameraBridge cameraBridge;
-
-    public void setCameraBridge(CameraBridge cameraBridge) {
-        this.cameraBridge = cameraBridge;
-    }
-
-    public boolean isInside3D(float x, float y, float z) {
+    public boolean isInside3D(float x, float y, float z, CameraBridge cameraBridge) {
         Point point = cameraBridge.projectPoint(x, y, z);
         return isInside2D(point.x, point.y);
     }

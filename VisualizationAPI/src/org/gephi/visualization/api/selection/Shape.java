@@ -21,18 +21,15 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 
 package org.gephi.visualization.api.selection;
 
-import java.util.List;
 import org.gephi.visualization.api.view.ui.UIPrimitive;
 
 public interface Shape {
-
-    void setCameraBridge(CameraBridge cameraBridge);
 
     /**
      * Returns true if given 3D coordinate point is inside the projection
      * frustum.
      */
-    boolean isInside3D(float x, float y, float z);
+    boolean isInside3D(float x, float y, float z, CameraBridge cameraBridge);
 
     /**
      * Returns true if given 2D screen coordinate point is inside the shape.
@@ -44,4 +41,5 @@ public interface Shape {
     Shape continuousUpdate(int x, int y);
 
     public UIPrimitive getUIPrimitive();
+    
 }

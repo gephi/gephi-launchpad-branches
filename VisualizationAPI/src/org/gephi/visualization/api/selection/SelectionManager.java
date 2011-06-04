@@ -34,6 +34,8 @@ import org.gephi.graph.api.Node;
 
 public interface SelectionManager {
 
+    void initialize();
+
     Collection<Node> getSelectedNodes();
 
     void addSelection(Shape shape);

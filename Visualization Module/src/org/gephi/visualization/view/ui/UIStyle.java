@@ -40,4 +40,12 @@ public class UIStyle {
         this.borderColor = new Vec4f();
     }
 
+    public static UIStyle createDefault() {
+        UIStyle style = new UIStyle();
+        style.fillColor.set(0.0f, 0.0f, 1.0f, 0.3f);
+        style.borderColor.set(0.0f, 0.0f, 1.0f, 1.0f);
+        style.borderWidth = 3.0f;
+        return style;
+    }
+
 }

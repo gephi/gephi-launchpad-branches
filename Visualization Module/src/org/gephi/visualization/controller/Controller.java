@@ -23,6 +23,7 @@ package org.gephi.visualization.controller;
 
 
 import java.awt.Dimension;
+import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -30,10 +31,24 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
+import org.gephi.lib.gleem.linalg.Mat4f;
 import org.gephi.lib.gleem.linalg.Vec3f;
+import org.gephi.project.api.ProjectController;
+import org.gephi.project.api.Workspace;
+import org.gephi.project.api.WorkspaceListener;
 import org.gephi.visualization.api.MotionManager;
+import org.gephi.visualization.api.selection.CameraBridge;
+import org.gephi.visualization.api.selection.SelectionManager;
+import org.gephi.visualization.api.selection.Shape;
 import org.gephi.visualization.camera.Camera;
 import org.gephi.visualization.geometry.AABB;
+import org.gephi.visualization.utils.Pair;
+import org.gephi.visualization.view.ui.UIStyle;
+import org.openide.util.Lookup;
 
 /**
  *
@@ -42,11 +57,14 @@ import org.gephi.visualization.geometry.AABB;
 public class Controller implements KeyListener, MouseListener, MouseMotionListener, MouseWheelListener {
 
     private Camera camera;
+    private CameraBridge cameraBridge;
     private MotionManager motionManager;
 
     private static Controller instance;
 
     private Dimension viewSize;
+
+    private final Map<Shape, UIStyle> shapes;
 
     private boolean centerGraph = true;
     private boolean centerZero;
@@ -56,6 +74,48 @@ public class Controller implements KeyListener, MouseListener, MouseMotionListen
         this.camera = new Camera(300, 300, 100f, 10000.0f);
         this.motionManager = new MotionManager3D();
         this.viewSize = new Dimension();
+
+        Lookup.getDefault().lookup(ProjectController.class).addWorkspaceListener(new WorkspaceListener() {
+            @Override
+            public void initialize(Workspace workspace) {
+            }
+
+            @Override
+            public void select(Workspace workspace) {
+                Lookup.getDefault().lookup(SelectionManager.class).initialize();
+            }
+
+            @Override
+            public void unselect(Workspace workspace) {
+            }
+
+            @Override
+            public void close(Workspace workspace) {
+            }
+
+            @Override
+            public void disable() {
+            }
+        });
+
+        this.cameraBridge = new CameraBridge() {
+            @Override
+            public Mat4f viewMatrix() {
+                return Controller.this.camera.viewMatrix();
+            }
+
+            @Override
+            public Mat4f projectiveMatrix() {
+                return Controller.this.camera.projectiveMatrix();
+            }
+            
+            @Override
+            public Point projectPoint(float x, float y, float z) {
+                return Controller.this.camera.projectPoint(x, y, z);
+            }
+        };
+
+        this.shapes = new HashMap<Shape, UIStyle>();
     }
 
     public synchronized static Controller getInstance() {
@@ -76,6 +136,10 @@ public class Controller implements KeyListener, MouseListener, MouseMotionListen
 
     public Camera getCamera() {
         return this.camera;
+    }
+
+    public CameraBridge getCameraBridge() {
+        return this.cameraBridge;
     }
 
     public MotionManager getMotionManager() {
@@ -106,6 +170,25 @@ public class Controller implements KeyListener, MouseListener, MouseMotionListen
 
             centerZero = false;
         }
+    }
+
+    /**
+     * Adds the shape to be drawn for current frame. Represented as a set.
+     */
+    public void addShape(Shape shape, UIStyle uiStyle) {
+        shapes.put(shape, uiStyle);
+    }
+
+    /**
+     * Gets shapes to be drawn on screen and clears the buffer.
+     */
+    public Collection<Pair> getShapes() {
+        Collection<Pair> collection = new LinkedList<Pair>();
+        for (Map.Entry<Shape, UIStyle> entry: shapes.entrySet()) {
+            collection.add(Pair.of(entry.getKey(), entry.getValue()));
+        }
+        shapes.clear();
+        return collection;
     }
 
     public void beginRenderFrame() {

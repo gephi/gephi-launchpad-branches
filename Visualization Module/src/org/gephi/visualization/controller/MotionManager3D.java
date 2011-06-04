@@ -30,6 +30,7 @@ import org.gephi.visualization.api.config.VizConfig;
 import org.gephi.visualization.api.selection.SelectionManager;
 import org.gephi.visualization.api.selection.Shape;
 import org.gephi.visualization.apiimpl.shape.Rectangle;
+import org.gephi.visualization.view.ui.UIStyle;
 import org.openide.util.Lookup;
 
 public class MotionManager3D implements MotionManager {
@@ -42,6 +43,7 @@ public class MotionManager3D implements MotionManager {
     protected static float MOVE_FACTOR = 5.0f;
     protected static float ZOOM_FACTOR = 0.008f;
     protected static float ORBIT_FACTOR = 0.005f;
+
 
     @Override
     public void mousePressed(MouseEvent e) {
@@ -74,9 +76,10 @@ public class MotionManager3D implements MotionManager {
         mouseDrag[0] = e.getX();
         mouseDrag[1] = e.getY();
         VizConfig vizConfig = Lookup.getDefault().lookup(VizConfig.class);
-        if (vizConfig.isSelectionEnabled()) {
+        if (vizConfig.isSelectionEnabled() && selectionShape != null) {
             selectionShape = selectionShape.continuousUpdate(e.getX(), e.getY());
             Lookup.getDefault().lookup(SelectionManager.class).addSelection(selectionShape);
+            Controller.getInstance().addShape(selectionShape, UIStyle.createDefault());
         }
         if (vizConfig.isDraggingEnabled()) {
             if (SwingUtilities.isLeftMouseButton(e)) {

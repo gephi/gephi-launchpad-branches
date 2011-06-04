@@ -24,6 +24,12 @@ package org.gephi.visualization.api;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 
+/**
+ * Class for handling all basic user events that lead to motion. Handles graph
+ * dragging, selection shape creation, camera rotation etc.
+ *
+ * @author Vojtech Bardiovsky
+ */
 public interface MotionManager {
 
     public void mousePressed(MouseEvent e);

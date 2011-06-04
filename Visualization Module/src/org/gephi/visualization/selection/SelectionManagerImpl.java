@@ -28,7 +28,9 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import org.gephi.graph.api.Edge;
 import org.gephi.graph.api.Graph;
+import org.gephi.graph.api.GraphController;
 import org.gephi.graph.api.Node;
+import org.gephi.project.api.WorkspaceListener;
 import org.gephi.visualization.api.config.VizConfig;
 import org.gephi.visualization.api.selection.NodeContainer;
 import org.gephi.visualization.api.selection.SelectionManager;
@@ -46,8 +48,9 @@ public class SelectionManagerImpl implements SelectionManager {
 
     private List<ChangeListener> listeners = new ArrayList<ChangeListener>();
 
-    public void setGraph(Graph graph) {
-        nodeContainer = new Octree(graph);
+    @Override
+    public void initialize() {
+        nodeContainer = new Octree(Lookup.getDefault().lookup(GraphController.class).getModel().getGraph());
         selectedNodes = new ArrayList<Node>();
     }
 
@@ -93,7 +96,7 @@ public class SelectionManagerImpl implements SelectionManager {
 
     @Override
     public boolean isBlocked() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return blocked;
     }
 
     @Override
