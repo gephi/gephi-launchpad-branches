@@ -44,7 +44,10 @@ public class VizBuffer<T> {
     }
 
     public final boolean isEndOfBuffer() {
-        return this.currentBuffer >= this.buffers.size();
+        final int c = this.currentBuffer;
+        final int s = this.buffers.size();
+        
+        return (c >= s) || (c == (s-1) && !this.buffers.get(c).hasRemaining());
     }
 
     public final VizLayout<T> layout() {
@@ -73,7 +76,7 @@ public class VizBuffer<T> {
 
     public void rewind() {
         for (int i = 0; i <= this.currentBuffer; ++i) {
-            this.buffers.get(i).rewind();
+            this.buffers.get(i).position(0);
         }
 
         this.currentBuffer = 0;

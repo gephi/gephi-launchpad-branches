@@ -23,6 +23,7 @@ package org.gephi.visualization.view.pipeline.gl11;
 
 import java.nio.ByteBuffer;
 import org.gephi.visualization.api.view.ui.UIPrimitive;
+import org.gephi.visualization.api.view.ui.UIPrimitive.Shape;
 import org.gephi.visualization.data.layout.VizUILayout;
 import org.gephi.visualization.utils.Pair;
 import org.gephi.visualization.view.ui.UIStyle;
@@ -34,29 +35,11 @@ import org.gephi.visualization.view.ui.UIStyle;
  */
 public class GL11UILayout implements VizUILayout {
 
-    private UIPrimitive.Shape shape(ByteBuffer b) {
-        int i = b.position();
-        return UIPrimitive.Shape.values()[b.getInt(i)];
-    }
-
-    private float[] data(ByteBuffer b) {
-        int i = b.position() + 40;
-
-        int length = b.getInt(i);
-        i+=4;
-
-        float[] ret = new float[length];
-
-        for (int j = 0; j < length; ++j) {
-            ret[j] = b.getFloat(i+4*j);
-        }
-
-        return ret;
-    }
+    final static private int headerSize = 4 /* size */ + 4 /* shape */ + 4*9 /* style */;
 
     @Override
     public UIStyle style(ByteBuffer b) {
-        int i = b.position() + 4;
+        int i = b.position() + 8;
 
         UIStyle style = new UIStyle();
         style.fillColor.setX(b.getFloat(i));
@@ -79,17 +62,12 @@ public class GL11UILayout implements VizUILayout {
 
     @Override
     public boolean advance(ByteBuffer b) {
-        int i = b.position() + 40;
-        int length = b.getInt(i);
+        int i = b.position();
 
-        if (b.remaining() < (2*44 + 4*length)) {
-            return false;
-        }
-        
-        int length2 = b.getInt(i + 4*length + 44);
-        
-        if (b.remaining() > (4*length + 2*44 + 4*length2)) {
-            b.position(b.position() + 44 + 4*length);
+        final int totalSize = b.getInt(i);
+
+        if (b.remaining() > totalSize) {
+            b.position(b.position() + totalSize);
             return true;
         } else {
             return false;
@@ -98,10 +76,17 @@ public class GL11UILayout implements VizUILayout {
 
     @Override
     public boolean add(ByteBuffer b, Pair<UIPrimitive, UIStyle> p) {
-        UIPrimitive primitive = p.first;
-        if (b.remaining() < (4*(1 + 9 + 1 + primitive.arguments().length))) {
+        final UIPrimitive primitive = p.first;
+        final UIStyle style = p.second;
+
+        final int dataSize = 4 * primitive.arguments().length;
+        final int totalSize = headerSize + dataSize;
+
+        if (b.remaining() < totalSize) {
             return false;
         } else {
+            /* HEADER */
+            b.putInt(totalSize);
             b.putInt(primitive.shape().ordinal());
 
             b.putFloat(p.second.fillColor.x());
@@ -114,8 +99,7 @@ public class GL11UILayout implements VizUILayout {
             b.putFloat(p.second.borderColor.w());
             b.putFloat(p.second.borderWidth);
 
-            b.putInt(primitive.arguments().length);
-
+            /* DATA */
             for (float f : primitive.arguments()) {
                 b.putFloat(f);
             }
@@ -126,7 +110,21 @@ public class GL11UILayout implements VizUILayout {
 
     @Override
     public UIPrimitive primitive(ByteBuffer b) {
-        return UIPrimitive.fromData(this.shape(b), this.data(b));
+        int i = b.position();
+
+        final int totalSize = b.getInt(i);
+        final int dataLength = (totalSize - headerSize)/4;
+
+        final Shape shape = UIPrimitive.Shape.values()[b.getInt(i+4)];
+
+        final float[] data = new float[dataLength];
+
+        i += headerSize;
+        for (int j = 0; j < dataLength; ++j) {
+            data[j] = b.getFloat(i+4*j);
+        }
+
+        return UIPrimitive.fromData(shape, data);
     }
 
 }

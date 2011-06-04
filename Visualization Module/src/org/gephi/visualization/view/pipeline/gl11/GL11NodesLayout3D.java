@@ -39,10 +39,6 @@ public final class GL11NodesLayout3D implements VizNodeLayout {
         return 4194304;
     }
 
-    static public int numberOfNodes(ByteBuffer buffer) {
-        return buffer.remaining()/28;
-    }
-
     @Override
     public boolean add(ByteBuffer buffer, Node node) {
         if (buffer.remaining() < 28) {
@@ -75,10 +71,10 @@ public final class GL11NodesLayout3D implements VizNodeLayout {
 
     @Override
     public Vec4f color(ByteBuffer b) {
-        int i = b.position();
-        float R = b.getFloat(i+16);
-        float G = b.getFloat(i+20);
-        float B = b.getFloat(i+24);
+        int i = b.position() + 16;
+        float R = b.getFloat(i);
+        float G = b.getFloat(i+4);
+        float B = b.getFloat(i+8);
         return new Vec4f(R, G, B, 1.0f);
     }
 
@@ -89,7 +85,7 @@ public final class GL11NodesLayout3D implements VizNodeLayout {
 
     @Override
     public boolean advance(ByteBuffer b) {
-        if (b.remaining() > 56) {
+        if (b.remaining() > 28) {
             b.position(b.position() + 28);
             return true;
         } else {

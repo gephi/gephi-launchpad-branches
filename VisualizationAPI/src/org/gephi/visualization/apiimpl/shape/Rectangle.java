@@ -59,7 +59,10 @@ public class Rectangle extends AbstractShape {
     }
 
     public Shape continuousUpdate(int x, int y) {
-        return new Rectangle(origin, new Point(x, y));
+        this.opposite.x = x;
+        this.opposite.y = y;
+        return this;
+        //return new Rectangle(origin, new Point(x, y));
     }
 
     public Shape singleUpdate(int x, int y) {
