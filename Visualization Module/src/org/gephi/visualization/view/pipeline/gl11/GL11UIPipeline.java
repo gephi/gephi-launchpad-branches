@@ -52,6 +52,7 @@ public class GL11UIPipeline implements Pipeline {
         final GLU glu = new GLUgl2();
 
         // premultiplied alpha blending..
+        gl2.glDisable(GL2.GL_DEPTH_TEST);
         gl2.glEnable(GL2.GL_BLEND);
         gl2.glBlendFunc(GL2.GL_ONE, GL2.GL_ONE_MINUS_SRC_ALPHA);
 
@@ -76,7 +77,7 @@ public class GL11UIPipeline implements Pipeline {
                 // fill
                 float alpha = style.fillColor.w();
                 gl2.glColor4f(style.fillColor.x()*alpha, style.fillColor.y()*alpha, style.fillColor.z()*alpha, alpha);
-                gl2.glBegin(GL2.GL_TRIANGLE_FAN);
+                gl2.glBegin(GL2.GL_POLYGON);
                 
                 for (int i = 0; i < data.length; i += 2) {
                     gl2.glVertex2f(data[i], data[i+1]);
@@ -102,6 +103,8 @@ public class GL11UIPipeline implements Pipeline {
                 // TODO: implements ELLIPSES shape
             }
 
+            gl2.glDisable(GL2.GL_BLEND);
+            gl2.glEnable(GL2.GL_DEPTH_TEST);
         }
     }
 
