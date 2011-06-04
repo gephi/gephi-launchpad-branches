@@ -70,17 +70,19 @@ public class GL11UIPipeline implements Pipeline {
         final VizUIBuffer uiBuffer = frameData.uiBuffer();
         for (; !uiBuffer.isEndOfBuffer(); uiBuffer.advance()) {
             UIStyle style = uiBuffer.style();
-            UIPrimitive.Shape shape = uiBuffer.shape();
-            float[] data = uiBuffer.data();
+            UIPrimitive primitive = uiBuffer.primitive();
 
-            if (shape == UIPrimitive.Shape.CONVEX_POLYGON) {
+            if (primitive.shape() == UIPrimitive.Shape.CONVEX_POLYGON) {
                 // fill
                 float alpha = style.fillColor.w();
                 gl2.glColor4f(style.fillColor.x()*alpha, style.fillColor.y()*alpha, style.fillColor.z()*alpha, alpha);
+
+                gl2.glPolygonMode(GL2.GL_FRONT_AND_BACK, GL2.GL_FILL);
+
                 gl2.glBegin(GL2.GL_POLYGON);
                 
-                for (int i = 0; i < data.length; i += 2) {
-                    gl2.glVertex2f(data[i], data[i+1]);
+                for (int i = 0; i < primitive.arguments().length; i += 2) {
+                    gl2.glVertex2f(primitive.arguments()[i], primitive.arguments()[i+1]);
                 }
 
                 gl2.glEnd();
@@ -91,13 +93,17 @@ public class GL11UIPipeline implements Pipeline {
 
                 gl2.glLineWidth(style.borderWidth);
 
-                gl2.glBegin(GL2.GL_LINE_LOOP);
+                gl2.glPolygonMode(GL2.GL_FRONT_AND_BACK, GL2.GL_LINE);
 
-                for (int i = 0; i < data.length; i += 2) {
-                    gl2.glVertex2f(data[i], data[i+1]);
+                gl2.glBegin(GL2.GL_POLYGON);
+
+                for (int i = 0; i < primitive.arguments().length; i += 2) {
+                    gl2.glVertex2f(primitive.arguments()[i], primitive.arguments()[i+1]);
                 }
 
                 gl2.glEnd();
+
+                gl2.glPolygonMode(GL2.GL_FRONT_AND_BACK, GL2.GL_FILL);
 
             } else {
                 // TODO: implements ELLIPSES shape

@@ -21,20 +21,16 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 
 package org.gephi.visualization.model;
 
-import java.awt.Point;
-import javax.annotation.Generated;
 import org.gephi.graph.api.Graph;
 import org.gephi.graph.api.GraphController;
 import org.gephi.graph.api.GraphModel;
 import org.gephi.graph.api.Node;
 import org.gephi.graph.api.NodeData;
 import org.gephi.lib.gleem.linalg.Vec3f;
-import org.gephi.lib.gleem.linalg.Vec4f;
 import org.gephi.project.api.ProjectController;
 import org.gephi.project.api.Workspace;
 import org.gephi.project.api.WorkspaceListener;
 import org.gephi.visualization.api.selection.Shape;
-import org.gephi.visualization.apiimpl.shape.Rectangle;
 import org.gephi.visualization.camera.Camera;
 import org.gephi.visualization.controller.Controller;
 import org.gephi.visualization.data.FrameDataBridgeIn;
@@ -126,7 +122,7 @@ public class Model implements Runnable, WorkspaceListener {
             }
 
             for (Pair<Shape, UIStyle> pair : this.controller.getShapes()) {
-                this.bridge.add(pair.first, pair.second);
+                this.bridge.add(pair.first.getUIPrimitive(), pair.second);
             }
 
             this.controller.endUpdateFrame(box);

@@ -24,6 +24,7 @@ package org.gephi.visualization.data;
 import org.gephi.graph.api.Edge;
 import org.gephi.graph.api.Node;
 import org.gephi.visualization.api.selection.Shape;
+import org.gephi.visualization.api.view.ui.UIPrimitive;
 import org.gephi.visualization.camera.Camera;
 import org.gephi.visualization.data.buffer.VizBufferBuilder;
 import org.gephi.visualization.data.buffer.VizEdgeBuffer;
@@ -45,20 +46,20 @@ public class FrameDataBuilder {
     private Camera camera;
     private final VizBufferBuilder<Node> nodeBufferBuilder;
     private final VizBufferBuilder<Edge> edgeBufferBuilder;
-    private final VizBufferBuilder<Pair<Shape, UIStyle>> uiBufferBuilder;
+    private final VizBufferBuilder<Pair<UIPrimitive, UIStyle>> uiBufferBuilder;
 
     public FrameDataBuilder(VizNodeLayout nodeLayout, VizEdgeLayout edgeLayout, VizUILayout uiLayout) {
         this.camera = null;
         this.nodeBufferBuilder = new VizBufferBuilder<Node>(nodeLayout);
         this.edgeBufferBuilder = new VizBufferBuilder<Edge>(edgeLayout);
-        this.uiBufferBuilder = new VizBufferBuilder<Pair<Shape, UIStyle>>(uiLayout);
+        this.uiBufferBuilder = new VizBufferBuilder<Pair<UIPrimitive, UIStyle>>(uiLayout);
     }
 
     public FrameDataBuilder(VizNodeBuffer nodeBuffer, VizEdgeBuffer edgeBuffer, VizUIBuffer uiBuffer) {
         this.camera = null;
         this.nodeBufferBuilder = new VizBufferBuilder<Node>(nodeBuffer);
         this.edgeBufferBuilder = new VizBufferBuilder<Edge>(edgeBuffer);
-        this.uiBufferBuilder = new VizBufferBuilder<Pair<Shape, UIStyle>>(uiBuffer);
+        this.uiBufferBuilder = new VizBufferBuilder<Pair<UIPrimitive, UIStyle>>(uiBuffer);
     }
 
     public void setCamera(Camera camera) {
@@ -73,8 +74,8 @@ public class FrameDataBuilder {
         this.edgeBufferBuilder.add(edge);
     }
 
-    public void add(Shape shape, UIStyle style) {
-        this.uiBufferBuilder.add(Pair.of(shape, style));
+    public void add(UIPrimitive primitive, UIStyle style) {
+        this.uiBufferBuilder.add(Pair.of(primitive, style));
     }
 
     public FrameData createFrameData() {

@@ -23,7 +23,6 @@ package org.gephi.visualization.data.buffer;
 
 import java.nio.ByteBuffer;
 import java.util.List;
-import org.gephi.visualization.api.selection.Shape;
 import org.gephi.visualization.api.view.ui.UIPrimitive;
 import org.gephi.visualization.data.layout.VizUILayout;
 import org.gephi.visualization.utils.Pair;
@@ -35,17 +34,16 @@ import org.gephi.visualization.view.ui.UIStyle;
  *
  * Antonio Patriarca <antoniopatriarca@gmail.com>
  */
-public class VizUIBuffer extends VizBuffer<Pair<Shape, UIStyle>> {
+public class VizUIBuffer extends VizBuffer<Pair<UIPrimitive, UIStyle>> {
 
-    private UIPrimitive.Shape shape;
-    private float[] data;
+    private UIPrimitive primitive;
     private UIStyle style;
 
     public VizUIBuffer(VizUILayout layout, List<ByteBuffer> buffers) {
         super(layout, buffers);
     }
 
-    public static VizUIBuffer wrap(VizBuffer<Pair<Shape, UIStyle>> vb) {
+    public static VizUIBuffer wrap(VizBuffer<Pair<UIPrimitive, UIStyle>> vb) {
         VizUILayout uiLayout = (VizUILayout) vb.layout;
         VizUIBuffer w = new VizUIBuffer(uiLayout, vb.buffers);
         w.currentBuffer = vb.currentBuffer;
@@ -54,8 +52,7 @@ public class VizUIBuffer extends VizBuffer<Pair<Shape, UIStyle>> {
 
         ByteBuffer b = w.buffers.get(w.currentBuffer);
 
-        w.shape = uiLayout.shape(b);
-        w.data = uiLayout.data(b);
+        w.primitive = uiLayout.primitive(b);
         w.style = uiLayout.style(b);
 
         return w;
@@ -70,17 +67,12 @@ public class VizUIBuffer extends VizBuffer<Pair<Shape, UIStyle>> {
         ByteBuffer b = this.buffers.get(this.currentBuffer);
         VizUILayout uiLayout = (VizUILayout) this.layout;
 
-        this.shape = uiLayout.shape(b);
-        this.data = uiLayout.data(b);
+        this.primitive = uiLayout.primitive(b);
         this.style = uiLayout.style(b);
     }
 
-    public UIPrimitive.Shape shape() {
-        return this.shape;
-    }
-
-    public float[] data() {
-        return this.data;
+    public UIPrimitive primitive() {
+        return this.primitive;
     }
 
     public UIStyle style() {

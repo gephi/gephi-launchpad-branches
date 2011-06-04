@@ -22,7 +22,6 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 package org.gephi.visualization.view.pipeline.gl11;
 
 import java.nio.ByteBuffer;
-import org.gephi.visualization.api.selection.Shape;
 import org.gephi.visualization.api.view.ui.UIPrimitive;
 import org.gephi.visualization.data.layout.VizUILayout;
 import org.gephi.visualization.utils.Pair;
@@ -35,14 +34,12 @@ import org.gephi.visualization.view.ui.UIStyle;
  */
 public class GL11UILayout implements VizUILayout {
 
-    @Override
-    public UIPrimitive.Shape shape(ByteBuffer b) {
+    private UIPrimitive.Shape shape(ByteBuffer b) {
         int i = b.position();
         return UIPrimitive.Shape.values()[b.getInt(i)];
     }
 
-    @Override
-    public float[] data(ByteBuffer b) {
+    private float[] data(ByteBuffer b) {
         int i = b.position() + 40;
 
         int length = b.getInt(i);
@@ -100,8 +97,8 @@ public class GL11UILayout implements VizUILayout {
     }
 
     @Override
-    public boolean add(ByteBuffer b, Pair<Shape, UIStyle> p) {
-        UIPrimitive primitive = p.first.getUIPrimitive();
+    public boolean add(ByteBuffer b, Pair<UIPrimitive, UIStyle> p) {
+        UIPrimitive primitive = p.first;
         if (b.remaining() < (4*(1 + 9 + 1 + primitive.arguments().length))) {
             return false;
         } else {
@@ -125,6 +122,11 @@ public class GL11UILayout implements VizUILayout {
 
             return true;
         }
+    }
+
+    @Override
+    public UIPrimitive primitive(ByteBuffer b) {
+        return UIPrimitive.fromData(this.shape(b), this.data(b));
     }
 
 }

@@ -28,7 +28,7 @@ import org.gephi.lib.gleem.linalg.Vec4f;
  *
  * Antonio Patriarca <antoniopatriarca@gmail.com>
  */
-public class UIStyle {
+public final class UIStyle {
 
     public final Vec4f fillColor;
     public final Vec4f borderColor;
@@ -47,5 +47,4 @@ public class UIStyle {
         style.borderWidth = 3.0f;
         return style;
     }
-
 }

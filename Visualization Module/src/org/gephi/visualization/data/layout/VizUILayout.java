@@ -22,7 +22,6 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 package org.gephi.visualization.data.layout;
 
 import java.nio.ByteBuffer;
-import org.gephi.visualization.api.selection.Shape;
 import org.gephi.visualization.api.view.ui.UIPrimitive;
 import org.gephi.visualization.utils.Pair;
 import org.gephi.visualization.view.ui.UIStyle;
@@ -32,10 +31,9 @@ import org.gephi.visualization.view.ui.UIStyle;
  *
  * @author Antonio Patriarca <antoniopatriarca@gmail.com>
  */
-public interface VizUILayout extends VizLayout<Pair<Shape, UIStyle>> {
+public interface VizUILayout extends VizLayout<Pair<UIPrimitive, UIStyle>> {
 
-    public UIPrimitive.Shape shape(ByteBuffer b);
-    public float[] data(ByteBuffer b);
+    public UIPrimitive primitive(ByteBuffer b);
     public UIStyle style(ByteBuffer b);
 
 }
