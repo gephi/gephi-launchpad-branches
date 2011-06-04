@@ -31,10 +31,6 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
 import org.gephi.lib.gleem.linalg.Mat4f;
 import org.gephi.lib.gleem.linalg.Vec3f;
 import org.gephi.project.api.ProjectController;
@@ -46,8 +42,6 @@ import org.gephi.visualization.api.selection.SelectionManager;
 import org.gephi.visualization.api.selection.Shape;
 import org.gephi.visualization.camera.Camera;
 import org.gephi.visualization.geometry.AABB;
-import org.gephi.visualization.utils.Pair;
-import org.gephi.visualization.view.ui.UIStyle;
 import org.openide.util.Lookup;
 
 /**
@@ -64,7 +58,7 @@ public class Controller implements KeyListener, MouseListener, MouseMotionListen
 
     private Dimension viewSize;
 
-    private final Map<Shape, UIStyle> shapes;
+    private Shape shape;
 
     private boolean centerGraph = true;
     private boolean centerZero;
@@ -115,7 +109,6 @@ public class Controller implements KeyListener, MouseListener, MouseMotionListen
             }
         };
 
-        this.shapes = new HashMap<Shape, UIStyle>();
     }
 
     public synchronized static Controller getInstance() {
@@ -173,22 +166,20 @@ public class Controller implements KeyListener, MouseListener, MouseMotionListen
     }
 
     /**
-     * Adds the shape to be drawn for current frame. Represented as a set.
+     * Sets the shape to be drawn for current frame. Only the last shape will
+     * be drawn.
      */
-    public void addShape(Shape shape, UIStyle uiStyle) {
-        shapes.put(shape, uiStyle);
+    public void setShape(Shape shape) {
+        this.shape = shape;
     }
 
     /**
-     * Gets shapes to be drawn on screen and clears the buffer.
+     * Gets shape to be drawn on screen and clears the buffer.
      */
-    public Collection<Pair> getShapes() {
-        Collection<Pair> collection = new LinkedList<Pair>();
-        for (Map.Entry<Shape, UIStyle> entry: shapes.entrySet()) {
-            collection.add(Pair.of(entry.getKey(), entry.getValue()));
-        }
-        shapes.clear();
-        return collection;
+    public Shape getSelectionShape() {
+        Shape s = this.shape;
+        this.shape = null;
+        return s;
     }
 
     public void beginRenderFrame() {

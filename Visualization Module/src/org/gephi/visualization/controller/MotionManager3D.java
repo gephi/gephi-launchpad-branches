@@ -79,7 +79,7 @@ public class MotionManager3D implements MotionManager {
         if (vizConfig.isSelectionEnabled() && selectionShape != null) {
             selectionShape = selectionShape.continuousUpdate(e.getX(), e.getY());
             Lookup.getDefault().lookup(SelectionManager.class).addSelection(selectionShape);
-            Controller.getInstance().addShape(selectionShape, UIStyle.createDefault());
+            Controller.getInstance().setShape(selectionShape);
         }
         if (vizConfig.isDraggingEnabled()) {
             if (SwingUtilities.isLeftMouseButton(e)) {

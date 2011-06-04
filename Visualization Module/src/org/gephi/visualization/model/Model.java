@@ -121,8 +121,9 @@ public class Model implements Runnable, WorkspaceListener {
                 this.bridge.add(n);
             }
 
-            for (Pair<Shape, UIStyle> pair : this.controller.getShapes()) {
-                this.bridge.add(pair.first.getUIPrimitive(), pair.second);
+            Shape selectionShape = this.controller.getSelectionShape();
+            if (selectionShape != null) {
+                this.bridge.add(selectionShape.getUIPrimitive(), UIStyle.createDefault());
             }
 
             this.controller.endUpdateFrame(box);
