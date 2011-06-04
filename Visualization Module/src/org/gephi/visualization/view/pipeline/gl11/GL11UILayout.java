@@ -22,6 +22,7 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 package org.gephi.visualization.view.pipeline.gl11;
 
 import java.nio.ByteBuffer;
+import org.gephi.visualization.api.color.Color;
 import org.gephi.visualization.api.view.ui.UIPrimitive;
 import org.gephi.visualization.api.view.ui.UIPrimitive.Shape;
 import org.gephi.visualization.data.layout.VizUILayout;
@@ -41,18 +42,11 @@ public class GL11UILayout implements VizUILayout {
     public UIStyle style(ByteBuffer b) {
         int i = b.position() + 8;
 
-        UIStyle style = new UIStyle();
-        style.fillColor.setX(b.getFloat(i));
-        style.fillColor.setY(b.getFloat(i+4));
-        style.fillColor.setZ(b.getFloat(i+8));
-        style.fillColor.setW(b.getFloat(i+12));
-        style.borderColor.setX(b.getFloat(i+16));
-        style.borderColor.setY(b.getFloat(i+20));
-        style.borderColor.setZ(b.getFloat(i+24));
-        style.borderColor.setW(b.getFloat(i+28));
-        style.borderWidth = b.getFloat(i+32);
+        Color fillColor = Color.readArrayRGBAFrom(b, i);
+        Color borderColor = Color.readArrayRGBAFrom(b, i+16);
+        float borderWidth = b.getFloat(i+32);
 
-        return style;
+        return new UIStyle(fillColor, borderColor, borderWidth);
     }
 
     @Override
@@ -89,15 +83,9 @@ public class GL11UILayout implements VizUILayout {
             b.putInt(totalSize);
             b.putInt(primitive.shape().ordinal());
 
-            b.putFloat(p.second.fillColor.x());
-            b.putFloat(p.second.fillColor.y());
-            b.putFloat(p.second.fillColor.z());
-            b.putFloat(p.second.fillColor.w());
-            b.putFloat(p.second.borderColor.x());
-            b.putFloat(p.second.borderColor.y());
-            b.putFloat(p.second.borderColor.z());
-            b.putFloat(p.second.borderColor.w());
-            b.putFloat(p.second.borderWidth);
+            style.fillColor().writeArrayRGBATo(b);
+            style.borderColor().writeArrayRGBATo(b);
+            b.putFloat(style.borderWidth());
 
             /* DATA */
             for (float f : primitive.arguments()) {

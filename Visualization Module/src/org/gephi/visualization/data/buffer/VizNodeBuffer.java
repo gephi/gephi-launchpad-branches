@@ -25,7 +25,7 @@ import java.nio.ByteBuffer;
 import java.util.List;
 import org.gephi.graph.api.Node;
 import org.gephi.lib.gleem.linalg.Vec3f;
-import org.gephi.lib.gleem.linalg.Vec4f;
+import org.gephi.visualization.api.color.Color;
 import org.gephi.visualization.data.layout.VizNodeLayout;
 
 /**
@@ -37,7 +37,7 @@ public class VizNodeBuffer extends VizBuffer<Node> {
 
     private Vec3f position;
     private float size;
-    private Vec4f color;
+    private Color color;
     private boolean isSelected;
 
     VizNodeBuffer(VizNodeLayout layout, List<ByteBuffer> buffers) {
@@ -84,7 +84,7 @@ public class VizNodeBuffer extends VizBuffer<Node> {
         return this.size;
     }
 
-    public Vec4f color() {
+    public Color color() {
         return this.color;
     }
 

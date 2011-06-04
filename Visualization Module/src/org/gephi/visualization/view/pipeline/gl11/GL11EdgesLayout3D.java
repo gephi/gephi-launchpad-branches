@@ -24,7 +24,7 @@ package org.gephi.visualization.view.pipeline.gl11;
 import java.nio.ByteBuffer;
 import org.gephi.graph.api.Edge;
 import org.gephi.lib.gleem.linalg.Vec3f;
-import org.gephi.lib.gleem.linalg.Vec4f;
+import org.gephi.visualization.api.color.Color;
 import org.gephi.visualization.data.layout.VizEdgeLayout;
 
 /**
@@ -55,8 +55,8 @@ public class GL11EdgesLayout3D implements VizEdgeLayout {
     }
 
     @Override
-    public Vec4f startColor(ByteBuffer b) {
-        return new Vec4f();
+    public Color startColor(ByteBuffer b) {
+        return Color.TRANSPARENT;
     }
 
     @Override
@@ -70,8 +70,8 @@ public class GL11EdgesLayout3D implements VizEdgeLayout {
     }
 
     @Override
-    public Vec4f endColor(ByteBuffer b) {
-        return new Vec4f();
+    public Color endColor(ByteBuffer b) {
+        return Color.TRANSPARENT;
     }
 
     @Override

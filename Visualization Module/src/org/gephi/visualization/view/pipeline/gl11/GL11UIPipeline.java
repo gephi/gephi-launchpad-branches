@@ -74,8 +74,7 @@ public class GL11UIPipeline implements Pipeline {
 
             if (primitive.shape() == UIPrimitive.Shape.CONVEX_POLYGON) {
                 // fill
-                float alpha = style.fillColor.w();
-                gl2.glColor4f(style.fillColor.x()*alpha, style.fillColor.y()*alpha, style.fillColor.z()*alpha, alpha);
+                gl2.glColor4f(style.fillColor().ra(), style.fillColor().ga(), style.fillColor().ba(), style.fillColor().a());
 
                 gl2.glPolygonMode(GL2.GL_FRONT_AND_BACK, GL2.GL_FILL);
 
@@ -88,10 +87,9 @@ public class GL11UIPipeline implements Pipeline {
                 gl2.glEnd();
 
                 // border
-                alpha = style.borderColor.w();
-                gl2.glColor4f(style.borderColor.x()*alpha, style.borderColor.y()*alpha, style.borderColor.z()*alpha, alpha);
+                gl2.glColor4f(style.borderColor().ra(), style.borderColor().ga(), style.borderColor().ba(), style.borderColor().a());
 
-                gl2.glLineWidth(style.borderWidth);
+                gl2.glLineWidth(style.borderWidth());
 
                 gl2.glPolygonMode(GL2.GL_FRONT_AND_BACK, GL2.GL_LINE);
 

@@ -24,7 +24,7 @@ package org.gephi.visualization.data.layout;
 import java.nio.ByteBuffer;
 import org.gephi.graph.api.Edge;
 import org.gephi.lib.gleem.linalg.Vec3f;
-import org.gephi.lib.gleem.linalg.Vec4f;
+import org.gephi.visualization.api.color.Color;
 
 /**
  * Interface which controls how edges are stored in the buffers.
@@ -35,11 +35,11 @@ public interface VizEdgeLayout extends VizLayout<Edge> {
 
     public Vec3f startNodePosition(ByteBuffer b);
     public float startNodeSize(ByteBuffer b);
-    public Vec4f startColor(ByteBuffer b);
+    public Color startColor(ByteBuffer b);
 
     public Vec3f endNodePosition(ByteBuffer b);
     public float endNodeSize(ByteBuffer b);
-    public Vec4f endColor(ByteBuffer b);
+    public Color endColor(ByteBuffer b);
 
     public float thickness(ByteBuffer b);
 

@@ -21,7 +21,7 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 
 package org.gephi.visualization.view.ui;
 
-import org.gephi.lib.gleem.linalg.Vec4f;
+import org.gephi.visualization.api.color.Color;
 
 /**
  * Class which defines how UIPrimitives are rendered.
@@ -30,21 +30,33 @@ import org.gephi.lib.gleem.linalg.Vec4f;
  */
 public final class UIStyle {
 
-    public final Vec4f fillColor;
-    public final Vec4f borderColor;
-
-    public float borderWidth;
-
-    public UIStyle() {
-        this.fillColor = new Vec4f();
-        this.borderColor = new Vec4f();
+    public final static UIStyle SELECTION;
+    static {
+        final Color fSC = new Color(0.0f, 0.0f, 1.0f, 0.3f);
+        final Color bSC = new Color(0.0f, 0.0f, 1.0f, 0.8f);
+        final float bSW = 3.0f;
+        SELECTION = new UIStyle(fSC, bSC, bSW);
     }
 
-    public static UIStyle createDefault() {
-        UIStyle style = new UIStyle();
-        style.fillColor.set(0.0f, 0.0f, 1.0f, 0.3f);
-        style.borderColor.set(0.0f, 0.0f, 1.0f, 1.0f);
-        style.borderWidth = 3.0f;
-        return style;
+    private final Color fillColor;
+    private final Color borderColor;
+    private final float borderWidth;
+
+    public UIStyle(Color fillColor, Color borderColor, float borderWidth) {
+        this.fillColor = fillColor;
+        this.borderColor = borderColor;
+        this.borderWidth = borderWidth;
+    }
+
+    public Color fillColor() {
+        return fillColor;
+    }
+
+    public Color borderColor() {
+        return borderColor;
+    }
+
+    public float borderWidth() {
+        return borderWidth;
     }
 }

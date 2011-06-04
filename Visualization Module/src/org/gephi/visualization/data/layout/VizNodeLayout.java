@@ -24,7 +24,7 @@ package org.gephi.visualization.data.layout;
 import java.nio.ByteBuffer;
 import org.gephi.graph.api.Node;
 import org.gephi.lib.gleem.linalg.Vec3f;
-import org.gephi.lib.gleem.linalg.Vec4f;
+import org.gephi.visualization.api.color.Color;
 
 /**
  * Interface which controls how nodes are stored in the buffers.
@@ -35,7 +35,7 @@ public interface VizNodeLayout extends VizLayout<Node> {
 
     public Vec3f position(ByteBuffer b);
     public float size(ByteBuffer b);
-    public Vec4f color(ByteBuffer b);
+    public Color color(ByteBuffer b);
     public boolean isSelected(ByteBuffer b);
 
 }

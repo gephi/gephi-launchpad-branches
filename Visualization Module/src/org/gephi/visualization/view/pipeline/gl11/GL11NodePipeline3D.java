@@ -27,7 +27,7 @@ import javax.media.opengl.glu.GLU;
 import javax.media.opengl.glu.GLUquadric;
 import javax.media.opengl.glu.gl2.GLUgl2;
 import org.gephi.lib.gleem.linalg.Vec3f;
-import org.gephi.lib.gleem.linalg.Vec4f;
+import org.gephi.visualization.api.color.Color;
 import org.gephi.visualization.camera.Camera;
 import org.gephi.visualization.data.FrameData;
 import org.gephi.visualization.data.buffer.VizNodeBuffer;
@@ -77,7 +77,6 @@ public class GL11NodePipeline3D implements Pipeline {
         if (!gl.isGL2()) return;
 
         final GL2 gl2 = gl.getGL2();
-        final GLU glu = new GLUgl2();
 
         final Camera camera = frameData.camera();
         gl2.glMatrixMode(GL2.GL_PROJECTION);
@@ -98,9 +97,9 @@ public class GL11NodePipeline3D implements Pipeline {
 
             Vec3f position = nodeBuffer.position();
             float size = nodeBuffer.size();
-            Vec4f color = nodeBuffer.color();
+            Color color = nodeBuffer.color();
 
-            gl2.glColor4f(color.x(), color.y(), color.z(), color.w());
+            gl2.glColor4f(color.r(), color.g(), color.b(), color.a());
 
             gl2.glTranslatef(position.x(), position.y(), position.z());
             gl2.glScalef(size, size, size);

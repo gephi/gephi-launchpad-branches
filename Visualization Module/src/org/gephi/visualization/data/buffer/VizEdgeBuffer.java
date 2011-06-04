@@ -25,7 +25,7 @@ import java.nio.ByteBuffer;
 import java.util.List;
 import org.gephi.graph.api.Edge;
 import org.gephi.lib.gleem.linalg.Vec3f;
-import org.gephi.lib.gleem.linalg.Vec4f;
+import org.gephi.visualization.api.color.Color;
 import org.gephi.visualization.data.layout.VizEdgeLayout;
 
 /**
@@ -37,11 +37,11 @@ public class VizEdgeBuffer extends VizBuffer<Edge> {
 
     private Vec3f startNodePosition;
     private float startNodeSize;
-    private Vec4f startColor;
+    private Color startColor;
 
     private Vec3f endNodePosition;
     private float endNodeSize;
-    private Vec4f endColor;
+    private Color endColor;
 
     private float thickness;
 
@@ -108,7 +108,7 @@ public class VizEdgeBuffer extends VizBuffer<Edge> {
         return this.startNodeSize;
     }
 
-    public Vec4f startColor() {
+    public Color startColor() {
         return this.startColor;
     }
 
@@ -120,7 +120,7 @@ public class VizEdgeBuffer extends VizBuffer<Edge> {
         return this.endNodeSize;
     }
 
-    public Vec4f endColor() {
+    public Color endColor() {
         return this.endColor;
     }
 

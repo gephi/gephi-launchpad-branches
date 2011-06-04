@@ -35,7 +35,6 @@ import org.gephi.visualization.camera.Camera;
 import org.gephi.visualization.controller.Controller;
 import org.gephi.visualization.data.FrameDataBridgeIn;
 import org.gephi.visualization.geometry.AABB;
-import org.gephi.visualization.utils.Pair;
 import org.gephi.visualization.view.ui.UIStyle;
 import org.openide.util.Lookup;
 
@@ -123,7 +122,7 @@ public class Model implements Runnable, WorkspaceListener {
 
             Shape selectionShape = this.controller.getSelectionShape();
             if (selectionShape != null) {
-                this.bridge.add(selectionShape.getUIPrimitive(), UIStyle.createDefault());
+                this.bridge.add(selectionShape.getUIPrimitive(), UIStyle.SELECTION);
             }
 
             this.controller.endUpdateFrame(box);

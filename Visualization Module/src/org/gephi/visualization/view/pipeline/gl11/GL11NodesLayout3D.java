@@ -24,7 +24,7 @@ package org.gephi.visualization.view.pipeline.gl11;
 import java.nio.ByteBuffer;
 import org.gephi.graph.api.Node;
 import org.gephi.lib.gleem.linalg.Vec3f;
-import org.gephi.lib.gleem.linalg.Vec4f;
+import org.gephi.visualization.api.color.Color;
 import org.gephi.visualization.data.layout.VizNodeLayout;
 
 /**
@@ -70,12 +70,9 @@ public final class GL11NodesLayout3D implements VizNodeLayout {
     }
 
     @Override
-    public Vec4f color(ByteBuffer b) {
+    public Color color(ByteBuffer b) {
         int i = b.position() + 16;
-        float R = b.getFloat(i);
-        float G = b.getFloat(i+4);
-        float B = b.getFloat(i+8);
-        return new Vec4f(R, G, B, 1.0f);
+        return Color.readArrayRGBFrom(b, i);
     }
 
     @Override
