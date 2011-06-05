@@ -31,6 +31,12 @@ import org.gephi.visualization.data.FrameData;
  */
 public interface Pipeline {
 
+    public String name();
+
+    public String description();
+
+    public String debugInfo();
+
     public boolean init(GL gl);
 
     public void draw(GL gl, FrameData frameData);

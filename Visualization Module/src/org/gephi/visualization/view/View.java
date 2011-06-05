@@ -56,9 +56,10 @@ public class View implements GLEventListener {
 
     private Pipeline pipeline;
 
-    private int countNulls = 0;
+    private boolean rebuildPipeline;
 
     static { GLProfile.initSingleton(true); }
+
 
     public View(Controller controller, FrameDataBridgeOut bridge) {
         this.controller = controller;
@@ -82,6 +83,8 @@ public class View implements GLEventListener {
         this.bridge.setLayout(new GL11NodesLayout3D());
         this.bridge.setLayout(new GL11EdgesLayout3D());
         this.bridge.setLayout(new GL11UILayout());
+
+        this.rebuildPipeline = true;
     }
     
     public Component getCanvas() {
@@ -135,7 +138,6 @@ public class View implements GLEventListener {
         this.frameData = this.bridge.updateCurrent();
 
         if (this.frameData == null) {
-            ++countNulls;
             return;
         }
 
@@ -165,5 +167,8 @@ public class View implements GLEventListener {
         this.canvas.setBounds(x, y, w, h);
         this.controller.resize(w, h);
     }
-    
+
+    public void rebuildPipeline() {
+        this.rebuildPipeline = true;
+    }
 }

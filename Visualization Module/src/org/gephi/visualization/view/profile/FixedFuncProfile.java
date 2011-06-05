@@ -23,17 +23,29 @@ package org.gephi.visualization.view.profile;
 
 import javax.media.opengl.GL;
 import org.gephi.visualization.view.pipeline.Pipeline;
+import org.gephi.visualization.view.pipeline.gl11.GL11Pipeline3D;
 
 /**
- * A VizProfile represents a set of features and can be used to set
+ * Profile based on OpenGL 1.1 to 1.5 versions. Different pipelines are choosen
+ * depending on the OpenGL version.
  *
- * Antonio Patriarca <antoniopatriarca@gmail.com>
+ * @author Antonio Patriarca <antoniopatriarca@gmail.com>
  */
-public interface VizProfile {
+public class FixedFuncProfile implements VizProfile {
 
-    public String name();
-    public String description();
+    @Override
+    public String name() {
+        return "FixedFuncProfile";
+    }
 
-    public Pipeline createPipeline(GL gl);
+    @Override
+    public String description() {
+        return "Profile based on OpenGL 1.1 to 1.5 versions. Different pipelines are choosen depending on the OpenGL version.";
+    }
+
+    @Override
+    public Pipeline createPipeline(GL gl) {
+        return new GL11Pipeline3D();
+    }
 
 }

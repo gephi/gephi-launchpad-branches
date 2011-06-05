@@ -32,6 +32,21 @@ import org.gephi.visualization.view.pipeline.Pipeline;
  */
 public class GL11Pipeline3D implements Pipeline {
 
+    @Override
+    public String name() {
+        return "GL11Pipeline3D.";
+    }
+
+    @Override
+    public String description() {
+        return "3D pipeline based on OpenGL 1.1.";
+    }
+
+    @Override
+    public String debugInfo() {
+        return "";
+    }
+
     final GL11NodePipeline3D nodePipeline;
     final GL11UIPipeline uiPipeline;
 

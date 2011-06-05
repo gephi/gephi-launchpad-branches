@@ -40,6 +40,21 @@ import org.gephi.visualization.view.pipeline.Pipeline;
  */
 public class GL11NodePipeline3D implements Pipeline {
 
+    @Override
+    public String name() {
+        return "GL11NodePipeline3D.";
+    }
+
+    @Override
+    public String description() {
+        return "3D Node pipeline using OpenGL 1.1.";
+    }
+
+    @Override
+    public String debugInfo() {
+        return "";
+    }
+
     private int smallerSphere;
     private static final int numLods = 5;
 

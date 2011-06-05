@@ -40,6 +40,21 @@ import org.gephi.visualization.view.ui.UIStyle;
 public class GL11UIPipeline implements Pipeline {
 
     @Override
+    public String name() {
+        return "GL11UIPipeline.";
+    }
+
+    @Override
+    public String description() {
+        return "UI pipeline based on OpenGL 1.1.";
+    }
+
+    @Override
+    public String debugInfo() {
+        return "";
+    }
+
+    @Override
     public boolean init(GL gl) {
         return true;
     }
