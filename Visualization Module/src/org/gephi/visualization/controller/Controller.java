@@ -31,6 +31,9 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import org.gephi.graph.api.Graph;
+import org.gephi.graph.api.GraphController;
+import org.gephi.graph.api.GraphListener;
 import org.gephi.lib.gleem.linalg.Mat4f;
 import org.gephi.lib.gleem.linalg.Vec3f;
 import org.gephi.project.api.ProjectController;
@@ -166,20 +169,10 @@ public class Controller implements KeyListener, MouseListener, MouseMotionListen
     }
 
     /**
-     * Sets the shape to be drawn for current frame. Only the last shape will
-     * be drawn.
-     */
-    public void setShape(Shape shape) {
-        this.shape = shape;
-    }
-
-    /**
      * Gets shape to be drawn on screen and clears the buffer.
      */
     public Shape getSelectionShape() {
-        Shape s = this.shape;
-        this.shape = null;
-        return s;
+        return motionManager.getSelectionShape();
     }
 
     public void beginRenderFrame() {

@@ -23,6 +23,7 @@ package org.gephi.visualization.controller;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import org.gephi.visualization.api.MotionManager;
+import org.gephi.visualization.api.selection.Shape;
 
 public class MotionManager2D implements MotionManager {
 
@@ -48,6 +49,11 @@ public class MotionManager2D implements MotionManager {
 
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public Shape getSelectionShape() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

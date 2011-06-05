@@ -40,6 +40,12 @@ public interface Shape {
 
     Shape continuousUpdate(int x, int y);
 
+    /**
+     * Returns true if this shape is built of many discrete steps and where
+     * every single update alters the shapes properties, such as a polygon.
+     */
+    boolean isDiscretelyUpdated();
+
     public UIPrimitive getUIPrimitive();
     
 }

@@ -27,10 +27,11 @@ import java.util.List;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import org.gephi.graph.api.Edge;
-import org.gephi.graph.api.Graph;
 import org.gephi.graph.api.GraphController;
+import org.gephi.graph.api.GraphEvent;
+import org.gephi.graph.api.GraphListener;
+import org.gephi.graph.api.GraphModel;
 import org.gephi.graph.api.Node;
-import org.gephi.project.api.WorkspaceListener;
 import org.gephi.visualization.api.config.VizConfig;
 import org.gephi.visualization.api.selection.NodeContainer;
 import org.gephi.visualization.api.selection.SelectionManager;
@@ -50,7 +51,14 @@ public class SelectionManagerImpl implements SelectionManager {
 
     @Override
     public void initialize() {
-        nodeContainer = new Octree(Lookup.getDefault().lookup(GraphController.class).getModel().getGraph());
+        GraphModel gm = Lookup.getDefault().lookup(GraphController.class).getModel();
+        gm.addGraphListener(new GraphListener() {
+            @Override
+            public void graphChanged(GraphEvent event) {
+                GraphController graphController = Lookup.getDefault().lookup(GraphController.class);
+                nodeContainer = new Octree(graphController.getModel().getGraph());
+            }
+        });
         selectedNodes = new ArrayList<Node>();
     }
 

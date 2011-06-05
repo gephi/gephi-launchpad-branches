@@ -21,6 +21,7 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 
 package org.gephi.visualization.selection;
 
+import java.util.ArrayList;
 import org.gephi.visualization.api.selection.Shape;
 import java.util.Collection;
 import java.util.Iterator;
@@ -144,6 +145,7 @@ class Octant {
         this.y = y;
         this.z = z;
         this.size = size;
+        nodes = new ArrayList<Node>();
     }
 
     public void addNode(Node node) {
@@ -155,7 +157,7 @@ class Octant {
                     int octantPosition = getChildPosition(n.getNodeData().x(), n.getNodeData().y(), n.getNodeData().z());
                     addToChild(n, octantPosition);
                 }
-                nodes.clear();
+                nodes = null;
             }
         } else {
             int octantPosition = getChildPosition(node.getNodeData().x(), node.getNodeData().y(), node.getNodeData().z());
@@ -169,9 +171,9 @@ class Octant {
     private void addToChild(Node node, int childPosition) {
         if (octants[childPosition] == null) {
             float newSize = size / 2;
-            float dx = (childPosition & 1) == 1 ? newSize : 0;
-            float dy = (childPosition & 2) == 2 ? newSize : 0;
-            float dz = (childPosition & 4) == 4 ? newSize : 0;
+            float dx = (childPosition & 1) == 1 ? 0 : newSize;
+            float dy = (childPosition & 2) == 2 ? 0 : newSize;
+            float dz = (childPosition & 4) == 4 ? 0 : newSize;
             octants[childPosition] = new Octant(x + dx, y + dy, z + dz, newSize);
         }
         octants[childPosition].addNode(node);
@@ -215,9 +217,9 @@ class Octant {
 
     public Iterator<Node> getAllNodes() {
         if (octants != null) {
-            return nodes.iterator();
-        } else {
             return new OctantNodeIterator(this);
+        } else {
+            return nodes.iterator();
         }
     }
 

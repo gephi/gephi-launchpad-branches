@@ -23,6 +23,7 @@ package org.gephi.visualization.api;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
+import org.gephi.visualization.api.selection.Shape;
 
 /**
  * Class for handling all basic user events that lead to motion. Handles graph
@@ -31,6 +32,8 @@ import java.awt.event.MouseWheelEvent;
  * @author Vojtech Bardiovsky
  */
 public interface MotionManager {
+
+    public Shape getSelectionShape();
 
     public void mousePressed(MouseEvent e);
 

@@ -223,7 +223,9 @@ public class Camera {
         viewMatrix.xformVec(point, screenPoint);
         projMatrix.xformVec(screenPoint, point);
         // to NDC
-        point.scale(1 / point.w());
+        if (point.w() != 0) {
+            point.scale(1 / point.w());
+        }
         // to screen
         int px = (int) ((point.get(1) + 1) * imageWidth / 2);
         int py = (int) ((point.get(2) + 1) * imageHeight / 2);

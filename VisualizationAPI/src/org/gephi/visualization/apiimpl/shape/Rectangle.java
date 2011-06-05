@@ -45,7 +45,7 @@ public class Rectangle extends AbstractShape {
      * @param origin Top left corner of the rectangle.
      * @param dimension Dimensions of the rectangle.
      */
-    public Rectangle(Point origin, Dimension dimension) {
+    private Rectangle(Point origin, Dimension dimension) {
         this(origin, new Point(origin.x + dimension.width, origin.y + dimension.height));
     }
 
@@ -71,6 +71,10 @@ public class Rectangle extends AbstractShape {
 
     public UIPrimitive getUIPrimitive() {
         return UIPrimitive.orientedQuad(new Vec2f((float)origin.x, (float)origin.y), new Vec2f((float)opposite.x, (float)opposite.y));
+    }
+
+    public boolean isDiscretelyUpdated() {
+        return false;
     }
 
 }
