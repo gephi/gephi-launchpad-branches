@@ -2,6 +2,7 @@ package org.gephi.visualization.api.config;
 
 import java.awt.Color;
 import java.awt.Font;
+import org.gephi.visualization.api.selection.SelectionType;
 
 /**
  *
@@ -241,8 +242,6 @@ public interface VizConfig {
 
     boolean isPropertiesbar();
 
-    boolean isRectangleSelection();
-
     boolean isReduceFpsWhenMouseOut();
 
     boolean isSelectionEnabled();
@@ -260,6 +259,8 @@ public interface VizConfig {
     boolean isUseLabelRenderer3d();
 
     boolean isWireFrame();
+
+    SelectionType getSelectionType();
 
     void setCustomSelection(boolean customSelection);
 
@@ -280,5 +281,7 @@ public interface VizConfig {
     void setRectangleSelection(boolean rectangleSelection);
 
     void setSelectionEnable(boolean selectionEnable);
+
+    void setSelectionType(SelectionType selectionType);
 
 }

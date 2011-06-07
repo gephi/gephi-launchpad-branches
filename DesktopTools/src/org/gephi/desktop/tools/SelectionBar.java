@@ -30,6 +30,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import org.gephi.ui.utils.UIUtils;
 import org.gephi.visualization.api.selection.SelectionManager;
+import org.gephi.visualization.api.selection.SelectionType;
 import org.openide.util.Lookup;
 import org.openide.util.NbBundle;
 
@@ -91,7 +92,7 @@ public class SelectionBar extends javax.swing.JPanel {
     public void refresh() {
         SelectionManager manager = Lookup.getDefault().lookup(SelectionManager.class);
         if (manager.isSelectionEnabled()) {
-            if (manager.isRectangleSelection()) {
+            if (manager.getSelectionType() != SelectionType.NONE) {
                 mouseSelection = false;
                 statusLabel.setText(NbBundle.getMessage(SelectionBar.class, "SelectionBar.statusLabel.rectangleSelection"));
             } else if (manager.isDirectMouseSelection()) {

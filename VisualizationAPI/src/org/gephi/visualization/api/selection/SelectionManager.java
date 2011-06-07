@@ -62,11 +62,11 @@ public interface SelectionManager {
 
     boolean isMouseSelectionZoomProportionnal();
 
-    boolean isRectangleSelection();
-
     boolean isSelectionEnabled();
 
     boolean isSelectionUpdateWhileDragging();
+
+    SelectionType getSelectionType();
 
     void removeChangeListener(ChangeListener changeListener);
 
@@ -92,8 +92,7 @@ public interface SelectionManager {
 
     void setMouseSelectionZoomProportionnal(boolean mouseSelectionZoomProportionnal);
 
-    void setRectangleSelection();
-
     void setSelectionUpdateWhileDragging(boolean selectionUpdateWhileDragging);
 
+    void setSelectionType(SelectionType selectionType);
 }

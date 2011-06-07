@@ -25,6 +25,7 @@ import java.awt.Font;
 import org.gephi.ui.utils.ColorUtils;
 import org.gephi.ui.utils.FontUtils;
 import org.gephi.visualization.api.config.VizConfig;
+import org.gephi.visualization.api.selection.SelectionType;
 import org.openide.util.NbPreferences;
 import org.openide.util.lookup.ServiceProvider;
 
@@ -76,12 +77,6 @@ public class VizConfigImpl implements VizConfig {
     protected boolean wireFrame = NbPreferences.forModule(VizConfig.class).getBoolean(WIREFRAME, DEFAULT_WIREFRAME);
     protected boolean useGLJPanel = NbPreferences.forModule(VizConfig.class).getBoolean(GLJPANEL, DEFAULT_GLJPANEL);
     protected float[] nodeSelectedColor = {1f, 1f, 1f};     //Not used
-    protected boolean selectionEnable = NbPreferences.forModule(VizConfig.class).getBoolean(SELECTION, DEFAULT_SELECTION);
-    protected boolean rectangleSelection = NbPreferences.forModule(VizConfig.class).getBoolean(RECTANGLE_SELECTION, DEFAULT_RECTANGLE_SELECTION);
-    protected Color rectangleSelectionColor = ColorUtils.decode(NbPreferences.forModule(VizConfig.class).get(RECTANGLE_SELECTION_COLOR, ColorUtils.encode(DEFAULT_RECTANGLE_SELECTION_COLOR)));
-    protected boolean customSelection = false;      //Overriden in Engine
-    protected boolean draggingEnable = NbPreferences.forModule(VizConfig.class).getBoolean(DRAGGING, DEFAULT_DRAGGING);
-    protected boolean cameraControlEnable = NbPreferences.forModule(VizConfig.class).getBoolean(CAMERA_CONTROL, DEFAULT_CAMERA_CONTROL);
     protected boolean showFPS = NbPreferences.forModule(VizConfig.class).getBoolean(SHOW_FPS, DEFAULT_SHOW_FPS);
     protected boolean reduceFpsWhenMouseOut = NbPreferences.forModule(VizConfig.class).getBoolean(REDUCE_FPS_MOUSE_OUT, DEFAULT_REDUCE_FPS_MOUSE_OUT);
     protected int reduceFpsWhenMouseOutValue = NbPreferences.forModule(VizConfig.class).getInt(REDUCE_FPS_MOUSE_OUT_VALUE, DEFAULT_REDUCE_FPS_MOUSE_OUT_VALUE);
@@ -104,11 +99,22 @@ public class VizConfigImpl implements VizConfig {
     protected boolean contextMenu = NbPreferences.forModule(VizConfig.class).getBoolean(CONTEXT_MENU, DEFAULT_CONTEXT_MENU);
     protected boolean toolbar = NbPreferences.forModule(VizConfig.class).getBoolean(TOOLBAR, DEFAULT_TOOLBAR);
     protected boolean propertiesbar = NbPreferences.forModule(VizConfig.class).getBoolean(HIGHTLIGHT_ANIMATION, DEFAULT_HIGHTLIGHT_ANIMATION);
+    protected boolean disableLOD = NbPreferences.forModule(VizConfig.class).getBoolean(DISABLE_LOD, DEFAULT_DISABLE_LOD);
+    protected boolean enableAutoSelect = true;      //Overriden in Engine - Temporary used by tools like ShortestPath
+    
+    // Selection
+    protected boolean selectionEnable = NbPreferences.forModule(VizConfig.class).getBoolean(SELECTION, DEFAULT_SELECTION);
+    protected boolean rectangleSelection = NbPreferences.forModule(VizConfig.class).getBoolean(RECTANGLE_SELECTION, DEFAULT_RECTANGLE_SELECTION);
+    protected Color rectangleSelectionColor = ColorUtils.decode(NbPreferences.forModule(VizConfig.class).get(RECTANGLE_SELECTION_COLOR, ColorUtils.encode(DEFAULT_RECTANGLE_SELECTION_COLOR)));
+    protected boolean customSelection = false;      //Overriden in Engine
     protected int mouseSelectionDiameter = NbPreferences.forModule(VizConfig.class).getInt(MOUSE_SELECTION_DIAMETER, DEFAULT_MOUSE_SELECTION_DIAMETER);
     protected boolean mouseSelectionZoomProportionnal = NbPreferences.forModule(VizConfig.class).getBoolean(MOUSE_SELECTION_ZOOM_PROPORTIONAL, DEFAULT_MOUSE_SELECTION_ZOOM_PROPORTIONAL);
     protected boolean mouseSelectionUpdateWhileDragging = NbPreferences.forModule(VizConfig.class).getBoolean(MOUSE_SELECTION_WHILE_DRAGGING, DEFAULT_MOUSE_SELECTION_WHILE_DRAGGING);
-    protected boolean disableLOD = NbPreferences.forModule(VizConfig.class).getBoolean(DISABLE_LOD, DEFAULT_DISABLE_LOD);
-    protected boolean enableAutoSelect = true;      //Overriden in Engine - Temporary used by tools like ShortestPath
+    protected SelectionType selectionType = SelectionType.NONE;
+
+    // Mouse input
+    protected boolean draggingEnable = NbPreferences.forModule(VizConfig.class).getBoolean(DRAGGING, DEFAULT_DRAGGING);
+    protected boolean cameraControlEnable = NbPreferences.forModule(VizConfig.class).getBoolean(CAMERA_CONTROL, DEFAULT_CAMERA_CONTROL);
 
     public int getAntialiasing() {
         return antialiasing;
@@ -442,4 +448,13 @@ public class VizConfigImpl implements VizConfig {
     public float getDefaultMetaEdgeScale() {
         return defaultMetaEdgeScale;
     }
+
+    public SelectionType getSelectionType() {
+        return selectionType;
+    }
+
+    public void setSelectionType(SelectionType selectionType) {
+        this.selectionType = selectionType;
+    }
+
 }

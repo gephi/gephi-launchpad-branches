@@ -48,6 +48,7 @@ import org.gephi.visualization.api.event.VizEvent.Type;
 import org.gephi.visualization.api.event.VizEventListener;
 import org.gephi.visualization.api.event.VizEventManager;
 import org.gephi.visualization.api.selection.SelectionManager;
+import org.gephi.visualization.api.selection.SelectionType;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.ServiceProvider;
 
@@ -195,7 +196,7 @@ public class DesktopToolController implements ToolController {
         final SelectionManager selectionManager = Lookup.getDefault().lookup(SelectionManager.class);
         selectionManager.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
-                if (selectionManager.isRectangleSelection() && currentTool != null) {
+                if (selectionManager.getSelectionType() != SelectionType.NONE && currentTool != null) {
                     toolbar.clearSelection();
                     unselect();
                 } else if (selectionManager.isSelectionEnabled() && currentTool != null && currentTool.getSelectionType() == ToolSelectionType.NONE) {

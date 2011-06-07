@@ -35,6 +35,7 @@ import org.gephi.graph.api.Node;
 import org.gephi.visualization.api.config.VizConfig;
 import org.gephi.visualization.api.selection.NodeContainer;
 import org.gephi.visualization.api.selection.SelectionManager;
+import org.gephi.visualization.api.selection.SelectionType;
 import org.gephi.visualization.api.selection.Shape;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.ServiceProvider;
@@ -115,7 +116,7 @@ public class SelectionManagerImpl implements SelectionManager {
     @Override
     public boolean isDirectMouseSelection() {
         VizConfig vizConfig = Lookup.getDefault().lookup(VizConfig.class);
-        return vizConfig.isSelectionEnabled() && !vizConfig.isRectangleSelection() && !vizConfig.isDraggingEnabled();
+        return vizConfig.isSelectionEnabled() && !vizConfig.isDraggingEnabled();
     }
 
     @Override
@@ -129,14 +130,14 @@ public class SelectionManagerImpl implements SelectionManager {
     }
 
     @Override
-    public boolean isRectangleSelection() {
-        VizConfig vizConfig = Lookup.getDefault().lookup(VizConfig.class);
-        return vizConfig.isSelectionEnabled() && vizConfig.isRectangleSelection();
+    public boolean isSelectionEnabled() {
+        return Lookup.getDefault().lookup(VizConfig.class).isSelectionEnabled();
     }
 
     @Override
-    public boolean isSelectionEnabled() {
-        return Lookup.getDefault().lookup(VizConfig.class).isSelectionEnabled();
+    public SelectionType getSelectionType() {
+        VizConfig vizConfig = Lookup.getDefault().lookup(VizConfig.class);
+        return vizConfig.getSelectionType();
     }
 
     @Override
@@ -181,9 +182,9 @@ public class SelectionManagerImpl implements SelectionManager {
     }
 
     @Override
-    public void setRectangleSelection() {
+    public void setSelectionType(SelectionType selectionType) {
         VizConfig vizConfig = Lookup.getDefault().lookup(VizConfig.class);
-        vizConfig.setRectangleSelection(true);
+        vizConfig.setSelectionType(selectionType);
         vizConfig.setDraggingEnable(false);
         vizConfig.setCustomSelection(false);
         vizConfig.setSelectionEnable(true);

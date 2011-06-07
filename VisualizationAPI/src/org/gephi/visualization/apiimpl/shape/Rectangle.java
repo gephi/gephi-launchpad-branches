@@ -36,7 +36,7 @@ public class Rectangle extends AbstractShape {
 
     Point origin, opposite;
 
-    public Rectangle(Point origin, Point opposite) {
+    Rectangle(Point origin, Point opposite) {
         this.origin = origin;
         this.opposite = opposite;
     }
@@ -45,8 +45,12 @@ public class Rectangle extends AbstractShape {
      * @param origin Top left corner of the rectangle.
      * @param dimension Dimensions of the rectangle.
      */
-    private Rectangle(Point origin, Dimension dimension) {
-        this(origin, new Point(origin.x + dimension.width, origin.y + dimension.height));
+    private Rectangle(int x, int y, int width, int height) {
+        this(new Point(x, y), new Point(x + width, y + height));
+    }
+
+    Rectangle(int x, int y) {
+        this(x, y, 0, 0);
     }
 
     public boolean isInside2D(int x, int y) {
@@ -54,19 +58,14 @@ public class Rectangle extends AbstractShape {
                ((y >= origin.y && y <= opposite.y) || (y <= origin.y && y >= opposite.y));
     }
 
-    public static Rectangle initRectangle(int x, int y) {
-        return new Rectangle(new Point(x, y), new Dimension(0, 0));
-    }
-
     public Shape continuousUpdate(int x, int y) {
         this.opposite.x = x;
         this.opposite.y = y;
         return this;
-        //return new Rectangle(origin, new Point(x, y));
     }
 
     public Shape singleUpdate(int x, int y) {
-        return initRectangle(x, y);
+        return new Rectangle(x, y);
     }
 
     public UIPrimitive getUIPrimitive() {

@@ -21,9 +21,7 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 
 package org.gephi.visualization.apiimpl.shape;
 
-import java.awt.Dimension;
 import java.awt.Point;
-import org.gephi.lib.gleem.linalg.Vec2f;
 import org.gephi.visualization.api.selection.Shape;
 import org.gephi.visualization.api.view.ui.UIPrimitive;
 
@@ -37,10 +35,14 @@ public class Ellipse extends AbstractShape {
     private final Point center;
     private final float a, b;
 
-    private Ellipse(Point center, float a, float b) {
-        this.center = center;
+    Ellipse(int x, int y, float a, float b) {
+        this.center = new Point(x, y);
         this.a = a;
         this.b = b;
+    }
+
+    Ellipse(int x, int y) {
+        this(x, y, 0, 0);
     }
 
     public boolean isInside2D(int x, int y) {
@@ -49,19 +51,15 @@ public class Ellipse extends AbstractShape {
     }
 
     public Shape singleUpdate(int x, int y) {
-        return initEllipse(x, y);
+        return new Ellipse(x, y);
     }
 
     public Shape continuousUpdate(int x, int y) {
-        return new Ellipse(center, Math.abs(x - center.x), Math.abs(y - center.y));
+        return new Ellipse(x, y, Math.abs(x - center.x), Math.abs(y - center.y));
     }
 
     public boolean isDiscretelyUpdated() {
         return false;
-    }
-
-    public Ellipse initEllipse(int x, int y) {
-        return new Ellipse(new Point(x, y), 0, 0);
     }
 
     public UIPrimitive getUIPrimitive() {

@@ -23,6 +23,7 @@ package org.gephi.visualization.apiimpl.shape;
 
 import java.awt.Point;
 import org.gephi.visualization.api.selection.CameraBridge;
+import org.gephi.visualization.api.selection.SelectionType;
 import org.gephi.visualization.api.selection.Shape;
 
 /**
@@ -36,6 +37,15 @@ public abstract class AbstractShape implements Shape {
     public boolean isInside3D(float x, float y, float z, CameraBridge cameraBridge) {
         Point point = cameraBridge.projectPoint(x, y, z);
         return isInside2D(point.x, point.y);
+    }
+
+    public static Shape initShape(SelectionType selectionType, int x, int y) {
+        switch (selectionType) {
+            case POLYGON: return new Polygon(x, y);
+            case ELLIPSE: return new Ellipse(x, y);
+            case RECTANGLE: return new Rectangle(x, y);
+        }
+        return null;
     }
 
 }

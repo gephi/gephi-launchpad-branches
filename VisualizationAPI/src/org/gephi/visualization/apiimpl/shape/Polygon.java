@@ -22,11 +22,13 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 package org.gephi.visualization.apiimpl.shape;
 
 import java.awt.Point;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import org.gephi.lib.gleem.linalg.Vec2f;
 import org.gephi.visualization.api.selection.Shape;
 import org.gephi.visualization.api.view.ui.UIPrimitive;
 
@@ -37,16 +39,16 @@ import org.gephi.visualization.api.view.ui.UIPrimitive;
  */
 public class Polygon extends AbstractShape {
 
-    private final List<Point> points;
+    private final Set<Point> points;
     private final Point tempPoint;
 
-    private Polygon(Point initalPoint) {
-        this.points = new ArrayList<Point>();
-        this.points.add(initalPoint);
-        this.tempPoint = null;
+    Polygon(int x, int y) {
+        this.points = new HashSet<Point>();
+        this.points.add(new Point(x, y));
+        this.tempPoint = new Point(x, y);
     }
 
-    private Polygon(Polygon polygon, Point tempPoint) {
+    Polygon(Polygon polygon, Point tempPoint) {
         this.points = polygon.points;
         this.tempPoint = tempPoint;
     }
@@ -58,7 +60,7 @@ public class Polygon extends AbstractShape {
 
     public Shape singleUpdate(int x, int y) {
         points.add(new Point(x, y));
-        return new Polygon(this, null);
+        return new Polygon(this, new Point(x, y));
     }
 
     public Shape continuousUpdate(int x, int y) {
@@ -66,27 +68,75 @@ public class Polygon extends AbstractShape {
     }
 
     public UIPrimitive getUIPrimitive() {
-        // Compute convex hull
-        Point[] ps = new Point[points.size() + 1];
-        for (int i = 0; i < points.size(); i++) {
-            ps[i] = points.get(i);
+        List<Point> convexHull = computeConvexHull();
+        Vec2f[] polygonPoints = new Vec2f[convexHull.size()];
+        int i = 0;
+        for (Point point : convexHull) {
+            polygonPoints[i++] = new Vec2f(point.x, point.y);
         }
-        ps[ps.length - 1] = tempPoint;
+        return UIPrimitive.polygon(polygonPoints);
+    }
+
+    private List<Point> computeConvexHull() {
+        points.add(tempPoint);
+        Point[] ps = new Point[points.size()];
+        int i = 0;
+        for (Point point : points) {
+            ps[i++] = point;
+        }
+
+        // If 2 points or 1 point
+        if (points.size() == 2) {
+            return Arrays.asList(ps);
+        }
+        
+        // Compute convex hull
         Arrays.sort(ps, new Comparator<Point>() {
             public int compare(Point o1, Point o2) {
                 return o1.x > o2.x ? 1 :
-                       o1.x == o2.x ? 0 : -1;
+                       o1.x < o2.x ? -1 :
+                       o1.y > o2.y ? 1 :
+                       o1.y < o2.y ? -1 : 0;
             }
         });
         List<Point> polygon = new ArrayList<Point>();
-        Point start = ps[0];
-        // TODO implement convex hull
-
-        return UIPrimitive.polygon(null);
-    }
-
-    public static Polygon initPolygon(int x, int y) {
-        return new Polygon(new Point(x, y));
+        // ps[0] contains the most bottom left vertex
+        polygon.add(ps[0]);
+        i = 0;
+        while (i < ps.length - 1) {
+            Point best = ps[i + 1];
+            int b = i + 1;
+            for (int j = i + 1; j < ps.length; j++) {
+                if ((ps[j].x == best.x && ps[j].y > best.y) ||
+                    (best.x != ps[i].x &&
+                     ps[j].x > best.x && (ps[j].y - ps[i].y) / (ps[j].x - ps[i].x) >
+                                         (best.y - ps[i].y) / (best.x - ps[i].x))) {
+                     best = ps[j];
+                     b = j;
+                }
+            }
+            polygon.add(best);
+            i = b;
+        }
+        i = ps.length - 1;
+        while (i > 0) {
+            Point best = ps[i - 1];
+            int b = i - 1;
+            for (int j = i - 1; j >= 0; j--) {
+                if ((ps[j].x == best.x && ps[j].y < best.y) ||
+                    (best.x != ps[i].x &&
+                     ps[j].x < best.x && (ps[j].y - ps[i].y) / (ps[j].x - ps[i].x) >
+                                         (best.y - ps[i].y) / (best.x - ps[i].x))) {
+                     best = ps[j];
+                     b = j;
+                }
+            }
+            if (b != 0) {
+                polygon.add(best);
+            }
+            i = b;
+        }
+        return polygon;
     }
 
     public boolean isDiscretelyUpdated() {

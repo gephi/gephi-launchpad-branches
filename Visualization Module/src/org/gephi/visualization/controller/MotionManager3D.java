@@ -29,7 +29,7 @@ import org.gephi.visualization.api.MotionManager;
 import org.gephi.visualization.api.config.VizConfig;
 import org.gephi.visualization.api.selection.SelectionManager;
 import org.gephi.visualization.api.selection.Shape;
-import org.gephi.visualization.apiimpl.shape.Rectangle;
+import org.gephi.visualization.apiimpl.shape.AbstractShape;
 import org.openide.util.Lookup;
 
 public class MotionManager3D implements MotionManager {
@@ -54,10 +54,7 @@ public class MotionManager3D implements MotionManager {
         mouseDrag[1] = e.getY();
         VizConfig vizConfig = Lookup.getDefault().lookup(VizConfig.class);
         if (vizConfig.isSelectionEnabled()) {
-            // TODO make differentiating between the shapes properly - either an enum or a string property or class
-            if (vizConfig.isRectangleSelection()) {
-                selectionShape = Rectangle.initRectangle(e.getX(), e.getY());
-            }
+            selectionShape = AbstractShape.initShape(vizConfig.getSelectionType(), e.getX(), e.getY());
         }
         if (vizConfig.isDraggingEnabled()) {
             if (SwingUtilities.isLeftMouseButton(e)) {

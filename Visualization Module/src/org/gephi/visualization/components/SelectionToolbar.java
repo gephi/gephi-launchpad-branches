@@ -35,6 +35,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import org.gephi.ui.utils.UIUtils;
 import org.gephi.visualization.api.selection.SelectionManager;
+import org.gephi.visualization.api.selection.SelectionType;
 import org.openide.util.Lookup;
 import org.openide.util.NbBundle;
 
@@ -74,11 +75,37 @@ public class SelectionToolbar extends JToolBar {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (rectangleButton.isSelected()) {
-                    Lookup.getDefault().lookup(SelectionManager.class).setRectangleSelection();
+                    Lookup.getDefault().lookup(SelectionManager.class).setSelectionType(SelectionType.RECTANGLE);
                 }
             }
         });
         add(rectangleButton);
+
+        //Polygon
+        final JToggleButton polygonButton = new JToggleButton(new ImageIcon(getClass().getResource("/org/gephi/visualization/components/polygon.png")));
+        polygonButton.setToolTipText(NbBundle.getMessage(SelectionToolbar.class, "SelectionToolbar.polygon.tooltip"));
+        polygonButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (polygonButton.isSelected()) {
+                    Lookup.getDefault().lookup(SelectionManager.class).setSelectionType(SelectionType.POLYGON);
+                }
+            }
+        });
+        add(polygonButton);
+
+        //Ellipse
+        final JToggleButton ellipseButton = new JToggleButton(new ImageIcon(getClass().getResource("/org/gephi/visualization/components/ellipse.png")));
+        ellipseButton.setToolTipText(NbBundle.getMessage(SelectionToolbar.class, "SelectionToolbar.ellipse.tooltip"));
+        ellipseButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (ellipseButton.isSelected()) {
+                    Lookup.getDefault().lookup(SelectionManager.class).setSelectionType(SelectionType.ELLIPSE);
+                }
+            }
+        });
+        add(ellipseButton);
 
         //Drag
         final JToggleButton dragButton = new JToggleButton(new ImageIcon(getClass().getResource("/org/gephi/visualization/components/hand.png")));
@@ -94,8 +121,10 @@ public class SelectionToolbar extends JToolBar {
         add(dragButton);
         addSeparator();
 
-        buttonGroup.setSelected(rectangleButton.getModel(), Lookup.getDefault().lookup(SelectionManager.class).isRectangleSelection());
-        buttonGroup.setSelected(mouseButton.getModel(), Lookup.getDefault().lookup(SelectionManager.class).isRectangleSelection());
+        buttonGroup.setSelected(rectangleButton.getModel(), Lookup.getDefault().lookup(SelectionManager.class).getSelectionType() == SelectionType.RECTANGLE);
+        buttonGroup.setSelected(polygonButton.getModel(), Lookup.getDefault().lookup(SelectionManager.class).getSelectionType() == SelectionType.POLYGON);
+        buttonGroup.setSelected(ellipseButton.getModel(), Lookup.getDefault().lookup(SelectionManager.class).getSelectionType() == SelectionType.ELLIPSE);
+        buttonGroup.setSelected(mouseButton.getModel(), Lookup.getDefault().lookup(SelectionManager.class).isDirectMouseSelection());
         buttonGroup.setSelected(dragButton.getModel(), Lookup.getDefault().lookup(SelectionManager.class).isDraggingEnabled());
 
         //Init events
