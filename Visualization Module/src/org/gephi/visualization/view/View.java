@@ -38,6 +38,7 @@ import org.gephi.visualization.view.pipeline.gl11.GL11EdgesLayout3D;
 import org.gephi.visualization.view.pipeline.gl11.GL11NodesLayout3D;
 import org.gephi.visualization.view.pipeline.gl11.GL11Pipeline3D;
 import org.gephi.visualization.view.pipeline.gl11.GL11UILayout;
+import org.gephi.visualization.view.profile.VizProfileSelector;
 
 /**
  * Class which controls the rendering loop.
@@ -83,8 +84,6 @@ public class View implements GLEventListener {
         this.bridge.setLayout(new GL11NodesLayout3D());
         this.bridge.setLayout(new GL11EdgesLayout3D());
         this.bridge.setLayout(new GL11UILayout());
-
-        this.rebuildPipeline = true;
     }
     
     public Component getCanvas() {
@@ -107,6 +106,10 @@ public class View implements GLEventListener {
     public void init(GLAutoDrawable glad) {
         final GL gl = glad.getGL();
         gl.setSwapInterval(1);
+
+        VizProfileSelector.setView(this);
+        // make Pipeline
+        this.rebuildPipeline = false;
 
         // TODO: change initialization code based on config files
 

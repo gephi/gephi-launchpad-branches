@@ -25,7 +25,9 @@ import java.util.ArrayDeque;
 import java.util.Iterator;
 import java.util.Queue;
 import javax.media.opengl.GL;
+import org.gephi.visualization.view.View;
 import org.gephi.visualization.view.pipeline.Pipeline;
+import org.openide.util.NbPreferences;
 
 /**
  * Service provider used to select the current visualization profile to be used
@@ -38,6 +40,8 @@ public final class VizProfileSelector {
     private static final VizProfile nullProfile;
     private static final Queue<VizProfile> profiles;
 
+    private static View view;
+
     private static VizProfile forcedProfile;
     private static boolean fallToDefault;
     
@@ -45,26 +49,42 @@ public final class VizProfileSelector {
         nullProfile = new NullVizProfile();
         profiles = new ArrayDeque<VizProfile>();
         /* TODO: add default profiles to the queue. */
-        profiles.offer(nullProfile);
         profiles.offer(new FixedFuncProfile());
         
+        VizProfileSelector.load();
+
         for (VizProfile p : profiles) {
             p.loadProperties();
         }
 
-        forcedProfile = null;
-        fallToDefault = true;
+        view = null;
     }
 
-    public static synchronized VizProfile[] profiles() {
+    public static VizProfile[] profiles() {
         return profiles.toArray(new VizProfile[profiles.size()]);
     }
 
-    public static synchronized boolean offer(VizProfile p) {
+    public static VizProfile forcedProfile() {
+        return forcedProfile;
+    }
+
+    public static boolean useOthersIfForcedUnavailable() {
+        return fallToDefault;
+    }
+
+    public static void setView(View currentView) {
+        view = currentView;
+    }
+
+    public static View currentView() {
+        return view;
+    }
+
+    public static boolean offer(VizProfile p) {
         return profiles.offer(p);
     }
 
-    public static synchronized Pipeline createPipeline(GL gl) {
+    public static Pipeline createPipeline(GL gl) {
         if (forcedProfile != null) {
             Pipeline pipeline = forcedProfile.createPipeline(gl);
             if (pipeline == null && !fallToDefault) return nullProfile.createPipeline(gl);
@@ -81,7 +101,7 @@ public final class VizProfileSelector {
         return nullProfile.createPipeline(gl);
     }
 
-    public static synchronized void forceProfile(String name, boolean useOtherIfUnavailable) {
+    public static void forceProfile(String name, boolean useOtherIfUnavailable) {
         fallToDefault = useOtherIfUnavailable;
 
         Iterator<VizProfile> it = profiles.iterator();
@@ -95,5 +115,21 @@ public final class VizProfileSelector {
         }
 
         forcedProfile = null;
+    }
+
+    public static void load() {
+        String name = NbPreferences.forModule(VizProfileSelector.class).get("FORCED_PROFILE", "None");
+        boolean useOthers = NbPreferences.forModule(VizProfileSelector.class).getBoolean("USE_OTHERS", true);
+
+        forceProfile(name, useOthers);
+    }
+
+    public static void store() {
+        if (forcedProfile != null)
+            NbPreferences.forModule(VizProfileSelector.class).put("FORCED_PROFILE", forcedProfile.name());
+        else
+            NbPreferences.forModule(VizProfileSelector.class).put("FORCED_PROFILE", "None");
+
+        NbPreferences.forModule(VizProfileSelector.class).putBoolean("USE_OTHERS", fallToDefault);
     }
 }

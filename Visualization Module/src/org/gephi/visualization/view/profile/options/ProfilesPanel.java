@@ -6,6 +6,7 @@ package org.gephi.visualization.view.profile.options;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.gephi.visualization.view.View;
 import org.gephi.visualization.view.profile.VizProfile;
 import org.gephi.visualization.view.profile.VizProfileSelector;
 
@@ -24,9 +25,11 @@ final class ProfilesPanel extends javax.swing.JPanel {
         this.panels = new ArrayList<VizProfileOptionPanel>();
 
         for (VizProfile p : profiles) {
+            this.forceProfileComboBox.addItem(p.name());
+
             VizProfileOptionPanel optionPanel = p.optionPanel();
             this.panels.add(optionPanel);
-            jTabbedPane1.addTab(p.name(), optionPanel);
+            this.tabbedPanel.addTab(p.name(), optionPanel);
         }
 
         this.controller.changed();
@@ -41,25 +44,67 @@ final class ProfilesPanel extends javax.swing.JPanel {
     private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
 
-        jTabbedPane1 = new javax.swing.JTabbedPane();
+        forcedProfilePanel = new javax.swing.JPanel();
+        jPanel2 = new javax.swing.JPanel();
+        forcedProfileNameLabel = new java.awt.Label();
+        forceProfileComboBox = new javax.swing.JComboBox();
+        useOthersCheckBox = new javax.swing.JCheckBox();
+        tabbedPanel = new javax.swing.JTabbedPane();
 
-        setLayout(new java.awt.GridBagLayout());
+        setLayout(new java.awt.BorderLayout());
 
-        jTabbedPane1.setDoubleBuffered(true);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        add(jTabbedPane1, gridBagConstraints);
+        forcedProfilePanel.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(ProfilesPanel.class, "ProfilesPanel.forcedProfilePanel.border.title"))); // NOI18N
+        forcedProfilePanel.setName("Forced Profile"); // NOI18N
+        forcedProfilePanel.setLayout(new java.awt.GridLayout(2, 0, 0, 5));
+
+        jPanel2.setLayout(new java.awt.BorderLayout());
+
+        forcedProfileNameLabel.setText(org.openide.util.NbBundle.getMessage(ProfilesPanel.class, "ProfilesPanel.forcedProfileNameLabel.text")); // NOI18N
+        jPanel2.add(forcedProfileNameLabel, java.awt.BorderLayout.WEST);
+        forcedProfileNameLabel.getAccessibleContext().setAccessibleName(org.openide.util.NbBundle.getMessage(ProfilesPanel.class, "ProfilesPanel.label1.AccessibleContext.accessibleName")); // NOI18N
+
+        forceProfileComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "None" }));
+        jPanel2.add(forceProfileComboBox, java.awt.BorderLayout.CENTER);
+
+        forcedProfilePanel.add(jPanel2);
+
+        useOthersCheckBox.setSelected(true);
+        org.openide.awt.Mnemonics.setLocalizedText(useOthersCheckBox, org.openide.util.NbBundle.getMessage(ProfilesPanel.class, "ProfilesPanel.useOthersCheckBox.text")); // NOI18N
+        useOthersCheckBox.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
+        forcedProfilePanel.add(useOthersCheckBox);
+
+        add(forcedProfilePanel, java.awt.BorderLayout.NORTH);
+        add(tabbedPanel, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
 
     void load() {
+        VizProfileSelector.load();
+
+        VizProfile forcedProfile = VizProfileSelector.forcedProfile();
+        if (forcedProfile == null)
+            this.forceProfileComboBox.setSelectedItem("None");
+        else
+            this.forceProfileComboBox.setSelectedItem(forcedProfile.name());
+
         for (VizProfileOptionPanel optionPanel : this.panels) {
             optionPanel.load();
         }
     }
 
     void store() {
+        String forcedProfile = (String) forceProfileComboBox.getSelectedItem();
+        boolean useOthers = useOthersCheckBox.isSelected();
+
+        VizProfileSelector.forceProfile(forcedProfile, useOthers);
+        VizProfileSelector.store();
+
         for (VizProfileOptionPanel optionPanel : this.panels) {
             optionPanel.store();
+        }
+
+        View view = VizProfileSelector.currentView();
+        if (view != null) {
+            view.rebuildPipeline();
         }
     }
 
@@ -71,6 +116,11 @@ final class ProfilesPanel extends javax.swing.JPanel {
         return result;
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JTabbedPane jTabbedPane1;
+    private javax.swing.JComboBox forceProfileComboBox;
+    private java.awt.Label forcedProfileNameLabel;
+    private javax.swing.JPanel forcedProfilePanel;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JTabbedPane tabbedPanel;
+    private javax.swing.JCheckBox useOthersCheckBox;
     // End of variables declaration//GEN-END:variables
 }
