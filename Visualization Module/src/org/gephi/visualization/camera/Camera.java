@@ -215,17 +215,16 @@ public class Camera {
      * Returns the given point as it will appear on the screen.
      */
     public Point projectPoint(float x, float y, float z) {
-        Vec3f point = new Vec3f(x, y, z);
-        Vec3f screenPoint = new Vec3f();
-        Mat4f projMatrix = projectiveMatrix();
-        Mat4f viewMatrix = viewMatrix();
+        Vec4f point = new Vec4f(x, y, z, 1.0f);
+        Vec4f screenPoint = new Vec4f();
+        Mat4f viewProjMatrix = projectiveMatrix().mul(viewMatrix());
         // multiply by modelview and projection matrices
-        viewMatrix.xformPt(point, screenPoint);
-        projMatrix.xformPt(screenPoint, point);
+        viewProjMatrix.xformVec(point, screenPoint);
+        screenPoint.scale(1.0f/screenPoint.w());
         // to NDC
         // point.scale(1 / point.w());
-        int px = (int) ((point.get(1) + 1) * imageWidth / 2);
-        int py = (int) ((point.get(2) + 1) * imageHeight / 2);
+        int px = (int) ((screenPoint.x() + 1.0f) * imageWidth / 2.0f);
+        int py = (int) ((screenPoint.y() + 1.0f) * imageHeight / 2.0f);
         return new Point(px, py);
     }
 
