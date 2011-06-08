@@ -19,29 +19,25 @@ You should have received a copy of the GNU Affero General Public License
 along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package org.gephi.visualization.view.profile;
+package org.gephi.visualization.view.pipeline;
 
 import javax.media.opengl.GL;
-import org.gephi.visualization.view.pipeline.Pipeline;
-import org.gephi.visualization.view.profile.options.VizProfileOptionPanel;
+import org.gephi.visualization.data.FrameData;
+import org.gephi.visualization.data.layout.VizLayout;
 
 /**
- * A VizProfile represents a set of features and can be used to set
+ * Parts of a pipeline.
  *
- * Antonio Patriarca <antoniopatriarca@gmail.com>
+ * @author Antonio Patriarca <antoniopatriarca@gmail.com>
  */
-public interface VizProfile {
+public interface Stage<T> {
 
-    public String name();
-    public String description();
+    public VizLayout<T> layout();
 
-    public void loadProperties();
-    public void saveProperties();
+    public boolean init(GL gl);
 
-    public void setProperty(VizProperty property);
+    public void draw(GL gl, FrameData frameData);
 
-    public VizProfileOptionPanel optionPanel();
-
-    public Pipeline createPipeline(GL gl);
+    public void dispose(GL gl);
 
 }

@@ -44,12 +44,19 @@ public final class VizProfileSelector {
     static {
         nullProfile = new NullVizProfile();
         profiles = new ArrayDeque<VizProfile>();
+        /* TODO: add default profiles to the queue. */
+        profiles.offer(nullProfile);
+        profiles.offer(new FixedFuncProfile());
+        
+        for (VizProfile p : profiles) {
+            p.loadProperties();
+        }
 
         forcedProfile = null;
         fallToDefault = true;
     }
 
-    public static synchronized VizProfile[] getProfiles() {
+    public static synchronized VizProfile[] profiles() {
         return profiles.toArray(new VizProfile[profiles.size()]);
     }
 
@@ -67,7 +74,7 @@ public final class VizProfileSelector {
 
         while (it.hasNext()) {
             VizProfile p = it.next();
-            Pipeline pipeline = p.createPipeline(gl);
+            Pipeline pipeline = (p != forcedProfile) ? p.createPipeline(gl) : null;
             if (pipeline != null) return pipeline;
         }
 

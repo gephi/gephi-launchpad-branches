@@ -42,8 +42,13 @@ public class Pair<F, S> {
         return new Pair<F, S>(first, second);
     }
 
+    public static <F, S> Pair<F, S> ofNotNull(F first, S second) {
+        if (first == null || second == null) return null;
+        else return Pair.of(first, second);
+    }
+
     @Override
     public String toString() {
-        return "(" + first + ", " + second + ')';
+        return "(" + first + ", " + second + ")";
     }
 }

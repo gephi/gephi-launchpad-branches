@@ -79,7 +79,7 @@ public final class UIPrimitive {
     public static UIPrimitive fromData(Shape shape, float[] arguments) {
         switch (shape) {
             case CONVEX_POLYGON:
-                if ((arguments.length & 1) != 0 || arguments.length < 6) return null;
+                if ((arguments.length & 1) != 0) return null;
                 else return new UIPrimitive(shape, arguments);
             case ELLIPSES:
                 if (arguments.length != 6) return null;

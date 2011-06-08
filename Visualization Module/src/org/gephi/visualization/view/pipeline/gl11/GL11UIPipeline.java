@@ -25,6 +25,7 @@ import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 import javax.media.opengl.glu.GLU;
 import javax.media.opengl.glu.gl2.GLUgl2;
+import org.gephi.lib.gleem.linalg.Vec2f;
 import org.gephi.visualization.api.view.ui.UIPrimitive;
 import org.gephi.visualization.camera.Camera;
 import org.gephi.visualization.data.FrameData;
@@ -119,7 +120,53 @@ public class GL11UIPipeline implements Pipeline {
                 gl2.glPolygonMode(GL2.GL_FRONT_AND_BACK, GL2.GL_FILL);
 
             } else {
-                // TODO: implements ELLIPSES shape
+                float[] args = primitive.arguments();
+                Vec2f center = new Vec2f(args[0], args[1]);
+                Vec2f axis1 = new Vec2f(args[2], args[3]);
+                Vec2f axis2 = new Vec2f(args[4], args[5]);
+
+                // TODO: calculate a better number of points
+                final int len = 200;
+                
+                Vec2f[] pnts = new Vec2f[len];
+                
+                for (int i = 0; i < len; ++i) {
+                    double angle = (Math.PI * i) / len;
+                    
+                    pnts[i] = new Vec2f(center);
+                    pnts[i].addScaled(pnts[i], (float)Math.cos(angle), axis1);
+                    pnts[i].addScaled(pnts[i], (float)Math.sin(angle), axis2);
+                }
+
+                // fill
+                gl2.glColor4f(style.fillColor().ra(), style.fillColor().ga(), style.fillColor().ba(), style.fillColor().a());
+
+                gl2.glPolygonMode(GL2.GL_FRONT_AND_BACK, GL2.GL_FILL);
+
+                gl2.glBegin(GL2.GL_POLYGON);
+
+                for (int i = 0; i < len; ++i) {
+                    gl2.glVertex2f(pnts[i].x(), pnts[i].y());
+                }
+
+                gl2.glEnd();
+
+                // border
+                gl2.glColor4f(style.borderColor().ra(), style.borderColor().ga(), style.borderColor().ba(), style.borderColor().a());
+
+                gl2.glLineWidth(style.borderWidth());
+
+                gl2.glPolygonMode(GL2.GL_FRONT_AND_BACK, GL2.GL_LINE);
+
+                gl2.glBegin(GL2.GL_POLYGON);
+
+                for (int i = 0; i < len; ++i) {
+                    gl2.glVertex2f(pnts[i].x(), pnts[i].y());
+                }
+
+                gl2.glEnd();
+
+                gl2.glPolygonMode(GL2.GL_FRONT_AND_BACK, GL2.GL_FILL);
             }
 
             gl2.glDisable(GL2.GL_BLEND);

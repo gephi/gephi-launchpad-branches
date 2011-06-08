@@ -74,7 +74,7 @@ public class FrameDataBuilder {
     }
 
     public void add(UIPrimitive primitive, UIStyle style) {
-        this.uiBufferBuilder.add(Pair.of(primitive, style));
+        this.uiBufferBuilder.add(Pair.ofNotNull(primitive, style));
     }
 
     public FrameData createFrameData() {

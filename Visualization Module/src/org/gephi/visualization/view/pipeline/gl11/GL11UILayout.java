@@ -22,6 +22,7 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 package org.gephi.visualization.view.pipeline.gl11;
 
 import java.nio.ByteBuffer;
+import java.util.UUID;
 import org.gephi.visualization.api.color.Color;
 import org.gephi.visualization.api.view.ui.UIPrimitive;
 import org.gephi.visualization.api.view.ui.UIPrimitive.Shape;

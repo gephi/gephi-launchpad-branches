@@ -24,6 +24,7 @@ package org.gephi.visualization.view.profile;
 import javax.media.opengl.GL;
 import org.gephi.visualization.data.FrameData;
 import org.gephi.visualization.view.pipeline.Pipeline;
+import org.gephi.visualization.view.profile.options.VizProfileOptionPanel;
 
 /**
  * Profile used when no other profile is available. Its pipeline do nothing.
@@ -32,12 +33,67 @@ import org.gephi.visualization.view.pipeline.Pipeline;
  */
 class NullVizProfile implements VizProfile {
 
+    public NullVizProfile() {
+    }
+
+    @Override
+    public String name() {
+        return "Null profile.";
+    }
+
+    @Override
+    public String description() {
+        return "Profile used when no other profile is available. Its pipeline do nothing.";
+    }
+
+    @Override
+    public void setProperty(VizProperty property) {
+        /* EMPTY BLOCK */
+    }
+
+    @Override
+    public Pipeline createPipeline(GL gl) {
+        return new NullPipeline();
+    }
+
+    @Override
+    public void loadProperties() {
+        /* EMPTY BLOCK */
+    }
+
+    @Override
+    public void saveProperties() {
+        /* EMPTY BLOCK */
+    }
+
+    @Override
+    public VizProfileOptionPanel optionPanel() {
+        return new VizProfileOptionPanel(this) {
+
+            @Override
+            protected VizProperty[] getProperties() {
+                return new VizProperty[]{};
+            }
+
+            @Override
+            public boolean valid() {
+                return true;
+            }
+
+            @Override
+            protected void updateValues() {
+                /* EMPTY BLOCK */
+            }
+        };
+    }
+
     /**
      * Pipeline used when no other pipeline can be used.
      */
     private static class NullPipeline implements Pipeline {
 
         public NullPipeline() {
+            /* EMPTY BLOCK */
         }
 
         @Override
@@ -70,23 +126,4 @@ class NullVizProfile implements VizProfile {
             /* EMPTY BLOCK */
         }
     }
-
-    public NullVizProfile() {
-    }
-
-    @Override
-    public String name() {
-        return "Null profile.";
-    }
-
-    @Override
-    public String description() {
-        return "Profile used when no other profile is available. Its pipeline do nothing.";
-    }
-
-    @Override
-    public Pipeline createPipeline(GL gl) {
-        return new NullPipeline();
-    }
-
 }

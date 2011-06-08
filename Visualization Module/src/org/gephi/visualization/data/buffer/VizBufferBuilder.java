@@ -88,6 +88,8 @@ public class VizBufferBuilder<T> {
     }
 
     public void add(T e) {
+        if (e == null) return;
+
         if (this.buffers.isEmpty()) {
             final ByteBuffer b = ByteBuffer.allocateDirect(this.layout.suggestedBlockSize());
             this.buffers.add(b);
