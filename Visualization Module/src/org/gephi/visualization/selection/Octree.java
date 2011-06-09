@@ -32,6 +32,7 @@ import org.gephi.graph.api.NodeData;
 import org.gephi.graph.api.NodeIterator;
 import org.gephi.visualization.api.selection.CameraBridge;
 import org.gephi.visualization.api.selection.NodeContainer;
+import org.gephi.visualization.api.selection.Shape.Intersection;
 import org.gephi.visualization.controller.Controller;
 
 public final class Octree implements NodeContainer {
@@ -88,41 +89,35 @@ public final class Octree implements NodeContainer {
     }
 
     private void recursiveAddNodes(Octant octant, Shape shape) {
-        float[][] cornerNodes = octant.getCornerCoordinates();
-        boolean intersecting = false;
-        boolean fullyInside = true;
         CameraBridge cameraBridge = Controller.getInstance().getCameraBridge();
-        for (int i = 0; i < cornerNodes.length; i++) {
-            if (shape.isInside3D(cornerNodes[i][0], cornerNodes[i][1], cornerNodes[i][2], cameraBridge)) {
-                intersecting = true;
-            } else {
-                fullyInside = false;
-            }
-            if (intersecting && !fullyInside) {
-                break;
-            }
-        }
-        if (!intersecting) {
-            return;
-        }
-        if (fullyInside) {
-            Iterator<Node> iterator = octant.getAllNodes();
-            while (iterator.hasNext()) {
-                // TODO for testing only
-                iterator.next().getNodeData().setColor(0, 255, 255);
-            }
-        } else {
-            if (octant.hasChildren()) {
-                for (Octant child : octant.getChildren()) {
-                    recursiveAddNodes(child, shape);
+        Intersection intersection = shape.intersectsBox(octant.getX(), octant.getY(), octant.getZ(), octant.getSize(), cameraBridge);
+
+        switch (intersection) {
+            case OUTSIDE:
+                return;
+            case INTERSECT:
+                if (octant.hasChildren()) {
+                    for (Octant child : octant.getChildren()) {
+                        if (child != null) {
+                            recursiveAddNodes(child, shape);
+                        }
+                    }
+                } else {
+                    // FIXME not all nodes!
+                    Iterator<Node> iterator = octant.getNodes();
+                    while (iterator.hasNext()) {
+                        // TODO for testing only
+                        iterator.next().getNodeData().setColor(255, 0, 0);
+                    }
                 }
-            } else {
-                Iterator<Node> iterator = octant.getNodes();
+                break;
+            case FULLY_INSIDE:
+                Iterator<Node> iterator = octant.getAllNodes();
                 while (iterator.hasNext()) {
                     // TODO for testing only
-                    iterator.next().getNodeData().setColor(0, 255, 255);
+                    iterator.next().getNodeData().setColor(255, 0, 0);
                 }
-            }
+                break;
         }
     }
 
@@ -146,6 +141,22 @@ class Octant {
         this.z = z;
         this.size = size;
         nodes = new ArrayList<Node>();
+    }
+
+    public float getSize() {
+        return size;
+    }
+
+    public float getX() {
+        return x;
+    }
+
+    public float getY() {
+        return y;
+    }
+
+    public float getZ() {
+        return z;
     }
 
     public void addNode(Node node) {

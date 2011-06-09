@@ -25,6 +25,8 @@ import org.gephi.visualization.api.view.ui.UIPrimitive;
 
 public interface Shape {
 
+    public enum Intersection {OUTSIDE, INTERSECT, FULLY_INSIDE};
+
     /**
      * Returns true if given 3D coordinate point is inside the projection
      * frustum.
@@ -32,9 +34,14 @@ public interface Shape {
     boolean isInside3D(float x, float y, float z, CameraBridge cameraBridge);
 
     /**
+     * Determines intersection of box with the shape.
+     */
+    Intersection intersectsBox(float x, float y, float z, float size, CameraBridge cameraBridge);
+
+    /**
      * Returns true if given 2D screen coordinate point is inside the shape.
      */
-    boolean isInside2D(int x, int y);
+    boolean isPointInside(int x, int y);
 
     Shape singleUpdate(int x, int y);
 

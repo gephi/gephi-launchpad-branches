@@ -37,4 +37,6 @@ public interface CameraBridge {
 
     public Point projectPoint(float x, float y, float z);
 
+    public int projectScale(float scale);
+    
 }

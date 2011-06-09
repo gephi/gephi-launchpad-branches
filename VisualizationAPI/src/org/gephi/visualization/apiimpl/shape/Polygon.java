@@ -53,7 +53,7 @@ public class Polygon extends AbstractShape {
         this.tempPoint = tempPoint;
     }
 
-    public boolean isInside2D(int x, int y) {
+    public boolean isPointInside(int x, int y) {
         // TODO implement
         return false;
     }
@@ -78,15 +78,15 @@ public class Polygon extends AbstractShape {
     }
 
     private List<Point> computeConvexHull() {
-        points.add(tempPoint);
-        Point[] ps = new Point[points.size()];
+        Point[] ps = new Point[points.size() + 1];
         int i = 0;
         for (Point point : points) {
             ps[i++] = point;
         }
+        ps[i] = tempPoint;
 
         // If 2 points or 1 point
-        if (points.size() == 2) {
+        if (ps.length == 2) {
             return Arrays.asList(ps);
         }
         
@@ -140,6 +140,11 @@ public class Polygon extends AbstractShape {
     }
 
     public boolean isDiscretelyUpdated() {
+        return true;
+    }
+
+    @Override
+    protected boolean intersectsCircle(int x, int y, int radius) {
         return true;
     }
 

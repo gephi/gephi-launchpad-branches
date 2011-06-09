@@ -45,7 +45,7 @@ public class Ellipse extends AbstractShape {
         this(x, y, 0, 0);
     }
 
-    public boolean isInside2D(int x, int y) {
+    public boolean isPointInside(int x, int y) {
         return (center.x - x) * (center.x - x) / (a * a) +
                (center.y - y) * (center.y - y) / (b * b) <= 1;
     }
@@ -65,6 +65,11 @@ public class Ellipse extends AbstractShape {
     public UIPrimitive getUIPrimitive() {
         //return UIPrimitive.ellipses(new Vec2f(center.x, center.y), a, b);
         return null;
+    }
+
+    @Override
+    protected boolean intersectsCircle(int x, int y, int radius) {
+        return true;
     }
 
 }

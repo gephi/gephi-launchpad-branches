@@ -228,6 +228,16 @@ public class Camera {
         return new Point(px, py);
     }
 
+    /**
+     * Returns the rescaled size of an object as it would appear on the screen.
+     */
+    public int projectScale(float scale) {
+        // TODO optimize
+        Point p1 = projectPoint(scale, 0, 0);
+        Point p2 = projectPoint(0, 0, 0);
+        return (int) Math.sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
+    }
+
     public void startTranslation() {}
 
     public void updateTranslation(float horizontal, float vertical) {

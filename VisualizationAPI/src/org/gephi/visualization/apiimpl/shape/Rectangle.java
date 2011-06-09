@@ -21,7 +21,6 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 
 package org.gephi.visualization.apiimpl.shape;
 
-import java.awt.Dimension;
 import java.awt.Point;
 import org.gephi.lib.gleem.linalg.Vec2f;
 import org.gephi.visualization.api.selection.Shape;
@@ -53,7 +52,7 @@ public class Rectangle extends AbstractShape {
         this(x, y, 0, 0);
     }
 
-    public boolean isInside2D(int x, int y) {
+    public boolean isPointInside(int x, int y) {
         return ((x >= origin.x && x <= opposite.x) || (x <= origin.x && x >= opposite.x)) &&
                ((y >= origin.y && y <= opposite.y) || (y <= origin.y && y >= opposite.y));
     }
@@ -74,6 +73,11 @@ public class Rectangle extends AbstractShape {
 
     public boolean isDiscretelyUpdated() {
         return false;
+    }
+
+    @Override
+    protected boolean intersectsCircle(int x, int y, int radius) {
+        return true;
     }
 
 }

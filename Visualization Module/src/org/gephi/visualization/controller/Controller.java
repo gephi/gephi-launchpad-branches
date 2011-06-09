@@ -110,6 +110,11 @@ public class Controller implements KeyListener, MouseListener, MouseMotionListen
             public Point projectPoint(float x, float y, float z) {
                 return Controller.this.camera.projectPoint(x, y, z);
             }
+
+            @Override
+            public int projectScale(float scale) {
+                return Controller.this.camera.projectScale(scale);
+            }
         };
 
     }

@@ -54,7 +54,11 @@ public class MotionManager3D implements MotionManager {
         mouseDrag[1] = e.getY();
         VizConfig vizConfig = Lookup.getDefault().lookup(VizConfig.class);
         if (vizConfig.isSelectionEnabled()) {
-            selectionShape = AbstractShape.initShape(vizConfig.getSelectionType(), e.getX(), e.getY());
+            if (selectionShape != null && selectionShape.isDiscretelyUpdated()) {
+                selectionShape = selectionShape.singleUpdate(e.getX(), e.getY());
+            } else {
+                selectionShape = AbstractShape.initShape(vizConfig.getSelectionType(), e.getX(), e.getY());
+            }
         }
         if (vizConfig.isDraggingEnabled()) {
             if (SwingUtilities.isLeftMouseButton(e)) {
@@ -96,7 +100,9 @@ public class MotionManager3D implements MotionManager {
         } else if (SwingUtilities.isRightMouseButton(e)) {
 
         }
-        selectionShape = null;
+        if (selectionShape != null && !selectionShape.isDiscretelyUpdated()) {
+            selectionShape = null;
+        }
     }
 
     @Override

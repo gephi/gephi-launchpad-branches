@@ -34,10 +34,40 @@ import org.gephi.visualization.api.selection.Shape;
  */
 public abstract class AbstractShape implements Shape {
 
+    private final static float THIRD_ROOT = (float) Math.sqrt(3);
+
     public boolean isInside3D(float x, float y, float z, CameraBridge cameraBridge) {
         Point point = cameraBridge.projectPoint(x, y, z);
-        return isInside2D(point.x, point.y);
+        return isPointInside(point.x, point.y);
     }
+
+    public Intersection intersectsBox(float x, float y, float z, float size, CameraBridge cameraBridge) {
+        // Create a sphere around the box and test every corner point for inclusion
+        int radius = cameraBridge.projectScale(size * THIRD_ROOT);
+        Point center = cameraBridge.projectPoint(x + size / 2, y + size / 2, z + size / 2);
+        // Is any box corner point inside the shape?
+        boolean intersect = false;
+        boolean inside = true;
+        int i = 0;
+        while (i < 8 && (!intersect || inside)) {
+            if (isInside3D(x + BOX_CORNERS[i][0] * size, y + BOX_CORNERS[i][1] * size, z + BOX_CORNERS[i][2] * size, cameraBridge)) {
+                intersect = true;
+            } else {
+                inside = false;
+            }
+            i++;
+        }
+        if (intersect) {
+            return inside ? Intersection.FULLY_INSIDE : Intersection.INTERSECT;
+        }
+        // Is shape inside the boxes bounding sphere?
+        return intersectsCircle(center.x, center.y, radius) ? Intersection.INTERSECT : Intersection.OUTSIDE;
+    }
+
+    /**
+     * Returns true if shape intersects a given circle.
+     */
+    protected abstract boolean intersectsCircle(int x, int y, int radius);
 
     public static Shape initShape(SelectionType selectionType, int x, int y) {
         switch (selectionType) {
@@ -47,5 +77,16 @@ public abstract class AbstractShape implements Shape {
         }
         return null;
     }
+
+    private static final int[][] BOX_CORNERS = new int[][]{
+            new int[]{0, 0, 0},
+            new int[]{0, 0, 1},
+            new int[]{0, 1, 0},
+            new int[]{0, 1, 1},
+            new int[]{1, 0, 0},
+            new int[]{1, 0, 1},
+            new int[]{1, 1, 0},
+            new int[]{1, 1, 1}
+    };
 
 }
