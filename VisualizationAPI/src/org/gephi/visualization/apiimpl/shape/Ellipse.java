@@ -22,6 +22,7 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 package org.gephi.visualization.apiimpl.shape;
 
 import java.awt.Point;
+import org.gephi.lib.gleem.linalg.Vec2f;
 import org.gephi.visualization.api.selection.Shape;
 import org.gephi.visualization.api.view.ui.UIPrimitive;
 
@@ -55,7 +56,7 @@ public class Ellipse extends AbstractShape {
     }
 
     public Shape continuousUpdate(int x, int y) {
-        return new Ellipse(x, y, Math.abs(x - center.x), Math.abs(y - center.y));
+        return new Ellipse(center.x, center.y, Math.abs(x - center.x), Math.abs(y - center.y));
     }
 
     public boolean isDiscretelyUpdated() {
@@ -63,8 +64,7 @@ public class Ellipse extends AbstractShape {
     }
 
     public UIPrimitive getUIPrimitive() {
-        //return UIPrimitive.ellipses(new Vec2f(center.x, center.y), a, b);
-        return null;
+        return UIPrimitive.ellipses(new Vec2f(center.x, center.y), new Vec2f(a, 0), new Vec2f(b, 0));
     }
 
     @Override
