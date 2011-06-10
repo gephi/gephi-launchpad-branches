@@ -64,7 +64,7 @@ public class Ellipse extends AbstractShape {
     }
 
     public UIPrimitive getUIPrimitive() {
-        return UIPrimitive.ellipses(new Vec2f(center.x, center.y), new Vec2f(a, 0), new Vec2f(b, 0));
+        return UIPrimitive.ellipses(new Vec2f(center.x, center.y), new Vec2f(a, 0), new Vec2f(0, b));
     }
 
     @Override

@@ -131,7 +131,7 @@ public class GL11UIPipeline implements Pipeline {
                 Vec2f[] pnts = new Vec2f[len];
                 
                 for (int i = 0; i < len; ++i) {
-                    double angle = (Math.PI * i) / len;
+                    double angle = (2.0 * Math.PI * i) / len;
                     
                     pnts[i] = new Vec2f(center);
                     pnts[i].addScaled(pnts[i], (float)Math.cos(angle), axis1);
