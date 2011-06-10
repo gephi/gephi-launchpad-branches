@@ -57,4 +57,9 @@ public class MotionManager2D implements MotionManager {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    @Override
+    public void mouseClicked(MouseEvent e) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
 }

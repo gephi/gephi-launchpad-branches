@@ -42,20 +42,39 @@ public class Polygon extends AbstractShape {
     private final Set<Point> points;
     private final Point tempPoint;
 
+    private final Point[] convexHull;
+    private final float[][] lineInfo;
+
     Polygon(int x, int y) {
+        Point point = new Point(x, y);
         this.points = new HashSet<Point>();
-        this.points.add(new Point(x, y));
-        this.tempPoint = new Point(x, y);
+        this.points.add(point);
+        this.tempPoint = point;
+        this.convexHull = new Point[] {point};
+        this.lineInfo = new float[1][4];
     }
 
     Polygon(Polygon polygon, Point tempPoint) {
         this.points = polygon.points;
         this.tempPoint = tempPoint;
+        this.convexHull = computeConvexHull();
+        this.lineInfo = computeLineInfo();
     }
 
     public boolean isPointInside(int x, int y) {
-        // TODO implement
-        return false;
+        if (lineInfo.length <= 2) {
+            return false;
+        }
+        for (int i = 0; i < lineInfo.length; i++) {
+            // Difference vector betwen point and line center
+            float vecx = x - lineInfo[i][2];
+            float vecy = y - lineInfo[i][3];
+            // Compute inner product
+            if (vecx * lineInfo[i][0] + vecy * lineInfo[i][1] < 0) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public Shape singleUpdate(int x, int y) {
@@ -68,16 +87,29 @@ public class Polygon extends AbstractShape {
     }
 
     public UIPrimitive getUIPrimitive() {
-        List<Point> convexHull = computeConvexHull();
-        Vec2f[] polygonPoints = new Vec2f[convexHull.size()];
-        int i = 0;
-        for (Point point : convexHull) {
-            polygonPoints[i++] = new Vec2f(point.x, point.y);
+        Vec2f[] polygonPoints = new Vec2f[convexHull.length];
+        for (int i = 0; i < convexHull.length; i++) {
+            polygonPoints[i] = new Vec2f(convexHull[i].x, convexHull[i].y);
         }
         return UIPrimitive.polygon(polygonPoints);
     }
 
-    private List<Point> computeConvexHull() {
+    private float[][] computeLineInfo() {
+        // First two elements for line normal, other two for line center
+        float[][] lNormals = new float[convexHull.length][4];
+        for (int i = 0; i < convexHull.length; i++) {
+            int j = i < convexHull.length - 1 ? i + 1 : 0;
+            // Normal
+            lNormals[i][0] = -(convexHull[j].y - convexHull[i].y);
+            lNormals[i][1] = convexHull[j].x - convexHull[i].x;
+            // Line center
+            lNormals[i][2] = (convexHull[j].x - convexHull[i].x) / 2;
+            lNormals[i][3] = (convexHull[j].y - convexHull[i].y) / 2;
+        }
+        return lNormals;
+    }
+
+    private Point[] computeConvexHull() {
         Point[] ps = new Point[points.size() + 1];
         int i = 0;
         for (Point point : points) {
@@ -85,9 +117,9 @@ public class Polygon extends AbstractShape {
         }
         ps[i] = tempPoint;
 
-        // If 2 points or 1 point
+        // If 2 points
         if (ps.length == 2) {
-            return Arrays.asList(ps);
+            return ps;
         }
         
         // Compute convex hull
@@ -109,8 +141,8 @@ public class Polygon extends AbstractShape {
             for (int j = i + 1; j < ps.length; j++) {
                 if ((ps[j].x == best.x && ps[j].y > best.y) ||
                     (best.x != ps[i].x &&
-                     ps[j].x > best.x && (ps[j].y - ps[i].y) / (ps[j].x - ps[i].x) >
-                                         (best.y - ps[i].y) / (best.x - ps[i].x))) {
+                     ps[j].x > best.x && (ps[j].y - ps[i].y) / (float) (ps[j].x - ps[i].x) >
+                                         (best.y - ps[i].y) / (float) (best.x - ps[i].x))) {
                      best = ps[j];
                      b = j;
                 }
@@ -125,8 +157,8 @@ public class Polygon extends AbstractShape {
             for (int j = i - 1; j >= 0; j--) {
                 if ((ps[j].x == best.x && ps[j].y < best.y) ||
                     (best.x != ps[i].x &&
-                     ps[j].x < best.x && (ps[j].y - ps[i].y) / (ps[j].x - ps[i].x) >
-                                         (best.y - ps[i].y) / (best.x - ps[i].x))) {
+                     ps[j].x < best.x && (ps[j].y - ps[i].y) / (float) (ps[j].x - ps[i].x) >
+                                         (best.y - ps[i].y) / (float) (best.x - ps[i].x))) {
                      best = ps[j];
                      b = j;
                 }
@@ -136,7 +168,7 @@ public class Polygon extends AbstractShape {
             }
             i = b;
         }
-        return polygon;
+        return polygon.toArray(new Point[]{});
     }
 
     public boolean isDiscretelyUpdated() {
@@ -145,7 +177,12 @@ public class Polygon extends AbstractShape {
 
     @Override
     protected boolean intersectsCircle(int x, int y, int radius) {
-        return true;
+        for (Point point : points) {
+            if ((point.x - x) * (point.x - x) + (point.y - y) * (point.y - y) <= radius * radius) {
+                return true;
+            }
+        }
+        return ((tempPoint.x - x) * (tempPoint.x - x) + (tempPoint.y - y) * (tempPoint.y - y) <= radius * radius);
     }
 
 }

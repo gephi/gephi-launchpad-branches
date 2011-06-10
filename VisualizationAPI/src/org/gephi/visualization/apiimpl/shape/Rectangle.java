@@ -77,7 +77,10 @@ public class Rectangle extends AbstractShape {
 
     @Override
     protected boolean intersectsCircle(int x, int y, int radius) {
-        return true;
+        return (origin.x - x) * (origin.x - x) + (origin.y - y) * (origin.y - y) <= radius * radius ||
+               (origin.x - x) * (origin.x - x) + (opposite.y - y) * (opposite.y - y) <= radius * radius ||
+               (opposite.x - x) * (opposite.x - x) + (origin.y - y) * (origin.y - y) <= radius * radius ||
+               (opposite.x - x) * (opposite.x - x) + (opposite.y - y) * (opposite.y - y) <= radius * radius;
     }
 
 }

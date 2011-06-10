@@ -34,8 +34,8 @@ import org.openide.util.Lookup;
 
 public class MotionManager3D implements MotionManager {
 
-    protected float[] mousePosition = new float[2];
-    protected float[] mouseDrag = new float[2];
+    protected int[] mousePosition = new int[2];
+    protected int[] mouseDrag = new int[2];
 
     protected Shape selectionShape;
 
@@ -54,10 +54,12 @@ public class MotionManager3D implements MotionManager {
         mouseDrag[1] = e.getY();
         VizConfig vizConfig = Lookup.getDefault().lookup(VizConfig.class);
         if (vizConfig.isSelectionEnabled()) {
-            if (selectionShape != null && selectionShape.isDiscretelyUpdated()) {
-                selectionShape = selectionShape.singleUpdate(e.getX(), e.getY());
-            } else {
+            // Initialize selections
+            if (selectionShape == null) {
                 selectionShape = AbstractShape.initShape(vizConfig.getSelectionType(), e.getX(), e.getY());
+            // And also update discrete type selections for better responsiveness
+            } else if (!selectionShape.isDiscretelyUpdated()) {
+                selectionShape = selectionShape.singleUpdate(e.getX(), e.getY());
             }
         }
         if (vizConfig.isDraggingEnabled()) {
@@ -72,11 +74,26 @@ public class MotionManager3D implements MotionManager {
             }
         }
     }
-    
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
+        VizConfig vizConfig = Lookup.getDefault().lookup(VizConfig.class);
+        if (vizConfig.isSelectionEnabled()) {
+            if (SwingUtilities.isLeftMouseButton(e)) {
+                // Update discrete type selections
+                if (selectionShape != null && selectionShape.isDiscretelyUpdated()) {
+                    selectionShape = selectionShape.singleUpdate(e.getX(), e.getY());
+                }
+            } else if (SwingUtilities.isRightMouseButton(e)) {
+                selectionShape = null;
+            }
+        }
+    }
+
     @Override
     public void mouseDragged(MouseEvent e) {
-        float x = e.getX() - mouseDrag[0];
-        float y = e.getY() - mouseDrag[1];
+        int x = e.getX() - mouseDrag[0];
+        int y = e.getY() - mouseDrag[1];
         mouseDrag[0] = e.getX();
         mouseDrag[1] = e.getY();
         VizConfig vizConfig = Lookup.getDefault().lookup(VizConfig.class);
@@ -95,11 +112,6 @@ public class MotionManager3D implements MotionManager {
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        if (SwingUtilities.isLeftMouseButton(e)) {
-
-        } else if (SwingUtilities.isRightMouseButton(e)) {
-
-        }
         if (selectionShape != null && !selectionShape.isDiscretelyUpdated()) {
             selectionShape = null;
         }
@@ -107,7 +119,13 @@ public class MotionManager3D implements MotionManager {
 
     @Override
     public void mouseMoved(MouseEvent e) {
-
+        mousePosition[0] = e.getX();
+        mousePosition[1] = e.getY();
+        VizConfig vizConfig = Lookup.getDefault().lookup(VizConfig.class);
+        if (vizConfig.isSelectionEnabled() && selectionShape != null) {
+            selectionShape = selectionShape.continuousUpdate(mousePosition[0], mousePosition[1]);
+            Lookup.getDefault().lookup(SelectionManager.class).addSelection(selectionShape);
+        }
     }
 
     @Override

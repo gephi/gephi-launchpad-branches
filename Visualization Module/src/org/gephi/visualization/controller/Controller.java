@@ -200,6 +200,7 @@ public class Controller implements KeyListener, MouseListener, MouseMotionListen
 
     @Override
     public void mouseClicked(MouseEvent e) {
+        motionManager.mouseClicked(e);
     }
 
     @Override

@@ -33,11 +33,11 @@ import org.gephi.visualization.api.view.ui.UIPrimitive;
  */
 public class Ellipse extends AbstractShape {
 
-    private final Point center;
-    private final float a, b;
+    private final Point origin;
+    private final int a, b;
 
-    Ellipse(int x, int y, float a, float b) {
-        this.center = new Point(x, y);
+    Ellipse(int x, int y, int a, int b) {
+        this.origin = new Point(x, y);
         this.a = a;
         this.b = b;
     }
@@ -47,8 +47,9 @@ public class Ellipse extends AbstractShape {
     }
 
     public boolean isPointInside(int x, int y) {
-        return (center.x - x) * (center.x - x) / (a * a) +
-               (center.y - y) * (center.y - y) / (b * b) <= 1;
+        return a > 0 && b > 0 &&
+               (origin.x - x) * (origin.x - x) / (a * a) +
+               (origin.y - y) * (origin.y - y) / (b * b) <= 1;
     }
 
     public Shape singleUpdate(int x, int y) {
@@ -56,7 +57,7 @@ public class Ellipse extends AbstractShape {
     }
 
     public Shape continuousUpdate(int x, int y) {
-        return new Ellipse(center.x, center.y, Math.abs(x - center.x), Math.abs(y - center.y));
+        return new Ellipse(origin.x, origin.y, (x - origin.x) / 2, (y - origin.y) / 2);
     }
 
     public boolean isDiscretelyUpdated() {
@@ -64,12 +65,25 @@ public class Ellipse extends AbstractShape {
     }
 
     public UIPrimitive getUIPrimitive() {
-        return UIPrimitive.ellipses(new Vec2f(center.x, center.y), new Vec2f(a, 0), new Vec2f(0, b));
+        return UIPrimitive.ellipses(new Vec2f(origin.x + a, origin.y + b), new Vec2f(a, 0), new Vec2f(0, b));
     }
 
     @Override
     protected boolean intersectsCircle(int x, int y, int radius) {
-        return true;
+        int centerX = origin.x + a;
+        int centerY = origin.y + b;
+        if (x == centerX && radius + b < Math.abs(y - centerY)) {
+            return false;
+        }
+        // Tangent
+        float k = (float) (y - centerY) / (x - centerX);
+
+        // Boundary ellipse point interface the difference vector direction
+        float boundaryX = (float) Math.sqrt((float) (a * a * b * b) / (b * b + a * a * k * k)) * Math.signum(x - centerX);
+        float boundaryY = k * boundaryX;
+        float ellipseRadius = (float) Math.sqrt(boundaryX * boundaryX + boundaryY * boundaryY);
+        
+        return ellipseRadius + radius > (float) Math.sqrt((x - centerX) * (x - centerX) + (y - centerY) * (y - centerY));
     }
 
 }
