@@ -30,6 +30,7 @@ import org.openide.util.NbPreferences;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
+ * Basic implementation of VizConfig interface.
  *
  * @author Mathieu Bastian
  */
@@ -104,13 +105,15 @@ public class VizConfigImpl implements VizConfig {
     
     // Selection
     protected boolean selectionEnable = NbPreferences.forModule(VizConfig.class).getBoolean(SELECTION, DEFAULT_SELECTION);
-    protected boolean rectangleSelection = NbPreferences.forModule(VizConfig.class).getBoolean(RECTANGLE_SELECTION, DEFAULT_RECTANGLE_SELECTION);
     protected Color rectangleSelectionColor = ColorUtils.decode(NbPreferences.forModule(VizConfig.class).get(RECTANGLE_SELECTION_COLOR, ColorUtils.encode(DEFAULT_RECTANGLE_SELECTION_COLOR)));
     protected boolean customSelection = false;      //Overriden in Engine
     protected int mouseSelectionDiameter = NbPreferences.forModule(VizConfig.class).getInt(MOUSE_SELECTION_DIAMETER, DEFAULT_MOUSE_SELECTION_DIAMETER);
     protected boolean mouseSelectionZoomProportionnal = NbPreferences.forModule(VizConfig.class).getBoolean(MOUSE_SELECTION_ZOOM_PROPORTIONAL, DEFAULT_MOUSE_SELECTION_ZOOM_PROPORTIONAL);
     protected boolean mouseSelectionUpdateWhileDragging = NbPreferences.forModule(VizConfig.class).getBoolean(MOUSE_SELECTION_WHILE_DRAGGING, DEFAULT_MOUSE_SELECTION_WHILE_DRAGGING);
+    // TODO add proper defaults
     protected SelectionType selectionType = SelectionType.NONE;
+    protected boolean directMouseSelection = false;
+    protected boolean movementEnabled = false;
 
     // Mouse input
     protected boolean draggingEnable = NbPreferences.forModule(VizConfig.class).getBoolean(DRAGGING, DEFAULT_DRAGGING);
@@ -304,10 +307,6 @@ public class VizConfigImpl implements VizConfig {
         return pointSmooth;
     }
 
-    public boolean isRectangleSelection() {
-        return rectangleSelection;
-    }
-
     public Color getRectangleSelectionColor() {
         return rectangleSelectionColor;
     }
@@ -393,10 +392,6 @@ public class VizConfigImpl implements VizConfig {
         this.lightenNonSelected = lightenNonSelected;
     }
 
-    public void setRectangleSelection(boolean rectangleSelection) {
-        this.rectangleSelection = rectangleSelection;
-    }
-
     public void setDraggingEnable(boolean draggingEnable) {
         this.draggingEnable = draggingEnable;
     }
@@ -429,6 +424,10 @@ public class VizConfigImpl implements VizConfig {
         return enableAutoSelect;
     }
 
+    public boolean isDirectMouseSelection() {
+        return directMouseSelection;
+    }
+
     public void setEnableAutoSelect(boolean enableAutoSelect) {
         this.enableAutoSelect = enableAutoSelect;
     }
@@ -455,6 +454,18 @@ public class VizConfigImpl implements VizConfig {
 
     public void setSelectionType(SelectionType selectionType) {
         this.selectionType = selectionType;
+    }
+
+    public void setDirectMouseSelection(boolean directMouseSelection) {
+        this.directMouseSelection = directMouseSelection;
+    }
+
+    public boolean isMovementEnabled() {
+        return movementEnabled;
+    }
+
+    public void setMovementEnabled(boolean enabled) {
+        this.movementEnabled = enabled;
     }
 
 }

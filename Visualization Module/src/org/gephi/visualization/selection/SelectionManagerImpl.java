@@ -21,6 +21,7 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 
 package org.gephi.visualization.selection;
 
+import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -69,13 +70,29 @@ public class SelectionManagerImpl implements SelectionManager {
     }
 
     @Override
-    public void addSelection(Shape shape) {
+    public void addSelection(Shape shape, boolean incremental) {
+        if (!incremental) {
+            nodeContainer.clearSelection();
+        }
         nodeContainer.addToSelection(shape);
     }
 
     @Override
     public void removeSelection(Shape shape) {
         nodeContainer.removeFromSelection(shape);
+    }
+
+    @Override
+    public void selectSingle(Point point, boolean incremental) {
+        if (!incremental) {
+            nodeContainer.clearSelection();
+        }
+        nodeContainer.selectSingle(point);
+    }
+
+    @Override
+    public void removeSingle(Point point) {
+        nodeContainer.removeSingle(point);
     }
 
     @Override
@@ -100,17 +117,13 @@ public class SelectionManagerImpl implements SelectionManager {
 
     @Override
     public int getMouseSelectionDiameter() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        // FIXME
+        return 16;
     }
 
     @Override
     public boolean isBlocked() {
         return blocked;
-    }
-
-    @Override
-    public boolean isCustomSelection() {
-        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
@@ -146,13 +159,18 @@ public class SelectionManagerImpl implements SelectionManager {
     }
 
     @Override
+    public boolean isMovementEnabled() {
+        return Lookup.getDefault().lookup(VizConfig.class).isMovementEnabled();
+    }
+
+    @Override
     public void removeChangeListener(ChangeListener changeListener) {
         listeners.remove(changeListener);
     }
 
     @Override
     public void resetSelection() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        selectedNodes = null;
     }
 
     @Override
@@ -184,10 +202,11 @@ public class SelectionManagerImpl implements SelectionManager {
     @Override
     public void setSelectionType(SelectionType selectionType) {
         VizConfig vizConfig = Lookup.getDefault().lookup(VizConfig.class);
-        vizConfig.setSelectionType(selectionType);
-        vizConfig.setDraggingEnable(false);
-        vizConfig.setCustomSelection(false);
         vizConfig.setSelectionEnable(true);
+        vizConfig.setSelectionType(selectionType);
+        vizConfig.setDirectMouseSelection(false);
+        vizConfig.setDraggingEnable(false);
+        vizConfig.setMovementEnabled(false);
         this.blocked = false;
         fireChangeEvent();
     }
@@ -195,10 +214,11 @@ public class SelectionManagerImpl implements SelectionManager {
     @Override
     public void setDirectMouseSelection() {
         VizConfig vizConfig = Lookup.getDefault().lookup(VizConfig.class);
-        vizConfig.setRectangleSelection(false);
-        vizConfig.setSelectionEnable(true);
         vizConfig.setDraggingEnable(false);
-        vizConfig.setCustomSelection(false);
+        vizConfig.setSelectionEnable(true);
+        vizConfig.setSelectionType(SelectionType.NONE);
+        vizConfig.setDirectMouseSelection(true);
+        vizConfig.setMovementEnabled(false);
         this.blocked = false;
         fireChangeEvent();
     }
@@ -206,28 +226,30 @@ public class SelectionManagerImpl implements SelectionManager {
     @Override
     public void setDraggingMouseSelection() {
         VizConfig vizConfig = Lookup.getDefault().lookup(VizConfig.class);
-        vizConfig.setRectangleSelection(false);
         vizConfig.setDraggingEnable(true);
         vizConfig.setMouseSelectionUpdateWhileDragging(false);
-        vizConfig.setSelectionEnable(true);
-        vizConfig.setCustomSelection(false);
+        vizConfig.setSelectionEnable(false);
+        vizConfig.setSelectionType(SelectionType.NONE);
+        vizConfig.setMovementEnabled(false);
+        vizConfig.setDirectMouseSelection(false);
         this.blocked = false;
         fireChangeEvent();
     }
 
     @Override
-    public void setCustomSelection() {
+    public void setMovementEnabled(boolean enabled) {
         VizConfig vizConfig = Lookup.getDefault().lookup(VizConfig.class);
-        vizConfig.setSelectionEnable(false);
         vizConfig.setDraggingEnable(false);
-        vizConfig.setCustomSelection(true);
-        //this.blocked = true;
+        vizConfig.setMouseSelectionUpdateWhileDragging(false);
+        vizConfig.setSelectionEnable(false);
+        vizConfig.setMovementEnabled(true);
+        this.blocked = false;
         fireChangeEvent();
     }
 
     @Override
     public void setMouseSelectionDiameter(int mouseSelectionDiameter) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        //Lookup.getDefault().lookup(VizConfig.class).set
     }
 
     @Override

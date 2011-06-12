@@ -224,7 +224,7 @@ public class Camera {
         // to NDC
         // point.scale(1 / point.w());
         int px = (int) ((screenPoint.x() + 1.0f) * imageWidth / 2.0f);
-        int py = (int) ((screenPoint.y() + 1.0f) * imageHeight / 2.0f);
+        int py = (int) ((1.0f - screenPoint.y()) * imageHeight / 2.0f);
         return new Point(px, py);
     }
 

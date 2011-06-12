@@ -29,6 +29,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import org.gephi.lib.gleem.linalg.Vec2f;
+import org.gephi.visualization.api.selection.SelectionType;
 import org.gephi.visualization.api.selection.Shape;
 import org.gephi.visualization.api.view.ui.UIPrimitive;
 
@@ -103,8 +104,8 @@ public class Polygon extends AbstractShape {
             lNormals[i][0] = -(convexHull[j].y - convexHull[i].y);
             lNormals[i][1] = convexHull[j].x - convexHull[i].x;
             // Line center
-            lNormals[i][2] = (convexHull[j].x - convexHull[i].x) / 2;
-            lNormals[i][3] = (convexHull[j].y - convexHull[i].y) / 2;
+            lNormals[i][2] = (convexHull[j].x + convexHull[i].x) / 2;
+            lNormals[i][3] = (convexHull[j].y + convexHull[i].y) / 2;
         }
         return lNormals;
     }
@@ -183,6 +184,10 @@ public class Polygon extends AbstractShape {
             }
         }
         return ((tempPoint.x - x) * (tempPoint.x - x) + (tempPoint.y - y) * (tempPoint.y - y) <= radius * radius);
+    }
+
+    public SelectionType getSelectionType() {
+        return SelectionType.POLYGON;
     }
 
 }

@@ -20,6 +20,7 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.gephi.visualization.api.selection;
 
+import java.awt.Point;
 import java.util.Collection;
 import javax.swing.event.ChangeListener;
 import org.gephi.graph.api.Edge;
@@ -38,9 +39,13 @@ public interface SelectionManager {
 
     Collection<Node> getSelectedNodes();
 
-    void addSelection(Shape shape);
+    void addSelection(Shape shape, boolean incremental);
 
     void removeSelection(Shape shape);
+
+    void selectSingle(Point point, boolean incremental);
+
+    void removeSingle(Point point);
 
     void addChangeListener(ChangeListener changeListener);
 
@@ -54,11 +59,11 @@ public interface SelectionManager {
 
     boolean isBlocked();
 
-    boolean isCustomSelection();
-
     boolean isDirectMouseSelection();
 
     boolean isDraggingEnabled();
+
+    boolean isMovementEnabled();
 
     boolean isMouseSelectionZoomProportionnal();
 
@@ -80,8 +85,6 @@ public interface SelectionManager {
 
     void selectNodes(Node[] nodes);
 
-    void setCustomSelection();
-
     void setDirectMouseSelection();
 
     void setDraggingEnable(boolean dragging);
@@ -91,6 +94,8 @@ public interface SelectionManager {
     void setMouseSelectionDiameter(int mouseSelectionDiameter);
 
     void setMouseSelectionZoomProportionnal(boolean mouseSelectionZoomProportionnal);
+
+    void setMovementEnabled(boolean enabled);
 
     void setSelectionUpdateWhileDragging(boolean selectionUpdateWhileDragging);
 

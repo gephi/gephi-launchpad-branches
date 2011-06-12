@@ -132,13 +132,22 @@ public class SelectionToolbar extends JToolBar {
             @Override
             public void stateChanged(ChangeEvent e) {
                 SelectionManager selectionManager = Lookup.getDefault().lookup(SelectionManager.class);
-                if (selectionManager.isBlocked()) {
-                    buttonGroup.clearSelection();
-                } else if (!selectionManager.isSelectionEnabled()) {
-                    buttonGroup.clearSelection();
-                } else if (selectionManager.isDirectMouseSelection()) {
-                    if (!buttonGroup.isSelected(mouseButton.getModel())) {
-                        buttonGroup.setSelected(mouseButton.getModel(), true);
+                buttonGroup.clearSelection();
+                if (selectionManager.isDirectMouseSelection()) {
+                    buttonGroup.setSelected(mouseButton.getModel(), true);
+                } else if (selectionManager.isDraggingEnabled()) {
+                    buttonGroup.setSelected(dragButton.getModel(), true);
+                } else {
+                    switch (selectionManager.getSelectionType()) {
+                        case ELLIPSE:
+                            buttonGroup.setSelected(ellipseButton.getModel(), true);
+                            break;
+                        case POLYGON:
+                            buttonGroup.setSelected(polygonButton.getModel(), true);
+                            break;
+                        case RECTANGLE:
+                            buttonGroup.setSelected(rectangleButton.getModel(), true);
+                            break;
                     }
                 }
             }

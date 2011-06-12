@@ -21,6 +21,8 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 
 package org.gephi.visualization.api.selection;
 
+import java.awt.Point;
+
 /**
  * Interface for data structures containing nodes and allowing effective 
  * selection algorithms.
@@ -34,5 +36,11 @@ public interface NodeContainer {
     public void addToSelection(Shape shape);
 
     public void removeFromSelection(Shape shape);
+    
+    public void selectSingle(Point point);
+
+    public void removeSingle(Point point);
+
+    public void clearSelection();
 
 }

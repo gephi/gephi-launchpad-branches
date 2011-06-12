@@ -23,6 +23,7 @@ package org.gephi.visualization.apiimpl.shape;
 
 import java.awt.Point;
 import org.gephi.lib.gleem.linalg.Vec2f;
+import org.gephi.visualization.api.selection.SelectionType;
 import org.gephi.visualization.api.selection.Shape;
 import org.gephi.visualization.api.view.ui.UIPrimitive;
 
@@ -81,6 +82,10 @@ public class Rectangle extends AbstractShape {
                (origin.x - x) * (origin.x - x) + (opposite.y - y) * (opposite.y - y) <= radius * radius ||
                (opposite.x - x) * (opposite.x - x) + (origin.y - y) * (origin.y - y) <= radius * radius ||
                (opposite.x - x) * (opposite.x - x) + (opposite.y - y) * (opposite.y - y) <= radius * radius;
+    }
+
+    public SelectionType getSelectionType() {
+        return SelectionType.RECTANGLE;
     }
 
 }

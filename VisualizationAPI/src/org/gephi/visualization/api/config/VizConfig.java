@@ -2,6 +2,8 @@ package org.gephi.visualization.api.config;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.util.HashSet;
+import java.util.Set;
 import org.gephi.visualization.api.selection.SelectionType;
 
 /**
@@ -176,8 +178,6 @@ public interface VizConfig {
 
     boolean isContextMenu();
 
-    boolean isCustomSelection();
-
     boolean isDefaultAdjustByText();
 
     boolean isDefaultAutoSelectNeighbor();
@@ -260,9 +260,11 @@ public interface VizConfig {
 
     boolean isWireFrame();
 
-    SelectionType getSelectionType();
+    boolean isDirectMouseSelection();
 
-    void setCustomSelection(boolean customSelection);
+    boolean isMovementEnabled();
+
+    SelectionType getSelectionType();
 
     void setDisableLOD(boolean disableLOD);
 
@@ -278,10 +280,13 @@ public interface VizConfig {
 
     void setPauseLoopWhenMouseOut(boolean pauseLoopWhenMouseOut);
 
-    void setRectangleSelection(boolean rectangleSelection);
-
     void setSelectionEnable(boolean selectionEnable);
 
     void setSelectionType(SelectionType selectionType);
+
+    void setDirectMouseSelection(boolean directMouseSelection);
+
+    void setMovementEnabled(boolean enabled);
+
 
 }

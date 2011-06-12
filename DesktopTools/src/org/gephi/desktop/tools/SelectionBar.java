@@ -46,7 +46,6 @@ public class SelectionBar extends javax.swing.JPanel {
     public SelectionBar() {
         initComponents();
         Lookup.getDefault().lookup(SelectionManager.class).addChangeListener(new ChangeListener() {
-
             public void stateChanged(ChangeEvent e) {
                 refresh();
             }
@@ -91,20 +90,25 @@ public class SelectionBar extends javax.swing.JPanel {
 
     public void refresh() {
         SelectionManager manager = Lookup.getDefault().lookup(SelectionManager.class);
-        if (manager.isSelectionEnabled()) {
-            if (manager.getSelectionType() != SelectionType.NONE) {
-                mouseSelection = false;
-                statusLabel.setText(NbBundle.getMessage(SelectionBar.class, "SelectionBar.statusLabel.rectangleSelection"));
-            } else if (manager.isDirectMouseSelection()) {
-                mouseSelection = true;
-                statusLabel.setText(NbBundle.getMessage(SelectionBar.class, "SelectionBar.statusLabel.mouseSelection"));
-            } else if (manager.isDraggingEnabled()) {
-                mouseSelection = true;
-                statusLabel.setText(NbBundle.getMessage(SelectionBar.class, "SelectionBar.statusLabel.dragging"));
-            }
-        } else {
+        if (manager.isDirectMouseSelection()) {
+            statusLabel.setText(NbBundle.getMessage(SelectionBar.class, "SelectionBar.statusLabel.mouseSelection"));
             mouseSelection = false;
-            statusLabel.setText("No selection");
+        } else if (manager.isDraggingEnabled()) {
+            statusLabel.setText(NbBundle.getMessage(SelectionBar.class, "SelectionBar.statusLabel.dragging"));
+            mouseSelection = false;
+        } else {
+            switch (manager.getSelectionType()) {
+                case ELLIPSE:
+                    statusLabel.setText(NbBundle.getMessage(SelectionBar.class, "SelectionBar.statusLabel.ellipseSelection"));
+                    break;
+                case POLYGON:
+                    statusLabel.setText(NbBundle.getMessage(SelectionBar.class, "SelectionBar.statusLabel.polygonSelection"));
+                    break;
+                case RECTANGLE:
+                    statusLabel.setText(NbBundle.getMessage(SelectionBar.class, "SelectionBar.statusLabel.rectangleSelection"));
+                    break;
+            }
+            mouseSelection = manager.getSelectionType() != SelectionType.NONE;
         }
     }
 

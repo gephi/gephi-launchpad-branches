@@ -31,28 +31,30 @@ public interface Shape {
      * Returns true if given 3D coordinate point is inside the projection
      * frustum.
      */
-    boolean isInside3D(float x, float y, float z, CameraBridge cameraBridge);
+    public boolean isInside3D(float x, float y, float z, CameraBridge cameraBridge);
 
     /**
      * Determines intersection of box with the shape.
      */
-    Intersection intersectsBox(float x, float y, float z, float size, CameraBridge cameraBridge);
+    public Intersection intersectsBox(float x, float y, float z, float size, CameraBridge cameraBridge);
 
     /**
      * Returns true if given 2D screen coordinate point is inside the shape.
      */
-    boolean isPointInside(int x, int y);
+    public boolean isPointInside(int x, int y);
 
-    Shape singleUpdate(int x, int y);
+    public Shape singleUpdate(int x, int y);
 
-    Shape continuousUpdate(int x, int y);
+    public Shape continuousUpdate(int x, int y);
 
     /**
      * Returns true if this shape is built of many discrete steps and where
      * every single update alters the shapes properties, such as a polygon.
      */
-    boolean isDiscretelyUpdated();
+    public boolean isDiscretelyUpdated();
 
     public UIPrimitive getUIPrimitive();
+
+    public SelectionType getSelectionType();
     
 }

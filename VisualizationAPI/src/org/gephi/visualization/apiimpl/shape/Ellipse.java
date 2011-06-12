@@ -23,6 +23,7 @@ package org.gephi.visualization.apiimpl.shape;
 
 import java.awt.Point;
 import org.gephi.lib.gleem.linalg.Vec2f;
+import org.gephi.visualization.api.selection.SelectionType;
 import org.gephi.visualization.api.selection.Shape;
 import org.gephi.visualization.api.view.ui.UIPrimitive;
 
@@ -47,9 +48,9 @@ public class Ellipse extends AbstractShape {
     }
 
     public boolean isPointInside(int x, int y) {
-        return a > 0 && b > 0 &&
-               (origin.x - x) * (origin.x - x) / (a * a) +
-               (origin.y - y) * (origin.y - y) / (b * b) <= 1;
+        return a != 0 && b != 0 &&
+               (origin.x + a - x) * (origin.x + a - x) / (float) (a * a) +
+               (origin.y + b - y) * (origin.y + b - y) / (float) (b * b) <= 1;
     }
 
     public Shape singleUpdate(int x, int y) {
@@ -84,6 +85,14 @@ public class Ellipse extends AbstractShape {
         float ellipseRadius = (float) Math.sqrt(boundaryX * boundaryX + boundaryY * boundaryY);
         
         return ellipseRadius + radius > (float) Math.sqrt((x - centerX) * (x - centerX) + (y - centerY) * (y - centerY));
+    }
+
+    public static Ellipse createEllipse(int x, int y, int a, int b) {
+        return new Ellipse(x, y, a, b);
+    }
+
+    public SelectionType getSelectionType() {
+        return SelectionType.ELLIPSE;
     }
 
 }
