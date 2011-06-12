@@ -26,7 +26,6 @@ import org.gephi.graph.api.Node;
 import org.gephi.graph.spi.LayoutData;
 import org.gephi.graph.api.NodeData;
 import org.gephi.graph.api.GroupData;
-import org.gephi.graph.api.Model;
 import org.gephi.graph.api.TextData;
 import org.gephi.graph.dhns.utils.avl.ViewNodeTree;
 
@@ -49,13 +48,12 @@ public class NodeDataImpl implements NodeData, GroupData {
     protected float g = 0.6f;
     protected float b = 0.6f;
     protected float alpha = 1f;
-    protected float size = 1f;
-    protected Model model;
+    protected float radius = 1f;
+    protected boolean selected = false;
     protected boolean fixed;
     protected String label;
     protected Attributes attributes;
     protected TextData textData;
-    protected Model hullModel;
 
     public NodeDataImpl(int ID, AbstractNode rootNode) {
         this.nodes = new ViewNodeTree();
@@ -130,22 +128,23 @@ public class NodeDataImpl implements NodeData, GroupData {
         updatePositionFlag();
     }
 
-    private void updatePositionFlag() {
-        if (model != null) {
-            model.updatePositionFlag();
-        }
+    public void setPosition(float x, float y, float z) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        updatePositionFlag();
     }
 
-    public float getRadius() {
-        return size;
+    private void updatePositionFlag() {
+        // TODO: implement update event managment
     }
 
     public float getSize() {
-        return size;
+        return radius;
     }
 
-    public void setSize(float size) {
-        this.size = size;
+    public void setSize(float radius) {
+        this.radius = radius;
     }
 
     public float r() {
@@ -194,14 +193,6 @@ public class NodeDataImpl implements NodeData, GroupData {
         this.alpha = alpha;
     }
 
-    public Model getModel() {
-        return model;
-    }
-
-    public void setModel(Model obj) {
-        this.model = obj;
-    }
-
     public String getLabel() {
         if (attributes != null) {
             return (String) attributes.getValue(PropertiesColumn.NODE_LABEL.getIndex());
@@ -242,11 +233,11 @@ public class NodeDataImpl implements NodeData, GroupData {
         this.textData = textData;
     }
 
-    public Model getHullModel() {
-        return hullModel;
+    public void setSelected(boolean selected) {
+        this.selected = selected;
     }
 
-    public void setHullModel(Model hullModel) {
-        this.hullModel = hullModel;
+    public boolean isSelected() {
+        return this.selected;
     }
 }

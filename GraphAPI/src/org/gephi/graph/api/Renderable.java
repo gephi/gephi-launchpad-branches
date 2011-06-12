@@ -1,5 +1,5 @@
 /*
-Copyright 2008-2010 Gephi
+Copyright 2008-2011 Gephi
 Authors : Mathieu Bastian <mathieu.bastian@gephi.org>
 Website : http://www.gephi.org
 
@@ -28,18 +28,6 @@ package org.gephi.graph.api;
  */
 public interface Renderable extends Spatial {
 
-    public void setX(float x);
-
-    public void setY(float y);
-
-    public void setZ(float z);
-
-    public float getRadius();
-
-    public float getSize();
-
-    public void setSize(float size);
-
     public float r();
 
     public float g();
@@ -58,9 +46,9 @@ public interface Renderable extends Spatial {
 
     public void setAlpha(float alpha);
 
-    public Model getModel();
+    public void setSelected(boolean selected);
 
-    public void setModel(Model obj);
+    public boolean isSelected();
 
     public TextData getTextData();
 }

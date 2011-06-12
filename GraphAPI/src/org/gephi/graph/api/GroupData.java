@@ -25,8 +25,9 @@ package org.gephi.graph.api;
  * @author Mathieu Bastian
  */
 public interface GroupData {
-
+/*
     public Model getHullModel();
 
     public void setHullModel(Model hullModel);
+*/
 }

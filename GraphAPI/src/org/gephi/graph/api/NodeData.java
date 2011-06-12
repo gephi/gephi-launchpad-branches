@@ -1,5 +1,5 @@
 /*
-Copyright 2008-2010 Gephi
+Copyright 2008-2011 Gephi
 Authors : Mathieu Bastian <mathieu.bastian@gephi.org>
 Website : http://www.gephi.org
 
@@ -35,6 +35,44 @@ import org.gephi.graph.spi.LayoutData;
  * @see Node
  */
 public interface NodeData extends Renderable {
+
+    /**
+     * Sets this node position along the x-axis.
+     * @param x         x-component of this node position
+     */
+    public void setX(float x);
+
+    /**
+     * Sets this node position along the y-axis.
+     * @param y         y-component of this node position
+     */
+    public void setY(float y);
+
+    /**
+     * Sets this node position along the z-axis.
+     * @param z         z-component of this node position
+     */
+    public void setZ(float z);
+
+    /**
+     * Sets this node position.
+     * @param x         x-component of this node position
+     * @param y         y-component of this node position
+     * @param z         z-component of this node position
+     */
+    public void setPosition(float x, float y, float z);
+
+    /**
+     * Returns the radius of the node.
+     * @return              the node radius
+     */
+    public float getSize();
+
+    /**
+     * Sets this node radius.
+     * @param radius         the new radius of the node
+     */
+    public void setSize(float radius);
 
     /**
      * Returns the node this node data belongs in the <b>main</b> view. To get

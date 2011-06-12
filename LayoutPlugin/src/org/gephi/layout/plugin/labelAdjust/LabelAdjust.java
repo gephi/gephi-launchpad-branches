@@ -90,7 +90,7 @@ public class LabelAdjust extends AbstractLayout implements Layout {
             float y = n.getNodeData().y();
             float w = n.getNodeData().getTextData().getWidth();
             float h = n.getNodeData().getTextData().getHeight();
-            float radius = n.getNodeData().getRadius();
+            float radius = n.getNodeData().getSize();
 
             if (w > 0 && h > 0) {
                 // Get the rectangle occupied by the node (size + label)
@@ -187,9 +187,9 @@ public class LabelAdjust extends AbstractLayout implements Layout {
             double xDist = n2x - n1x;
             double yDist = n2y - n1y;
             double dist = Math.sqrt(xDist * xDist + yDist * yDist);
-            boolean sphereCollision = dist < radiusScale * (n1.getNodeData().getRadius() + n2.getNodeData().getRadius());
+            boolean sphereCollision = dist < radiusScale * (n1.getNodeData().getSize() + n2.getNodeData().getSize());
             if (sphereCollision) {
-                double f = 0.1 * n1.getNodeData().getRadius() / dist;
+                double f = 0.1 * n1.getNodeData().getSize() / dist;
                 if (dist > 0) {
                     n2Data.dx = (float) (n2Data.dx + xDist / dist * f);
                     n2Data.dy = (float) (n2Data.dy + yDist / dist * f);
@@ -328,7 +328,7 @@ public class LabelAdjust extends AbstractLayout implements Layout {
             float y = node.getNodeData().y();
             float w = node.getNodeData().getTextData().getWidth();
             float h = node.getNodeData().getTextData().getHeight();
-            float radius = node.getNodeData().getRadius();
+            float radius = node.getNodeData().getSize();
 
             // Get the rectangle occupied by the node (size + label)
             float nxmin = Math.min(x - w / 2, x - radius);

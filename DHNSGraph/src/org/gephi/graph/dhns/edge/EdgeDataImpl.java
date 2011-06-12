@@ -29,7 +29,6 @@ import org.gephi.graph.api.Attributes;
 import org.gephi.graph.api.EdgeData;
 import org.gephi.graph.spi.LayoutData;
 import org.gephi.graph.api.NodeData;
-import org.gephi.graph.api.Model;
 import org.gephi.graph.api.TextData;
 
 /**
@@ -45,8 +44,8 @@ public class EdgeDataImpl implements EdgeData {
     protected float g = 0f;
     protected float b = 0f;
     protected float alpha = 1f;
+    protected boolean selected;
     private String label;
-    private Model model;
     protected Attributes attributes;
     protected TextData textData;
 
@@ -102,30 +101,6 @@ public class EdgeDataImpl implements EdgeData {
         return (getSource().z() + 2 * getTarget().z()) / 3f;
     }
 
-    public void setX(float x) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public void setY(float y) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public void setZ(float z) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public float getRadius() {
-        return 0;
-    }
-
-    public float getSize() {
-        return edge.getWeight();
-    }
-
-    public void setSize(float size) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
     public float r() {
         return r;
     }
@@ -162,14 +137,6 @@ public class EdgeDataImpl implements EdgeData {
 
     public void setAlpha(float alpha) {
         this.alpha = alpha;
-    }
-
-    public Model getModel() {
-        return model;
-    }
-
-    public void setModel(Model obj) {
-        this.model = obj;
     }
 
     public TextData getTextData() {
@@ -250,5 +217,13 @@ public class EdgeDataImpl implements EdgeData {
         if (attributes != null) {
             ((AttributeRow) attributes).setValues((AttributeRow) edgeData.getAttributes());
         }
+    }
+
+    public void setSelected(boolean selected) {
+        this.selected = selected;
+    }
+
+    public boolean isSelected() {
+        return this.selected;
     }
 }

@@ -211,14 +211,14 @@ public class PreviewGraphFactory {
         }
 
         if (previewGraph.getModel().getNodeSupervisor().getProportionalLabelSize()) {
-            labelSize *= sourceNodeData.getRadius() / 10f;
+            labelSize *= sourceNodeData.getSize() / 10f;
         }
 
         NodeImpl previewNode = new NodeImpl(
                 previewGraph,
                 sourceNodeData.x(),
                 -sourceNodeData.y(), // different referential from the workspace one
-                sourceNodeData.getRadius(),
+                sourceNodeData.getSize(),
                 label,
                 labelSize,
                 sourceNodeData.r(),
