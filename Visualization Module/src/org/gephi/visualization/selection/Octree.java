@@ -24,7 +24,6 @@ package org.gephi.visualization.selection;
 import java.awt.Point;
 import java.util.ArrayList;
 import org.gephi.visualization.api.selection.Shape;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import org.gephi.graph.api.Graph;
@@ -33,11 +32,9 @@ import org.gephi.graph.api.NodeData;
 import org.gephi.graph.api.NodeIterator;
 import org.gephi.visualization.api.selection.CameraBridge;
 import org.gephi.visualization.api.selection.NodeContainer;
-import org.gephi.visualization.api.selection.SelectionManager;
 import org.gephi.visualization.api.selection.Shape.Intersection;
 import org.gephi.visualization.apiimpl.shape.Ellipse;
 import org.gephi.visualization.controller.Controller;
-import org.openide.util.Lookup;
 
 public final class Octree implements NodeContainer {
 
@@ -45,12 +42,8 @@ public final class Octree implements NodeContainer {
 
     private final Graph graph;
 
-    // TODO temporary implementation
-    private Collection<Node> selectedNodes;
-
     public Octree(Graph graph) {
         this.graph = graph;
-        selectedNodes = new ArrayList<Node>();
         rebuild();
     }
 
@@ -89,26 +82,57 @@ public final class Octree implements NodeContainer {
     }
 
     @Override
-    public void addToSelection(final Shape shape) {
+    public List<Node> getSelectedNodes() {
+        List<Node> selectedNodes = new ArrayList<Node>();
+        recursiveGetSelectedNodes(root, selectedNodes);
+        return selectedNodes;
+    }
+
+    @Override
+    public List<Node> addToSelection(final Shape shape) {
         final CameraBridge cameraBridge = Controller.getInstance().getCameraBridge();
-        Octant octant = root;
-        recursiveAddNodes(octant, shape, new NodeFunction() {
+        final List<Node> selectedNodes = new ArrayList<Node>();
+
+        recursiveAddNodes(root, shape, new NodeFunction() {
             @Override
             public void apply(Node node) {
                  if (shape.isInside3D(node.getNodeData().x(), node.getNodeData().y(), node.getNodeData().z(), cameraBridge)) {
-                    // TODO for testing only
+                     // TODO for testing only
                     node.getNodeData().setColor(255, 0, 0);
-                    selectedNodes.add(node);
+
+                    if (node.getNodeData().isSelected()) {
+                        node.getNodeData().setSelected(true);
+                        selectedNodes.add(node);
+                    }
                 }
             }
         });
+        return selectedNodes;
+    }
+
+    private void recursiveGetSelectedNodes(Octant octant, List<Node> list) {
+        if (!octant.isSelectFlag()) {
+            return;
+        }
+        if (octant.hasChildren()) {
+            for (Octant child : octant.getChildren()) {
+                if (child != null) {
+                    recursiveGetSelectedNodes(child, list);
+                }
+            }
+        } else {
+            for (Node node : octant.getNodes()) {
+                if (node.getNodeData().isSelected()) {
+                    list.add(node);
+                }
+            }
+        }
     }
 
     private void recursiveAddNodes(Octant octant, Shape shape, NodeFunction nodeFunction) {
         final CameraBridge cameraBridge = Controller.getInstance().getCameraBridge();
-        octant.applyFunction(nodeFunction);
         Intersection intersection = shape.intersectsBox(octant.getX(), octant.getY(), octant.getZ(), octant.getSize(), cameraBridge);
-/*
+
         switch (intersection) {
             case OUTSIDE:
                 return;
@@ -121,31 +145,17 @@ public final class Octree implements NodeContainer {
                     }
                 } else {
                     octant.applyFunction(nodeFunction);
-                    
-//                    Iterator<Node> iterator = octant.getNodes();
-//                    while (iterator.hasNext()) {
-//                        Node node = iterator.next();
-//                        if (shape.isInside3D(node.getNodeData().x(), node.getNodeData().y(), node.getNodeData().z(), cameraBridge)) {
-//                            // TODO for testing only
-//                            node.getNodeData().setColor(255, 0, 0);
-//                        }
-//                    }
                 }
                 break;
             case FULLY_INSIDE:
                 octant.applyFunction(nodeFunction);
-                
-//                Iterator<Node> iterator = octant.getAllNodes();
-//                while (iterator.hasNext()) {
-//                    // TODO for testing only
-//                    iterator.next().getNodeData().setColor(255, 0, 0);
-//                }
                 break;
-        }*/
+        }
     }
 
     @Override
     public void removeFromSelection(final Shape shape) {
+        // FIXME implement
         final CameraBridge cameraBridge = Controller.getInstance().getCameraBridge();
         Octant octant = root;
         recursiveAddNodes(octant, shape, new NodeFunction() {
@@ -154,26 +164,29 @@ public final class Octree implements NodeContainer {
                  if (shape.isInside3D(node.getNodeData().x(), node.getNodeData().y(), node.getNodeData().z(), cameraBridge)) {
                     // TODO for testing only
                     node.getNodeData().setColor(0, 0, 0);
-                    //selectedNodes.remove(node);
+
+                    node.getNodeData().setSelected(true);
                 }
             }
         });
     }
     
     @Override
-    public void selectSingle(Point point) {
+    public void selectSingle(Point point, int selectionRadius, int policy) {
         final CameraBridge cameraBridge = Controller.getInstance().getCameraBridge();
         Octant octant = root;
-        int radius = Lookup.getDefault().lookup(SelectionManager.class).getMouseSelectionDiameter() / 2;
-        final Shape shape = Ellipse.createEllipse(point.x, point.y, radius, radius);
+        
+        final Shape shape = Ellipse.createEllipse(point.x, point.y, selectionRadius, selectionRadius);
         recursiveAddNodes(octant, shape, new NodeFunction() {
             private boolean active = true;
             @Override
+            // TODO implement closest policy
             public void apply(Node node) {
                  if (active && shape.isInside3D(node.getNodeData().x(), node.getNodeData().y(), node.getNodeData().z(), cameraBridge)) {
                     // TODO for testing only
                     node.getNodeData().setColor(255, 0, 0);
-                    selectedNodes.add(node);
+                    
+                    node.getNodeData().setSelected(true);
                     active = false;
                 }
             }
@@ -187,14 +200,25 @@ public final class Octree implements NodeContainer {
 
     @Override
     public void clearSelection() {
-        selectedNodes.clear();
         root.applyFunction(new NodeFunction() {
             @Override
             public void apply(Node node) {
                 // TODO for testing only
                 node.getNodeData().setColor(0, 0, 0);
+
+                node.getNodeData().setSelected(false);
             }
         });
+    }
+
+    @Override
+    public void addNode(Node node) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void removeNode(Node node) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
 }
@@ -216,6 +240,10 @@ class Octant {
     private Octant[] children;
     private final float x, y, z;
     private final float size;
+    /**
+     * Octant may contain selected nodes.
+     */
+    private boolean selectFlag;
 
     public Octant(float x, float y, float z, float size) {
         this.x = x;
@@ -239,6 +267,14 @@ class Octant {
 
     public float getZ() {
         return z;
+    }
+
+    public boolean isSelectFlag() {
+        return selectFlag;
+    }
+
+    public void setSelectFlag(boolean selectFlag) {
+        this.selectFlag = selectFlag;
     }
 
     public void addNode(Node node) {
@@ -308,6 +344,10 @@ class Octant {
         return children;
     }
 
+    public List<Node> getNodes() {
+        return nodes;
+    }
+
     public void applyFunction(NodeFunction nodeFunction) {
         if (children == null) {
             for (Node node : nodes) {
@@ -328,10 +368,6 @@ class Octant {
         } else {
             return nodes.iterator();
         }
-    }
-
-    public Iterator<Node> getNodes() {
-        return nodes.iterator();
     }
 
     /**

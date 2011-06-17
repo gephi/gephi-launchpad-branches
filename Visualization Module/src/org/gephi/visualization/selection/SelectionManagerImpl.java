@@ -46,6 +46,7 @@ public class SelectionManagerImpl implements SelectionManager {
 
     private NodeContainer nodeContainer;
     private Collection<Node> selectedNodes;
+    private Collection<Node> temporarySelectedNodes;
 
     private boolean blocked;
 
@@ -70,10 +71,7 @@ public class SelectionManagerImpl implements SelectionManager {
     }
 
     @Override
-    public void addSelection(Shape shape, boolean incremental) {
-        if (!incremental) {
-            nodeContainer.clearSelection();
-        }
+    public void addSelection(Shape shape) {
         nodeContainer.addToSelection(shape);
     }
 
@@ -83,11 +81,34 @@ public class SelectionManagerImpl implements SelectionManager {
     }
 
     @Override
+    public void applyContinuousSelection(Shape shape) {
+        temporarySelectedNodes = nodeContainer.addToSelection(shape);
+    }
+
+    @Override
+    public void clearContinuousSelection() {
+        if (temporarySelectedNodes != null) {
+            for (Node node : temporarySelectedNodes) {
+                // TODO for testing only
+                node.getNodeData().setColor(0, 0, 0);
+
+                node.getNodeData().setSelected(false);
+            }
+            temporarySelectedNodes = null;
+        }
+    }
+
+    @Override
+    public void clearSelection() {
+        nodeContainer.clearSelection();
+    }
+
+    @Override
     public void selectSingle(Point point, boolean incremental) {
         if (!incremental) {
             nodeContainer.clearSelection();
         }
-        nodeContainer.selectSingle(point);
+        nodeContainer.selectSingle(point, getMouseSelectionDiameter() / 2, NodeContainer.SINGLE_NODE_DEFAULT);
     }
 
     @Override

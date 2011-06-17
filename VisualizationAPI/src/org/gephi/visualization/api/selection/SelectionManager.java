@@ -39,12 +39,43 @@ public interface SelectionManager {
 
     Collection<Node> getSelectedNodes();
 
-    void addSelection(Shape shape, boolean incremental);
+    /**
+     * Adds nodes from inside the shape to a permanent selection.
+     */
+    void addSelection(Shape shape);
 
+    /**
+     * Removes nodes from inside the shape from permanent selection.
+     */
     void removeSelection(Shape shape);
 
+    /**
+     * Adds nodes from inside the shape to a temporary selection.
+     * @see #clearContinuousSelection()
+     */
+    void applyContinuousSelection(Shape shape);
+
+    /**
+     * Clears temporary selection.
+     */
+    void clearContinuousSelection();
+
+    /**
+     * Clears all selected nodes.
+     */
+    void clearSelection();
+
+    /**
+     * Adds single node to a permanent selection.
+     * @param point the point to determine the closest node
+     * @param incremental true if adding to previous permanent selection
+     */
     void selectSingle(Point point, boolean incremental);
 
+    /**
+     * Removes single node to a permanent selection.
+     * @param point the point to determine the closest node
+     */
     void removeSingle(Point point);
 
     void addChangeListener(ChangeListener changeListener);

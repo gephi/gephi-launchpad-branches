@@ -53,10 +53,10 @@ public class MotionManager3D implements MotionManager {
     public void mousePressed(MouseEvent e) {
         mouseDrag[0] = e.getX();
         mouseDrag[1] = e.getY();
-        SelectionModifier modifier = (e.getModifiersEx() & MouseEvent.SHIFT_DOWN_MASK) > 0 ? SelectionModifier.INCREMENTAL :
-                                     (e.getModifiersEx() & MouseEvent.CTRL_DOWN_MASK) > 0 ? SelectionModifier.DECREMENTAL :
-                                     SelectionModifier.DEFAULT;
+
+        SelectionModifier modifier = getSelectionModifier(e);
         VizConfig vizConfig = Lookup.getDefault().lookup(VizConfig.class);
+        SelectionManager selectionManager = Lookup.getDefault().lookup(SelectionManager.class);
 
         if (vizConfig.isDirectMouseSelection()) {
             if (SwingUtilities.isLeftMouseButton(e)) {
@@ -73,22 +73,28 @@ public class MotionManager3D implements MotionManager {
                 }
             }
         } else if (vizConfig.getSelectionType() != SelectionType.NONE) {
+            if (modifier == SelectionModifier.DEFAULT) {
+                selectionManager.clearSelection();
+            }
+
             // Initialize selections
             if (selectionShape == null || selectionShape.getSelectionType() != vizConfig.getSelectionType()) {
                 selectionShape = AbstractShape.initShape(vizConfig.getSelectionType(), e.getX(), e.getY());
             // And also update discrete type selections for better responsiveness
-            } else if (!selectionShape.isDiscretelyUpdated()) {
+            } else {
                 selectionShape = selectionShape.singleUpdate(e.getX(), e.getY());
+
                 if (SwingUtilities.isLeftMouseButton(e)) {
                     switch (modifier) {
                         case DEFAULT:
-                            Lookup.getDefault().lookup(SelectionManager.class).addSelection(selectionShape, false);
+                            selectionManager.applyContinuousSelection(selectionShape);
                             break;
                         case INCREMENTAL:
-                            Lookup.getDefault().lookup(SelectionManager.class).addSelection(selectionShape, true);
+                            selectionManager.applyContinuousSelection(selectionShape);
                             break;
                         case DECREMENTAL:
-                            Lookup.getDefault().lookup(SelectionManager.class).removeSelection(selectionShape);
+                            // remove
+                            // selectionManager.removeSelection(selectionShape);
                             break;
                     }
                 }
@@ -110,23 +116,9 @@ public class MotionManager3D implements MotionManager {
     public void mouseClicked(MouseEvent e) {
         VizConfig vizConfig = Lookup.getDefault().lookup(VizConfig.class);
         SelectionManager selectionManager = Lookup.getDefault().lookup(SelectionManager.class);
-        // TODO may not be neccessary
-        /*if (vizConfig.isSelectionEnabled()) {
-            if (vizConfig.isDirectMouseSelection()) {
-                if (SwingUtilities.isLeftMouseButton(e)) {
-                    selectionManager.selectSingle(e.getPoint());
-                }
-            } else {
-                if (SwingUtilities.isLeftMouseButton(e)) {
-                    // Update discrete type selections
-                    if (selectionShape != null && selectionShape.isDiscretelyUpdated()) {
-                        selectionShape = selectionShape.singleUpdate(e.getX(), e.getY());
-                    }
-                } else if (SwingUtilities.isRightMouseButton(e)) {
-                    selectionShape = null;
-                }
-            }
-        }*/
+        if (SwingUtilities.isRightMouseButton(e)) {
+            selectionShape = null;
+        }
     }
 
     @Override
@@ -135,23 +127,26 @@ public class MotionManager3D implements MotionManager {
         int y = e.getY() - mouseDrag[1];
         mouseDrag[0] = e.getX();
         mouseDrag[1] = e.getY();
-        SelectionModifier modifier = (e.getModifiersEx() & MouseEvent.SHIFT_DOWN_MASK) > 0 ? SelectionModifier.INCREMENTAL :
-                                     (e.getModifiersEx() & MouseEvent.CTRL_DOWN_MASK) > 0 ? SelectionModifier.DECREMENTAL :
-                                     SelectionModifier.DEFAULT;
+
+        SelectionModifier modifier = getSelectionModifier(e);
         VizConfig vizConfig = Lookup.getDefault().lookup(VizConfig.class);
+        SelectionManager selectionManager = Lookup.getDefault().lookup(SelectionManager.class);
 
         if (vizConfig.getSelectionType() != SelectionType.NONE && selectionShape != null) {
             selectionShape = selectionShape.continuousUpdate(e.getX(), e.getY());
+            selectionManager.clearContinuousSelection();
+
             if (SwingUtilities.isLeftMouseButton(e)) {
                 switch (modifier) {
-                    case DEFAULT:;
-                        Lookup.getDefault().lookup(SelectionManager.class).addSelection(selectionShape, false);
+                    case DEFAULT:
+                        selectionManager.applyContinuousSelection(selectionShape);
                         break;
                     case INCREMENTAL:
-                        Lookup.getDefault().lookup(SelectionManager.class).addSelection(selectionShape, true);
+                        selectionManager.applyContinuousSelection(selectionShape);
                         break;
                     case DECREMENTAL:
-                        Lookup.getDefault().lookup(SelectionManager.class).removeSelection(selectionShape);
+                        //TODO removeContinuous
+                        // selectionManager.rem(selectionShape);
                         break;
                 }
             }
@@ -166,6 +161,28 @@ public class MotionManager3D implements MotionManager {
 
     @Override
     public void mouseReleased(MouseEvent e) {
+        SelectionModifier modifier = getSelectionModifier(e);
+        VizConfig vizConfig = Lookup.getDefault().lookup(VizConfig.class);
+        SelectionManager selectionManager = Lookup.getDefault().lookup(SelectionManager.class);
+
+        if (vizConfig.getSelectionType() != SelectionType.NONE && selectionShape != null) {
+            selectionManager.clearContinuousSelection();
+            selectionShape = selectionShape.continuousUpdate(e.getX(), e.getY());
+            if (SwingUtilities.isLeftMouseButton(e)) {
+                switch (modifier) {
+                    case DEFAULT:
+                        selectionManager.addSelection(selectionShape);
+                        break;
+                    case INCREMENTAL:
+                        selectionManager.addSelection(selectionShape);
+                        break;
+                    case DECREMENTAL:
+                        selectionManager.removeSelection(selectionShape);
+                        break;
+                }
+            }
+        }
+        
         if (selectionShape != null && !selectionShape.isDiscretelyUpdated()) {
             selectionShape = null;
         }
@@ -175,16 +192,36 @@ public class MotionManager3D implements MotionManager {
     public void mouseMoved(MouseEvent e) {
         mousePosition[0] = e.getX();
         mousePosition[1] = e.getY();
+
+        SelectionModifier modifier = getSelectionModifier(e);
         VizConfig vizConfig = Lookup.getDefault().lookup(VizConfig.class);
-        if (vizConfig.isSelectionEnabled() && selectionShape != null) {
+
+        if (vizConfig.getSelectionType() != SelectionType.NONE && selectionShape != null) {
             selectionShape = selectionShape.continuousUpdate(mousePosition[0], mousePosition[1]);
-            Lookup.getDefault().lookup(SelectionManager.class).addSelection(selectionShape, false);
+            switch (modifier) {
+                case DEFAULT:
+                    Lookup.getDefault().lookup(SelectionManager.class).addSelection(selectionShape);
+                    break;
+                case INCREMENTAL:
+                    Lookup.getDefault().lookup(SelectionManager.class).addSelection(selectionShape);
+                    break;
+                case DECREMENTAL:
+                    Lookup.getDefault().lookup(SelectionManager.class).removeSelection(selectionShape);
+                    break;
+            }
+            Lookup.getDefault().lookup(SelectionManager.class).addSelection(selectionShape);
         }
     }
 
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
         Controller.getInstance().getCamera().zoom(ZOOM_FACTOR * e.getUnitsToScroll());
+    }
+
+    private SelectionModifier getSelectionModifier(MouseEvent e) {
+        return (e.getModifiersEx() & MouseEvent.SHIFT_DOWN_MASK) > 0 ? SelectionModifier.INCREMENTAL :
+               (e.getModifiersEx() & MouseEvent.CTRL_DOWN_MASK) > 0 ? SelectionModifier.DECREMENTAL :
+               SelectionModifier.DEFAULT;
     }
 
     private enum SelectionModifier {DEFAULT, INCREMENTAL, DECREMENTAL};

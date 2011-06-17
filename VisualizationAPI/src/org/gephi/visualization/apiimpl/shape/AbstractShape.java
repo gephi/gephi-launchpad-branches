@@ -45,6 +45,10 @@ public abstract class AbstractShape implements Shape {
         // Create a sphere around the box and test every corner point for inclusion
         int radius = cameraBridge.projectScale(size * THIRD_ROOT);
         Point center = cameraBridge.projectPoint(x + size / 2, y + size / 2, z + size / 2);
+        // Is shape inside the boxes bounding sphere?
+        if (intersectsCircle(center.x, center.y, radius)) {
+            return Intersection.INTERSECT;
+        }
         // Is any box corner point inside the shape?
         boolean intersect = false;
         boolean inside = true;
@@ -59,9 +63,9 @@ public abstract class AbstractShape implements Shape {
         }
         if (intersect) {
             return inside ? Intersection.FULLY_INSIDE : Intersection.INTERSECT;
+        } else {
+            return Intersection.OUTSIDE;
         }
-        // Is shape inside the boxes bounding sphere?
-        return intersectsCircle(center.x, center.y, radius) ? Intersection.INTERSECT : Intersection.OUTSIDE;
     }
 
     /**

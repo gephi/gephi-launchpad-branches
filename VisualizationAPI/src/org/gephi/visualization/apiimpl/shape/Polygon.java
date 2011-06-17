@@ -68,10 +68,10 @@ public class Polygon extends AbstractShape {
         }
         for (int i = 0; i < lineInfo.length; i++) {
             // Difference vector betwen point and line center
-            float vecx = x - lineInfo[i][2];
-            float vecy = y - lineInfo[i][3];
+            float vecx = x - convexHull[i].x;
+            float vecy = y - convexHull[i].y;
             // Compute inner product
-            if (vecx * lineInfo[i][0] + vecy * lineInfo[i][1] < 0) {
+            if (vecx * lineInfo[i][0] + vecy * lineInfo[i][1] > 0) {
                 return false;
             }
         }
@@ -97,15 +97,12 @@ public class Polygon extends AbstractShape {
 
     private float[][] computeLineInfo() {
         // First two elements for line normal, other two for line center
-        float[][] lNormals = new float[convexHull.length][4];
+        float[][] lNormals = new float[convexHull.length][2];
         for (int i = 0; i < convexHull.length; i++) {
             int j = i < convexHull.length - 1 ? i + 1 : 0;
             // Normal
             lNormals[i][0] = -(convexHull[j].y - convexHull[i].y);
             lNormals[i][1] = convexHull[j].x - convexHull[i].x;
-            // Line center
-            lNormals[i][2] = (convexHull[j].x + convexHull[i].x) / 2;
-            lNormals[i][3] = (convexHull[j].y + convexHull[i].y) / 2;
         }
         return lNormals;
     }
