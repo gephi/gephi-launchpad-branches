@@ -41,7 +41,7 @@ public final class GL11NodesLayout3D implements VizNodeLayout {
 
     @Override
     public boolean add(ByteBuffer buffer, Node node) {
-        if (buffer.remaining() < 28) {
+        if (buffer.remaining() < 29) {
             return false;
         } else {
             buffer.putFloat(node.getNodeData().x());
@@ -51,6 +51,7 @@ public final class GL11NodesLayout3D implements VizNodeLayout {
             buffer.putFloat(node.getNodeData().r());
             buffer.putFloat(node.getNodeData().g());
             buffer.putFloat(node.getNodeData().b());
+            buffer.put(node.getNodeData().isSelected() ? (byte) 1 : 0);
             return true;
         }
     }
@@ -77,13 +78,13 @@ public final class GL11NodesLayout3D implements VizNodeLayout {
 
     @Override
     public boolean isSelected(ByteBuffer b) {
-        return false;
+        return b.get(b.position() + 28) == 1;
     }
 
     @Override
     public boolean advance(ByteBuffer b) {
-        if (b.remaining() > 28) {
-            b.position(b.position() + 28);
+        if (b.remaining() > 29) {
+            b.position(b.position() + 29);
             return true;
         } else {
             return false;

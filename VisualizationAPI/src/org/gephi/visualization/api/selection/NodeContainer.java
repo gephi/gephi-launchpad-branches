@@ -51,12 +51,10 @@ public interface NodeContainer {
     public void rebuild();
 
     /**
-     * Add nodes from given shape to selection.
+     * Add or remove nodes from given shape to selection.
      * @return nodes added to selection that were not selected before.
      */
-    public List<Node> addToSelection(Shape shape);
-
-    public void removeFromSelection(Shape shape);
+    public List<Node> applySelection(Shape shape);
 
     public List<Node> getSelectedNodes();
 

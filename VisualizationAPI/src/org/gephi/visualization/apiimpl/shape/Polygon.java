@@ -38,7 +38,7 @@ import org.gephi.visualization.api.view.ui.UIPrimitive;
  *
  * @author Vojtech Bardiovsky
  */
-public class Polygon extends AbstractShape {
+class Polygon extends AbstractShape {
 
     private final Set<Point> points;
     private final Point tempPoint;

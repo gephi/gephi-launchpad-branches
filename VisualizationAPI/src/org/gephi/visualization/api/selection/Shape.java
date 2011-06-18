@@ -25,8 +25,6 @@ import org.gephi.visualization.api.view.ui.UIPrimitive;
 
 public interface Shape {
 
-    public enum Intersection {OUTSIDE, INTERSECT, FULLY_INSIDE};
-
     /**
      * Returns true if given 3D coordinate point is inside the projection
      * frustum.
@@ -43,9 +41,9 @@ public interface Shape {
      */
     public boolean isPointInside(int x, int y);
 
-    public Shape singleUpdate(int x, int y);
+    Shape singleUpdate(int x, int y);
 
-    public Shape continuousUpdate(int x, int y);
+    Shape continuousUpdate(int x, int y);
 
     /**
      * Returns true if this shape is built of many discrete steps and where
@@ -56,5 +54,22 @@ public interface Shape {
     public UIPrimitive getUIPrimitive();
 
     public SelectionType getSelectionType();
-    
+
+    public SelectionModifier getSelectionModifier();
+
+    public void setSelectionModifier(SelectionModifier selectionModifier);
+
+    public enum Intersection {OUTSIDE, INTERSECT, FULLY_INSIDE};
+
+    public enum SelectionModifier {
+        DEFAULT,
+        INCREMENTAL,
+        DECREMENTAL;
+
+        public boolean isPositive() {
+            return this != DECREMENTAL;
+        }
+
+    };
+
 }

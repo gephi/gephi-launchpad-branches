@@ -32,7 +32,7 @@ import org.gephi.visualization.api.view.ui.UIPrimitive;
  *
  * @author Vojtech Bardiovsky
  */
-public class Ellipse extends AbstractShape {
+class Ellipse extends AbstractShape {
 
     private final Point origin;
     private final int a, b;
@@ -85,10 +85,6 @@ public class Ellipse extends AbstractShape {
         float ellipseRadius = (float) Math.sqrt(boundaryX * boundaryX + boundaryY * boundaryY);
         
         return ellipseRadius + radius > (float) Math.sqrt((x - centerX) * (x - centerX) + (y - centerY) * (y - centerY));
-    }
-
-    public static Ellipse createEllipse(int x, int y, int a, int b) {
-        return new Ellipse(x, y, a, b);
     }
 
     public SelectionType getSelectionType() {

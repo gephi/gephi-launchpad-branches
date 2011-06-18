@@ -114,7 +114,11 @@ public class GL11NodePipeline3D implements Pipeline {
             float size = nodeBuffer.size();
             Color color = nodeBuffer.color();
 
-            gl2.glColor4f(color.r(), color.g(), color.b(), color.a());
+            if (nodeBuffer.isSelected()) {
+                gl2.glColor4f(0, 0, 255, color.a());
+            } else {
+                gl2.glColor4f(255, 0, 0, color.a());
+            }
 
             gl2.glTranslatef(position.x(), position.y(), position.z());
             gl2.glScalef(size, size, size);

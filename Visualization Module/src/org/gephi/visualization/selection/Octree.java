@@ -33,7 +33,7 @@ import org.gephi.graph.api.NodeIterator;
 import org.gephi.visualization.api.selection.CameraBridge;
 import org.gephi.visualization.api.selection.NodeContainer;
 import org.gephi.visualization.api.selection.Shape.Intersection;
-import org.gephi.visualization.apiimpl.shape.Ellipse;
+import org.gephi.visualization.apiimpl.shape.ShapeUtils;
 import org.gephi.visualization.controller.Controller;
 
 public final class Octree implements NodeContainer {
@@ -89,25 +89,25 @@ public final class Octree implements NodeContainer {
     }
 
     @Override
-    public List<Node> addToSelection(final Shape shape) {
+    public List<Node> applySelection(final Shape shape) {
         final CameraBridge cameraBridge = Controller.getInstance().getCameraBridge();
-        final List<Node> selectedNodes = new ArrayList<Node>();
+        final List<Node> nodes = new ArrayList<Node>();
+
+        final boolean select = shape.getSelectionModifier().isPositive();
 
         recursiveAddNodes(root, shape, new NodeFunction() {
             @Override
             public void apply(Node node) {
-                 if (shape.isInside3D(node.getNodeData().x(), node.getNodeData().y(), node.getNodeData().z(), cameraBridge)) {
-                     // TODO for testing only
-                    node.getNodeData().setColor(255, 0, 0);
-
-                    if (node.getNodeData().isSelected()) {
-                        node.getNodeData().setSelected(true);
-                        selectedNodes.add(node);
+                if (shape.isInside3D(node.getNodeData().x(), node.getNodeData().y(), node.getNodeData().z(), cameraBridge)) {
+                    
+                    if (select != node.getNodeData().isSelected()) {
+                        node.getNodeData().setSelected(select);
+                        nodes.add(node);
                     }
                 }
             }
         });
-        return selectedNodes;
+        return nodes;
     }
 
     private void recursiveGetSelectedNodes(Octant octant, List<Node> list) {
@@ -152,40 +152,19 @@ public final class Octree implements NodeContainer {
                 break;
         }
     }
-
-    @Override
-    public void removeFromSelection(final Shape shape) {
-        // FIXME implement
-        final CameraBridge cameraBridge = Controller.getInstance().getCameraBridge();
-        Octant octant = root;
-        recursiveAddNodes(octant, shape, new NodeFunction() {
-            @Override
-            public void apply(Node node) {
-                 if (shape.isInside3D(node.getNodeData().x(), node.getNodeData().y(), node.getNodeData().z(), cameraBridge)) {
-                    // TODO for testing only
-                    node.getNodeData().setColor(0, 0, 0);
-
-                    node.getNodeData().setSelected(true);
-                }
-            }
-        });
-    }
     
     @Override
     public void selectSingle(Point point, int selectionRadius, int policy) {
         final CameraBridge cameraBridge = Controller.getInstance().getCameraBridge();
         Octant octant = root;
         
-        final Shape shape = Ellipse.createEllipse(point.x, point.y, selectionRadius, selectionRadius);
+        final Shape shape = ShapeUtils.createEllipseShape(point.x, point.y, selectionRadius, selectionRadius);
         recursiveAddNodes(octant, shape, new NodeFunction() {
             private boolean active = true;
             @Override
             // TODO implement closest policy
             public void apply(Node node) {
                  if (active && shape.isInside3D(node.getNodeData().x(), node.getNodeData().y(), node.getNodeData().z(), cameraBridge)) {
-                    // TODO for testing only
-                    node.getNodeData().setColor(255, 0, 0);
-                    
                     node.getNodeData().setSelected(true);
                     active = false;
                 }
@@ -203,9 +182,6 @@ public final class Octree implements NodeContainer {
         root.applyFunction(new NodeFunction() {
             @Override
             public void apply(Node node) {
-                // TODO for testing only
-                node.getNodeData().setColor(0, 0, 0);
-
                 node.getNodeData().setSelected(false);
             }
         });

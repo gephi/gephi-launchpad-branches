@@ -40,25 +40,20 @@ public interface SelectionManager {
     Collection<Node> getSelectedNodes();
 
     /**
-     * Adds nodes from inside the shape to a permanent selection.
+     * Adds or removes nodes from inside the shape to a permanent selection.
      */
-    void addSelection(Shape shape);
-
-    /**
-     * Removes nodes from inside the shape from permanent selection.
-     */
-    void removeSelection(Shape shape);
+    void applySelection(Shape shape);
 
     /**
      * Adds nodes from inside the shape to a temporary selection.
-     * @see #clearContinuousSelection()
+     * @see #cancelContinuousSelection()
      */
     void applyContinuousSelection(Shape shape);
 
     /**
-     * Clears temporary selection.
+     * Cancels temporary selection.
      */
-    void clearContinuousSelection();
+    void cancelContinuousSelection();
 
     /**
      * Clears all selected nodes.

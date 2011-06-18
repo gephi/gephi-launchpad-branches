@@ -36,6 +36,8 @@ public abstract class AbstractShape implements Shape {
 
     private final static float THIRD_ROOT = (float) Math.sqrt(3);
 
+    private SelectionModifier selectionModifier;
+
     public boolean isInside3D(float x, float y, float z, CameraBridge cameraBridge) {
         Point point = cameraBridge.projectPoint(x, y, z);
         return isPointInside(point.x, point.y);
@@ -73,15 +75,6 @@ public abstract class AbstractShape implements Shape {
      */
     protected abstract boolean intersectsCircle(int x, int y, int radius);
 
-    public static Shape initShape(SelectionType selectionType, int x, int y) {
-        switch (selectionType) {
-            case POLYGON: return new Polygon(x, y);
-            case ELLIPSE: return new Ellipse(x, y);
-            case RECTANGLE: return new Rectangle(x, y);
-        }
-        return null;
-    }
-
     private static final int[][] BOX_CORNERS = new int[][]{
             new int[]{0, 0, 0},
             new int[]{0, 0, 1},
@@ -92,5 +85,13 @@ public abstract class AbstractShape implements Shape {
             new int[]{1, 1, 0},
             new int[]{1, 1, 1}
     };
+
+    public SelectionModifier getSelectionModifier() {
+        return selectionModifier;
+    }
+
+    public void setSelectionModifier(SelectionModifier selectionModifier) {
+        this.selectionModifier = selectionModifier;
+    }
 
 }

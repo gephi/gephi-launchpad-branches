@@ -32,7 +32,7 @@ import org.gephi.visualization.api.view.ui.UIPrimitive;
  *
  * @author Vojtech Bardiovsky
  */
-public class Rectangle extends AbstractShape {
+class Rectangle extends AbstractShape {
 
     Point origin, opposite;
 

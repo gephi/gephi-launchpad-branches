@@ -38,6 +38,7 @@ import org.gephi.visualization.api.selection.NodeContainer;
 import org.gephi.visualization.api.selection.SelectionManager;
 import org.gephi.visualization.api.selection.SelectionType;
 import org.gephi.visualization.api.selection.Shape;
+import org.gephi.visualization.api.selection.Shape.SelectionModifier;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.ServiceProvider;
 
@@ -47,6 +48,8 @@ public class SelectionManagerImpl implements SelectionManager {
     private NodeContainer nodeContainer;
     private Collection<Node> selectedNodes;
     private Collection<Node> temporarySelectedNodes;
+
+    private SelectionModifier temporarySelectionModifier;
 
     private boolean blocked;
 
@@ -71,32 +74,28 @@ public class SelectionManagerImpl implements SelectionManager {
     }
 
     @Override
-    public void addSelection(Shape shape) {
-        nodeContainer.addToSelection(shape);
-    }
-
-    @Override
-    public void removeSelection(Shape shape) {
-        nodeContainer.removeFromSelection(shape);
+    public void applySelection(Shape shape) {
+        nodeContainer.applySelection(shape);
     }
 
     @Override
     public void applyContinuousSelection(Shape shape) {
-        temporarySelectedNodes = nodeContainer.addToSelection(shape);
+        temporarySelectedNodes = nodeContainer.applySelection(shape);
+        temporarySelectionModifier = shape.getSelectionModifier();
     }
 
     @Override
-    public void clearContinuousSelection() {
-        if (temporarySelectedNodes != null) {
-            for (Node node : temporarySelectedNodes) {
-                // TODO for testing only
-                node.getNodeData().setColor(0, 0, 0);
-
-                node.getNodeData().setSelected(false);
-            }
-            temporarySelectedNodes = null;
+    public void cancelContinuousSelection() {
+        if (temporarySelectedNodes == null) {
+            return;
         }
+        boolean select = temporarySelectionModifier.isPositive();
+        for (Node node : temporarySelectedNodes) {
+            node.getNodeData().setSelected(!select);
+        }
+        temporarySelectedNodes = null;
     }
+
 
     @Override
     public void clearSelection() {
