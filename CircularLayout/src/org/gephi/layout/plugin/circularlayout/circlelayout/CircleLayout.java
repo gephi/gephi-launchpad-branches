@@ -29,6 +29,7 @@ package org.gephi.layout.plugin.circularlayout.circlelayout;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.TreeMap;
 import java.util.Map;
@@ -69,21 +70,11 @@ public class CircleLayout extends AbstractLayout implements Layout {
         this.boolfixeddiameter = boolfixeddiameter;
     }
 
-    private enum PlacementEnum {
-        NodeID,
-        Random,
-        Degree,
-        Indegree,
-        Outdegree,
-        Mutual,
-        Children,
-        Descendents;
-    }
-
       public static Map getPlacementMap() {
         GraphController graphController = Lookup.getDefault().lookup(GraphController.class);
         GraphModel objGraphModel = graphController.getModel();
         Map<String, String> map = new TreeMap<String, String>();
+        map.put("Random", NbBundle.getMessage(CircleLayout.class, "CircleLayout.NodePlacement.Random.name"));
         map.put("NodeID", NbBundle.getMessage(CircleLayout.class, "CircleLayout.NodePlacement.NodeID.name"));
         map.put("Degree", NbBundle.getMessage(CircleLayout.class, "CircleLayout.NodePlacement.Degree.name"));
         if (objGraphModel.isDirected()) {
@@ -131,7 +122,9 @@ public class CircleLayout extends AbstractLayout implements Layout {
         if (!this.boolfixeddiameter) {
             Node[] nodes = graph.getNodes().toArray();
             for (Node n : nodes) {
-                tmpcirc += (n.getNodeData().getRadius() * 2);
+                if (!n.getNodeData().isFixed()) {
+                    tmpcirc += (n.getNodeData().getRadius() * 2);
+                }
             }
             tmpcirc = (tmpcirc * 1.2);
             tmpdiameter = tmpcirc / Math.PI;
@@ -145,8 +138,10 @@ public class CircleLayout extends AbstractLayout implements Layout {
 
         //determine Node placement
         Node[] nodes = graph.getNodes().toArray();
-        
-        if (this.strNodeplacement.equals("NodeID")) {
+        if (this.strNodeplacement.equals("Random")) {
+            List nodesList = Arrays.asList(nodes);
+            Collections.shuffle(nodesList);
+        } else if (this.strNodeplacement.equals("NodeID")) {
             Arrays.sort(nodes, new NodeComparator(graph, nodes, NodeComparator.CompareType.NODEID, null, false));
         } else if (this.strNodeplacement.endsWith("-Att")) {
             Arrays.sort(nodes, new NodeComparator(graph, nodes, NodeComparator.CompareType.ATTRIBUTE, this.strNodeplacement.substring(0, this.strNodeplacement.length() - 4), false));
@@ -159,17 +154,19 @@ public class CircleLayout extends AbstractLayout implements Layout {
         }
         
         for (Node n : nodes) {
-            if (this.boolNoOverlap) {
-                noderadius = (n.getNodeData().getRadius());
-                double noderadian = (theta * noderadius * 1.2);
-                nodeCoords = this.cartCoors(radius, 1, lasttheta + noderadian);
-                lasttheta += (noderadius * 2 * theta * 1.2);
-            } else {
-                nodeCoords = this.cartCoors(radius, index, theta);
+            if (!n.getNodeData().isFixed()) {
+                if (this.boolNoOverlap) {
+                    noderadius = (n.getNodeData().getRadius());
+                    double noderadian = (theta * noderadius * 1.2);
+                    nodeCoords = this.cartCoors(radius, 1, lasttheta + noderadian);
+                    lasttheta += (noderadius * 2 * theta * 1.2);
+                } else {
+                    nodeCoords = this.cartCoors(radius, index, theta);
+                }
+                n.getNodeData().setX(nodeCoords[0]);
+                n.getNodeData().setY(nodeCoords[1]);
+                index++;
             }
-            n.getNodeData().setX(nodeCoords[0]);
-            n.getNodeData().setY(nodeCoords[1]);
-            index++;
         }
         converged = true;
     }
@@ -279,13 +276,12 @@ public class CircleLayout extends AbstractLayout implements Layout {
             setBoolFixedDiameter(false);
         }
     }
-
+    
     private float[] cartCoors(double radius, int whichInt, double theta) {
         float[] coOrds = new float[2];
         coOrds[0] = (float) (radius * (Math.cos((theta * whichInt) + (Math.PI / 2))));
         coOrds[1] = (float) (radius * (Math.sin((theta * whichInt) + (Math.PI / 2))));
         return coOrds;
     }
-
 
 }

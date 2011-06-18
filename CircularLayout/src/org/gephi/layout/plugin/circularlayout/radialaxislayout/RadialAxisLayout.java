@@ -121,7 +121,6 @@ public class RadialAxisLayout extends AbstractLayout implements Layout {
         graph.readLock();
         float[] nodeCoords = new float[2];
         ArrayList<Integer> ArrayLayers = new ArrayList<Integer>();
-        List<Node> NodeList = new ArrayList<Node>();
         double radius = 0;
         double SparArrayCount = 0;
         double tmpcirc = 0;
@@ -143,24 +142,27 @@ public class RadialAxisLayout extends AbstractLayout implements Layout {
         Object currentlayer = null;
 
         for (Node n : nodes) {
-            if (this.boolResizeNode) {
-                n.getNodeData().setSize(this.intNodeSize);
+            if (!n.getNodeData().isFixed()) {
+                if (this.boolResizeNode) {
+                    n.getNodeData().setSize(this.intNodeSize);
+                }
+                currentlayer = getLayerAttribute(n, this.strNodeplacement);
+                if (i == 0) {
+                    lastlayer = currentlayer;
+                    ArrayLayers.add(Integer.valueOf(i));
+                }
+                if (i == nodecount - 1) {
+                    ArrayLayers.add(Integer.valueOf(i));
+                }
+                if (lastlayer != currentlayer) {
+                    lastlayer = currentlayer;
+                    ArrayLayers.add(Integer.valueOf(i));
+                }
+                i++;
             }
-            currentlayer = getLayerAttribute(n, this.strNodeplacement);
-            if (i == 0) {
-                lastlayer = currentlayer;
-                ArrayLayers.add(Integer.valueOf(i));
-            }
-            if (i == nodecount - 1) {
-                ArrayLayers.add(Integer.valueOf(i));
-            }
-            if (lastlayer != currentlayer) {
-                lastlayer = currentlayer;
-                ArrayLayers.add(Integer.valueOf(i));
-            }
-            NodeList.add(n);
-            i++;
         }
+        List<Node> NodeList = new ArrayList<Node>(Arrays.asList(nodes));
+
         nodes = null;
 
         SparArrayCount = ArrayLayers.size();
@@ -218,18 +220,20 @@ public class RadialAxisLayout extends AbstractLayout implements Layout {
                 SparNodeCount[group] = shortnodes.length;
                 int order = 0;
                 for (Node n : shortnodes) {
-                    if (n.getNodeData().getLayoutData() == null || !(n.getNodeData().getLayoutData() instanceof GroupLayoutData)) {
-                        posData = new GroupLayoutData();
-                        posData.group = group;
-                        posData.order = order;
-                        n.getNodeData().setLayoutData(posData);
+                    if (!n.getNodeData().isFixed()) {
+                        if (n.getNodeData().getLayoutData() == null || !(n.getNodeData().getLayoutData() instanceof GroupLayoutData)) {
+                            posData = new GroupLayoutData();
+                            posData.group = group;
+                            posData.order = order;
+                            n.getNodeData().setLayoutData(posData);
+                        }
+                        if (order == 0) {
+                            double noderadius = n.getNodeData().getRadius();
+                            circ += noderadius * 2;
+                            SparBaseList.add(n);
+                        }
+                        order++;
                     }
-                    if (order == 0) {
-                        double noderadius = n.getNodeData().getRadius();
-                        circ += noderadius * 2;
-                        SparBaseList.add(n);
-                    }
-                    order++;
                 }
                 group++;
             }
@@ -265,24 +269,25 @@ public class RadialAxisLayout extends AbstractLayout implements Layout {
 
         double tmpsparlength;
         for (Node n : NodeList) {
-            if (n.getNodeData().getLayoutData() != null) {
-                position = n.getNodeData().getLayoutData();
-            }
-            if (position.order != 0) {
-                tmpsparlength = ArraySparLength[position.group];
-                tmpspartheta = ArraySparTheta[position.group];
-
-                double noderadius = (n.getNodeData().getRadius());
-                if (this.boolSparSpiral) {
-                    nodeCoords = this.cartCoors(tmpsparlength + radius + (noderadius * this.dScalingWidth), 1, tmpspartheta + (position.order * (thetainc / SparNodeCount[position.group])));
-                } else {
-                    nodeCoords = this.cartCoors(tmpsparlength + radius + (noderadius * this.dScalingWidth), 1, tmpspartheta);
+            if (!n.getNodeData().isFixed()) {
+                if (n.getNodeData().getLayoutData() != null) {
+                    position = n.getNodeData().getLayoutData();
                 }
-                n.getNodeData().setX(nodeCoords[0]);
-                n.getNodeData().setY(nodeCoords[1]);
-                ArraySparLength[position.group] = tmpsparlength + noderadius * this.dScalingWidth * 2;
-            }
+                if (position.order != 0) {
+                    tmpsparlength = ArraySparLength[position.group];
+                    tmpspartheta = ArraySparTheta[position.group];
 
+                    double noderadius = (n.getNodeData().getRadius());
+                    if (this.boolSparSpiral) {
+                        nodeCoords = this.cartCoors(tmpsparlength + radius + (noderadius * this.dScalingWidth), 1, tmpspartheta + (position.order * (thetainc / SparNodeCount[position.group])));
+                    } else {
+                        nodeCoords = this.cartCoors(tmpsparlength + radius + (noderadius * this.dScalingWidth), 1, tmpspartheta);
+                    }
+                    n.getNodeData().setX(nodeCoords[0]);
+                    n.getNodeData().setY(nodeCoords[1]);
+                    ArraySparLength[position.group] = tmpsparlength + noderadius * this.dScalingWidth * 2;
+                }
+            }
             n.getNodeData().setLayoutData(null);
         }
         graph.readUnlock();

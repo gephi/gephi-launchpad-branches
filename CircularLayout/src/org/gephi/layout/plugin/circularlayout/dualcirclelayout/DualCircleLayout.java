@@ -132,12 +132,14 @@ public class DualCircleLayout extends AbstractLayout implements Layout {
         }       
 
         for (Node n : nodes) {
-            if (index < this.secondarynodecount) {
-                tmpsecondarycirc += (n.getNodeData().getRadius() * 2);
-            } else {
-                tmpprimarycirc += (n.getNodeData().getRadius() * 2);
+            if (!n.getNodeData().isFixed()) {
+                if (index < this.secondarynodecount) {
+                    tmpsecondarycirc += (n.getNodeData().getRadius() * 2);
+                } else {
+                    tmpprimarycirc += (n.getNodeData().getRadius() * 2);
+                }
+                index++;
             }
-            index++;
         }
         index = 0;//reset index
 
@@ -166,34 +168,35 @@ public class DualCircleLayout extends AbstractLayout implements Layout {
         double secondaryradius = (tmpsecondarycirc / Math.PI) / 2;
 
         for (Node n : nodes) {
-            if (index < this.secondarynodecount) {
-                //Draw secondary circle
-                double noderadius = (n.getNodeData().getRadius());
-                //This step is hackish... but it makes small numbers of nodes symetrical on both the secondary circles.
-                if (secondary_scale > 2) {
-                    noderadius = (tmpsecondarycirc / (2 * this.secondarynodecount * secondary_scale * 1.2));
+            if (!n.getNodeData().isFixed()) {
+                if (index < this.secondarynodecount) {
+                    //Draw secondary circle
+                    double noderadius = (n.getNodeData().getRadius());
+                    //This step is hackish... but it makes small numbers of nodes symetrical on both the secondary circles.
+                    if (secondary_scale > 2) {
+                        noderadius = (tmpsecondarycirc / (2 * this.secondarynodecount * secondary_scale * 1.2));
+                    }
+                    double noderadian = (secondary_theta * noderadius * 1.2 * secondary_scale);
+                    if (index == 0) {
+                        correct_theta = noderadian; //correct for cosmetics... overlap prevention offsets the first node by it's radius which looks weird.
+                    }
+                    nodeCoords = this.cartCoors(secondaryradius, 1, lasttheta + noderadian - correct_theta);
+                    lasttheta += (noderadius * 2 * secondary_theta * 1.2 * secondary_scale);
+                } else {
+                    double noderadius = (n.getNodeData().getRadius());
+                    double noderadian = (primary_theta * noderadius * 1.2 * primary_scale);
+                    if (index == this.secondarynodecount) {
+                        lasttheta = 0;
+                        correct_theta = noderadian; //correct for cosmetics... overlap prevention offsets the first node by it's radius which looks weird.
+                    }
+                    //Draw primary circle
+                    nodeCoords = this.cartCoors(primaryradius, 1, lasttheta + noderadian - correct_theta);
+                    lasttheta += (noderadius * 2 * primary_theta * 1.2 * primary_scale);
                 }
-                double noderadian = (secondary_theta * noderadius * 1.2 * secondary_scale);
-                if (index == 0) {
-                    correct_theta = noderadian; //correct for cosmetics... overlap prevention offsets the first node by it's radius which looks weird.
-                }
-                nodeCoords = this.cartCoors(secondaryradius, 1, lasttheta + noderadian - correct_theta);
-                lasttheta += (noderadius * 2 * secondary_theta * 1.2 * secondary_scale);
-            } else {
-                double noderadius = (n.getNodeData().getRadius());
-                double noderadian = (primary_theta * noderadius * 1.2 * primary_scale);
-                if (index == this.secondarynodecount) {
-                    lasttheta = 0;
-                    correct_theta = noderadian; //correct for cosmetics... overlap prevention offsets the first node by it's radius which looks weird.
-                }
-                //Draw primary circle
-                nodeCoords = this.cartCoors(primaryradius, 1, lasttheta + noderadian - correct_theta);
-                lasttheta += (noderadius * 2 * primary_theta * 1.2 * primary_scale);
+                n.getNodeData().setX(nodeCoords[0]);
+                n.getNodeData().setY(nodeCoords[1]);
+                index++;
             }
-            n.getNodeData().setX(nodeCoords[0]);
-            n.getNodeData().setY(nodeCoords[1]);
-            index++;
-
         }
         converged = true;
     }
