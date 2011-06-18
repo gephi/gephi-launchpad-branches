@@ -1,23 +1,23 @@
 /*
- * Copyright 2008-2010 Gephi
- * Authors : Cezary Bartosiak
- * Website : http://www.gephi.org
- *
- * This file is part of Gephi.
- *
- * Gephi is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Gephi is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
- */
+Copyright 2008-2011 Gephi
+Authors : Cezary Bartosiak
+Website : http://www.gephi.org
+
+This file is part of Gephi.
+
+Gephi is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+Gephi is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
+*/
 package org.gephi.ui.statistics.plugin;
 
 import java.text.SimpleDateFormat;
@@ -33,134 +33,131 @@ import org.gephi.dynamic.DynamicUtilities;
  * @author Cezary Bartosiak
  */
 public class DynamicPanel extends javax.swing.JPanel {
-	/** Creates new form DynamicPanel */
-	public DynamicPanel() {
-		initComponents();
-	}
 
-	public TimeInterval getTimeInterval() {
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-		String begin = sdf.format(beginDatePicker.getDate());
-		String end   = sdf.format(endDatePicker.getDate());
-		int beginHour   = (Integer)beginHourSpinner.getValue();
-		int beginMinute = (Integer)beginMinuteSpinner.getValue();
-		int beginSecond = (Integer)beginSecondSpinner.getValue();
-		int endHour     = (Integer)endHourSpinner.getValue();
-		int endMinute   = (Integer)endMinuteSpinner.getValue();
-		int endSecond   = (Integer)endSecondSpinner.getValue();
-		begin += "T" + (beginHour < 10 ? "0" + beginHour : beginHour);
-		begin += ":" + (beginMinute < 10 ? "0" + beginMinute : beginMinute);
-		begin += ":" + (beginSecond < 10 ? "0" + beginSecond : beginSecond);
-		end   += "T" + (endHour < 10 ? "0" + endHour : endHour);
-		end   += ":" + (endMinute < 10 ? "0" + endMinute : endMinute);
-		end   += ":" + (endSecond < 10 ? "0" + endSecond : endSecond);
-		
-		return new TimeInterval(
-				DynamicUtilities.getDoubleFromXMLDateString(begin),
-				DynamicUtilities.getDoubleFromXMLDateString(end)
-			);
-	}
+    /** Creates new form DynamicPanel */
+    public DynamicPanel() {
+        initComponents();
+    }
 
-	public double getWindow() {
-		TimeInterval timeInterval = getTimeInterval();
-		return windowSlider.getValue() / 100.0 * (timeInterval.getHigh() - timeInterval.getLow());
-	}
+    public TimeInterval getTimeInterval() {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        String begin = sdf.format(beginDatePicker.getDate());
+        String end = sdf.format(endDatePicker.getDate());
+        int beginHour = (Integer) beginHourSpinner.getValue();
+        int beginMinute = (Integer) beginMinuteSpinner.getValue();
+        int beginSecond = (Integer) beginSecondSpinner.getValue();
+        int endHour = (Integer) endHourSpinner.getValue();
+        int endMinute = (Integer) endMinuteSpinner.getValue();
+        int endSecond = (Integer) endSecondSpinner.getValue();
+        begin += "T" + (beginHour < 10 ? "0" + beginHour : beginHour);
+        begin += ":" + (beginMinute < 10 ? "0" + beginMinute : beginMinute);
+        begin += ":" + (beginSecond < 10 ? "0" + beginSecond : beginSecond);
+        end += "T" + (endHour < 10 ? "0" + endHour : endHour);
+        end += ":" + (endMinute < 10 ? "0" + endMinute : endMinute);
+        end += ":" + (endSecond < 10 ? "0" + endSecond : endSecond);
 
-	public Estimator getEstimator() {
-		switch (estimatorComboBox.getSelectedIndex()) {
-			case 0: // FIRST
-				return Estimator.FIRST;
-			case 1: // LAST
-				return Estimator.LAST;
-			case 2: // MEDIAN
-				return Estimator.MEDIAN;
-			case 3: // MODE
-				return Estimator.MODE;
-			default:
-				return Estimator.FIRST;
-		}
-	}
+        return new TimeInterval(
+                DynamicUtilities.getDoubleFromXMLDateString(begin),
+                DynamicUtilities.getDoubleFromXMLDateString(end));
+    }
 
-	public void setTimeInterval(TimeInterval timeInterval) {
-		try {
-			String begin     = DynamicUtilities.getXMLDateStringFromDouble(timeInterval.getLow()).replace('T', ' ').
-								substring(0, 19);
-			String beginDate = begin.split(" ")[0];
-			String beginTime = begin.split(" ")[1];
-			String end       = DynamicUtilities.getXMLDateStringFromDouble(timeInterval.getHigh()).replace('T', ' ').
-								substring(0, 19);
-			String endDate   = end.split(" ")[0];
-			String endTime   = end.split(" ")[1];
+    public double getWindow() {
+        TimeInterval timeInterval = getTimeInterval();
+        return windowSlider.getValue() / 100.0 * (timeInterval.getHigh() - timeInterval.getLow());
+    }
 
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-			beginDatePicker.setDate(sdf.parse(beginDate));
-			beginHourSpinner.setValue(Integer.parseInt(beginTime.split(":")[0]));
-			beginMinuteSpinner.setValue(Integer.parseInt(beginTime.split(":")[1]));
-			beginSecondSpinner.setValue(Integer.parseInt(beginTime.split(":")[2]));
-			endDatePicker.setDate(sdf.parse(endDate));
-			endHourSpinner.setValue(Integer.parseInt(endTime.split(":")[0]));
-			endMinuteSpinner.setValue(Integer.parseInt(endTime.split(":")[1]));
-			endSecondSpinner.setValue(Integer.parseInt(endTime.split(":")[2]));
-		}
-		catch (Exception ex) {
-			beginDatePicker.setDate(new Date());
-			beginHourSpinner.setValue(0);
-			beginMinuteSpinner.setValue(0);
-			beginSecondSpinner.setValue(0);
-			endDatePicker.setDate(new Date());
-			endHourSpinner.setValue(23);
-			endMinuteSpinner.setValue(59);
-			endSecondSpinner.setValue(59);
-		}
-	}
+    public Estimator getEstimator() {
+        switch (estimatorComboBox.getSelectedIndex()) {
+            case 0: // FIRST
+                return Estimator.FIRST;
+            case 1: // LAST
+                return Estimator.LAST;
+            case 2: // MEDIAN
+                return Estimator.MEDIAN;
+            case 3: // MODE
+                return Estimator.MODE;
+            default:
+                return Estimator.FIRST;
+        }
+    }
 
-	public void setWindow(double window) {
-		TimeInterval timeInterval = getTimeInterval();
-		if (window > timeInterval.getHigh() - timeInterval.getLow() || Double.compare(window, 0.0) == 0)
-			windowSlider.setValue(100);
-		else windowSlider.setValue((int)Math.round(window / (timeInterval.getHigh() - timeInterval.getLow()) * 100));
-	}
+    public void setTimeInterval(TimeInterval timeInterval) {
+        try {
+            String begin = DynamicUtilities.getXMLDateStringFromDouble(timeInterval.getLow()).replace('T', ' ').
+                    substring(0, 19);
+            String beginDate = begin.split(" ")[0];
+            String beginTime = begin.split(" ")[1];
+            String end = DynamicUtilities.getXMLDateStringFromDouble(timeInterval.getHigh()).replace('T', ' ').
+                    substring(0, 19);
+            String endDate = end.split(" ")[0];
+            String endTime = end.split(" ")[1];
 
-	public void setEstimator(Estimator estimator) {
-		switch (estimator) {
-			case FIRST:
-				estimatorComboBox.setSelectedIndex(0);
-				break;
-			case LAST:
-				estimatorComboBox.setSelectedIndex(1);
-				break;
-			case MEDIAN:
-				estimatorComboBox.setSelectedIndex(2);
-				break;
-			case MODE:
-				estimatorComboBox.setSelectedIndex(3);
-				break;
-			default:
-				estimatorComboBox.setSelectedIndex(0);
-				break;
-		}
-	}
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            beginDatePicker.setDate(sdf.parse(beginDate));
+            beginHourSpinner.setValue(Integer.parseInt(beginTime.split(":")[0]));
+            beginMinuteSpinner.setValue(Integer.parseInt(beginTime.split(":")[1]));
+            beginSecondSpinner.setValue(Integer.parseInt(beginTime.split(":")[2]));
+            endDatePicker.setDate(sdf.parse(endDate));
+            endHourSpinner.setValue(Integer.parseInt(endTime.split(":")[0]));
+            endMinuteSpinner.setValue(Integer.parseInt(endTime.split(":")[1]));
+            endSecondSpinner.setValue(Integer.parseInt(endTime.split(":")[2]));
+        } catch (Exception ex) {
+            beginDatePicker.setDate(new Date());
+            beginHourSpinner.setValue(0);
+            beginMinuteSpinner.setValue(0);
+            beginSecondSpinner.setValue(0);
+            endDatePicker.setDate(new Date());
+            endHourSpinner.setValue(23);
+            endMinuteSpinner.setValue(59);
+            endSecondSpinner.setValue(59);
+        }
+    }
 
-	protected void setContent(JPanel panel, int height) {
-		javax.swing.GroupLayout contentLayout = new javax.swing.GroupLayout(content);
-		content.setLayout(contentLayout);
-		contentLayout.setHorizontalGroup(
-			contentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-			.addComponent(panel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE,
-				Short.MAX_VALUE)
-		);
-		contentLayout.setVerticalGroup(
-			contentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-			.addComponent(panel, height, height, height)
-		);
-	}
+    public void setWindow(double window) {
+        TimeInterval timeInterval = getTimeInterval();
+        if (window > timeInterval.getHigh() - timeInterval.getLow() || Double.compare(window, 0.0) == 0) {
+            windowSlider.setValue(100);
+        } else {
+            windowSlider.setValue((int) Math.round(window / (timeInterval.getHigh() - timeInterval.getLow()) * 100));
+        }
+    }
 
-	/** This method is called from within the constructor to
-	 * initialize the form.
-	 * WARNING: Do NOT modify this code. The content of this method is
-	 * always regenerated by the Form Editor.
-	 */
-	@SuppressWarnings("unchecked")
+    public void setEstimator(Estimator estimator) {
+        switch (estimator) {
+            case FIRST:
+                estimatorComboBox.setSelectedIndex(0);
+                break;
+            case LAST:
+                estimatorComboBox.setSelectedIndex(1);
+                break;
+            case MEDIAN:
+                estimatorComboBox.setSelectedIndex(2);
+                break;
+            case MODE:
+                estimatorComboBox.setSelectedIndex(3);
+                break;
+            default:
+                estimatorComboBox.setSelectedIndex(0);
+                break;
+        }
+    }
+
+    protected void setContent(JPanel panel, int height) {
+        javax.swing.GroupLayout contentLayout = new javax.swing.GroupLayout(content);
+        content.setLayout(contentLayout);
+        contentLayout.setHorizontalGroup(
+                contentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING).addComponent(panel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE,
+                Short.MAX_VALUE));
+        contentLayout.setVerticalGroup(
+                contentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING).addComponent(panel, height, height, height));
+    }
+
+    /** This method is called from within the constructor to
+     * initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is
+     * always regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
         timeIntervalLabel = new javax.swing.JLabel();
@@ -322,7 +319,6 @@ public class DynamicPanel extends javax.swing.JPanel {
         separatorTimeInterval1.getAccessibleContext().setAccessibleName(org.openide.util.NbBundle.getMessage(DynamicPanel.class, "DynamicPanel.jLabel1.AccessibleContext.accessibleName")); // NOI18N
         estimatorLabel.getAccessibleContext().setAccessibleName(org.openide.util.NbBundle.getMessage(DynamicPanel.class, "DynamicPanel.estimatorLabel.AccessibleContext.accessibleName")); // NOI18N
     }// </editor-fold>//GEN-END:initComponents
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private org.jdesktop.swingx.JXDatePicker beginDatePicker;
     private javax.swing.JSpinner beginHourSpinner;

@@ -147,6 +147,7 @@ public class ImporterCSV implements FileImporter, LongTask {
                         if (!data.isEmpty() && !data.toLowerCase().equals("null")) {
                             if (count == 0) {
                                 sourceID = data;
+                                addNode(sourceID, data);
                             } else {
                                 //Create Edge
                                 addEdge(sourceID, data);
@@ -197,6 +198,7 @@ public class ImporterCSV implements FileImporter, LongTask {
             edge = container.factory().newEdgeDraft();
             edge.setSource(sourceNode);
             edge.setTarget(targetNode);
+            edge.setWeight(weight);
             container.addEdge(edge);
         } else {
             edge.setWeight(edge.getWeight() + weight);

@@ -26,6 +26,7 @@ import java.util.HashSet;
 import java.util.Set;
 import org.gephi.data.attributes.api.AttributeOrigin;
 import org.gephi.data.attributes.api.AttributeRow;
+import org.gephi.data.properties.PropertiesColumn;
 import org.gephi.datalab.api.GraphElementsController;
 import org.gephi.graph.api.DirectedGraph;
 import org.gephi.graph.api.Edge;
@@ -35,6 +36,8 @@ import org.gephi.graph.api.HierarchicalGraph;
 import org.gephi.graph.api.Node;
 import org.gephi.graph.api.NodeData;
 import org.gephi.graph.api.UndirectedGraph;
+import org.openide.DialogDisplayer;
+import org.openide.NotifyDescriptor;
 import org.openide.util.Lookup;
 import org.openide.util.NbBundle;
 import org.openide.util.lookup.ServiceProvider;
@@ -47,8 +50,9 @@ import org.openide.util.lookup.ServiceProvider;
  */
 @ServiceProvider(service = GraphElementsController.class)
 public class GraphElementsControllerImpl implements GraphElementsController {
-    private static final float DEFAULT_NODE_SIZE=10f;
-    private static final float DEFAULT_EDGE_WEIGHT=1f;
+
+    private static final float DEFAULT_NODE_SIZE = 10f;
+    private static final float DEFAULT_EDGE_WEIGHT = 1f;
 
     public Node createNode(String label) {
         Node newNode = buildNode(label);
@@ -68,14 +72,10 @@ public class GraphElementsControllerImpl implements GraphElementsController {
     }
 
     public Node duplicateNode(Node node) {
-        if (isNodeInGraph(node)) {
-            HierarchicalGraph hg = getHierarchicalGraph();
+        HierarchicalGraph hg = getHierarchicalGraph();
 
-            Node copy = copyNodeRecursively(node, hg.getParent(node), hg);//Add copy to the same level as the original node
-            return copy;
-        } else {
-            return null;
-        }
+        Node copy = copyNodeRecursively(node, hg.getParent(node), hg);//Add copy to the same level as the original node
+        return copy;
     }
 
     public void duplicateNodes(Node[] nodes) {
@@ -127,11 +127,9 @@ public class GraphElementsControllerImpl implements GraphElementsController {
     }
 
     public void createEdges(Node source, Node[] allNodes, boolean directed) {
-        if (isNodeInGraph(source) && areNodesInGraph(allNodes)) {
-            for (Node n : allNodes) {
-                if (n != source) {
-                    createEdge(source, n, directed);
-                }
+        for (Node n : allNodes) {
+            if (n != source) {
+                createEdge(source, n, directed);
             }
         }
     }
@@ -176,10 +174,39 @@ public class GraphElementsControllerImpl implements GraphElementsController {
 
     public boolean groupNodes(Node[] nodes) {
         if (canGroupNodes(nodes)) {
-            HierarchicalGraph hg = getHierarchicalGraph();
-            Node group = hg.groupNodes(nodes);
-            //Set the group node label to the same used int visualization module:
-            group.getNodeData().setLabel(NbBundle.getMessage(GraphElementsControllerImpl.class, "Group.nodeCount.label", getNodeChildrenCount(hg, group)));
+            HierarchicalGraph graph = getHierarchicalGraph();
+            try {
+                float centroidX = 0;
+                float centroidY = 0;
+                int len = 0;
+                float sizes = 0;
+                float r = 0;
+                float g = 0;
+                float b = 0;
+                Node group = graph.groupNodes(nodes);
+                group.getNodeData().setLabel(NbBundle.getMessage(GraphElementsControllerImpl.class, "Group.nodeCount.label", nodes.length));
+                group.getNodeData().setSize(10f);
+                for (Node child : nodes) {
+                    centroidX += child.getNodeData().x();
+                    centroidY += child.getNodeData().y();
+                    len++;
+                    sizes += child.getNodeData().getSize() / 10f;
+                    r += child.getNodeData().r();
+                    g += child.getNodeData().g();
+                    b += child.getNodeData().b();
+                }
+                centroidX /= len;
+                centroidY /= len;
+                group.getNodeData().setSize(sizes);
+                group.getNodeData().setColor(r / len, g / len, b / len);
+                group.getNodeData().setX(centroidX);
+                group.getNodeData().setY(centroidY);
+            } catch (Exception e) {
+                graph.readUnlockAll();
+                NotifyDescriptor.Message nd = new NotifyDescriptor.Message(e.getMessage());
+                DialogDisplayer.getDefault().notifyLater(nd);
+                return false;
+            }
             return true;
         } else {
             return false;
@@ -187,9 +214,6 @@ public class GraphElementsControllerImpl implements GraphElementsController {
     }
 
     public boolean canGroupNodes(Node[] nodes) {
-        if (!areNodesInGraph(nodes)) {
-            return false;
-        }
         HierarchicalGraph hg = getHierarchicalGraph();
         Node parent = hg.getParent(nodes[0]);
         for (Node n : nodes) {
@@ -235,9 +259,6 @@ public class GraphElementsControllerImpl implements GraphElementsController {
     }
 
     public boolean canUngroupNode(Node node) {
-        if (!isNodeInGraph(node)) {
-            return false;
-        }
         boolean canUngroup;
         HierarchicalGraph hg = getHierarchicalGraph();
         canUngroup = getNodeChildrenCount(hg, node) > 0;//The node has children
@@ -290,7 +311,7 @@ public class GraphElementsControllerImpl implements GraphElementsController {
 
     public boolean canMoveNodeToGroup(Node node, Node group) {
         HierarchicalGraph hg = getHierarchicalGraph();
-        return node != group && hg.getParent(node) == hg.getParent(group) && canUngroupNode(group) && isNodeInGraph(node);
+        return node != group && hg.getParent(node) == hg.getParent(group) && canUngroupNode(group);
     }
 
     public boolean removeNodeFromGroup(Node node) {
@@ -318,17 +339,12 @@ public class GraphElementsControllerImpl implements GraphElementsController {
     }
 
     public boolean isNodeInGroup(Node node) {
-        if (!isNodeInGraph(node)) {
-            return false;
-        }
         HierarchicalGraph hg = getHierarchicalGraph();
         return hg.getParent(node) != null;
     }
 
     public void setNodeFixed(Node node, boolean fixed) {
-        if (isNodeInGraph(node)) {
-            node.getNodeData().setFixed(fixed);
-        }
+        node.getNodeData().setFixed(fixed);
     }
 
     public void setNodesFixed(Node[] nodes, boolean fixed) {
@@ -449,7 +465,7 @@ public class GraphElementsControllerImpl implements GraphElementsController {
         //Copy attributes:
         AttributeRow row = (AttributeRow) nodeData.getAttributes();
         for (int i = 0; i < row.countValues(); i++) {
-            if (row.getValues()[i].getColumn().getOrigin() == AttributeOrigin.DATA) {
+            if (row.getValues()[i].getColumn().getIndex()!=PropertiesColumn.NODE_ID.getIndex()) {
                 copyData.getAttributes().setValue(i, row.getValue(i));
             }
         }
@@ -472,15 +488,11 @@ public class GraphElementsControllerImpl implements GraphElementsController {
     }
 
     private void removeNode(Node node, Graph graph) {
-        if (isNodeInGraph(node)) {
-            graph.removeNode(node);
-        }
+        graph.removeNode(node);
     }
 
     private void removeEdge(Edge edge, Graph graph) {
-        if (isEdgeInGraph(edge)) {
-            graph.removeEdge(edge);
-        }
+        graph.removeEdge(edge);
     }
 
     private int getNodeChildrenCount(HierarchicalGraph hg, Node n) {

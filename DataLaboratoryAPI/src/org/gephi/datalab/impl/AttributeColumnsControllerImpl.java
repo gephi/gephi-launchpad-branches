@@ -142,6 +142,22 @@ public class AttributeColumnsControllerImpl implements AttributeColumnsControlle
         }
     }
 
+    public void fillNodesColumnWithValue(Node[] nodes, AttributeColumn column, String value) {
+        if (canChangeColumnData(column)) {
+            for (Node node : nodes) {
+                setAttributeValue(value, node.getNodeData().getAttributes(), column);
+            }
+        }
+    }
+
+    public void fillEdgesColumnWithValue(Edge[] edges, AttributeColumn column, String value) {
+        if (canChangeColumnData(column)) {
+            for (Edge edge : edges) {
+                setAttributeValue(value, edge.getEdgeData().getAttributes(), column);
+            }
+        }
+    }
+
     public void clearColumnData(AttributeTable table, AttributeColumn column) {
         if (canClearColumnData(column)) {
             final int columnIndex = column.getIndex();
@@ -620,6 +636,25 @@ public class AttributeColumnsControllerImpl implements AttributeColumnsControlle
                     edgeAttributes = edge.getEdgeData().getAttributes();
                     for (AttributeColumn column : columnsList) {
                         setAttributeValue(reader.get(column.getTitle()), edgeAttributes, column);
+                    }
+                } else {
+                    //Do not ignore repeated edge, instead increase edge weight
+                    edge = graph.getEdge(source, target);
+                    if (edge != null) {
+                        //Increase edge weight with specified weight (if specified), else increase by 1:
+                        String weight = reader.get(edges.getColumn(PropertiesColumn.EDGE_WEIGHT.getIndex()).getTitle());
+                        if (weight != null) {
+                            try {
+                                Float weightFloat = Float.parseFloat(weight);
+                                edge.getEdgeData().getAttributes().setValue(PropertiesColumn.EDGE_WEIGHT.getIndex(), edge.getWeight() + weightFloat);
+                            } catch (NumberFormatException numberFormatException) {
+                                //Not valid weight, add 1
+                                edge.getEdgeData().getAttributes().setValue(PropertiesColumn.EDGE_WEIGHT.getIndex(), edge.getWeight() + 1);
+                            }
+                        } else {
+                            //Add 1 (weight not specified)
+                            edge.getEdgeData().getAttributes().setValue(PropertiesColumn.EDGE_WEIGHT.getIndex(), edge.getWeight() + 1);
+                        }
                     }
                 }
             }

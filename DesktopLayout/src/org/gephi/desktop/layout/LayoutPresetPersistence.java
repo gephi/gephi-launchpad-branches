@@ -56,8 +56,7 @@ public class LayoutPresetPersistence {
     }
 
     public void savePreset(String name, Layout layout) {
-        Preset preset = new Preset(name, layout);
-        addPreset(preset);
+        Preset preset = addPreset(new Preset(name, layout));
 
         try {
             //Create file if dont exist
@@ -95,7 +94,8 @@ public class LayoutPresetPersistence {
     public void loadPreset(Preset preset, Layout layout) {
         for (LayoutProperty p : layout.getProperties()) {
             for (int i = 0; i < preset.propertyNames.size(); i++) {
-                if (p.getProperty().getName().equals(preset.propertyNames.get(i))) {
+                if (p.getCanonicalName().equalsIgnoreCase(preset.propertyNames.get(i))
+                        || p.getProperty().getName().equalsIgnoreCase(preset.propertyNames.get(i))) {//Also compare with property name to maintain compatibility with old presets
                     try {
                         p.getProperty().setValue(preset.propertyValues.get(i));
                     } catch (Exception ex) {
@@ -130,13 +130,19 @@ public class LayoutPresetPersistence {
         }
     }
 
-    private void addPreset(Preset preset) {
+    private Preset addPreset(Preset preset) {
         List<Preset> layoutPresets = presets.get(preset.layoutClassName);
         if (layoutPresets == null) {
             layoutPresets = new ArrayList<Preset>();
             presets.put(preset.layoutClassName, layoutPresets);
         }
+        for (Preset p : layoutPresets) {
+            if (p.equals(preset)) {
+                return p;
+            }
+        }
         layoutPresets.add(preset);
+        return preset;
     }
 
     protected static class Preset {
@@ -153,7 +159,7 @@ public class LayoutPresetPersistence {
                 try {
                     Object value = p.getProperty().getValue();
                     if (value != null) {
-                        propertyNames.add(p.getProperty().getName());
+                        propertyNames.add(p.getCanonicalName());
                         propertyValues.add(value);
                     }
                 } catch (Exception e) {
@@ -239,6 +245,28 @@ public class LayoutPresetPersistence {
         @Override
         public String toString() {
             return name;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == null) {
+                return false;
+            }
+            if (getClass() != obj.getClass()) {
+                return false;
+            }
+            final Preset other = (Preset) obj;
+            if ((this.name == null) ? (other.name != null) : !this.name.equals(other.name)) {
+                return false;
+            }
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+            int hash = 3;
+            hash = 37 * hash + (this.name != null ? this.name.hashCode() : 0);
+            return hash;
         }
     }
 }

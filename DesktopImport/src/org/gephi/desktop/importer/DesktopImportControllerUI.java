@@ -35,7 +35,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import org.apache.tools.bzip2.CBZip2InputStream;
+import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.gephi.desktop.importer.api.ImportControllerUI;
 import org.gephi.desktop.mrufiles.api.MostRecentFiles;
 import org.gephi.desktop.project.api.ProjectControllerUI;
@@ -338,7 +338,7 @@ public class DesktopImportControllerUI implements ImportControllerUI {
             }
 
             //Execute task
-            final String containerSource = database.getName();
+            final String containerSource = database != null ? database.getName() : (ui != null ? ui.getDisplayName() : importer.getClass().getSimpleName());
             final Database db = database;
             String taskName = NbBundle.getMessage(DesktopImportControllerUI.class, "DesktopImportControllerUI.taskName", containerSource);
             executor.execute(task, new Runnable() {
@@ -519,7 +519,11 @@ public class DesktopImportControllerUI implements ImportControllerUI {
     private FileObject getArchivedFile(FileObject fileObject) {
         // ZIP and JAR archives
         if (FileUtil.isArchiveFile(fileObject)) {
-            fileObject = FileUtil.getArchiveRoot(fileObject).getChildren()[0];
+            try {
+                fileObject = FileUtil.getArchiveRoot(fileObject).getChildren()[0];
+            } catch (Exception e) {
+                throw new RuntimeException("The archive can't be opened, be sure it has no password and contains a single file, without folders");
+            }
         } else { // GZ or BZIP2 archives
             boolean isGz = fileObject.getExt().equalsIgnoreCase("gz");
             boolean isBzip = fileObject.getExt().equalsIgnoreCase("bz2");
@@ -588,14 +592,12 @@ public class DesktopImportControllerUI implements ImportControllerUI {
         final int BUFF_SIZE = 8192;
         final byte[] buffer = new byte[BUFF_SIZE];
 
-        CBZip2InputStream inputStream = null;
+        BZip2CompressorInputStream inputStream = null;
         FileOutputStream outStream = null;
 
         try {
             FileInputStream is = new FileInputStream(in.getPath());
-            is.read(); // 'B'
-            is.read(); // 'Z'
-            inputStream = new CBZip2InputStream(is);
+            inputStream = new BZip2CompressorInputStream(is);
             outStream = new FileOutputStream(out.getAbsolutePath());
 
             if (isTar) {
