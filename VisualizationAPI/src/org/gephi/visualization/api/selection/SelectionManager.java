@@ -61,17 +61,11 @@ public interface SelectionManager {
     void clearSelection();
 
     /**
-     * Adds single node to a permanent selection.
-     * @param point the point to determine the closest node
-     * @param incremental true if adding to previous permanent selection
+     * Adds or removes single node from a permanent selection.
+     * @param point the point to determine the closest node.
+     * @param select true to select, false to deselect.
      */
-    void selectSingle(Point point, boolean incremental);
-
-    /**
-     * Removes single node to a permanent selection.
-     * @param point the point to determine the closest node
-     */
-    void removeSingle(Point point);
+    void selectSingle(Point point, boolean select);
 
     void addChangeListener(ChangeListener changeListener);
 

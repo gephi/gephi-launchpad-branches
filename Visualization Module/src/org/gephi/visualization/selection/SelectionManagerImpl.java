@@ -103,16 +103,8 @@ public class SelectionManagerImpl implements SelectionManager {
     }
 
     @Override
-    public void selectSingle(Point point, boolean incremental) {
-        if (!incremental) {
-            nodeContainer.clearSelection();
-        }
-        nodeContainer.selectSingle(point, getMouseSelectionDiameter() / 2, NodeContainer.SINGLE_NODE_DEFAULT);
-    }
-
-    @Override
-    public void removeSingle(Point point) {
-        nodeContainer.removeSingle(point);
+    public void selectSingle(Point point, boolean select) {
+        nodeContainer.selectSingle(point, select, getMouseSelectionDiameter() / 2, NodeContainer.SINGLE_NODE_DEFAULT);
     }
 
     @Override

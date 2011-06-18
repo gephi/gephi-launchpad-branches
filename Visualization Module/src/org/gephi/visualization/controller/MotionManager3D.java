@@ -61,18 +61,10 @@ public class MotionManager3D implements MotionManager {
 
         if (vizConfig.isDirectMouseSelection()) {
             if (SwingUtilities.isLeftMouseButton(e)) {
-
-                switch (modifier) {
-                    case DEFAULT:
-                        selectionManager.selectSingle(e.getPoint(), false);
-                        break;
-                    case INCREMENTAL:
-                        selectionManager.selectSingle(e.getPoint(), true);
-                        break;
-                    case DECREMENTAL:
-                        selectionManager.removeSingle(e.getPoint());
-                        break;
+                if (modifier == SelectionModifier.DEFAULT) {
+                    selectionManager.clearSelection();
                 }
+                selectionManager.selectSingle(e.getPoint(), modifier.isPositive());
             }
         } else if (vizConfig.getSelectionType() != SelectionType.NONE) {
             if (modifier == SelectionModifier.DEFAULT) {

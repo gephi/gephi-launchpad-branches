@@ -59,13 +59,12 @@ public interface NodeContainer {
     public List<Node> getSelectedNodes();
 
     /**
-     * Select single node closest to the given point.
+     * Select or deselect single node closest to the given point.
+     * @param add true if node is selected, false if deselected.
      * @param selectionRadius nodes outside the radius will be ignored.
      * @param policy determines how to pick the closest node.
      */
-    public void selectSingle(Point point, int selectionRadius, int policy);
-
-    public void removeSingle(Point point);
+    public void selectSingle(Point point, boolean select, int selectionRadius, int policy);
 
     public void clearSelection();
 

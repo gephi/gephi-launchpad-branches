@@ -28,6 +28,7 @@ import org.gephi.graph.api.NodeData;
 import org.gephi.graph.api.GroupData;
 import org.gephi.graph.api.TextData;
 import org.gephi.graph.dhns.utils.avl.ViewNodeTree;
+import org.gephi.graph.spi.SpatialData;
 
 /**
  * Implementation of the node data interface.
@@ -41,6 +42,7 @@ public class NodeDataImpl implements NodeData, GroupData {
     protected final ViewNodeTree nodes;
     //NodeData
     protected LayoutData layoutData;
+    protected SpatialData spatialData;
     protected float x;
     protected float y;
     protected float z;
@@ -87,6 +89,14 @@ public class NodeDataImpl implements NodeData, GroupData {
 
     public void setLayoutData(LayoutData layoutData) {
         this.layoutData = layoutData;
+    }
+
+    public SpatialData getSpatialData() {
+        return spatialData;
+    }
+
+    public void setSpatialData(SpatialData spatialData) {
+        this.spatialData = spatialData;
     }
 
     public Attributes getAttributes() {
@@ -136,7 +146,9 @@ public class NodeDataImpl implements NodeData, GroupData {
     }
 
     private void updatePositionFlag() {
-        // TODO: implement update event managment
+        if (getSpatialData() != null) {
+            getSpatialData().positionUpdated();
+        }
     }
 
     public float getSize() {

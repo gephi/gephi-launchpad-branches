@@ -22,6 +22,7 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 package org.gephi.graph.api;
 
 import org.gephi.graph.spi.LayoutData;
+import org.gephi.graph.spi.SpatialData;
 
 /**
  * Contains all extended data related to a node, including access to its
@@ -130,6 +131,21 @@ public interface NodeData extends Renderable {
      * @param layoutData    the layout data that is to be set for this node
      */
     public void setLayoutData(LayoutData layoutData);
+
+    /**
+     * Returns the spatial data object associated to this node. Spatial data
+     * are used to optimize operations on spatial data structures.
+     * @param <T>           must inherit from <code>SpatialData</code>
+     * @return              the spatial data of this node, can be <code>null</code>
+     */
+    public <T extends SpatialData> T getSpatialData();
+
+    /**
+     * Sets the spatial data of this node. Spatial data are used to optimize
+     * operations on spatial data structures.
+     * @param spatialData   the spatial data object that is to be set for this node
+     */
+    public void setSpatialData(SpatialData spatialData);
 
     /**
      * Returns <code>true</code> if this node is fixed. A node can be fixed
