@@ -70,7 +70,7 @@ public class SelectionManagerImpl implements SelectionManager {
 
     @Override
     public Collection<Node> getSelectedNodes() {
-        return selectedNodes;
+        return nodeContainer.getSelectedNodes();
     }
 
     @Override
@@ -140,8 +140,7 @@ public class SelectionManagerImpl implements SelectionManager {
 
     @Override
     public boolean isDirectMouseSelection() {
-        VizConfig vizConfig = Lookup.getDefault().lookup(VizConfig.class);
-        return vizConfig.isSelectionEnabled() && !vizConfig.isDraggingEnabled();
+        return Lookup.getDefault().lookup(VizConfig.class).isDirectMouseSelection();
     }
 
     @Override
@@ -167,7 +166,8 @@ public class SelectionManagerImpl implements SelectionManager {
 
     @Override
     public boolean isSelectionUpdateWhileDragging() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        VizConfig vizConfig = Lookup.getDefault().lookup(VizConfig.class);
+        return vizConfig.isMouseSelectionUpdateWhileDragging();
     }
 
     @Override
@@ -197,17 +197,26 @@ public class SelectionManagerImpl implements SelectionManager {
 
     @Override
     public void selectNode(Node node) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        node.getNodeData().setSelected(true);
     }
 
     @Override
     public void selectNodes(Node[] nodes) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        for (Node node : nodes) {
+            node.getNodeData().setSelected(true);
+        }
     }
 
     @Override
     public void setDraggingEnable(boolean dragging) {
-        Lookup.getDefault().lookup(VizConfig.class).setMouseSelectionUpdateWhileDragging(!dragging);
+        VizConfig vizConfig = Lookup.getDefault().lookup(VizConfig.class);
+        vizConfig.setDraggingEnable(true);
+        //vizConfig.setMouseSelectionUpdateWhileDragging(false);
+        vizConfig.setSelectionEnable(false);
+        vizConfig.setSelectionType(SelectionType.NONE);
+        vizConfig.setMovementEnabled(false);
+        vizConfig.setDirectMouseSelection(false);
+        this.blocked = false;
         fireChangeEvent();
     }
 
@@ -271,7 +280,8 @@ public class SelectionManagerImpl implements SelectionManager {
 
     @Override
     public void setSelectionUpdateWhileDragging(boolean selectionUpdateWhileDragging) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        VizConfig vizConfig = Lookup.getDefault().lookup(VizConfig.class);
+        vizConfig.setMouseSelectionUpdateWhileDragging(selectionUpdateWhileDragging);
     }
 
     private void fireChangeEvent() {

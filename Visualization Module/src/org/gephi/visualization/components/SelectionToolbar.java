@@ -107,6 +107,19 @@ public class SelectionToolbar extends JToolBar {
         });
         add(ellipseButton);
 
+        //Movement
+        final JToggleButton movementButton = new JToggleButton(new ImageIcon(getClass().getResource("/org/gephi/visualization/components/hand.png")));
+        movementButton.setToolTipText(NbBundle.getMessage(SelectionToolbar.class, "SelectionToolbar.movement.tooltip"));
+        movementButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (movementButton.isSelected()) {
+                    Lookup.getDefault().lookup(SelectionManager.class).setMovementEnabled(true);
+                }
+            }
+        });
+        add(movementButton);
+
         //Drag
         final JToggleButton dragButton = new JToggleButton(new ImageIcon(getClass().getResource("/org/gephi/visualization/components/hand.png")));
         dragButton.setToolTipText(NbBundle.getMessage(SelectionToolbar.class, "SelectionToolbar.drag.tooltip"));
@@ -126,6 +139,7 @@ public class SelectionToolbar extends JToolBar {
         buttonGroup.setSelected(ellipseButton.getModel(), Lookup.getDefault().lookup(SelectionManager.class).getSelectionType() == SelectionType.ELLIPSE);
         buttonGroup.setSelected(mouseButton.getModel(), Lookup.getDefault().lookup(SelectionManager.class).isDirectMouseSelection());
         buttonGroup.setSelected(dragButton.getModel(), Lookup.getDefault().lookup(SelectionManager.class).isDraggingEnabled());
+        buttonGroup.setSelected(movementButton.getModel(), Lookup.getDefault().lookup(SelectionManager.class).isMovementEnabled());
 
         //Init events
         Lookup.getDefault().lookup(SelectionManager.class).addChangeListener(new ChangeListener() {
@@ -137,6 +151,8 @@ public class SelectionToolbar extends JToolBar {
                     buttonGroup.setSelected(mouseButton.getModel(), true);
                 } else if (selectionManager.isDraggingEnabled()) {
                     buttonGroup.setSelected(dragButton.getModel(), true);
+                } else if (selectionManager.isMovementEnabled()) {
+                    buttonGroup.setSelected(movementButton.getModel(), true);
                 } else {
                     switch (selectionManager.getSelectionType()) {
                         case ELLIPSE:

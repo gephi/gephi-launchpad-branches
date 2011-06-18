@@ -96,6 +96,9 @@ public class SelectionBar extends javax.swing.JPanel {
         } else if (manager.isDraggingEnabled()) {
             statusLabel.setText(NbBundle.getMessage(SelectionBar.class, "SelectionBar.statusLabel.dragging"));
             mouseSelection = false;
+        } else if (manager.isMovementEnabled()) {
+            statusLabel.setText(NbBundle.getMessage(SelectionBar.class, "SelectionBar.statusLabel.movement"));
+            mouseSelection = false;
         } else {
             switch (manager.getSelectionType()) {
                 case ELLIPSE:

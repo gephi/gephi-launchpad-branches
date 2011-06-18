@@ -91,8 +91,16 @@ public final class Octree implements NodeContainer {
 
     @Override
     public List<Node> getSelectedNodes() {
+        // TODO optimize
         List<Node> selectedNodes = new ArrayList<Node>();
         recursiveGetSelectedNodes(root, selectedNodes);
+        
+        for (Node node : unassignedNodes) {
+            if (node.getNodeData().isSelected()) {
+                selectedNodes.add(node);
+            }
+        }
+        
         return selectedNodes;
     }
 
@@ -119,9 +127,10 @@ public final class Octree implements NodeContainer {
     }
 
     private void recursiveGetSelectedNodes(Octant octant, List<Node> list) {
+        /*
         if (!octant.isSelectFlag()) {
             return;
-        }
+        }*/
         if (octant.hasChildren()) {
             for (Octant child : octant.getChildren()) {
                 if (child != null) {
@@ -272,6 +281,7 @@ public final class Octree implements NodeContainer {
                 nodeData.z() < z || nodeData.z() > z) {
                 nodes.remove(node);
                 unassignedNodes.add(node);
+                nodeData.setSpatialData(null);
             }
         }
 

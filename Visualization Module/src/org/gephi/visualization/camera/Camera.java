@@ -229,6 +229,27 @@ public class Camera {
     }
 
     /**
+     * Returns a vector from camera viewing plane corresponding to the 2D vector
+     * on screen.
+     */
+    public Vec3f projectVectorInverse(float x, float y) {
+        float ratio = (float) Math.sqrt((1 - Math.cos(fovy)) / (1 - Math.cos(1.0)));
+        Vec3f rightVector = rightVector();
+        Vec3f horizontalTranslation = rightVector.times(x * ratio);
+        Vec3f verticalTranslation = this.up.times(y * ratio);
+        Vec3f translation = new Vec3f();
+        translation.add(horizontalTranslation, verticalTranslation);
+        Vec3f result = new Vec3f();
+        Mat3f rotationMatrix = new Mat3f();
+        rotationMatrix.setCol(0, rightVector);
+        rotationMatrix.setCol(1, this.up);
+        rotationMatrix.setCol(2, this.front);
+        rotationMatrix.invert();
+        rotationMatrix.xformVec(translation, result);
+        return result;
+    }
+
+    /**
      * Returns the rescaled size of an object as it would appear on the screen.
      */
     public int projectScale(float scale) {
