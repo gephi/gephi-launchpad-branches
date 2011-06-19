@@ -306,16 +306,21 @@ public class Camera {
         rotationMatrix.setCol(2, new Vec3f(sy, -sx * cy, cx * cy));
         Vec3f v = new Vec3f();
         Vec3f u = new Vec3f(up);
+
         u.add(fromCenter);
         Vec3f ur = new Vec3f();
         rotationMatrix.xformVec(fromCenter, v);
         rotationMatrix.xformVec(u, ur);
 
         ur.sub(v);
-
         v.add(orbitCenter);
         moveTo(v);
         lookAt(orbitCenter, ur);
+        
+        System.out.println("Front: " + this.front);
+        System.out.println("Up: " + this.up);
+        System.out.println("Right: " + rightVector());
+        System.out.println("--------------------------");
     }
 
     public void finishOrbit() {}

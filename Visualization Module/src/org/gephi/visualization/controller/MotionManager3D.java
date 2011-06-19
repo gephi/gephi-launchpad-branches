@@ -97,7 +97,14 @@ public class MotionManager3D implements MotionManager {
                 Controller.getInstance().getCamera().startOrbit(orbitModifier);
             }
         } else if (vizConfig.isDraggingEnabled()) {
-            // start node drag
+            // TODO cleanup - just a proposal - orbit tool working with node dragging
+            if (SwingUtilities.isRightMouseButton(e)) {
+                Dimension viewDimension = Controller.getInstance().getViewDimensions();
+                int dx = e.getX() - viewDimension.width / 2;
+                int dy = e.getY() - viewDimension.height / 2;
+                float orbitModifier = (float) (Math.sqrt(dx * dx + dy * dy) / Math.sqrt(viewDimension.width * viewDimension.width / 4 + viewDimension.height * viewDimension.height / 4));
+                Controller.getInstance().getCamera().startOrbit(orbitModifier);
+            }
         }
     }
 
@@ -128,9 +135,14 @@ public class MotionManager3D implements MotionManager {
                 Controller.getInstance().getCamera().updateOrbit(ORBIT_FACTOR * x, ORBIT_FACTOR * y);
             }
         } else if (vizConfig.isDraggingEnabled()) {
-            Vec3f translation = Controller.getInstance().getCamera().projectVectorInverse(MOVE_FACTOR * x, MOVE_FACTOR * y);
-            for (Node node : selectionManager.getSelectedNodes()) {
-                node.getNodeData().setPosition(node.getNodeData().x() - translation.x(), node.getNodeData().y() - translation.y(), node.getNodeData().z() - translation.z());
+            // TODO cleanup - just a proposal - orbit tool working with node dragging
+            if (SwingUtilities.isLeftMouseButton(e)) {
+                Vec3f translation = Controller.getInstance().getCamera().projectVectorInverse(MOVE_FACTOR * x, -MOVE_FACTOR * y);
+                for (Node node : selectionManager.getSelectedNodes()) {
+                    node.getNodeData().setPosition(node.getNodeData().x() - translation.x(), node.getNodeData().y() - translation.y(), node.getNodeData().z() - translation.z());
+                }
+            } else if (SwingUtilities.isRightMouseButton(e)) {
+                Controller.getInstance().getCamera().updateOrbit(ORBIT_FACTOR * x, ORBIT_FACTOR * y);
             }
         }
     }

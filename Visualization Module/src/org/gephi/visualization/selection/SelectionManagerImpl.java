@@ -209,63 +209,55 @@ public class SelectionManagerImpl implements SelectionManager {
 
     @Override
     public void setDraggingEnable(boolean dragging) {
+        clearState();
         VizConfig vizConfig = Lookup.getDefault().lookup(VizConfig.class);
         vizConfig.setDraggingEnable(true);
-        //vizConfig.setMouseSelectionUpdateWhileDragging(false);
-        vizConfig.setSelectionEnable(false);
-        vizConfig.setSelectionType(SelectionType.NONE);
-        vizConfig.setMovementEnabled(false);
-        vizConfig.setDirectMouseSelection(false);
-        this.blocked = false;
         fireChangeEvent();
     }
 
     @Override
     public void setSelectionType(SelectionType selectionType) {
+        clearState();
         VizConfig vizConfig = Lookup.getDefault().lookup(VizConfig.class);
         vizConfig.setSelectionEnable(true);
         vizConfig.setSelectionType(selectionType);
-        vizConfig.setDirectMouseSelection(false);
-        vizConfig.setDraggingEnable(false);
-        vizConfig.setMovementEnabled(false);
-        this.blocked = false;
         fireChangeEvent();
     }
 
     @Override
     public void setDirectMouseSelection() {
+        clearState();
         VizConfig vizConfig = Lookup.getDefault().lookup(VizConfig.class);
-        vizConfig.setDraggingEnable(false);
         vizConfig.setSelectionEnable(true);
-        vizConfig.setSelectionType(SelectionType.NONE);
         vizConfig.setDirectMouseSelection(true);
-        vizConfig.setMovementEnabled(false);
-        this.blocked = false;
         fireChangeEvent();
     }
 
     @Override
     public void setDraggingMouseSelection() {
+        clearState();
         VizConfig vizConfig = Lookup.getDefault().lookup(VizConfig.class);
         vizConfig.setDraggingEnable(true);
+        fireChangeEvent();
+    }
+
+    @Override
+    public void setMovementEnabled(boolean enabled) {
+        clearState();
+        VizConfig vizConfig = Lookup.getDefault().lookup(VizConfig.class);
+        vizConfig.setMovementEnabled(true);
+        fireChangeEvent();
+    }
+
+    private void clearState() {
+        VizConfig vizConfig = Lookup.getDefault().lookup(VizConfig.class);
+        vizConfig.setDraggingEnable(false);
         vizConfig.setMouseSelectionUpdateWhileDragging(false);
         vizConfig.setSelectionEnable(false);
         vizConfig.setSelectionType(SelectionType.NONE);
         vizConfig.setMovementEnabled(false);
         vizConfig.setDirectMouseSelection(false);
         this.blocked = false;
-        fireChangeEvent();
-    }
-
-    @Override
-    public void setMovementEnabled(boolean enabled) {
-        VizConfig vizConfig = Lookup.getDefault().lookup(VizConfig.class);
-        vizConfig.setDraggingEnable(false);
-        vizConfig.setMouseSelectionUpdateWhileDragging(false);
-        vizConfig.setSelectionEnable(false);
-        vizConfig.setMovementEnabled(true);
-        this.blocked = false;
-        fireChangeEvent();
     }
 
     @Override
