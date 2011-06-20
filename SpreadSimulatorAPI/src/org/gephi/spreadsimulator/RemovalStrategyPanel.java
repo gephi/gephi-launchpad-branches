@@ -117,7 +117,6 @@ public class RemovalStrategyPanel extends javax.swing.JPanel {
 			default:
 				randomRadioButton.setSelected(true);
 				break;
-
 		}
 	}
 
@@ -125,8 +124,16 @@ public class RemovalStrategyPanel extends javax.swing.JPanel {
 		return Integer.parseInt(kFormattedTextField.getText());
 	}
 
+	public boolean isExactlyK() {
+		return exactlyKCheckBox.isSelected();
+	}
+
 	public void setK(int k) {
 		kFormattedTextField.setText(k + "");
+	}
+
+	public void setExactlyK(boolean exactlyK) {
+		exactlyKCheckBox.setSelected(exactlyK);
 	}
 
     /** This method is called from within the constructor to
@@ -149,6 +156,7 @@ public class RemovalStrategyPanel extends javax.swing.JPanel {
         attributeLowestRadioButton = new javax.swing.JRadioButton();
         contentScrollPane = new javax.swing.JScrollPane();
         contentPanel = new javax.swing.JPanel();
+        exactlyKCheckBox = new javax.swing.JCheckBox();
 
         setMinimumSize(new java.awt.Dimension(458, 463));
 
@@ -179,6 +187,9 @@ public class RemovalStrategyPanel extends javax.swing.JPanel {
         contentPanel.setLayout(new java.awt.GridLayout(1, 0));
         contentScrollPane.setViewportView(contentPanel);
 
+        exactlyKCheckBox.setSelected(true);
+        exactlyKCheckBox.setText(org.openide.util.NbBundle.getMessage(RemovalStrategyPanel.class, "RemovalStrategyPanel.exactlyKCheckBox.text")); // NOI18N
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -206,7 +217,9 @@ public class RemovalStrategyPanel extends javax.swing.JPanel {
                 .addComponent(kLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(kFormattedTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(332, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(exactlyKCheckBox)
+                .addContainerGap(257, Short.MAX_VALUE))
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(attributeHighestRadioButton)
@@ -219,7 +232,8 @@ public class RemovalStrategyPanel extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(kLabel)
-                    .addComponent(kFormattedTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(kFormattedTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(exactlyKCheckBox))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(randomRadioButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -244,6 +258,7 @@ public class RemovalStrategyPanel extends javax.swing.JPanel {
     private javax.swing.JLabel columnsLabel;
     private javax.swing.JPanel contentPanel;
     private javax.swing.JScrollPane contentScrollPane;
+    private javax.swing.JCheckBox exactlyKCheckBox;
     private org.jdesktop.swingx.JXHeader header;
     private javax.swing.JFormattedTextField kFormattedTextField;
     private javax.swing.JLabel kLabel;

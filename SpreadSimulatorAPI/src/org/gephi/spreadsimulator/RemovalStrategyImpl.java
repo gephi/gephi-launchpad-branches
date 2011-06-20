@@ -48,6 +48,7 @@ import org.openide.util.lookup.ServiceProvider;
 public class RemovalStrategyImpl implements RemovalStrategy {
 	private AttributeColumn attributeColumn = null;
 	private int k = 0;
+	private boolean exactlyK = true;
 	private ModifyStrategyType mstype = ModifyStrategyType.RANDOM;
 
 	@Override
@@ -85,12 +86,21 @@ public class RemovalStrategyImpl implements RemovalStrategy {
 			case RANDOM:
 				List<Node> rNodes = new LinkedList<Node>(Arrays.asList(nodes));
 				for (int i = 0; i < k; ++i)
-					modNodes.add(rNodes.remove(random.nextInt(rNodes.size())));
+					if (exactlyK)
+						modNodes.add(rNodes.remove(random.nextInt(rNodes.size())));
+					else {
+						Node node = rNodes.get(random.nextInt(rNodes.size()));
+						if (!modNodes.contains(node))
+							modNodes.add(node);
+					}
 				break;
 			case RANDOM_RANDOM:
 				rNodes = new LinkedList<Node>(Arrays.asList(nodes));
 				for (int i = 0; i < k; ++i) {
-					Node rNode = rNodes.remove(random.nextInt(rNodes.size()));
+					Node rNode;
+					if (exactlyK)
+						rNode = rNodes.remove(random.nextInt(rNodes.size()));
+					else rNode = rNodes.get(random.nextInt(rNodes.size()));
 					Node[] neighbors = gm.getGraph().getNeighbors(rNode).toArray();
 					Node node = neighbors[random.nextInt(neighbors.length)];
 					if (!modNodes.contains(node))
@@ -124,12 +134,20 @@ public class RemovalStrategyImpl implements RemovalStrategy {
 		return k;
 	}
 
+	public boolean isExactlyK() {
+		return exactlyK;
+	}
+
 	public void setAttributeColumn(AttributeColumn attributeColumn) {
 		this.attributeColumn = attributeColumn;
 	}
 
 	public void setK(int k) {
 		this.k = k;
+	}
+
+	public void setExactlyK(boolean exactlyK) {
+		this.exactlyK = exactlyK;
 	}
 
 	public void setMstype(ModifyStrategyType mstype) {

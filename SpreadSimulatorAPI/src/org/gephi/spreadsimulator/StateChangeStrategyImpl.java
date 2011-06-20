@@ -48,6 +48,7 @@ import org.openide.util.lookup.ServiceProvider;
 public class StateChangeStrategyImpl implements StateChangeStrategy {
 	private AttributeColumn attributeColumn = null;
 	private int k = 0;
+	private boolean exactlyK = true;
 	private ModifyStrategyType mstype = ModifyStrategyType.RANDOM;
 	private String stateName = "";
 
@@ -86,12 +87,21 @@ public class StateChangeStrategyImpl implements StateChangeStrategy {
 			case RANDOM:
 				List<Node> rNodes = new LinkedList<Node>(Arrays.asList(nodes));
 				for (int i = 0; i < k; ++i)
-					modNodes.add(rNodes.remove(random.nextInt(rNodes.size())));
+					if (exactlyK)
+						modNodes.add(rNodes.remove(random.nextInt(rNodes.size())));
+					else {
+						Node node = rNodes.get(random.nextInt(rNodes.size()));
+						if (!modNodes.contains(node))
+							modNodes.add(node);
+					}
 				break;
 			case RANDOM_RANDOM:
 				rNodes = new LinkedList<Node>(Arrays.asList(nodes));
 				for (int i = 0; i < k; ++i) {
-					Node rNode = rNodes.remove(random.nextInt(rNodes.size()));
+					Node rNode;
+					if (exactlyK)
+						rNode = rNodes.remove(random.nextInt(rNodes.size()));
+					else rNode = rNodes.get(random.nextInt(rNodes.size()));
 					Node[] neighbors = gm.getGraph().getNeighbors(rNode).toArray();
 					Node node = neighbors[random.nextInt(neighbors.length)];
 					if (!modNodes.contains(node))
@@ -120,6 +130,10 @@ public class StateChangeStrategyImpl implements StateChangeStrategy {
 		return k;
 	}
 
+	public boolean isExactlyK() {
+		return exactlyK;
+	}
+
 	public ModifyStrategyType getMstype() {
 		return mstype;
 	}
@@ -134,6 +148,10 @@ public class StateChangeStrategyImpl implements StateChangeStrategy {
 
 	public void setK(int k) {
 		this.k = k;
+	}
+
+	public void setExactlyK(boolean exactlyK) {
+		this.exactlyK = exactlyK;
 	}
 
 	public void setMstype(ModifyStrategyType mstype) {

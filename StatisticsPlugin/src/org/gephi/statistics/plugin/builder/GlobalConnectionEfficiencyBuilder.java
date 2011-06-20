@@ -34,7 +34,7 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service=StatisticsBuilder.class)
 public class GlobalConnectionEfficiencyBuilder implements StatisticsBuilder {
 	public String getName() {
-		return NbBundle.getMessage(GraphDistanceBuilder.class, "GlobalConnectionEfficiency.name");
+		return NbBundle.getMessage(GlobalConnectionEfficiencyBuilder.class, "GlobalConnectionEfficiency.name");
 	}
 
 	public Statistics getStatistics() {

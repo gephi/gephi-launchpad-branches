@@ -47,6 +47,7 @@ public class RemovalStrategyUIImpl implements RemovalStrategyUI {
 		if (panel != null) {
 			panel.setAttributeColumn(rs.getAttributeColumn());
 			panel.setK(rs.getK());
+			panel.setExactlyK(rs.isExactlyK());
 			panel.setMstype(rs.getMstype());
 		}
 	}
@@ -56,6 +57,7 @@ public class RemovalStrategyUIImpl implements RemovalStrategyUI {
 		if (panel != null) {
 			rs.setAttributeColumn(panel.getAttributeColumn());
 			rs.setK(panel.getK());
+			rs.setExactlyK(panel.isExactlyK());
 			rs.setMstype(panel.getMstype());
 		}
 		panel = null;

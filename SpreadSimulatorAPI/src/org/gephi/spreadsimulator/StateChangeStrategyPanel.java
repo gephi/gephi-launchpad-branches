@@ -125,8 +125,16 @@ public class StateChangeStrategyPanel extends javax.swing.JPanel {
 		return Integer.parseInt(kFormattedTextField.getText());
 	}
 
+	public boolean isExactlyK() {
+		return exactlyKCheckBox.isSelected();
+	}
+
 	public void setK(int k) {
 		kFormattedTextField.setText(k + "");
+	}
+
+	public void setExactlyK(boolean exactlyK) {
+		exactlyKCheckBox.setSelected(exactlyK);
 	}
 
 	public String getStateName() {
@@ -159,6 +167,7 @@ public class StateChangeStrategyPanel extends javax.swing.JPanel {
         contentScrollPane = new javax.swing.JScrollPane();
         contentPanel = new javax.swing.JPanel();
         columnsLabel = new javax.swing.JLabel();
+        exactlyKCheckBox = new javax.swing.JCheckBox();
 
         setMinimumSize(new java.awt.Dimension(458, 463));
 
@@ -193,6 +202,9 @@ public class StateChangeStrategyPanel extends javax.swing.JPanel {
 
         columnsLabel.setText(org.openide.util.NbBundle.getMessage(StateChangeStrategyPanel.class, "StateChangeStrategyPanel.columnsLabel.text")); // NOI18N
 
+        exactlyKCheckBox.setSelected(true);
+        exactlyKCheckBox.setText(org.openide.util.NbBundle.getMessage(StateChangeStrategyPanel.class, "StateChangeStrategyPanel.exactlyKCheckBox.text")); // NOI18N
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -207,7 +219,9 @@ public class StateChangeStrategyPanel extends javax.swing.JPanel {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(kFormattedTextField)
                     .addComponent(stateTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 128, Short.MAX_VALUE))
-                .addContainerGap(287, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(exactlyKCheckBox)
+                .addContainerGap(212, Short.MAX_VALUE))
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -236,7 +250,8 @@ public class StateChangeStrategyPanel extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(kLabel)
-                    .addComponent(kFormattedTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(kFormattedTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(exactlyKCheckBox))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(stateLabel)
@@ -265,6 +280,7 @@ public class StateChangeStrategyPanel extends javax.swing.JPanel {
     private javax.swing.JLabel columnsLabel;
     private javax.swing.JPanel contentPanel;
     private javax.swing.JScrollPane contentScrollPane;
+    private javax.swing.JCheckBox exactlyKCheckBox;
     private org.jdesktop.swingx.JXHeader header;
     private javax.swing.JFormattedTextField kFormattedTextField;
     private javax.swing.JLabel kLabel;
