@@ -93,6 +93,7 @@
     <module>JFreeChart</module>
     <module>JodaWrapper</module>
     <module>SwingX</module>
+    <module>StaxUtils</module>
   </modules>
     <reporting>
         <plugins>

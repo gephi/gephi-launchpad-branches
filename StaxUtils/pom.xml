@@ -7,12 +7,12 @@
     <version>1.0-SNAPSHOT</version>
   </parent>
 
-    <groupId>org.jdesktop</groupId>
-    <artifactId>SwingX</artifactId>
-    <version>1.6.1</version>
+    <groupId>org.gephi.lib</groupId>
+    <artifactId>StaxUtils</artifactId>
+    <version>1.0</version>
     <packaging>nbm</packaging>
 
-    <name>SwingX</name>
+    <name>StaxUtils</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -32,15 +32,6 @@
                 <enabled>false</enabled>
             </snapshots>
         </repository>
-        
-       
-     <repository>
-         <id>maven2-release-repository.nbpwr.kenai.com</id>
-         <name>NBPWR Maven Release Repository</name>
-         <url>http://nbpwr.kenai.com/maven-repository/releases</url>
-     </repository>
-
-        
     </repositories>
 
     <dependencies>
@@ -49,20 +40,12 @@
             <artifactId>org-netbeans-api-annotations-common</artifactId>
             <version>RELEASE70</version>
         </dependency>
-      <!--  
-        <dependency>
-    <groupId>com.kenai.nbpwr</groupId>
-    <artifactId>org-swinglabs-swingx</artifactId>
-    <version>1.6</version>
+        
+       <dependency>
+    <groupId>stax-utils</groupId>
+    <artifactId>stax-utils</artifactId>
+    <version>snapshot-20040917</version>
 </dependency>
-
-<dependency>
-    <groupId>org.swinglabs</groupId>
-    <artifactId>swingx-beaninfo</artifactId>
-    <version>1.6.2-2</version>
-</dependency>
--->
-
     </dependencies>
 
     <build>
@@ -72,6 +55,11 @@
                 <artifactId>nbm-maven-plugin</artifactId>
                 <version>3.5</version>
                 <extensions>true</extensions>
+                <configuration>
+                    <publicPackages>
+                        <publicPackage>javanet.staxutils.*</publicPackage>
+                    </publicPackages>
+                </configuration>
             </plugin>
 
             <plugin>
