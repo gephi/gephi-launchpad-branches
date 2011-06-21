@@ -20,6 +20,7 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.gephi.dynamic;
 
+import com.sun.xml.internal.fastinfoset.algorithm.IEEE754FloatingPointEncodingAlgorithm;
 import org.gephi.data.attributes.api.Estimator;
 import org.gephi.data.attributes.type.DynamicType;
 import org.gephi.data.attributes.type.Interval;
@@ -145,7 +146,7 @@ public final class DynamicGraphImpl implements DynamicGraph {
 		for (int i = 0; i < attributes.countValues(); ++i) {
 			values[i] = attributes.getValue(i);
 			if (values[i] instanceof DynamicType)
-				values[i] = ((DynamicType)values[i]).getValue(estimators[i]);
+				values[i] = ((DynamicType)values[i]).getValue(interval, estimators[i]);
 		}
 
 		return values;
@@ -197,7 +198,7 @@ public final class DynamicGraphImpl implements DynamicGraph {
 		for (int i = 0; i < attributes.countValues(); ++i) {
 			values[i] = attributes.getValue(i);
 			if (values[i] instanceof DynamicType)
-				values[i] = ((DynamicType)values[i]).getValue(estimators[i]);
+				values[i] = ((DynamicType)values[i]).getValue(interval, estimators[i]);
 		}
 
 		return values;
