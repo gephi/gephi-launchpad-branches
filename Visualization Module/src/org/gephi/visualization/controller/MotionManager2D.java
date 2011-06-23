@@ -62,4 +62,19 @@ public class MotionManager2D implements MotionManager {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    @Override
+    public float[] getDragDisplacement() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public float[] getMousePosition() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public float[] getMousePosition3d() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
 }

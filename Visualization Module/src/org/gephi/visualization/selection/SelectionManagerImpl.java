@@ -113,18 +113,26 @@ public class SelectionManagerImpl implements SelectionManager {
     }
 
     @Override
-    public void blockSelection(boolean block) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
     public void centerOnNode(Node node) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
+    public void blockSelection(boolean block) {
+        // TODO find a better name for blocking selection and leaving direct selection
+        VizConfig vizConfig = Lookup.getDefault().lookup(VizConfig.class);
+        if (vizConfig.getSelectionType() != SelectionType.NONE) {
+            this.blocked = block;
+            vizConfig.setSelectionEnable(!block);
+            fireChangeEvent();
+        } else {
+            setDirectMouseSelection();
+        }
+    }
+
+    @Override
     public void disableSelection() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Lookup.getDefault().lookup(VizConfig.class).setSelectionEnable(false);
     }
 
     @Override

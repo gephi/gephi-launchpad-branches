@@ -53,9 +53,25 @@ public class MotionManager3D implements MotionManager {
     }
 
     @Override
+    public float[] getDragDisplacement() {
+        return new float[] {mouseDrag[0], mouseDrag[1]};
+    }
+
+    @Override
+    public float[] getMousePosition() {
+        return new float[] {mousePosition[0], mousePosition[1]};
+    }
+
+    @Override
+    public float[] getMousePosition3d() {
+        // FIXME
+        return new float[] {0f, 0f};
+    }
+
+    @Override
     public void mousePressed(MouseEvent e) {
-        mouseDrag[0] = e.getX();
-        mouseDrag[1] = e.getY();
+        mousePosition[0] = e.getX();
+        mousePosition[1] = e.getY();
 
         SelectionModifier modifier = extractSelectionModifier(e);
         VizConfig vizConfig = Lookup.getDefault().lookup(VizConfig.class);
@@ -113,10 +129,10 @@ public class MotionManager3D implements MotionManager {
 
     @Override
     public void mouseDragged(MouseEvent e) {
-        int x = e.getX() - mouseDrag[0];
-        int y = e.getY() - mouseDrag[1];
-        mouseDrag[0] = e.getX();
-        mouseDrag[1] = e.getY();
+        mouseDrag[0] = e.getX() - mousePosition[0];
+        mouseDrag[1] = e.getY() - mousePosition[1];
+        mousePosition[0] = e.getX();
+        mousePosition[1] = e.getY();
 
         VizConfig vizConfig = Lookup.getDefault().lookup(VizConfig.class);
         SelectionManager selectionManager = Lookup.getDefault().lookup(SelectionManager.class);
@@ -130,19 +146,19 @@ public class MotionManager3D implements MotionManager {
             }
         } else if (vizConfig.isMovementEnabled()) {
             if (SwingUtilities.isLeftMouseButton(e)) {
-                Controller.getInstance().getCamera().updateTranslation(MOVE_FACTOR * x, -MOVE_FACTOR * y);
+                Controller.getInstance().getCamera().updateTranslation(MOVE_FACTOR * mouseDrag[0], -MOVE_FACTOR * mouseDrag[1]);
             } else if (SwingUtilities.isRightMouseButton(e)) {
-                Controller.getInstance().getCamera().updateOrbit(ORBIT_FACTOR * x, ORBIT_FACTOR * y);
+                Controller.getInstance().getCamera().updateOrbit(ORBIT_FACTOR * mouseDrag[0], ORBIT_FACTOR * mouseDrag[1]);
             }
         } else if (vizConfig.isDraggingEnabled()) {
             // TODO cleanup - just a proposal - orbit tool working with node dragging
             if (SwingUtilities.isLeftMouseButton(e)) {
-                Vec3f translation = Controller.getInstance().getCamera().projectVectorInverse(MOVE_FACTOR * x, -MOVE_FACTOR * y);
+                Vec3f translation = Controller.getInstance().getCamera().projectVectorInverse(MOVE_FACTOR * mouseDrag[0], -MOVE_FACTOR * mouseDrag[1]);
                 for (Node node : selectionManager.getSelectedNodes()) {
                     node.getNodeData().setPosition(node.getNodeData().x() - translation.x(), node.getNodeData().y() - translation.y(), node.getNodeData().z() - translation.z());
                 }
             } else if (SwingUtilities.isRightMouseButton(e)) {
-                Controller.getInstance().getCamera().updateOrbit(ORBIT_FACTOR * x, ORBIT_FACTOR * y);
+                Controller.getInstance().getCamera().updateOrbit(ORBIT_FACTOR * mouseDrag[0], ORBIT_FACTOR * mouseDrag[1]);
             }
         }
     }
