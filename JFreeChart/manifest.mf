@@ -1,5 +1,6 @@
 Manifest-Version: 1.0
 OpenIDE-Module: org.jfree
+OpenIDE-Module-Layer: org/jfree/layer.xml
 OpenIDE-Module-Localizing-Bundle: org/jfree/Bundle.properties
 OpenIDE-Module-Specification-Version: 1.0
 
