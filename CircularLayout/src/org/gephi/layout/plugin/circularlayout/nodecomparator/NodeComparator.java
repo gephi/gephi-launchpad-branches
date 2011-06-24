@@ -51,6 +51,7 @@ public class NodeComparator implements Comparator<Object> {
     }    
     
     @Override
+    @SuppressWarnings("CallToThreadDumpStack")
     public int compare(Object o1, Object o2) {
             int rv = 0;
             Method method;
@@ -67,7 +68,6 @@ public class NodeComparator implements Comparator<Object> {
                             NodeData2 = (NodeData) method.invoke(o2);
                             result1 = NodeData1.getId();
                             result2 = NodeData2.getId();
-                            c = result1.getClass();
                             break;
                             
 			case ATTRIBUTE:
@@ -76,7 +76,6 @@ public class NodeComparator implements Comparator<Object> {
                             NodeData2 = (NodeData) method.invoke(o2);
                             result1 = NodeData1.getAttributes().getValue(this.attribute);
                             result2 = NodeData2.getAttributes().getValue(this.attribute);
-                            c = result1.getClass();
                             break;
                             
 			case LAYOUTDATA:
@@ -89,7 +88,6 @@ public class NodeComparator implements Comparator<Object> {
                             result1 = field1.get(NodeLayoutData1);
                             Field field2 = NodeLayoutData2.getClass().getField(this.attribute);
                             result2 = field2.get(NodeLayoutData2);
-                            c = result1.getClass();
                             break;
                             
 			case METHOD: 
@@ -98,8 +96,15 @@ public class NodeComparator implements Comparator<Object> {
                             result1 = method.invoke(graph, o1);
                             result2 = method.invoke(graph, o2);
                             break;
-                } 
-
+                }
+                
+                
+                if (result1 == null && result2 == null) return 0; 
+                if (result1 != null && result2 == null) return -1; 
+                if (result1 == null && result2 != null) return 1; 
+                if (this.enumcompare != CompareType.METHOD) {
+                    c = result1.getClass();
+                }
                 if (c.isAssignableFrom(Class.forName("java.util.Comparator"))) {
                     java.util.Comparator c1 = (java.util.Comparator) result1;
                     java.util.Comparator c2 = (java.util.Comparator) result2;
@@ -122,11 +127,12 @@ public class NodeComparator implements Comparator<Object> {
                     throw new RuntimeException("NodeComparator does not currently support ''" + c.getName() + "''!");
                 }
             } catch (Exception nsme) {
-                System.out.println("Error " + nsme);
+                System.out.println("Error " + nsme.toString());
             }
             return rv * getSortOrder();
         }
 
+       
     private int getSortOrder() {
         return sortAsc ? 1 : -1;
     }
