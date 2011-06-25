@@ -77,6 +77,7 @@ public class NodePencil implements Tool {
                 Node node = gc.getModel().factory().newNode();
                 node.getNodeData().setX(position3d[0]);
                 node.getNodeData().setY(position3d[1]);
+                node.getNodeData().setZ(position3d[2]);
                 node.getNodeData().setSize(size);
                 node.getNodeData().setR(color.getRed() / 255f);
                 node.getNodeData().setG(color.getGreen() / 255f);

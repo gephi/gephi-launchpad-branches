@@ -43,6 +43,8 @@ public final class Octree implements NodeContainer {
 
     private final List<Node> unassignedNodes;
 
+    private boolean singleFound;
+
     private final Graph graph;
 
     float xmin, xmax, ymin, ymax, zmin, zmax;
@@ -169,25 +171,55 @@ public final class Octree implements NodeContainer {
                 break;
         }
     }
+
+    private void recursiveFindNode(Octant octant, Shape shape, NodeFunction nodeFunction) {
+        if (singleFound) {
+            return;
+        }
+        final CameraBridge cameraBridge = Controller.getInstance().getCameraBridge();
+        Intersection intersection = shape.intersectsBox(octant.getX(), octant.getY(), octant.getZ(), octant.getSize(), cameraBridge);
+
+        switch (intersection) {
+            case OUTSIDE:
+                return;
+            case INTERSECT:
+                if (octant.hasChildren()) {
+                    for (Octant child : octant.getChildren()) {
+                        if (child != null) {
+                            recursiveAddNodes(child, shape, nodeFunction);
+                        }
+                    }
+                } else {
+                    octant.applyFunction(nodeFunction);
+                }
+                break;
+            case FULLY_INSIDE:
+                octant.applyFunction(nodeFunction);
+                break;
+        }
+    }
     
     @Override
-    public void selectSingle(Point point, final boolean select, final int selectionRadius, final int policy) {
+    public Node selectSingle(Point point, final boolean select, final int selectionRadius, final int policy) {
         final CameraBridge cameraBridge = Controller.getInstance().getCameraBridge();
         Octant octant = root;
+        singleFound = false;
+        final Node[] nodes = new Node[1];
         
         final Shape shape = ShapeUtils.createEllipseShape(point.x, point.y, selectionRadius, selectionRadius);
-        recursiveAddNodes(octant, shape, new NodeFunction() {
-            private boolean active = true;
+        recursiveFindNode(octant, shape, new NodeFunction() {
             @Override
             // TODO implement closest policy
             public void apply(Node node) {
-                 if (active && node.getNodeData().isSelected() != select &&
+                 if (node.getNodeData().isSelected() != select &&
                      shape.isInside3D(node.getNodeData().x(), node.getNodeData().y(), node.getNodeData().z(), cameraBridge)) {
                     node.getNodeData().setSelected(select);
-                    active = false;
+                    singleFound = true;
+                    nodes[0] = node;
                 }
             }
         });
+        return nodes[0];
     }
 
     @Override

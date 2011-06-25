@@ -20,9 +20,6 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 */
 package org.gephi.visualization.api.event;
 
-import org.gephi.visualization.api.event.VizEvent;
-import org.gephi.visualization.api.event.VizEventListener;
-
 /**
  *
  * @author Mathieu Bastian

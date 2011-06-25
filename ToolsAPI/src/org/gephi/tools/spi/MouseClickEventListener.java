@@ -36,7 +36,7 @@ public interface MouseClickEventListener extends ToolEventListener {
      * Notify a mouse click on the visualization window.
      * @param positionViewport Position in the 2D coordinate system, (0,0) is located
      * top-left.
-     * @param position3d Position in the 3D coordinate system, (0,0) is located at the
+     * @param position3d Position in the 3D coordinate system, (0,0,0) is located at the
      * center.
      */
     public void mouseClick(int[] positionViewport, float[] position3d);

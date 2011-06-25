@@ -64,7 +64,7 @@ public interface NodeContainer {
      * @param selectionRadius nodes outside the radius will be ignored.
      * @param policy determines how to pick the closest node.
      */
-    public void selectSingle(Point point, boolean select, int selectionRadius, int policy);
+    public Node selectSingle(Point point, boolean select, int selectionRadius, int policy);
 
     public void clearSelection();
 

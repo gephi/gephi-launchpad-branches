@@ -67,6 +67,20 @@ public interface SelectionManager {
      */
     void selectSingle(Point point, boolean select);
 
+    /**
+     * Adds or removes single node from a temporary selection.
+     * @param point the point to determine the closest node.
+     * @param select true to select, false to deselect.
+     */
+    void selectContinuousSingle(Point point, boolean select);
+
+    /**
+     * Clears single node from a temporary selection.
+     * @param point the point to determine the closest node.
+     * @param select true to select, false to deselect.
+     */
+    void deselectSingle();
+
     void addChangeListener(ChangeListener changeListener);
 
     void blockSelection(boolean block);
@@ -94,8 +108,6 @@ public interface SelectionManager {
     SelectionType getSelectionType();
 
     void removeChangeListener(ChangeListener changeListener);
-
-    void resetSelection();
 
     void selectEdge(Edge edge);
 

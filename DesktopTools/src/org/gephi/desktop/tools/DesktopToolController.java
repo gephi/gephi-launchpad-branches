@@ -116,6 +116,7 @@ public class DesktopToolController implements ToolController {
                 selectionManager.setDraggingEnable(true);
                 break;
         }
+        selectionManager.setDirectMouseSelection();
         currentTool = tool;
         currentTool.select();
     }
@@ -364,7 +365,7 @@ public class DesktopToolController implements ToolController {
                 public void handleEvent(VizEvent event) {
                     float[] data = (float[]) event.getData();
                     int[] viewport = new int[]{(int) data[0], (int) data[1]};
-                    float[] threed = new float[]{data[2], data[3]};
+                    float[] threed = new float[]{data[2], data[3], data[4]};
                     toolEventListener.mouseClick(viewport, threed);
                 }
 

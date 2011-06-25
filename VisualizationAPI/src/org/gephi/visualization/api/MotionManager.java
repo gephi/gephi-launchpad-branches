@@ -37,6 +37,8 @@ public interface MotionManager {
 
     public float[] getDragDisplacement();
 
+    public float[] getDragDisplacement3d();
+
     public float[] getMousePosition();
 
     public float[] getMousePosition3d();

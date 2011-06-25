@@ -38,7 +38,6 @@ import org.gephi.visualization.api.selection.NodeContainer;
 import org.gephi.visualization.api.selection.SelectionManager;
 import org.gephi.visualization.api.selection.SelectionType;
 import org.gephi.visualization.api.selection.Shape;
-import org.gephi.visualization.api.selection.Shape.SelectionModifier;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.ServiceProvider;
 
@@ -46,10 +45,11 @@ import org.openide.util.lookup.ServiceProvider;
 public class SelectionManagerImpl implements SelectionManager {
 
     private NodeContainer nodeContainer;
-    private Collection<Node> selectedNodes;
     private Collection<Node> temporarySelectedNodes;
+    private Node temporarySelectedNode;
 
-    private SelectionModifier temporarySelectionModifier;
+    private boolean temporarySelectionMod;
+    private boolean temporarySingleMod;
 
     private boolean blocked;
 
@@ -65,7 +65,6 @@ public class SelectionManagerImpl implements SelectionManager {
                 nodeContainer = new Octree(graphController.getModel().getGraph());
             }
         });
-        selectedNodes = new ArrayList<Node>();
     }
 
     @Override
@@ -81,7 +80,7 @@ public class SelectionManagerImpl implements SelectionManager {
     @Override
     public void applyContinuousSelection(Shape shape) {
         temporarySelectedNodes = nodeContainer.applySelection(shape);
-        temporarySelectionModifier = shape.getSelectionModifier();
+        temporarySelectionMod = shape.getSelectionModifier().isPositive();
     }
 
     @Override
@@ -89,9 +88,8 @@ public class SelectionManagerImpl implements SelectionManager {
         if (temporarySelectedNodes == null) {
             return;
         }
-        boolean select = temporarySelectionModifier.isPositive();
         for (Node node : temporarySelectedNodes) {
-            node.getNodeData().setSelected(!select);
+            node.getNodeData().setSelected(!temporarySelectionMod);
         }
         temporarySelectedNodes = null;
     }
@@ -105,6 +103,19 @@ public class SelectionManagerImpl implements SelectionManager {
     @Override
     public void selectSingle(Point point, boolean select) {
         nodeContainer.selectSingle(point, select, getMouseSelectionDiameter() / 2, NodeContainer.SINGLE_NODE_DEFAULT);
+    }
+
+    @Override
+    public void selectContinuousSingle(Point point, boolean select) {
+        temporarySingleMod = select;
+        temporarySelectedNode = nodeContainer.selectSingle(point, select, getMouseSelectionDiameter() / 2, NodeContainer.SINGLE_NODE_DEFAULT);
+    }
+
+    @Override
+    public void deselectSingle() {
+        if (temporarySelectedNode != null) {
+            temporarySelectedNode.getNodeData().setSelected(!temporarySingleMod);
+        }
     }
 
     @Override
@@ -186,11 +197,6 @@ public class SelectionManagerImpl implements SelectionManager {
     @Override
     public void removeChangeListener(ChangeListener changeListener) {
         listeners.remove(changeListener);
-    }
-
-    @Override
-    public void resetSelection() {
-        selectedNodes = null;
     }
 
     @Override

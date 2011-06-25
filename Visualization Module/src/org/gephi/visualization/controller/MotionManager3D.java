@@ -22,6 +22,7 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 package org.gephi.visualization.controller;
 
 import java.awt.Dimension;
+import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import javax.swing.SwingUtilities;
@@ -29,6 +30,7 @@ import org.gephi.graph.api.Node;
 import org.gephi.lib.gleem.linalg.Vec3f;
 import org.gephi.visualization.api.MotionManager;
 import org.gephi.visualization.api.config.VizConfig;
+import org.gephi.visualization.api.event.VizEventManager;
 import org.gephi.visualization.api.selection.SelectionManager;
 import org.gephi.visualization.api.selection.SelectionType;
 import org.gephi.visualization.api.selection.Shape;
@@ -58,6 +60,11 @@ public class MotionManager3D implements MotionManager {
     }
 
     @Override
+    public float[] getDragDisplacement3d() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
     public float[] getMousePosition() {
         return new float[] {mousePosition[0], mousePosition[1]};
     }
@@ -72,6 +79,8 @@ public class MotionManager3D implements MotionManager {
     public void mousePressed(MouseEvent e) {
         mousePosition[0] = e.getX();
         mousePosition[1] = e.getY();
+        mouseDrag[0] = 0;
+        mouseDrag[1] = 0;
 
         SelectionModifier modifier = extractSelectionModifier(e);
         VizConfig vizConfig = Lookup.getDefault().lookup(VizConfig.class);
@@ -85,43 +94,47 @@ public class MotionManager3D implements MotionManager {
                 selectionManager.selectSingle(e.getPoint(), modifier.isPositive());
             }
         } else if (vizConfig.getSelectionType() != SelectionType.NONE) {
-            if (modifier == SelectionModifier.DEFAULT) {
-                selectionManager.clearSelection();
-            }
+            if (SwingUtilities.isLeftMouseButton(e)) {
+                if (modifier == SelectionModifier.DEFAULT) {
+                    selectionManager.clearSelection();
+                }
 
-            // Initialize selections
-            if (selectionShape == null || selectionShape.getSelectionType() != vizConfig.getSelectionType()) {
-                selectionShape = ShapeUtils.initShape(vizConfig.getSelectionType(), modifier, e.getX(), e.getY());
-            // And also update discrete type selections for better responsiveness
-            } else {
-                selectionShape = ShapeUtils.singleUpdate(selectionShape, e.getX(), e.getY());
+                // Initialize selections
+                if (selectionShape == null || selectionShape.getSelectionType() != vizConfig.getSelectionType()) {
+                    selectionShape = ShapeUtils.initShape(vizConfig.getSelectionType(), modifier, e.getX(), e.getY());
+                // And also update discrete type selections for better responsiveness
+                } else {
+                    selectionShape = ShapeUtils.singleUpdate(selectionShape, e.getX(), e.getY());
 
-                if (selectionShape.isDiscretelyUpdated()) {
-                    if (SwingUtilities.isLeftMouseButton(e)) {
-                        selectionManager.applyContinuousSelection(selectionShape);
+                    if (selectionShape.isDiscretelyUpdated()) {
+                        if (SwingUtilities.isLeftMouseButton(e)) {
+                            selectionManager.applyContinuousSelection(selectionShape);
+                        }
                     }
                 }
             }
-        } else if (vizConfig.isMovementEnabled()) {
-            if (SwingUtilities.isLeftMouseButton(e)) {
-                Controller.getInstance().getCamera().startTranslation();
-            } else if (SwingUtilities.isRightMouseButton(e)) {
-                Dimension viewDimension = Controller.getInstance().getViewDimensions();
-                int dx = e.getX() - viewDimension.width / 2;
-                int dy = e.getY() - viewDimension.height / 2;
-                float orbitModifier = (float) (Math.sqrt(dx * dx + dy * dy) / Math.sqrt(viewDimension.width * viewDimension.width / 4 + viewDimension.height * viewDimension.height / 4));
-                Controller.getInstance().getCamera().startOrbit(orbitModifier);
-            }
-        } else if (vizConfig.isDraggingEnabled()) {
-            // TODO cleanup - just a proposal - orbit tool working with node dragging
-            if (SwingUtilities.isRightMouseButton(e)) {
-                Dimension viewDimension = Controller.getInstance().getViewDimensions();
-                int dx = e.getX() - viewDimension.width / 2;
-                int dy = e.getY() - viewDimension.height / 2;
-                float orbitModifier = (float) (Math.sqrt(dx * dx + dy * dy) / Math.sqrt(viewDimension.width * viewDimension.width / 4 + viewDimension.height * viewDimension.height / 4));
-                Controller.getInstance().getCamera().startOrbit(orbitModifier);
-            }
         }
+        // Movement
+        if (SwingUtilities.isRightMouseButton(e)) {
+            Controller.getInstance().getCamera().startTranslation();
+        } else if (SwingUtilities.isMiddleMouseButton(e)) {
+            Dimension viewDimension = Controller.getInstance().getViewDimensions();
+            int dx = e.getX() - viewDimension.width / 2;
+            int dy = e.getY() - viewDimension.height / 2;
+            float orbitModifier = (float) (Math.sqrt(dx * dx + dy * dy) / Math.sqrt(viewDimension.width * viewDimension.width / 4 + viewDimension.height * viewDimension.height / 4));
+            Controller.getInstance().getCamera().startOrbit(orbitModifier);
+        }
+
+        VizEventManager vizEventManager = Lookup.getDefault().lookup(VizEventManager.class);
+        if (SwingUtilities.isRightMouseButton(e)) {
+            vizEventManager.mouseRightPress();
+        } else if (SwingUtilities.isMiddleMouseButton(e)) {
+            vizEventManager.mouseMiddlePress();
+        } else if (SwingUtilities.isLeftMouseButton(e)) {
+            vizEventManager.mouseLeftPress();
+            vizEventManager.startDrag();
+        }
+
     }
 
     @Override
@@ -138,28 +151,26 @@ public class MotionManager3D implements MotionManager {
         SelectionManager selectionManager = Lookup.getDefault().lookup(SelectionManager.class);
 
         if (vizConfig.getSelectionType() != SelectionType.NONE && selectionShape != null) {
-            selectionShape = ShapeUtils.continuousUpdate(selectionShape, e.getX(), e.getY());
-            selectionManager.cancelContinuousSelection();
-
             if (SwingUtilities.isLeftMouseButton(e)) {
+                selectionShape = ShapeUtils.continuousUpdate(selectionShape, e.getX(), e.getY());
+                selectionManager.cancelContinuousSelection();
                 selectionManager.applyContinuousSelection(selectionShape);
             }
-        } else if (vizConfig.isMovementEnabled()) {
-            if (SwingUtilities.isLeftMouseButton(e)) {
-                Controller.getInstance().getCamera().updateTranslation(MOVE_FACTOR * mouseDrag[0], -MOVE_FACTOR * mouseDrag[1]);
-            } else if (SwingUtilities.isRightMouseButton(e)) {
-                Controller.getInstance().getCamera().updateOrbit(ORBIT_FACTOR * mouseDrag[0], ORBIT_FACTOR * mouseDrag[1]);
-            }
         } else if (vizConfig.isDraggingEnabled()) {
-            // TODO cleanup - just a proposal - orbit tool working with node dragging
             if (SwingUtilities.isLeftMouseButton(e)) {
-                Vec3f translation = Controller.getInstance().getCamera().projectVectorInverse(MOVE_FACTOR * mouseDrag[0], -MOVE_FACTOR * mouseDrag[1]);
+                Vec3f translation = Controller.getInstance().getCamera().projectVectorInverse(MOVE_FACTOR * mouseDrag[0], MOVE_FACTOR * mouseDrag[1]);
                 for (Node node : selectionManager.getSelectedNodes()) {
                     node.getNodeData().setPosition(node.getNodeData().x() - translation.x(), node.getNodeData().y() - translation.y(), node.getNodeData().z() - translation.z());
                 }
-            } else if (SwingUtilities.isRightMouseButton(e)) {
-                Controller.getInstance().getCamera().updateOrbit(ORBIT_FACTOR * mouseDrag[0], ORBIT_FACTOR * mouseDrag[1]);
             }
+        } else {
+            Lookup.getDefault().lookup(VizEventManager.class).drag();
+        }
+        // Movement
+        if (SwingUtilities.isRightMouseButton(e)) {
+            Controller.getInstance().getCamera().updateTranslation(MOVE_FACTOR * mouseDrag[0], -MOVE_FACTOR * mouseDrag[1]);
+        } else if (SwingUtilities.isMiddleMouseButton(e)) {
+            Controller.getInstance().getCamera().updateOrbit(ORBIT_FACTOR * mouseDrag[0], ORBIT_FACTOR * mouseDrag[1]);
         }
     }
 
@@ -183,6 +194,8 @@ public class MotionManager3D implements MotionManager {
             selectionShape.isDiscretelyUpdated() && SwingUtilities.isRightMouseButton(e))) {
             selectionShape = null;
         }
+        Lookup.getDefault().lookup(VizEventManager.class).stopDrag();
+        Lookup.getDefault().lookup(VizEventManager.class).mouseReleased();
     }
 
     @Override
@@ -192,12 +205,19 @@ public class MotionManager3D implements MotionManager {
 
         VizConfig vizConfig = Lookup.getDefault().lookup(VizConfig.class);
         SelectionManager selectionManager = Lookup.getDefault().lookup(SelectionManager.class);
+        SelectionModifier modifier = extractSelectionModifier(e);
 
         // Only discretely updated shapes
         if (vizConfig.getSelectionType() != SelectionType.NONE && selectionShape != null && selectionShape.isDiscretelyUpdated()) {
             selectionShape = ShapeUtils.continuousUpdate(selectionShape, e.getX(), e.getY());
             selectionManager.cancelContinuousSelection();
             selectionManager.applyContinuousSelection(selectionShape);
+        }
+
+        if (vizConfig.isDirectMouseSelection()) {
+            // TODO temporary
+            selectionManager.deselectSingle();
+            selectionManager.selectContinuousSingle(e.getPoint(), modifier.isPositive());
         }
     }
 

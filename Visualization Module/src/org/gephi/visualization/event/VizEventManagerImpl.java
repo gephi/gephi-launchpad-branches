@@ -32,20 +32,20 @@ import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import org.gephi.graph.api.Node;
-import org.gephi.graph.api.NodeData;
 import org.gephi.visualization.api.MotionManager;
-import org.gephi.visualization.api.config.VizConfig;
 import org.gephi.visualization.api.event.VizEvent;
 import org.gephi.visualization.api.event.VizEventListener;
 import org.gephi.visualization.api.event.VizEventManager;
 import org.gephi.visualization.api.selection.SelectionManager;
 import org.gephi.visualization.controller.Controller;
 import org.openide.util.Lookup;
+import org.openide.util.lookup.ServiceProvider;
 
 /**
  * @author Mathieu Bastian
  * @author Vojtech Bardiovsky
  */
+@ServiceProvider(service = VizEventManager.class)
 public class VizEventManagerImpl implements VizEventManager {
 
     //Architecture
@@ -108,7 +108,7 @@ public class VizEventManagerImpl implements VizEventManager {
             if (nodes.isEmpty() || !selectionManager.isSelectionEnabled()) {
                 float[] mousePositionViewport = motionManager.getMousePosition();
                 float[] mousePosition3d = motionManager.getMousePosition3d();
-                float[] mousePos = new float[]{mousePositionViewport[0], mousePositionViewport[1], mousePosition3d[0], mousePosition3d[1]};
+                float[] mousePos = new float[]{mousePositionViewport[0], mousePositionViewport[1], mousePosition3d[0], mousePosition3d[1], mousePosition3d[2]};
                 handlers[VizEvent.Type.MOUSE_LEFT_CLICK.ordinal()].dispatch(mousePos);
             }
         }
@@ -163,15 +163,11 @@ public class VizEventManagerImpl implements VizEventManager {
             VizEventTypeHandler nodeHandler = handlers[VizEvent.Type.NODE_LEFT_PRESSING.ordinal()];
             if (nodeHandler.hasListeners()) {
                 //Check if some node are selected
-                /*
-                ModelImpl[] modelArray = engine.getSelectedObjects(AbstractEngine.CLASS_NODE);
-                if (modelArray.length > 0) {
-                    Node[] nodeArray = new Node[modelArray.length];
-                    for (int i = 0; i < modelArray.length; i++) {
-                        nodeArray[i] = ((NodeData) modelArray[i].getObj()).getRootNode();
-                    }
-                    nodeHandler.dispatch(nodeArray);
-                }*/
+                SelectionManager selectionManager = Lookup.getDefault().lookup(SelectionManager.class);
+                Collection<Node> nodes = selectionManager.getSelectedNodes();
+                if (!nodes.isEmpty()) {
+                    nodeHandler.dispatch(nodes.toArray(new Node[]{}));
+                }
             }
         }
     }
@@ -188,18 +184,24 @@ public class VizEventManagerImpl implements VizEventManager {
     private static final int DRAGGING_FREQUENCY = 5;
     private int draggingTick = 0;
 
+    @Override
     public void drag() {
         if (draggingTick++ >= DRAGGING_FREQUENCY) {
             draggingTick = 0;
             VizEventTypeHandler handler = handlers[VizEvent.Type.DRAG.ordinal()];
             if (handler.hasListeners()) {
                 MotionManager motionManager = Controller.getInstance().getMotionManager();
-                // TODO may miss 3D drag coordinates
-                handler.dispatch(motionManager.getDragDisplacement());
+                float[] mouseDrag = Arrays.copyOf(motionManager.getDragDisplacement(), 5);
+                float[] mouseDrag3d = motionManager.getDragDisplacement3d();
+                mouseDrag[2] = mouseDrag3d[0];
+                mouseDrag[3] = mouseDrag3d[1];
+                mouseDrag[4] = mouseDrag3d[2];
+                handler.dispatch(mouseDrag);
             }
         }
     }
 
+    @Override
     public void mouseReleased() {
         handlers[VizEvent.Type.MOUSE_RELEASED.ordinal()].dispatch();
     }

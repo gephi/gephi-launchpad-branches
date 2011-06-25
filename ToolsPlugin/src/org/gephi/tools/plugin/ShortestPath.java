@@ -142,7 +142,7 @@ public class ShortestPath implements Tool {
                     shortestPathPanel.setStatus(NbBundle.getMessage(ShortestPath.class, "ShortestPath.status1"));
                     sourceNode = null;
                 } else {
-                    Lookup.getDefault().lookup(SelectionManager.class).resetSelection();
+                    Lookup.getDefault().lookup(SelectionManager.class).clearSelection();
                 }
             }
         };
