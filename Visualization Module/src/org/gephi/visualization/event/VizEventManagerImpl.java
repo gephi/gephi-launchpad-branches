@@ -54,9 +54,7 @@ public class VizEventManagerImpl implements VizEventManager {
 
     public VizEventManagerImpl() {
         pool = new ThreadPoolExecutor(0, 1, 60L, TimeUnit.SECONDS, new LinkedBlockingDeque<Runnable>(10));
-    }
 
-    public void initArchitecture() {
         //Set handlers
         ArrayList<VizEventTypeHandler> handlersList = new ArrayList<VizEventTypeHandler>();
         handlersList.add(new VizEventTypeHandler(VizEvent.Type.MOUSE_LEFT_CLICK, false));

@@ -229,6 +229,23 @@ public class Camera {
     }
 
     /**
+     * Returns a point from camera viewing plane corresponding to the 2D point
+     * on screen.
+     */
+    public Vec3f projectPointInverse(float x, float y) {
+        // FIXME
+        Vec3f point = this.position.addScaled(getCameraDistance(), this.front);
+        return point.addScaled(y - imageHeight / 2, up).addScaled(x - imageWidth / 2, rightVector());
+    }
+
+    private float getCameraDistance() {
+        //TODO implement
+        Vec3f distance = new Vec3f();
+        distance.sub(new Vec3f(0, 0, 0), position);
+        return distance.length();
+    }
+
+    /**
      * Returns a vector from camera viewing plane corresponding to the 2D vector
      * on screen.
      */
@@ -268,17 +285,16 @@ public class Camera {
         Vec3f verticalTranslation = this.up.times(vertical * ratio);
         Vec3f translation = new Vec3f();
         translation.add(horizontalTranslation, verticalTranslation);
-        Vec3f result = new Vec3f();
-        Mat3f rotationMatrix = new Mat3f();
-        rotationMatrix.setCol(0, rightVector);
-        rotationMatrix.setCol(1, this.up);
-        rotationMatrix.setCol(2, this.front);
-        rotationMatrix.invert();
-        rotationMatrix.xformVec(translation, result);
-        translate(result);
+        //Vec3f result = new Vec3f();
+        //Mat3f rotationMatrix = new Mat3f();
+        //rotationMatrix.setCol(0, rightVector);
+        //rotationMatrix.setCol(1, this.up);
+        //rotationMatrix.setCol(2, this.front);
+        //rotationMatrix.invert();
+        //rotationMatrix.xformVec(translation, result);
+        System.out.println("Position: " + position);
+        translate(translation);
     }
-
-    public void finishTranslation() {}
 
     private float orbitRadius(float modifier) {
         return (MIN_ORBIT + (MAX_ORBIT - MIN_ORBIT) * modifier) * fovy;
@@ -317,19 +333,18 @@ public class Camera {
         moveTo(v);
         lookAt(orbitCenter, ur);
         
-        System.out.println("Front: " + this.front);
-        System.out.println("Up: " + this.up);
-        System.out.println("Right: " + rightVector());
-        System.out.println("--------------------------");
+        //System.out.println("Front: " + this.front);
+        //System.out.println("Up: " + this.up);
+        //System.out.println("Right: " + rightVector());
+        //System.out.println("Position: " + position);
+        //System.out.println("--------------------------");
     }
-
-    public void finishOrbit() {}
 
     public void zoom(float by) {
         setFov((float) Math.min(fovy * Math.exp(by), MAX_FOVY));
     }
 
-    public void requireRecomputeMatrix() {
+    private void requireRecomputeMatrix() {
         recomputeMatrix = true;
     }
 }

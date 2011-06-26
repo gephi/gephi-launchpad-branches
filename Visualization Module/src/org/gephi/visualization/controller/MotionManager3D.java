@@ -61,7 +61,8 @@ public class MotionManager3D implements MotionManager {
 
     @Override
     public float[] getDragDisplacement3d() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        // TODO real displacement
+        return new float[3];
     }
 
     @Override
@@ -71,8 +72,8 @@ public class MotionManager3D implements MotionManager {
 
     @Override
     public float[] getMousePosition3d() {
-        // FIXME
-        return new float[] {0f, 0f};
+        Vec3f position = Controller.getInstance().getCamera().projectPointInverse(mousePosition[0], mousePosition[1]);
+        return new float[]{position.x(), position.y(), position.z()};
     }
 
     @Override
@@ -138,7 +139,16 @@ public class MotionManager3D implements MotionManager {
     }
 
     @Override
-    public void mouseClicked(MouseEvent e) {}
+    public void mouseClicked(MouseEvent e) {
+        VizEventManager eventManager = Lookup.getDefault().lookup(VizEventManager.class);
+        if (SwingUtilities.isLeftMouseButton(e)) {
+            eventManager.mouseLeftClick();
+        } else if (SwingUtilities.isMiddleMouseButton(e)) {
+            eventManager.mouseMiddleClick();
+        } else if (SwingUtilities.isRightMouseButton(e)) {
+            eventManager.mouseRightClick();
+        }
+    }
 
     @Override
     public void mouseDragged(MouseEvent e) {
