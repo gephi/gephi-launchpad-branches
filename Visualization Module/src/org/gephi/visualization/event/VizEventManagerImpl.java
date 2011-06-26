@@ -179,7 +179,7 @@ public class VizEventManagerImpl implements VizEventManager {
     public void stopDrag() {
         handlers[VizEvent.Type.STOP_DRAG.ordinal()].dispatch();
     }
-    private static final int DRAGGING_FREQUENCY = 5;
+    private static final int DRAGGING_FREQUENCY = 1;
     private int draggingTick = 0;
 
     @Override
@@ -189,8 +189,8 @@ public class VizEventManagerImpl implements VizEventManager {
             VizEventTypeHandler handler = handlers[VizEvent.Type.DRAG.ordinal()];
             if (handler.hasListeners()) {
                 MotionManager motionManager = Controller.getInstance().getMotionManager();
-                float[] mouseDrag = Arrays.copyOf(motionManager.getDragDisplacement(), 5);
-                float[] mouseDrag3d = motionManager.getDragDisplacement3d();
+                float[] mouseDrag = Arrays.copyOf(motionManager.getDrag(), 5);
+                float[] mouseDrag3d = motionManager.getDrag3d();
                 mouseDrag[2] = mouseDrag3d[0];
                 mouseDrag[3] = mouseDrag3d[1];
                 mouseDrag[4] = mouseDrag3d[2];

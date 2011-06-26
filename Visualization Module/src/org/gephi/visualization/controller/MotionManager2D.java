@@ -63,7 +63,7 @@ public class MotionManager2D implements MotionManager {
     }
 
     @Override
-    public float[] getDragDisplacement() {
+    public float[] getDrag() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
@@ -78,7 +78,7 @@ public class MotionManager2D implements MotionManager {
     }
 
     @Override
-    public float[] getDragDisplacement3d() {
+    public float[] getDrag3d() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

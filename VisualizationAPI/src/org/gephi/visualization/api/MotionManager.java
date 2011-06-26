@@ -35,9 +35,9 @@ public interface MotionManager {
 
     public Shape getSelectionShape();
 
-    public float[] getDragDisplacement();
+    public float[] getDrag();
 
-    public float[] getDragDisplacement3d();
+    public float[] getDrag3d();
 
     public float[] getMousePosition();
 

@@ -42,6 +42,7 @@ public class MotionManager3D implements MotionManager {
 
     protected int[] mousePosition = new int[2];
     protected int[] mouseDrag = new int[2];
+    protected int[] startDrag = new int[2];
 
     protected Shape selectionShape;
 
@@ -55,12 +56,12 @@ public class MotionManager3D implements MotionManager {
     }
 
     @Override
-    public float[] getDragDisplacement() {
+    public float[] getDrag() {
         return new float[] {mouseDrag[0], mouseDrag[1]};
     }
 
     @Override
-    public float[] getDragDisplacement3d() {
+    public float[] getDrag3d() {
         // TODO real displacement
         return new float[3];
     }
@@ -80,8 +81,8 @@ public class MotionManager3D implements MotionManager {
     public void mousePressed(MouseEvent e) {
         mousePosition[0] = e.getX();
         mousePosition[1] = e.getY();
-        mouseDrag[0] = 0;
-        mouseDrag[1] = 0;
+        startDrag[0] = e.getX();
+        startDrag[1] = e.getY();
 
         SelectionModifier modifier = extractSelectionModifier(e);
         VizConfig vizConfig = Lookup.getDefault().lookup(VizConfig.class);
@@ -152,10 +153,12 @@ public class MotionManager3D implements MotionManager {
 
     @Override
     public void mouseDragged(MouseEvent e) {
-        mouseDrag[0] = e.getX() - mousePosition[0];
-        mouseDrag[1] = e.getY() - mousePosition[1];
+        int x = e.getX() - mousePosition[0];
+        int y = e.getY() - mousePosition[1];
         mousePosition[0] = e.getX();
         mousePosition[1] = e.getY();
+        mouseDrag[0] = mousePosition[0] - startDrag[0];
+        mouseDrag[1] = startDrag[1] - mousePosition[1];
 
         VizConfig vizConfig = Lookup.getDefault().lookup(VizConfig.class);
         SelectionManager selectionManager = Lookup.getDefault().lookup(SelectionManager.class);
@@ -168,7 +171,7 @@ public class MotionManager3D implements MotionManager {
             }
         } else if (vizConfig.isDraggingEnabled()) {
             if (SwingUtilities.isLeftMouseButton(e)) {
-                Vec3f translation = Controller.getInstance().getCamera().projectVectorInverse(MOVE_FACTOR * mouseDrag[0], MOVE_FACTOR * mouseDrag[1]);
+                Vec3f translation = Controller.getInstance().getCamera().projectVectorInverse(MOVE_FACTOR * x, MOVE_FACTOR * y);
                 for (Node node : selectionManager.getSelectedNodes()) {
                     node.getNodeData().setPosition(node.getNodeData().x() - translation.x(), node.getNodeData().y() - translation.y(), node.getNodeData().z() - translation.z());
                 }
@@ -178,9 +181,9 @@ public class MotionManager3D implements MotionManager {
         }
         // Movement
         if (SwingUtilities.isRightMouseButton(e)) {
-            Controller.getInstance().getCamera().updateTranslation(MOVE_FACTOR * mouseDrag[0], -MOVE_FACTOR * mouseDrag[1]);
+            Controller.getInstance().getCamera().updateTranslation(MOVE_FACTOR * x, -MOVE_FACTOR * y);
         } else if (SwingUtilities.isMiddleMouseButton(e)) {
-            Controller.getInstance().getCamera().updateOrbit(ORBIT_FACTOR * mouseDrag[0], ORBIT_FACTOR * mouseDrag[1]);
+            Controller.getInstance().getCamera().updateOrbit(ORBIT_FACTOR * x, ORBIT_FACTOR * y);
         }
     }
 

@@ -80,9 +80,12 @@ public class Sizer implements Tool {
                 if (nodes != null) {
                     float averageSize = 0f;
                     for (int i = 0; i < nodes.length; i++) {
+                        System.out.println("Displacement: " + displacementY);
                         Node n = nodes[i];
                         float size = sizes[i];
                         size += displacementY * INTENSITY;
+                        System.out.println("Displacement * intensity: " + displacementY * INTENSITY);
+                        System.out.println("Size: " + size);
                         if (size < LIMIT) {
                             size = LIMIT;
                         }

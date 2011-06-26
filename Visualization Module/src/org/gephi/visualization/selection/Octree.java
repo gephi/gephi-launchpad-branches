@@ -23,6 +23,7 @@ package org.gephi.visualization.selection;
 
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.Collection;
 import org.gephi.visualization.api.selection.Shape;
 import java.util.Iterator;
 import java.util.List;
@@ -44,6 +45,12 @@ public final class Octree implements NodeContainer {
     private final List<Node> unassignedNodes;
 
     private boolean singleFound;
+
+    private Collection<Node> temporarySelectedNodes;
+    private Node temporarySelectedNode;
+
+    private boolean temporarySelectionMod;
+    private boolean temporarySingleMod;
 
     private final Graph graph;
 
@@ -104,6 +111,23 @@ public final class Octree implements NodeContainer {
         }
         
         return selectedNodes;
+    }
+
+    @Override
+    public void applyContinuousSelection(Shape shape) {
+        temporarySelectedNodes = applySelection(shape);
+        temporarySelectionMod = shape.getSelectionModifier().isPositive();
+    }
+
+    @Override
+    public void cancelContinuousSelection() {
+        if (temporarySelectedNodes == null) {
+            return;
+        }
+        for (Node node : temporarySelectedNodes) {
+            node.getNodeData().setSelected(!temporarySelectionMod);
+        }
+        temporarySelectedNodes = null;
     }
 
     @Override
@@ -223,6 +247,19 @@ public final class Octree implements NodeContainer {
     }
 
     @Override
+    public void selectContinuousSingle(Point point, final boolean select, final int selectionRadius, final int policy) {
+        temporarySingleMod = select;
+        temporarySelectedNode = selectSingle(point, select, selectionRadius, policy);
+    }
+
+    @Override
+    public void deselectSingle() {
+        if (temporarySelectedNode != null) {
+            temporarySelectedNode.getNodeData().setSelected(!temporarySingleMod);
+        }
+    }
+
+    @Override
     public void clearSelection() {
         root.applyFunction(new NodeFunction() {
             @Override
@@ -250,7 +287,6 @@ public final class Octree implements NodeContainer {
             ((OctreeData) node.getNodeData().getSpatialData()).getOctant().removeNode(node);
         }
     }
-
 
     /**
      * Interface representing a conditioned function on a node.

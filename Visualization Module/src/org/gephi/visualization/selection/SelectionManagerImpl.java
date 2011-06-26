@@ -45,11 +45,6 @@ import org.openide.util.lookup.ServiceProvider;
 public class SelectionManagerImpl implements SelectionManager {
 
     private NodeContainer nodeContainer;
-    private Collection<Node> temporarySelectedNodes;
-    private Node temporarySelectedNode;
-
-    private boolean temporarySelectionMod;
-    private boolean temporarySingleMod;
 
     private boolean blocked;
 
@@ -79,19 +74,12 @@ public class SelectionManagerImpl implements SelectionManager {
 
     @Override
     public void applyContinuousSelection(Shape shape) {
-        temporarySelectedNodes = nodeContainer.applySelection(shape);
-        temporarySelectionMod = shape.getSelectionModifier().isPositive();
+        nodeContainer.applyContinuousSelection(shape);
     }
 
     @Override
     public void cancelContinuousSelection() {
-        if (temporarySelectedNodes == null) {
-            return;
-        }
-        for (Node node : temporarySelectedNodes) {
-            node.getNodeData().setSelected(!temporarySelectionMod);
-        }
-        temporarySelectedNodes = null;
+        nodeContainer.cancelContinuousSelection();
     }
 
 
@@ -107,15 +95,12 @@ public class SelectionManagerImpl implements SelectionManager {
 
     @Override
     public void selectContinuousSingle(Point point, boolean select) {
-        temporarySingleMod = select;
-        temporarySelectedNode = nodeContainer.selectSingle(point, select, getMouseSelectionDiameter() / 2, NodeContainer.SINGLE_NODE_DEFAULT);
+        nodeContainer.selectContinuousSingle(point, select, getMouseSelectionDiameter() / 2, NodeContainer.SINGLE_NODE_DEFAULT);
     }
 
     @Override
     public void deselectSingle() {
-        if (temporarySelectedNode != null) {
-            temporarySelectedNode.getNodeData().setSelected(!temporarySingleMod);
-        }
+        nodeContainer.deselectSingle();
     }
 
     @Override

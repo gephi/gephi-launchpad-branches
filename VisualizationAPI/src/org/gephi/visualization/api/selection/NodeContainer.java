@@ -56,15 +56,39 @@ public interface NodeContainer {
      */
     public List<Node> applySelection(Shape shape);
 
+    /**
+     * Adds nodes from inside the shape to a temporary selection.
+     * @see #cancelContinuousSelection()
+     */
+    public void applyContinuousSelection(Shape shape);
+
+    /**
+     * Cancels temporary selection.
+     */
+    public void cancelContinuousSelection();
+    
     public List<Node> getSelectedNodes();
 
     /**
-     * Select or deselect single node closest to the given point.
-     * @param add true if node is selected, false if deselected.
-     * @param selectionRadius nodes outside the radius will be ignored.
-     * @param policy determines how to pick the closest node.
+     * Adds or removes single node from a permanent selection.
+     * @param point the point to determine the closest node.
+     * @param select true to select, false to deselect.
      */
-    public Node selectSingle(Point point, boolean select, int selectionRadius, int policy);
+    public Node selectSingle(Point point, final boolean select, final int selectionRadius, final int policy);
+
+    /**
+     * Adds or removes single node from a temporary selection.
+     * @param point the point to determine the closest node.
+     * @param select true to select, false to deselect.
+     */
+    public void selectContinuousSingle(Point point, final boolean select, final int selectionRadius, final int policy);
+
+    /**
+     * Clears single node from a temporary selection.
+     * @param point the point to determine the closest node.
+     * @param select true to select, false to deselect.
+     */
+    public void deselectSingle();
 
     public void clearSelection();
 
