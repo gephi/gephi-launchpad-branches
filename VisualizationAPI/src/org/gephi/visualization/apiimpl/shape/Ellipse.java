@@ -74,17 +74,21 @@ class Ellipse extends AbstractShape {
     protected boolean intersectsCircle(int x, int y, int radius) {
         int centerX = origin.x + a;
         int centerY = origin.y + b;
-        if (x == centerX && radius + b < Math.abs(y - centerY)) {
+        if (a == 0 || b == 0) {
             return false;
+        }
+        if (x == centerX) {
+            return radius + b < Math.abs(y - centerY);
         }
         // Tangent
         float k = (float) (y - centerY) / (x - centerX);
 
-        // Boundary ellipse point interface the difference vector direction
-        float boundaryX = (float) Math.sqrt((float) (a * a * b * b) / (b * b + a * a * k * k)) * Math.signum(x - centerX);
+        // Boundary ellipse point intersect the difference vector direction
+        float a2 = (float) a * a;
+        float b2 = (float) b * b;
+        float boundaryX = (float) Math.sqrt((a2 * b2) / (b2 + a2 * k * k)) * Math.signum(x - centerX);
         float boundaryY = k * boundaryX;
         float ellipseRadius = (float) Math.sqrt(boundaryX * boundaryX + boundaryY * boundaryY);
-        
         return ellipseRadius + radius > (float) Math.sqrt((x - centerX) * (x - centerX) + (y - centerY) * (y - centerY));
     }
 

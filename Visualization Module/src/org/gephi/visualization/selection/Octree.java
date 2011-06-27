@@ -42,15 +42,19 @@ public final class Octree implements NodeContainer {
 
     private Octant root;
 
-    private final List<Node> unassignedNodes;
+    private final Collection<Node> unassignedNodes;
 
     private boolean singleFound;
+
+    private Collection<Node> selectedNodes;
 
     private Collection<Node> temporarySelectedNodes;
     private Node temporarySelectedNode;
 
     private boolean temporarySelectionMod;
     private boolean temporarySingleMod;
+
+    private boolean changeMarker;
 
     private final Graph graph;
 
@@ -59,6 +63,7 @@ public final class Octree implements NodeContainer {
     public Octree(Graph graph) {
         this.graph = graph;
         this.unassignedNodes = new ArrayList<Node>();
+        this.selectedNodes = new ArrayList<Node>();
         rebuild();
     }
 
@@ -99,9 +104,13 @@ public final class Octree implements NodeContainer {
     }
 
     @Override
-    public List<Node> getSelectedNodes() {
-        // TODO optimize
-        List<Node> selectedNodes = new ArrayList<Node>();
+    public Collection<Node> getSelectedNodes() {
+        // Return last selected nodes collection
+        if (!changeMarker) {
+            return selectedNodes;
+        }
+
+        selectedNodes = new ArrayList<Node>();
         recursiveGetSelectedNodes(root, selectedNodes);
         
         for (Node node : unassignedNodes) {
@@ -109,6 +118,7 @@ public final class Octree implements NodeContainer {
                 selectedNodes.add(node);
             }
         }
+        changeMarker = false;
         
         return selectedNodes;
     }
@@ -141,10 +151,10 @@ public final class Octree implements NodeContainer {
             @Override
             public void apply(Node node) {
                 if (shape.isInside3D(node.getNodeData().x(), node.getNodeData().y(), node.getNodeData().z(), cameraBridge)) {
-                    
                     if (select != node.getNodeData().isSelected()) {
                         node.getNodeData().setSelected(select);
                         nodes.add(node);
+                        changeMarker = true;
                     }
                 }
             }
@@ -152,7 +162,7 @@ public final class Octree implements NodeContainer {
         return nodes;
     }
 
-    private void recursiveGetSelectedNodes(Octant octant, List<Node> list) {
+    private void recursiveGetSelectedNodes(Octant octant, Collection<Node> list) {
         /*
         if (!octant.isSelectFlag()) {
             return;
@@ -342,14 +352,20 @@ public final class Octree implements NodeContainer {
 
         public void nodeUpdated(Node node) {
             // If node still inside do nothing, otherwise remove
-            // TODO better implementation, pass to a parent if chance of inclusion
             NodeData nodeData = node.getNodeData();
-            if (nodeData.x() < x || nodeData.x() > x ||
-                nodeData.y() < y || nodeData.y() > y ||
-                nodeData.z() < z || nodeData.z() > z) {
+            if (nodeData.x() < x || nodeData.x() > x + size ||
+                nodeData.y() < y || nodeData.y() > y + size ||
+                nodeData.z() < z || nodeData.z() > z + size) {
                 nodes.remove(node);
-                unassignedNodes.add(node);
-                nodeData.setSpatialData(null);
+                // Test parent, there is a large probability that node can be assigned fast
+                if (parent != null && nodeData.x() >= parent.x && nodeData.x() <= parent.x + parent.size &&
+                                      nodeData.y() >= parent.y && nodeData.y() <= parent.y + parent.size &&
+                                      nodeData.z() >= parent.z && nodeData.z() <= parent.z + parent.size) {
+                    parent.addNode(node);
+                } else {
+                    unassignedNodes.add(node);
+                    nodeData.setSpatialData(null);
+                }
             }
         }
 

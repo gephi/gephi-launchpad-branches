@@ -273,7 +273,8 @@ public class Camera {
         // TODO optimize
         Point p1 = projectPoint(scale, 0, 0);
         Point p2 = projectPoint(0, 0, 0);
-        return (int) Math.sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
+        return Integer.MAX_VALUE;
+        //return (int) Math.sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
     }
 
     public void startTranslation() {}
@@ -292,7 +293,7 @@ public class Camera {
         //rotationMatrix.setCol(2, this.front);
         //rotationMatrix.invert();
         //rotationMatrix.xformVec(translation, result);
-        System.out.println("Position: " + position);
+        //System.out.println("Position: " + position);
         translate(translation);
     }
 

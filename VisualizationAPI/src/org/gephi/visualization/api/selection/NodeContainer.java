@@ -22,6 +22,7 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 package org.gephi.visualization.api.selection;
 
 import java.awt.Point;
+import java.util.Collection;
 import java.util.List;
 import org.gephi.graph.api.Node;
 
@@ -54,7 +55,7 @@ public interface NodeContainer {
      * Add or remove nodes from given shape to selection.
      * @return nodes added to selection that were not selected before.
      */
-    public List<Node> applySelection(Shape shape);
+    public Collection<Node> applySelection(Shape shape);
 
     /**
      * Adds nodes from inside the shape to a temporary selection.
@@ -67,7 +68,7 @@ public interface NodeContainer {
      */
     public void cancelContinuousSelection();
     
-    public List<Node> getSelectedNodes();
+    public Collection<Node> getSelectedNodes();
 
     /**
      * Adds or removes single node from a permanent selection.

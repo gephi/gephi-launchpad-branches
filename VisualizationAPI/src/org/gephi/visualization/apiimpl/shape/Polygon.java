@@ -177,11 +177,11 @@ class Polygon extends AbstractShape {
     @Override
     protected boolean intersectsCircle(int x, int y, int radius) {
         for (Point point : points) {
-            if ((point.x - x) * (point.x - x) + (point.y - y) * (point.y - y) <= radius * radius) {
+            if ((point.x - x) * (point.x - x) + (point.y - y) * (point.y - y) <= (float) radius * radius) {
                 return true;
             }
         }
-        return ((tempPoint.x - x) * (tempPoint.x - x) + (tempPoint.y - y) * (tempPoint.y - y) <= radius * radius);
+        return ((tempPoint.x - x) * (tempPoint.x - x) + (tempPoint.y - y) * (tempPoint.y - y) <= (float) radius * radius);
     }
 
     public SelectionType getSelectionType() {
