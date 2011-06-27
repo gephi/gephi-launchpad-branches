@@ -22,10 +22,11 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 package org.gephi.visualization.apiimpl.shape;
 
 import java.awt.Point;
-import org.gephi.lib.gleem.linalg.Vec2f;
+import org.gephi.math.Vec2;
 import org.gephi.visualization.api.selection.SelectionType;
 import org.gephi.visualization.api.selection.Shape;
-import org.gephi.visualization.api.view.ui.UIPrimitive;
+import org.gephi.visualization.api.view.ui.UIShape;
+import org.gephi.visualization.api.view.ui.UIStyle;
 
 /**
  * Class representing an ellipse shape.
@@ -65,8 +66,8 @@ class Ellipse extends AbstractShape {
         return false;
     }
 
-    public UIPrimitive getUIPrimitive() {
-        return UIPrimitive.ellipses(new Vec2f(origin.x + a, origin.y + b), new Vec2f(a, 0), new Vec2f(0, b));
+    public UIShape getUIPrimitive() {
+        return UIShape.orientedEllipse(UIStyle.SELECTION, new Vec2(origin.x + a, origin.y + b), a, b);
     }
 
     @Override

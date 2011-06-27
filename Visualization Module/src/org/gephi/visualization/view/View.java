@@ -81,9 +81,9 @@ public class View implements GLEventListener {
         this.canvas.addMouseWheelListener(controller);
 
         this.pipeline = new GL11Pipeline3D();
-        this.bridge.setLayout(new GL11NodesLayout3D());
-        this.bridge.setLayout(new GL11EdgesLayout3D());
-        this.bridge.setLayout(new GL11UILayout());
+        this.bridge.setNodeLayout(new GL11NodesLayout3D());
+        this.bridge.setEdgeLayout(new GL11EdgesLayout3D());
+        this.bridge.setUILayout(new GL11UILayout());
     }
     
     public Component getCanvas() {

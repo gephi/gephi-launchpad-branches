@@ -49,9 +49,18 @@ public final class Color {
     public final static Color TRANSPARENT = new Color(0.0f, 0.0f, 0.0f, 0.0f);
 
     /*
-     * Private data
+     * Constants
      */
-    private final float r, g, b, a;
+    private static final int binarySizeRGBA8 = 4;
+    private static final int binarySizeRGB8 = 3;
+    private static final int binarySize = 4 * 4;
+    private static final int binarySizeNoAlpha = 4 * 3;
+    private static final int binarySizePremultiplied = 4 * 4;
+
+    /*
+     * Public final data
+     */
+    public final float r, g, b, a;
 
     /*
      * Constructors
@@ -64,32 +73,27 @@ public final class Color {
         this.r = r; this.g = g; this.b = b; this.a = a;
     }
 
-    public Color(int r, int g, int b) {
+    public Color(byte r, byte g, byte b) {
         this(r/255.0f, g/255.0f, b/255.0f);
     }
 
-    public Color(int r, int g, int b, int a) {
+    public Color(byte r, byte g, byte b, byte a) {
         this(r/255.0f, g/255.0f, b/255.0f, a/255.0f);
     }
 
+    /**
+     * Creates a new Color from its integer representation in the RGBA8 format.
+     * It is not the same representation java.awt.Color use, since java.awt.Color
+     * use the ARGB8 format.
+     *
+     * @param c Integer representation of the color in the RGBA8 format.
+     */
     public Color(int c) {
-        this(c >> 24, (c >> 16)& 0xff, (c >> 8) & 0xff, c & 0xff);
+        this(c >> 24, (c >> 16) & 0xff, (c >> 8) & 0xff, c & 0xff);
     }
 
     public Color(java.awt.Color c) {
         this(c.getRed(), c.getGreen(), c.getBlue(), c.getTransparency());
-    }
-
-    public Color(float[] c) {
-        this(c[0], c[1], c[2], c[3]);
-    }
-
-    public Color(ByteBuffer buf) {
-        this(buf.getFloat(), buf.getFloat(), buf.getFloat(), buf.getFloat());
-    }
-
-    public Color(ByteBuffer buf, int i) {
-        this(buf.getFloat(i), buf.getFloat(i+4), buf.getFloat(i+8), buf.getFloat(i+12));
     }
 
     /*
@@ -98,15 +102,15 @@ public final class Color {
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
-
         if ( !(obj instanceof Color) ) return false;
 
-        return this.toRGBA() == ((Color)obj).toRGBA();
+        Color c = (Color) obj;
+        return (this.r == c.r) && (this.g == c.g) && (this.b == c.b) && (this.a == c.a);
     }
 
     @Override
     public int hashCode() {
-        return toRGBA();
+        return toRGBA8();
     }
 
     @Override
@@ -151,7 +155,7 @@ public final class Color {
     /*
      * Casts.
      */
-    public int toRGBA() {
+    public int toRGBA8() {
         int ret = (int)(clamp(this.r, 0.0f, 1.0f) * 255.0f) << 24;
         ret |= (int)(clamp(this.g, 0.0f, 1.0f) * 255.0f) << 16;
         ret |= (int)(clamp(this.b, 0.0f, 1.0f) * 255.0f) << 8;
@@ -160,23 +164,15 @@ public final class Color {
         return ret;
     }
 
-    public int toRGB() {
-        int ret = (int)(clamp(this.r, 0.0f, 1.0f) * 255.0f) << 16;
-        ret |= (int)(clamp(this.g, 0.0f, 1.0f) * 255.0f) << 8;
-        ret |= (int)(clamp(this.b, 0.0f, 1.0f) * 255.0f);
-
-        return ret;
-    }
-
     public java.awt.Color toAWTColor() {
         return new java.awt.Color(this.r, this.g, this.b, this.a);
     }
 
-    public float[] toArrayRGBA() {
+    public float[] toArray() {
         return new float[]{this.r, this.g, this.b, this.a};
     }
 
-    public float[] toArrayRGB() {
+    public float[] toArrayNoAlpha() {
         return new float[]{this.r, this.g, this.b};
     }
 
@@ -187,27 +183,54 @@ public final class Color {
     /*
      * Writers.
      */
-    public void writeRGBATo(ByteBuffer buf) {
-        buf.putInt(toRGBA());
+    public void writeRGBA8To(ByteBuffer buf) {
+        buf.putInt(toRGBA8());
     }
 
-    public void writeRGBTo(ByteBuffer buf) {
+    public int writeRGBA8To(ByteBuffer buf, int i) {
+        buf.putInt(i, toRGBA8());
+        return i + binarySizeRGBA8;
+    }
+
+    public void writeRGB8To(ByteBuffer buf) {
         buf.put((byte)(clamp(this.r, 0.0f, 1.0f) * 255.0f));
         buf.put((byte)(clamp(this.g, 0.0f, 1.0f) * 255.0f));
         buf.put((byte)(clamp(this.b, 0.0f, 1.0f) * 255.0f));
     }
 
-    public void writeArrayRGBATo(ByteBuffer buf) {
+    public int writeRGB8To(ByteBuffer buf, int i) {
+        buf.put(i, (byte)(clamp(this.r, 0.0f, 1.0f) * 255.0f));
+        buf.put(i+1, (byte)(clamp(this.g, 0.0f, 1.0f) * 255.0f));
+        buf.put(i+2, (byte)(clamp(this.b, 0.0f, 1.0f) * 255.0f));
+        return i + binarySizeRGB8;
+    }
+
+    public void writeTo(ByteBuffer buf) {
         buf.putFloat(this.r);
         buf.putFloat(this.g);
         buf.putFloat(this.b);
         buf.putFloat(this.a);
     }
 
-    public void writeArrayRGBTo(ByteBuffer buf) {
+    public int writeTo(ByteBuffer buf, int i) {
+        buf.putFloat(i, this.r);
+        buf.putFloat(i+4, this.g);
+        buf.putFloat(i+8, this.b);
+        buf.putFloat(i+12, this.a);
+        return i + binarySize;
+    }
+
+    public void writeNoAlphaTo(ByteBuffer buf) {
         buf.putFloat(this.r);
         buf.putFloat(this.g);
         buf.putFloat(this.b);
+    }
+
+    public int writeNoAlphaTo(ByteBuffer buf, int i) {
+        buf.putFloat(i, this.r);
+        buf.putFloat(i+4, this.g);
+        buf.putFloat(i+8, this.b);
+        return i + binarySizeNoAlpha;
     }
 
     public void writePremultipliedTo(ByteBuffer buf) {
@@ -217,34 +240,12 @@ public final class Color {
         buf.putFloat(this.a);
     }
 
-    public void writeRGBATo(ByteBuffer buf, int i) {
-        buf.putInt(i, toRGBA());
-    }
-
-    public void writeRGBTo(ByteBuffer buf, int i) {
-        buf.put(i, (byte)(clamp(this.r, 0.0f, 1.0f) * 255.0f));
-        buf.put(i+1, (byte)(clamp(this.g, 0.0f, 1.0f) * 255.0f));
-        buf.put(i+2, (byte)(clamp(this.b, 0.0f, 1.0f) * 255.0f));
-    }
-
-    public void writeArrayRGBATo(ByteBuffer buf, int i) {
-        buf.putFloat(i, this.r);
-        buf.putFloat(i+4, this.g);
-        buf.putFloat(i+8, this.b);
-        buf.putFloat(i+12, this.a);
-    }
-
-    public void writeArrayRGBTo(ByteBuffer buf, int i) {
-        buf.putFloat(i, this.r);
-        buf.putFloat(i+4, this.g);
-        buf.putFloat(i+8, this.b);
-    }
-
-    public void writePremultipliedTo(ByteBuffer buf, int i) {
+    public int writePremultipliedTo(ByteBuffer buf, int i) {
         buf.putFloat(i, this.ra());
         buf.putFloat(i+4, this.ga());
         buf.putFloat(i+8, this.ba());
         buf.putFloat(i+12, this.a);
+        return i + binarySizePremultiplied;
     }
 
     /*
@@ -261,44 +262,44 @@ public final class Color {
     /*
      * Static methods.
      */
-    public static Color readRGBAFrom(ByteBuffer buf) {
+    public static Color readRGBA8From(ByteBuffer buf) {
         return new Color(buf.getInt());
     }
 
-    public static Color readRGBAFrom(ByteBuffer buf, int i) {
-        return new Color(buf.getInt(i));
+    public static Color readRGBA8From(ByteBuffer buf, int[] i) {
+        final Color result = new Color(buf.getInt(i[0]));
+        i[0] += binarySizeRGBA8;
+        return result;
     }
 
-    public static Color readRGBFrom(ByteBuffer buf) {
-        int c = (buf.get() << 16) | (buf.get() << 8) | buf.get();
-        return new Color(c);
+    public static Color readRGB8From(ByteBuffer buf) {
+        return new Color(buf.get(), buf.get(), buf.get());
     }
 
-    public static Color readRGBFrom(ByteBuffer buf, int i) {
-        int c = (buf.get(i) << 16) | (buf.get(i+1) << 8) | buf.get(i+2);
-        return new Color(c);
+    public static Color readRGB8From(ByteBuffer buf, int[] i) {
+        final Color result = new Color(buf.get(i[0]), buf.get(i[0]+1), buf.get(i[0]+2));
+        i[0] += binarySizeRGB8;
+        return result;
     }
 
-    public static Color readArrayRGBAFrom(ByteBuffer buf) {
-        return new Color(buf);
+    public static Color readFrom(ByteBuffer buf) {
+        return new Color(buf.getFloat(), buf.getFloat(), buf.getFloat(), buf.getFloat());
     }
 
-    public static Color readArrayRGBAFrom(ByteBuffer buf, int i) {
-        return new Color(buf, i);
+    public static Color readFrom(ByteBuffer buf, int[] i) {
+        final Color result = new Color(buf.getFloat(i[0]), buf.getFloat(i[0]+4), buf.getFloat(i[0]+8), buf.getFloat(i[0]+12));
+        i[0] += binarySize;
+        return result;
     }
 
-    public static Color readArrayRGBFrom(ByteBuffer buf) {
-        final float r = buf.getFloat();
-        final float g = buf.getFloat();
-        final float b = buf.getFloat();
-        return new Color(r, g, b);
+    public static Color readNoAlphaFrom(ByteBuffer buf) {
+        return new Color(buf.getFloat(), buf.getFloat(), buf.getFloat());
     }
 
-    public static Color readArrayRGBFrom(ByteBuffer buf, int i) {
-        final float r = buf.getFloat(i);
-        final float g = buf.getFloat(i+4);
-        final float b = buf.getFloat(i+8);
-        return new Color(r, g, b);
+    public static Color readNoAlphaFrom(ByteBuffer buf, int[] i) {
+        final Color result = new Color(buf.getFloat(i[0]), buf.getFloat(i[0]+4), buf.getFloat(i[0]+8));
+        i[0] += binarySizeNoAlpha;
+        return result;
     }
 
     public static Color readPremultipliedFrom(ByteBuffer buf) {
@@ -306,18 +307,19 @@ public final class Color {
         final float g = buf.getFloat();
         final float b = buf.getFloat();
         final float a = buf.getFloat();
-        if (a < 1.0f/255.0f)
+        if (a > 2.0e-16)
             return new Color(r/a, g/a, b/a, a);
         else
             return new Color(0.0f, 0.0f, 0.0f, 0.0f);
     }
 
-    public static Color readPremultipliedFrom(ByteBuffer buf, int i) {
-        final float r = buf.getFloat(i);
-        final float g = buf.getFloat(i+4);
-        final float b = buf.getFloat(i+8);
-        final float a = buf.getFloat(i+12);
-        if (a < 1.0f/255.0f)
+    public static Color readPremultipliedFrom(ByteBuffer buf, int[] i) {
+        final float r = buf.getFloat(i[0]);
+        final float g = buf.getFloat(i[0]+4);
+        final float b = buf.getFloat(i[0]+8);
+        final float a = buf.getFloat(i[0]+12);
+        i[0] += binarySizePremultiplied;
+        if (a > 2.0e-16)
             return new Color(r/a, g/a, b/a, a);
         else
             return new Color(0.0f, 0.0f, 0.0f, 0.0f);
@@ -329,5 +331,5 @@ public final class Color {
     private float clamp(float t, float m, float M) {
         return t < m ? m : (t > M ? M : t);
     }
-    
+
 }

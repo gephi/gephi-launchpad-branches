@@ -23,25 +23,28 @@ package org.gephi.visualization.view.pipeline.gl11;
 
 import java.nio.ByteBuffer;
 import org.gephi.graph.api.Node;
-import org.gephi.lib.gleem.linalg.Vec3f;
+import org.gephi.math.Vec3;
 import org.gephi.visualization.api.color.Color;
-import org.gephi.visualization.data.layout.VizNodeLayout;
+import org.gephi.visualization.data.graph.VizNode;
+import org.gephi.visualization.data.layout.Layout;
 
 /**
- * VizNodeLayout used by GL11Pipeline3D.
+ * NodeLayout used by GL11Pipeline3D.
  *
  * Antonio Patriarca <antoniopatriarca@gmail.com>
  */
-public final class GL11NodesLayout3D implements VizNodeLayout {
+public final class GL11NodesLayout3D implements Layout<Node, VizNode> {
+
+    private final static int nodeSize = 29;
 
     @Override
-    public int suggestedBlockSize() {
-        return 4194304;
+    public int suggestedBufferSize() {
+        return 4 * 1024 * 1024;
     }
 
     @Override
     public boolean add(ByteBuffer buffer, Node node) {
-        if (buffer.remaining() < 29) {
+        if (buffer.remaining() < nodeSize) {
             return false;
         } else {
             buffer.putFloat(node.getNodeData().x());
@@ -57,37 +60,38 @@ public final class GL11NodesLayout3D implements VizNodeLayout {
     }
 
     @Override
-    public Vec3f position(ByteBuffer b) {
-        int i = b.position();
-        float x = b.getFloat(i);
-        float y = b.getFloat(i+4);
-        float z = b.getFloat(i+8);
-        return new Vec3f(x, y, z);
-    }
-
-    @Override
-    public float size(ByteBuffer b) {
-        return b.getFloat(b.position() + 12);
-    }
-
-    @Override
-    public Color color(ByteBuffer b) {
-        int i = b.position() + 16;
-        return Color.readArrayRGBFrom(b, i);
-    }
-
-    @Override
-    public boolean isSelected(ByteBuffer b) {
-        return b.get(b.position() + 28) == 1;
-    }
-
-    @Override
-    public boolean advance(ByteBuffer b) {
-        if (b.remaining() > 29) {
-            b.position(b.position() + 29);
-            return true;
+    public VizNode get(ByteBuffer b) {
+        if (hasNext(b)) {
+            final Vec3 position = Vec3.readFrom(b);
+            final float size = b.getFloat();
+            final Color color = Color.readNoAlphaFrom(b);
+            final boolean selected = b.get() != 0;
+            return new VizNode(position, size, color, selected);
         } else {
-            return false;
+            return null;
         }
+    }
+
+    @Override
+    public VizNode get(ByteBuffer b, int[] i) throws IndexOutOfBoundsException {
+        if (hasNext(b, i[0])) {
+            final Vec3 position = Vec3.readFrom(b, i);
+            final float size = b.getFloat(i[0]); i[0] += 4;
+            final Color color = Color.readNoAlphaFrom(b, i);
+            final boolean selected = b.get(i[0]) != 0; ++i[0];
+            return new VizNode(position, size, color, selected);
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public boolean hasNext(ByteBuffer b) {
+        return b.remaining() >= nodeSize;
+    }
+
+    @Override
+    public boolean hasNext(ByteBuffer b, int i) {
+        return (b.limit() - i) >= nodeSize;
     }
 }

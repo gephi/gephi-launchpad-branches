@@ -28,10 +28,11 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import org.gephi.lib.gleem.linalg.Vec2f;
+import org.gephi.math.Vec2;
 import org.gephi.visualization.api.selection.SelectionType;
 import org.gephi.visualization.api.selection.Shape;
-import org.gephi.visualization.api.view.ui.UIPrimitive;
+import org.gephi.visualization.api.view.ui.UIShape;
+import org.gephi.visualization.api.view.ui.UIStyle;
 
 /**
  * Class representing a polygon shape.
@@ -87,12 +88,12 @@ class Polygon extends AbstractShape {
         return new Polygon(this, new Point(x, y));
     }
 
-    public UIPrimitive getUIPrimitive() {
-        Vec2f[] polygonPoints = new Vec2f[convexHull.length];
+    public UIShape getUIPrimitive() {
+        Vec2[] polygonPoints = new Vec2[convexHull.length];
         for (int i = 0; i < convexHull.length; i++) {
-            polygonPoints[i] = new Vec2f(convexHull[i].x, convexHull[i].y);
+            polygonPoints[i] = new Vec2(convexHull[i].x, convexHull[i].y);
         }
-        return UIPrimitive.polygon(polygonPoints);
+        return UIShape.polygon(UIStyle.SELECTION, polygonPoints);
     }
 
     private float[][] computeLineInfo() {

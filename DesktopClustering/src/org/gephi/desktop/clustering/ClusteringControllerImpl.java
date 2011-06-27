@@ -117,7 +117,7 @@ public class ClusteringControllerImpl implements ClusteringController {
 
     public void selectCluster(Cluster cluster) {
         SelectionManager selectionManager = Lookup.getDefault().lookup(SelectionManager.class);
-        selectionManager.resetSelection();
+        selectionManager.clearSelection();
         selectionManager.selectNodes(cluster.getNodes());
     }
 

@@ -24,51 +24,50 @@ package org.gephi.visualization.data.buffer;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
-import org.gephi.visualization.data.layout.VizLayout;
+import org.gephi.visualization.data.layout.Layout;
 
 /**
- * Class used to create a new VizBuffer object.
+ * Class used to create a new Buffer object.
  *
  * Antonio Patriarca <antoniopatriarca@gmail.com>
  */
-public class VizBufferBuilder<T> {
+public class BufferBuilder<I, O> {
 
-    private final VizLayout<T> layout;
+    private final Layout<I, O> layout;
     private ArrayList<ByteBuffer> buffers;
     private int currentBuffer;
 
-    public VizBufferBuilder(VizLayout<T> layout) {
+    public BufferBuilder(Layout<I, O> layout) {
         this.layout = layout;
         this.buffers = new ArrayList<ByteBuffer>();
         this.currentBuffer = 0;
     }
 
-    public VizBufferBuilder(VizBuffer<T> oldBuffer) {
+    public BufferBuilder(Buffer<I, O> oldBuffer) {
         this(oldBuffer.layout);
         recycle(oldBuffer);
     }
 
-    public final void recycle(VizBuffer<T> oldBuffer) {
+    public final void recycle(Buffer<I, O> oldBuffer) {
         if (this.layout != oldBuffer.layout) return;
 
         for (ByteBuffer b : oldBuffer.buffers) {
-            b.position(0);
-            b.limit(b.capacity());
+            b.clear();
             this.buffers.add(b);
         }
     }
 
-    public final VizLayout<T> layout() {
+    public final Layout<I, O> layout() {
         return this.layout;
     }
 
-    public VizBuffer<T> createVizBuffer() {
+    public Buffer<I, O> create() {
         if (this.buffers.isEmpty()) {
-            return new VizBuffer<T>(this.layout, new ArrayList<ByteBuffer>());
+            return new Buffer<I, O>(this.layout, new ArrayList<ByteBuffer>());
         }
 
         ArrayList<ByteBuffer> oldBuffers = new ArrayList<ByteBuffer>(this.currentBuffer + 1);
-        ArrayList<ByteBuffer> newBuffers = new ArrayList<ByteBuffer>(this.buffers.size() - this.currentBuffer + 1);
+        ArrayList<ByteBuffer> newBuffers = new ArrayList<ByteBuffer>(this.buffers.size() - this.currentBuffer - 1);
 
         int i;
         for (i = 0; i <= this.currentBuffer; ++i) {
@@ -84,14 +83,14 @@ public class VizBufferBuilder<T> {
         this.buffers = newBuffers;
         this.currentBuffer = 0;
 
-        return new VizBuffer<T>(this.layout, Collections.unmodifiableList(oldBuffers));
+        return new Buffer<I, O>(this.layout, Collections.unmodifiableList(oldBuffers));
     }
 
-    public void add(T e) {
+    public final void add(I e) {
         if (e == null) return;
 
         if (this.buffers.isEmpty()) {
-            final ByteBuffer b = ByteBuffer.allocateDirect(this.layout.suggestedBlockSize());
+            final ByteBuffer b = ByteBuffer.allocateDirect(this.layout.suggestedBufferSize());
             this.buffers.add(b);
             this.currentBuffer = 0;
         }
@@ -103,7 +102,7 @@ public class VizBufferBuilder<T> {
             if (this.currentBuffer < this.buffers.size()) {
                 b = this.buffers.get(this.currentBuffer);
             } else {
-                b = ByteBuffer.allocateDirect(this.layout.suggestedBlockSize());
+                b = ByteBuffer.allocateDirect(this.layout.suggestedBufferSize());
                 this.buffers.add(b);
             }
             this.layout.add(b, e); // it should always succeed

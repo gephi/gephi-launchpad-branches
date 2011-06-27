@@ -21,7 +21,7 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 
 package org.gephi.visualization.api.selection;
 
-import org.gephi.visualization.api.view.ui.UIPrimitive;
+import org.gephi.visualization.api.view.ui.UIShape;
 
 public interface Shape {
 
@@ -51,7 +51,7 @@ public interface Shape {
      */
     public boolean isDiscretelyUpdated();
 
-    public UIPrimitive getUIPrimitive();
+    public UIShape getUIPrimitive();
 
     public SelectionType getSelectionType();
 

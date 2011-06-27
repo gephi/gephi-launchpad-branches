@@ -23,19 +23,18 @@ package org.gephi.visualization.view.pipeline.gl11;
 
 import java.nio.ByteBuffer;
 import org.gephi.graph.api.Edge;
-import org.gephi.lib.gleem.linalg.Vec3f;
-import org.gephi.visualization.api.color.Color;
-import org.gephi.visualization.data.layout.VizEdgeLayout;
+import org.gephi.visualization.data.graph.VizEdge;
+import org.gephi.visualization.data.layout.Layout;
 
 /**
- * VizEdgeLayout used by GL11Pipeline3D.
+ * EdgeLayout used by GL11Pipeline3D.
  *
  * Antonio Patriarca <antoniopatriarca@gmail.com>
  */
-public class GL11EdgesLayout3D implements VizEdgeLayout {
+public class GL11EdgesLayout3D implements Layout<Edge, VizEdge> {
 
     @Override
-    public int suggestedBlockSize() {
+    public int suggestedBufferSize() {
         return 0;
     }
 
@@ -45,52 +44,22 @@ public class GL11EdgesLayout3D implements VizEdgeLayout {
     }
 
     @Override
-    public Vec3f startNodePosition(ByteBuffer b) {
-        return new Vec3f();
+    public VizEdge get(ByteBuffer b) {
+        return null;
     }
 
     @Override
-    public float startNodeSize(ByteBuffer b) {
-        return 0.0f;
+    public VizEdge get(ByteBuffer b, int[] i) {
+        return null;
     }
 
     @Override
-    public Color startColor(ByteBuffer b) {
-        return Color.TRANSPARENT;
-    }
-
-    @Override
-    public Vec3f endNodePosition(ByteBuffer b) {
-        return new Vec3f();
-    }
-
-    @Override
-    public float endNodeSize(ByteBuffer b) {
-        return 0.0f;
-    }
-
-    @Override
-    public Color endColor(ByteBuffer b) {
-        return Color.TRANSPARENT;
-    }
-
-    @Override
-    public float thickness(ByteBuffer b) {
-        return 0.0f;
-    }
-
-    @Override
-    public boolean isBidirectional(ByteBuffer b) {
+    public boolean hasNext(ByteBuffer b) {
         return false;
     }
 
     @Override
-    public boolean isSelected(ByteBuffer b) {
-        return false;
-    }
-
-    @Override
-    public boolean advance(ByteBuffer b) {
+    public boolean hasNext(ByteBuffer b, int i) {
         return false;
     }
 

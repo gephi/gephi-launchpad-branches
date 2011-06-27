@@ -25,13 +25,12 @@ import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 import javax.media.opengl.glu.GLU;
 import javax.media.opengl.glu.gl2.GLUgl2;
-import org.gephi.lib.gleem.linalg.Vec2f;
-import org.gephi.visualization.api.view.ui.UIPrimitive;
+import org.gephi.math.Vec2M;
+import org.gephi.visualization.api.view.ui.UIShape;
 import org.gephi.visualization.camera.Camera;
 import org.gephi.visualization.data.FrameData;
-import org.gephi.visualization.data.buffer.VizUIBuffer;
 import org.gephi.visualization.view.pipeline.Pipeline;
-import org.gephi.visualization.view.ui.UIStyle;
+import org.gephi.visualization.api.view.ui.UIStyle;
 
 /**
  * UI pipeline based on OpenGL 1.1
@@ -83,21 +82,21 @@ public class GL11UIPipeline implements Pipeline {
 
         gl2.glLoadIdentity();
 
-        final VizUIBuffer uiBuffer = frameData.uiBuffer();
-        for (; !uiBuffer.isEndOfBuffer(); uiBuffer.advance()) {
-            UIStyle style = uiBuffer.style();
-            UIPrimitive primitive = uiBuffer.primitive();
+        for (UIShape shape : frameData.uiBuffer()) {
+            UIStyle style = shape.style();
 
-            if (primitive.shape() == UIPrimitive.Shape.CONVEX_POLYGON) {
+            if (shape.type() == UIShape.Type.CONVEX_POLYGON) {
+                UIShape.UIConvexPolygon poly = (UIShape.UIConvexPolygon)shape;
+
                 // fill
                 gl2.glColor4f(style.fillColor().ra(), style.fillColor().ga(), style.fillColor().ba(), style.fillColor().a());
 
                 gl2.glPolygonMode(GL2.GL_FRONT_AND_BACK, GL2.GL_FILL);
 
                 gl2.glBegin(GL2.GL_POLYGON);
-                
-                for (int i = 0; i < primitive.arguments().length; i += 2) {
-                    gl2.glVertex2f(primitive.arguments()[i], primitive.arguments()[i+1]);
+
+                for (int i = 0; i < poly.numPoints(); ++i) {
+                    gl2.glVertex2f(poly.point(i).x(), poly.point(i).y());
                 }
 
                 gl2.glEnd();
@@ -111,8 +110,8 @@ public class GL11UIPipeline implements Pipeline {
 
                 gl2.glBegin(GL2.GL_POLYGON);
 
-                for (int i = 0; i < primitive.arguments().length; i += 2) {
-                    gl2.glVertex2f(primitive.arguments()[i], primitive.arguments()[i+1]);
+                for (int i = 0; i < poly.numPoints(); ++i) {
+                    gl2.glVertex2f(poly.point(i).x(), poly.point(i).y());
                 }
 
                 gl2.glEnd();
@@ -120,22 +119,19 @@ public class GL11UIPipeline implements Pipeline {
                 gl2.glPolygonMode(GL2.GL_FRONT_AND_BACK, GL2.GL_FILL);
 
             } else {
-                float[] args = primitive.arguments();
-                Vec2f center = new Vec2f(args[0], args[1]);
-                Vec2f axis1 = new Vec2f(args[2], args[3]);
-                Vec2f axis2 = new Vec2f(args[4], args[5]);
+                UIShape.UIEllipse ellipse = (UIShape.UIEllipse)shape;
 
                 // TODO: calculate a better number of points
                 final int len = 200;
-                
-                Vec2f[] pnts = new Vec2f[len];
-                
+
+                final Vec2M[] pnts = new Vec2M[len];
+
                 for (int i = 0; i < len; ++i) {
                     double angle = (2.0 * Math.PI * i) / len;
-                    
-                    pnts[i] = new Vec2f(center);
-                    pnts[i].addScaled(pnts[i], (float)Math.cos(angle), axis1);
-                    pnts[i].addScaled(pnts[i], (float)Math.sin(angle), axis2);
+                    float c = (float) Math.cos(angle);
+                    float s = (float) Math.sin(angle);
+
+                    pnts[i] = ellipse.center.plusM(c, ellipse.axis1).plusEq(s, ellipse.axis2);
                 }
 
                 // fill

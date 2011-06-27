@@ -19,25 +19,27 @@ You should have received a copy of the GNU Affero General Public License
 along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package org.gephi.visualization.view.pipeline;
+package org.gephi.visualization.data.graph;
 
-import javax.media.opengl.GL;
-import org.gephi.visualization.data.FrameData;
-import org.gephi.visualization.data.layout.VizLayout;
+import org.gephi.math.Vec3;
+import org.gephi.visualization.api.color.Color;
 
 /**
- * Parts of a pipeline.
+ * Immutable node visualization data class.
  *
  * @author Antonio Patriarca <antoniopatriarca@gmail.com>
  */
-public interface Stage<T> {
+public final class VizNode {
 
-    public VizLayout<T> layout();
+    public final Vec3 position;
+    public final float size;
+    public final Color color;
+    public final boolean selected;
 
-    public boolean init(GL gl);
-
-    public void draw(GL gl, FrameData frameData);
-
-    public void dispose(GL gl);
-
+    public VizNode(Vec3 position, float size, Color color, boolean selected) {
+        this.position = position;
+        this.size = size;
+        this.color = color;
+        this.selected = selected;
+    }
 }

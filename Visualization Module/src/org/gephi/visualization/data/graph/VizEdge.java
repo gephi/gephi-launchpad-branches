@@ -19,20 +19,29 @@ You should have received a copy of the GNU Affero General Public License
 along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package org.gephi.visualization.data.layout;
-
-import java.nio.ByteBuffer;
+package org.gephi.visualization.data.graph;
 
 /**
- * Generic interface which controls how some data is stored in a buffer.
+ * Immutable edge visualization data class.
  *
- * Antonio Patriarca <antoniopatriarca@gmail.com>
+ * @author Antonio Patriarca <antoniopatriarca@gmail.com>
  */
-public interface VizLayout<T> {
+public final class VizEdge {
 
-    public int suggestedBlockSize();
-    
-    public boolean add(ByteBuffer b, T e);
+    public final VizNode start;
+    public final VizNode end;
+    public final float thickness;
+    public final boolean selected;
+    public final float directional;
+    public final float bidirectional;
 
-    public boolean advance(ByteBuffer b);
+    public VizEdge(VizNode start, VizNode end, float thickness, boolean selected,
+            float directional, float bidirectional) {
+        this.start = start;
+        this.end = end;
+        this.thickness = thickness;
+        this.selected = selected;
+        this.directional = directional;
+        this.bidirectional = bidirectional;
+    }
 }

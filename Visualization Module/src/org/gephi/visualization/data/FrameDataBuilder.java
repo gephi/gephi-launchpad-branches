@@ -23,17 +23,13 @@ package org.gephi.visualization.data;
 
 import org.gephi.graph.api.Edge;
 import org.gephi.graph.api.Node;
-import org.gephi.visualization.api.view.ui.UIPrimitive;
+import org.gephi.visualization.api.view.ui.UIShape;
 import org.gephi.visualization.camera.Camera;
-import org.gephi.visualization.data.buffer.VizBufferBuilder;
-import org.gephi.visualization.data.buffer.VizEdgeBuffer;
-import org.gephi.visualization.data.buffer.VizNodeBuffer;
-import org.gephi.visualization.data.buffer.VizUIBuffer;
-import org.gephi.visualization.data.layout.VizEdgeLayout;
-import org.gephi.visualization.data.layout.VizNodeLayout;
-import org.gephi.visualization.data.layout.VizUILayout;
-import org.gephi.visualization.utils.Pair;
-import org.gephi.visualization.view.ui.UIStyle;
+import org.gephi.visualization.data.buffer.BufferBuilder;
+import org.gephi.visualization.data.buffer.Buffer;
+import org.gephi.visualization.data.graph.VizEdge;
+import org.gephi.visualization.data.graph.VizNode;
+import org.gephi.visualization.data.layout.Layout;
 
 /**
  * Class used to create FrameData objects.
@@ -43,22 +39,31 @@ import org.gephi.visualization.view.ui.UIStyle;
 public class FrameDataBuilder {
 
     private Camera camera;
-    private final VizBufferBuilder<Node> nodeBufferBuilder;
-    private final VizBufferBuilder<Edge> edgeBufferBuilder;
-    private final VizBufferBuilder<Pair<UIPrimitive, UIStyle>> uiBufferBuilder;
 
-    public FrameDataBuilder(VizNodeLayout nodeLayout, VizEdgeLayout edgeLayout, VizUILayout uiLayout) {
+    private boolean somethingIsSelected;
+
+    private final BufferBuilder<Node, VizNode> nodeBufferBuilder;
+    private final BufferBuilder<Edge, VizEdge> edgeBufferBuilder;
+    private final BufferBuilder<UIShape, UIShape> uiBufferBuilder;
+
+    public FrameDataBuilder(Layout<Node, VizNode> nodeLayout, Layout<Edge, VizEdge> edgeLayout, Layout<UIShape, UIShape> uiLayout) {
         this.camera = null;
-        this.nodeBufferBuilder = new VizBufferBuilder<Node>(nodeLayout);
-        this.edgeBufferBuilder = new VizBufferBuilder<Edge>(edgeLayout);
-        this.uiBufferBuilder = new VizBufferBuilder<Pair<UIPrimitive, UIStyle>>(uiLayout);
+
+        this.somethingIsSelected = false;
+
+        this.nodeBufferBuilder = new BufferBuilder<Node, VizNode>(nodeLayout);
+        this.edgeBufferBuilder = new BufferBuilder<Edge, VizEdge>(edgeLayout);
+        this.uiBufferBuilder = new BufferBuilder<UIShape, UIShape>(uiLayout);
     }
 
-    public FrameDataBuilder(VizNodeBuffer nodeBuffer, VizEdgeBuffer edgeBuffer, VizUIBuffer uiBuffer) {
+    public FrameDataBuilder(Buffer<Node, VizNode> nodeBuffer, Buffer<Edge, VizEdge> edgeBuffer, Buffer<UIShape, UIShape> uiBuffer) {
         this.camera = null;
-        this.nodeBufferBuilder = new VizBufferBuilder<Node>(nodeBuffer);
-        this.edgeBufferBuilder = new VizBufferBuilder<Edge>(edgeBuffer);
-        this.uiBufferBuilder = new VizBufferBuilder<Pair<UIPrimitive, UIStyle>>(uiBuffer);
+
+        this.somethingIsSelected = false;
+
+        this.nodeBufferBuilder = new BufferBuilder<Node, VizNode>(nodeBuffer);
+        this.edgeBufferBuilder = new BufferBuilder<Edge, VizEdge>(edgeBuffer);
+        this.uiBufferBuilder = new BufferBuilder<UIShape, UIShape>(uiBuffer);
     }
 
     public void setCamera(Camera camera) {
@@ -66,6 +71,7 @@ public class FrameDataBuilder {
     }
 
     public void add(Node node) {
+        if (node.getNodeData().isSelected()) this.somethingIsSelected = true;
         this.nodeBufferBuilder.add(node);
     }
 
@@ -73,15 +79,15 @@ public class FrameDataBuilder {
         this.edgeBufferBuilder.add(edge);
     }
 
-    public void add(UIPrimitive primitive, UIStyle style) {
-        this.uiBufferBuilder.add(Pair.ofNotNull(primitive, style));
+    public void add(UIShape shape) {
+        this.uiBufferBuilder.add(shape);
     }
 
     public FrameData createFrameData() {
-        VizNodeBuffer nodeBuffer = VizNodeBuffer.wrap(this.nodeBufferBuilder.createVizBuffer());
-        VizEdgeBuffer edgeBuffer = VizEdgeBuffer.wrap(this.edgeBufferBuilder.createVizBuffer());
-        VizUIBuffer uiBuffer = VizUIBuffer.wrap(this.uiBufferBuilder.createVizBuffer());
+        Buffer<Node, VizNode> nodeBuffer = this.nodeBufferBuilder.create();
+        Buffer<Edge, VizEdge> edgeBuffer = this.edgeBufferBuilder.create();
+        Buffer<UIShape, UIShape> uiBuffer = this.uiBufferBuilder.create();
 
-        return new FrameData(camera, nodeBuffer, edgeBuffer, uiBuffer);
+        return new FrameData(camera, somethingIsSelected, nodeBuffer, edgeBuffer, uiBuffer);
     }
 }

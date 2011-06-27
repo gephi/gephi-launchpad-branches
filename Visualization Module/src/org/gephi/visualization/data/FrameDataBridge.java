@@ -25,13 +25,12 @@ import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 import org.gephi.graph.api.Edge;
 import org.gephi.graph.api.Node;
-import org.gephi.visualization.api.view.ui.UIPrimitive;
+import org.gephi.visualization.api.view.ui.UIShape;
 import org.gephi.visualization.camera.Camera;
 import org.gephi.visualization.data.FrameData;
-import org.gephi.visualization.data.layout.VizEdgeLayout;
-import org.gephi.visualization.data.layout.VizNodeLayout;
-import org.gephi.visualization.data.layout.VizUILayout;
-import org.gephi.visualization.view.ui.UIStyle;
+import org.gephi.visualization.data.graph.VizEdge;
+import org.gephi.visualization.data.graph.VizNode;
+import org.gephi.visualization.data.layout.Layout;
 
 /**
  * Class used to exchange frame data information between Model and View.
@@ -40,9 +39,9 @@ import org.gephi.visualization.view.ui.UIStyle;
  */
 public class FrameDataBridge implements FrameDataBridgeIn, FrameDataBridgeOut {
 
-    private VizNodeLayout nodeLayout;
-    private VizEdgeLayout edgeLayout;
-    private VizUILayout uiLayout;
+    private Layout<Node, VizNode> nodeLayout;
+    private Layout<Edge, VizEdge> edgeLayout;
+    private Layout<UIShape, UIShape> uiLayout;
 
     private final Queue<FrameDataBuilder> waitingQueue;
     private FrameDataBuilder currentBuilder;
@@ -98,9 +97,9 @@ public class FrameDataBridge implements FrameDataBridgeIn, FrameDataBridgeOut {
     }
 
     @Override
-    public void add(UIPrimitive primitive, UIStyle style) {
+    public void add(UIShape shape) {
         if (this.isUpdating) {
-            this.currentBuilder.add(primitive, style);
+            this.currentBuilder.add(shape);
         }
     }
 
@@ -123,21 +122,21 @@ public class FrameDataBridge implements FrameDataBridgeIn, FrameDataBridgeOut {
     }
 
     @Override
-    public void setLayout(VizNodeLayout layout) {
+    public void setNodeLayout(Layout<Node, VizNode> layout) {
         synchronized(this.lock) {
             this.nodeLayout = layout;
         }
     }
 
     @Override
-    public void setLayout(VizEdgeLayout layout) {
+    public void setEdgeLayout(Layout<Edge, VizEdge> layout) {
         synchronized(this.lock) {
             this.edgeLayout = layout;
         }
     }
 
     @Override
-    public void setLayout(VizUILayout layout) {
+    public void setUILayout(Layout<UIShape, UIShape> layout) {
         synchronized(this.lock) {
             this.uiLayout = layout;
         }

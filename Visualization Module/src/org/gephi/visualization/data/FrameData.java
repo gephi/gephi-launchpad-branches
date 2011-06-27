@@ -21,13 +21,14 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 
 package org.gephi.visualization.data;
 
+import org.gephi.graph.api.Edge;
+import org.gephi.graph.api.Node;
+import org.gephi.visualization.api.view.ui.UIShape;
 import org.gephi.visualization.camera.Camera;
-import org.gephi.visualization.data.buffer.VizEdgeBuffer;
-import org.gephi.visualization.data.buffer.VizNodeBuffer;
-import org.gephi.visualization.data.buffer.VizUIBuffer;
-import org.gephi.visualization.data.layout.VizEdgeLayout;
-import org.gephi.visualization.data.layout.VizNodeLayout;
-import org.gephi.visualization.data.layout.VizUILayout;
+import org.gephi.visualization.data.buffer.Buffer;
+import org.gephi.visualization.data.graph.VizEdge;
+import org.gephi.visualization.data.graph.VizNode;
+import org.gephi.visualization.data.layout.Layout;
 
 /**
  * Class used to get the current graph data in View.
@@ -37,12 +38,16 @@ import org.gephi.visualization.data.layout.VizUILayout;
 public class FrameData {
 
     private final Camera camera;
-    private final VizNodeBuffer nodeBuffer;
-    private final VizEdgeBuffer edgeBuffer;
-    private final VizUIBuffer uiBuffer;
 
-    FrameData(Camera camera, VizNodeBuffer nodeBuffer, VizEdgeBuffer edgeBuffer, VizUIBuffer uiBuffer) {
+    private final boolean somethingIsSelected;
+
+    private final Buffer<Node, VizNode> nodeBuffer;
+    private final Buffer<Edge, VizEdge> edgeBuffer;
+    private final Buffer<UIShape, UIShape> uiBuffer;
+
+    FrameData(Camera camera, boolean somethingIsSelected, Buffer<Node, VizNode> nodeBuffer, Buffer<Edge, VizEdge> edgeBuffer, Buffer<UIShape, UIShape> uiBuffer) {
         this.camera = camera;
+        this.somethingIsSelected = somethingIsSelected;
         this.nodeBuffer = nodeBuffer;
         this.edgeBuffer = edgeBuffer;
         this.uiBuffer = uiBuffer;
@@ -52,27 +57,31 @@ public class FrameData {
         return this.camera;
     }
 
-    public VizNodeBuffer nodeBuffer() {
+    public boolean somethingIsSelected() {
+        return this.somethingIsSelected;
+    }
+
+    public Buffer<Node, VizNode> nodeBuffer() {
         return this.nodeBuffer;
     }
 
-    public VizNodeLayout nodeLayout() {
-        return (VizNodeLayout) this.nodeBuffer.layout();
+    public Layout<Node, VizNode> nodeLayout() {
+        return this.nodeBuffer.layout();
     }
 
-    public VizEdgeBuffer edgeBuffer() {
+    public Buffer<Edge, VizEdge> edgeBuffer() {
         return this.edgeBuffer;
     }
 
-    public VizEdgeLayout edgeLayout() {
-        return (VizEdgeLayout) this.edgeBuffer.layout();
+    public Layout<Edge, VizEdge> edgeLayout() {
+        return this.edgeBuffer.layout();
     }
 
-    public VizUIBuffer uiBuffer() {
+    public Buffer<UIShape, UIShape> uiBuffer() {
         return this.uiBuffer;
     }
 
-    public VizUILayout uiLayout() {
-        return (VizUILayout) this.uiBuffer.layout();
+    public Layout<UIShape, UIShape> uiLayout() {
+        return this.uiBuffer.layout();
     }
 }

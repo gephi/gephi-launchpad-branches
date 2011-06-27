@@ -19,12 +19,13 @@ You should have received a copy of the GNU Affero General Public License
 along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package org.gephi.visualization.view.ui;
+package org.gephi.visualization.api.view.ui;
 
+import java.nio.ByteBuffer;
 import org.gephi.visualization.api.color.Color;
 
 /**
- * Class which defines how UIPrimitives are rendered.
+ * Class which defines how <code>UIShape</code>s are rendered.
  *
  * Antonio Patriarca <antoniopatriarca@gmail.com>
  */
@@ -42,6 +43,8 @@ public final class UIStyle {
     private final Color borderColor;
     private final float borderWidth;
 
+    final static int binarySize = 4*9;
+
     public UIStyle(Color fillColor, Color borderColor, float borderWidth) {
         this.fillColor = fillColor;
         this.borderColor = borderColor;
@@ -58,5 +61,32 @@ public final class UIStyle {
 
     public float borderWidth() {
         return borderWidth;
+    }
+
+    public void writeTo(ByteBuffer b) {
+        this.fillColor.writeTo(b);
+        this.borderColor.writeTo(b);
+        b.putFloat(this.borderWidth);
+    }
+
+    public int writeTo(ByteBuffer b, int i) {
+        i = this.fillColor.writeTo(b, i);
+        i = this.borderColor.writeTo(b, i);
+        b.putFloat(i, this.borderWidth);
+        return i + 4;
+    }
+
+    public static UIStyle readFrom(ByteBuffer b) {
+        Color fillColor = Color.readFrom(b);
+        Color borderColor = Color.readFrom(b);
+        float borderWidth = b.getFloat();
+        return new UIStyle(fillColor, borderColor, borderWidth);
+    }
+
+    public static UIStyle readFrom(ByteBuffer b, int[] i) {
+        Color fillColor = Color.readFrom(b, i);
+        Color borderColor = Color.readFrom(b, i);
+        float borderWidth = b.getFloat(i[0]); i[0] += 4;
+        return new UIStyle(fillColor, borderColor, borderWidth);
     }
 }

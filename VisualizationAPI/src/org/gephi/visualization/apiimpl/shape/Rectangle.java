@@ -22,10 +22,11 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 package org.gephi.visualization.apiimpl.shape;
 
 import java.awt.Point;
-import org.gephi.lib.gleem.linalg.Vec2f;
+import org.gephi.math.Vec2;
 import org.gephi.visualization.api.selection.SelectionType;
 import org.gephi.visualization.api.selection.Shape;
-import org.gephi.visualization.api.view.ui.UIPrimitive;
+import org.gephi.visualization.api.view.ui.UIShape;
+import org.gephi.visualization.api.view.ui.UIStyle;
 
 /**
  * Class representing a rectangular shape.
@@ -68,8 +69,8 @@ class Rectangle extends AbstractShape {
         return new Rectangle(x, y);
     }
 
-    public UIPrimitive getUIPrimitive() {
-        return UIPrimitive.orientedQuad(new Vec2f((float)origin.x, (float)origin.y), new Vec2f((float)opposite.x, (float)opposite.y));
+    public UIShape getUIPrimitive() {
+        return UIShape.orientedQuad(UIStyle.SELECTION, new Vec2((float)origin.x, (float)origin.y), new Vec2((float)opposite.x, (float)opposite.y));
     }
 
     public boolean isDiscretelyUpdated() {

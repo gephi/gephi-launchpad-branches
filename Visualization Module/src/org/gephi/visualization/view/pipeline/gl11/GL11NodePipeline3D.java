@@ -26,11 +26,11 @@ import javax.media.opengl.GL2;
 import javax.media.opengl.glu.GLU;
 import javax.media.opengl.glu.GLUquadric;
 import javax.media.opengl.glu.gl2.GLUgl2;
-import org.gephi.lib.gleem.linalg.Vec3f;
+import org.gephi.math.Vec3;
 import org.gephi.visualization.api.color.Color;
 import org.gephi.visualization.camera.Camera;
 import org.gephi.visualization.data.FrameData;
-import org.gephi.visualization.data.buffer.VizNodeBuffer;
+import org.gephi.visualization.data.graph.VizNode;
 import org.gephi.visualization.view.pipeline.Pipeline;
 
 /**
@@ -56,7 +56,7 @@ public class GL11NodePipeline3D implements Pipeline {
     }
 
     private int smallerSphere;
-    private static final int numLods = 5;
+    private static final int numLods = 4;
 
     public GL11NodePipeline3D() {
         this.smallerSphere = 0;
@@ -106,31 +106,34 @@ public class GL11NodePipeline3D implements Pipeline {
         camera.viewMatrix().getColumnMajorData(matrix);
         gl2.glLoadMatrixf(matrix, 0);
 
-        final VizNodeBuffer nodeBuffer = frameData.nodeBuffer();
-        for (; !nodeBuffer.isEndOfBuffer(); nodeBuffer.advance()) {
+        for (VizNode node : frameData.nodeBuffer()) {
             gl2.glPushMatrix();
 
-            Vec3f position = nodeBuffer.position();
-            float size = nodeBuffer.size();
-            Color color = nodeBuffer.color();
+            Vec3 position = node.position;
+            float size = node.size;
+            Color color = node.color;
 
-            if (nodeBuffer.isSelected()) {
-                gl2.glColor4f(0, 0, 255, color.a());
+            if (frameData.somethingIsSelected()) {
+                if (node.selected) {
+                    Color selectionColor = Color.RED;
+                    gl2.glColor3f(selectionColor.r, selectionColor.g, selectionColor.b);
+                } else {
+                    Color lightColor = Color.WHITE;
+                    float lightColorFactor = 0.3f;
+                    final float r = color.r + (lightColor.r - color.r) * lightColorFactor;
+                    final float g = color.g + (lightColor.g - color.g) * lightColorFactor;
+                    final float b = color.b + (lightColor.b - color.b) * lightColorFactor;
+                    gl2.glColor3f(r, g, b);
+                }
             } else {
-                gl2.glColor4f(255, 0, 0, color.a());
+                gl2.glColor3f(color.r, color.g, color.b);
             }
 
             gl2.glTranslatef(position.x(), position.y(), position.z());
             gl2.glScalef(size, size, size);
 
-            final float dist = camera.projectedDistanceFrom(position);
-            final float h = (float) (dist * Math.tan(camera.fov() / 2.0));
-            final float approxSize = (h * camera.imageHeight()) / (2.0f * size);
-
-            final float log2Size = (float) (Math.log(approxSize) / Math.log(2.0));
-
-            int lod = log2Size < 0.0 ? 0 : (int) log2Size;
-            lod = lod >= numLods ? numLods - 1 : lod;
+            // implement LOD
+            int lod = numLods - 1;
 
             gl2.glCallList(this.smallerSphere + lod);
 
