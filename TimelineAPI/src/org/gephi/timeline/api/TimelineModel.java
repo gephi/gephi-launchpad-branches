@@ -21,6 +21,7 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 package org.gephi.timeline.api;
 
 import org.gephi.dynamic.api.DynamicModel;
+import org.gephi.graph.api.Graph;
 
 /**
  *
@@ -59,4 +60,6 @@ public interface TimelineModel {
     public void setUnit(Class cl);
 
     public Class getUnit();
+    
+    public Graph getSnapshotGraph(double point);
 }

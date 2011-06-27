@@ -335,11 +335,11 @@ public class MinimalDrawer extends JPanel
 
         //DateTime dtFrom = new DateTime(1455, 1, 1, 1, 1, 1, 1);
         //DateTime dtTo = new DateTime(1960, 2, 10, 1, 1, 1, 1);
-        if (model.getUnit() == DateTime.class) {
-            paintUpperRulerForInterval(g2d,
-                    new DateTime(new Date(min)),
-                    new DateTime(new Date(max)));
-        }
+//        if (model.getUnit() == DateTime.class) {
+//            paintUpperRulerForInterval(g2d,
+//                    new DateTime(new Date(min)),
+//                    new DateTime(new Date(max)));
+//        }
 
         g2d.setColor(settings.defaultStrokeColor);
         g2d.drawRect((int) sf, settings.tmMarginTop, sw, height - settings.tmMarginBottom - 1);

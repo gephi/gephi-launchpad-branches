@@ -20,9 +20,15 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.gephi.desktop.timeline;
 
+import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Random;
 import java.util.logging.Logger;
+import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
@@ -32,6 +38,22 @@ import org.gephi.timeline.api.TimelineModel;
 import org.gephi.timeline.api.TimelineModelEvent;
 import org.gephi.timeline.api.TimelineModelListener;
 import org.gephi.ui.components.CloseButton;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.DateAxis;
+import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.axis.ValueAxis;
+import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.xy.StandardXYItemRenderer;
+import org.jfree.data.general.Series;
+import org.jfree.data.time.Day;
+import org.jfree.data.time.TimeSeries;
+import org.jfree.data.time.TimeSeriesCollection;
+import org.jfree.data.xy.XYDataset;
+import org.jfree.data.xy.XYSeries;
+import org.jfree.data.xy.XYSeriesCollection;
+import org.jfree.ui.RectangleInsets;
+import org.joda.time.DateTime;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 import org.openide.windows.WindowManager;
@@ -52,31 +74,91 @@ public final class TimelineTopComponent extends TopComponent implements Timeline
     /** path to the icon used by the component and its open action */
     static final String ICON_PATH = "org/gephi/desktop/timeline/resources/ui-status-bar.png";
     private static final String PREFERRED_ID = "TimelineTopComponent";
-    private JPanel drawerPanel;
-    private TimelineAnimatorImpl animator;
+
+    // model+controller
     private TimelineModel model;
-    //MinMax
+    private TimelineAnimatorImpl animator;
+    
+    // MinMax
     private double min;
     private double max;
-
+    
+    // drawer
+    private JPanel drawerPanel;
+        
+    // sparkline
+    private XYDataset dataset;
+    private ValueAxis timeline;
+    private NumberAxis metric;
+    private XYPlot plot;
+    private JFreeChart chart;
+    private JPanel chartpanel;
+    
+        
     public TimelineTopComponent() {
         initComponents();
+        
         setName(NbBundle.getMessage(TimelineTopComponent.class, "CTL_TimelineTopComponent"));
 //        setToolTipText(NbBundle.getMessage(TimelineTopComponent.class, "HINT_TimelineTopComponent"));
         setIcon(ImageUtilities.loadImage(ICON_PATH, true));
         putClientProperty(TopComponent.PROP_MAXIMIZATION_DISABLED, Boolean.TRUE);
+        
+        // setup sparkline data
+        refreshModelData();
+                
+        // The sparkline is created by setting a bunch of the visible properties
+        // on the domain, range axis and the XYPlot to false
+        timeline = new DateAxis();
+        timeline.setTickLabelsVisible(true);
+        timeline.setTickMarksVisible(true);
+        timeline.setAxisLineVisible(true);
+        timeline.setNegativeArrowVisible(true);
+        timeline.setPositiveArrowVisible(true);
+        timeline.setVisible(true);
 
-        //Drawer
+        metric = new NumberAxis();
+        metric.setTickLabelsVisible(false);
+        metric.setTickMarksVisible(false);
+        metric.setAxisLineVisible(false);
+        metric.setNegativeArrowVisible(false);
+        metric.setPositiveArrowVisible(false);
+        metric.setVisible(false);
+        
+        plot = new XYPlot();
+        plot.setInsets(new RectangleInsets(-1, -1, 0, 0));
+        plot.setDataset(dataset);
+        plot.setDomainAxis(timeline);
+        plot.setDomainGridlinesVisible(false);
+        plot.setDomainCrosshairVisible(false);
+        plot.setRangeGridlinesVisible(false);
+        plot.setRangeCrosshairVisible(false);
+        plot.setRangeAxis(metric);
+        plot.setRenderer(new StandardXYItemRenderer(StandardXYItemRenderer.LINES));
+        
+        chart = new JFreeChart(null, JFreeChart.DEFAULT_TITLE_FONT, plot, false);
+        chart.setBorderVisible(false);
+        chart.setBackgroundPaint(Color.WHITE);
+        
+        ChartPanel chartPanel = new ChartPanel(chart);
+        chartPanel.setMinimumDrawHeight(50);
+        chartPanel.setLayout(new java.awt.BorderLayout());
+        chartPanel.setBounds(0, 2, 300, 30);        
+        chartpanel = (JPanel) chartPanel;
+                
+        tlcontainer.add(chartpanel, JLayeredPane.DEFAULT_LAYER); 
+                       
+        // Drawer
         TimelineDrawer drawer = Lookup.getDefault().lookup(TimelineDrawer.class);
         drawerPanel = (JPanel) drawer;
-        timelinePanel.add(drawerPanel);
+        drawerPanel.setOpaque(false);
         drawerPanel.setEnabled(false);
-
-        //Animator
+        timelinePanel.add(drawerPanel);
+                
+        // Animator
         animator = new TimelineAnimatorImpl();
         animator.addListener(this);
 
-        //Button
+        // Button
         enableButton.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
@@ -93,6 +175,35 @@ public final class TimelineTopComponent extends TopComponent implements Timeline
                 TimelineTopComponent.this.close();
             }
         });
+    }
+    
+    private void refreshModelData() {
+        final int samplepoints = 1000; // another candidate: 840
+        final String metricId = "Number of nodes";
+        
+        if(model==null) System.out.println("refreshModelData: no model");
+
+//        if(model.getUnit()==DateTime.class) {
+            TimeSeriesCollection dataSet = new TimeSeriesCollection();
+            TimeSeries data = new TimeSeries(metricId);
+//
+//        } else {
+//            XYSeriesCollection dataSet = new XYSeriesCollection();
+//            XYSeries data = new XYSeries(metricId);
+//        }
+        // just an example
+        Random r = new Random();
+        Calendar c = Calendar.getInstance();
+        for(int i = 0; i < 100; i++) {
+            int val = r.nextInt(100);
+            if(val < 50)
+                val += 50;
+            c.add(Calendar.DATE, 7);
+            Date date = c.getTime();
+            data.add(new Day(date), val);
+        }
+        dataSet.addSeries(data);
+        dataset = dataSet;
     }
 
     public void timelineModelChanged(TimelineModelEvent event) {
@@ -141,6 +252,7 @@ public final class TimelineTopComponent extends TopComponent implements Timeline
                 } else if (!visible && TimelineTopComponent.this.isOpened()) {
                     TimelineTopComponent.this.close();
                 }
+                timelinePanel.setSize(tlcontainer.getSize());
             }
         });
     }
@@ -155,6 +267,7 @@ public final class TimelineTopComponent extends TopComponent implements Timeline
         java.awt.GridBagConstraints gridBagConstraints;
 
         enableButton = new javax.swing.JToggleButton();
+        tlcontainer = new javax.swing.JLayeredPane();
         timelinePanel = new javax.swing.JPanel();
         closeButton = new CloseButton();
 
@@ -179,16 +292,30 @@ public final class TimelineTopComponent extends TopComponent implements Timeline
         gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
         add(enableButton, gridBagConstraints);
 
+        tlcontainer.setMaximumSize(new java.awt.Dimension(2147483647, 2147483647));
+        tlcontainer.setMinimumSize(new java.awt.Dimension(300, 28));
+        tlcontainer.setPreferredSize(new java.awt.Dimension(300, 31));
+        tlcontainer.addComponentListener(new java.awt.event.ComponentAdapter() {
+            public void componentResized(java.awt.event.ComponentEvent evt) {
+                tlcontainerResize(evt);
+            }
+        });
+
         timelinePanel.setEnabled(false);
         timelinePanel.setMinimumSize(new java.awt.Dimension(300, 28));
+        timelinePanel.setOpaque(false);
+        timelinePanel.setPreferredSize(new java.awt.Dimension(300, 30));
         timelinePanel.setLayout(new java.awt.BorderLayout());
+        timelinePanel.setBounds(0, 0, 300, 30);
+        tlcontainer.add(timelinePanel, javax.swing.JLayeredPane.MODAL_LAYER);
+
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
-        add(timelinePanel, gridBagConstraints);
+        add(tlcontainer, gridBagConstraints);
 
         closeButton.setToolTipText(org.openide.util.NbBundle.getMessage(TimelineTopComponent.class, "TimelineTopComponent.closeButton.toolTipText")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -202,10 +329,17 @@ public final class TimelineTopComponent extends TopComponent implements Timeline
     private void enableButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_enableButtonActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_enableButtonActionPerformed
+
+    private void tlcontainerResize(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_tlcontainerResize
+        timelinePanel.setSize(tlcontainer.getSize());
+        chartpanel.setSize(new Dimension(tlcontainer.getWidth(), tlcontainer.getHeight()-6));  
+    }//GEN-LAST:event_tlcontainerResize
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton closeButton;
     private javax.swing.JToggleButton enableButton;
     private javax.swing.JPanel timelinePanel;
+    private javax.swing.JLayeredPane tlcontainer;
     // End of variables declaration//GEN-END:variables
 
     /**
@@ -291,4 +425,5 @@ public final class TimelineTopComponent extends TopComponent implements Timeline
     public void timelineAnimatorChanged(ChangeEvent event) {
         // check animator value, to update the buttons etc..
     }
+
 }

@@ -113,6 +113,7 @@
                 </test-type>
             </test-dependencies>
             <public-packages>
+                <package>org.gephi.statistics</package>
                 <package>org.gephi.statistics.api</package>
                 <package>org.gephi.statistics.spi</package>
             </public-packages>

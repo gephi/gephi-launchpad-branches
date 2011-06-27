@@ -36,6 +36,9 @@ public class DegreeDistributionPanel extends javax.swing.JPanel {
 
     public void setDirected(boolean directed) {
         directedButtonGroup.setSelected(directed ? directedRadioButton.getModel() : undirectedRadioButton.getModel(), true);
+        if (!directed) {
+            directedRadioButton.setEnabled(false);
+        }
     }
 
     /** This method is called from within the constructor to
@@ -88,7 +91,7 @@ public class DegreeDistributionPanel extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(undirectedRadioButton)
                 .addGap(96, 96, 96)
-                .addComponent(descriptionLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 2, Short.MAX_VALUE)
+                .addComponent(descriptionLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents

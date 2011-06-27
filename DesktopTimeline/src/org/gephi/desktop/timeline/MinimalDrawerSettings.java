@@ -118,25 +118,25 @@ public class MinimalDrawerSettings {
         //background.bottom = new Color(47, 45, 43, 255);
         //background.top = new Color(131, 131, 131, 255);
         //background.bottom = new Color(77, 75, 73, 255);
-        background.top = new Color(151, 151, 151, 255);
-        background.bottom = new Color(97, 95, 93, 255);
+        background.top = new Color(151, 151, 151, 0);
+        background.bottom = new Color(97, 95, 93, 0);
         background.paint = new GradientPaint(0, 0, background.top, 0, 20, background.bottom, true);
 
         //selection.top = new Color(89, 161, 235, 153);
         //selection.bottom = new Color(37, 104, 161, 153);
-        selection.top = new Color(108, 151, 194, 255);
-        selection.bottom = new Color(57, 97, 131, 255);
+        selection.top = new Color(108, 151, 194, 50);
+        selection.bottom = new Color(57, 97, 131, 50);
         selection.paint = new GradientPaint(0, 0, selection.top, 0, 20, selection.bottom, true);
         selection.visibleHookWidth = 12; // the "visible hook" (mouse hook, to move the selection box)
         selection.invisibleHookMargin = 3; // let the "invisible hook" be a bit larger on the left..
         selection.minimalWidth = 16;
-        selection.mouseOverTopColor = new Color(102, 195, 145, 255);
-        selection.activatedTopColor = new Color(188, 118, 114, 255);
-        selection.mouseOverBottomColor = new Color(60, 143, 96, 255);
-        selection.activatedBottomColor = new Color(151, 79, 79, 255);
+        selection.mouseOverTopColor = new Color(102, 195, 145, 50);
+        selection.activatedTopColor = new Color(188, 118, 114, 50);
+        selection.mouseOverBottomColor = new Color(60, 143, 96, 50);
+        selection.activatedBottomColor = new Color(151, 79, 79, 50);
         selection.mouseOverPaint = new GradientPaint(0, 0, selection.mouseOverTopColor, 0, 20, selection.mouseOverBottomColor, true);
         selection.activatedPaint = new GradientPaint(0, 0, selection.activatedTopColor, 0, 20, selection.activatedBottomColor, true);
-
+        
 
         shadowColor = new Color(35, 35, 35, 105);
 
@@ -161,7 +161,7 @@ public class MinimalDrawerSettings {
         };
         tip.backgroundColor = new Color(255, 255, 255, 160);
 
-        hookLength = 16;
+        hookLength = 8;
 
         tmMarginTop = 2;
         tmMarginBottom = 4;

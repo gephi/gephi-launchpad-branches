@@ -145,7 +145,7 @@ public final class DynamicGraphImpl implements DynamicGraph {
 		for (int i = 0; i < attributes.countValues(); ++i) {
 			values[i] = attributes.getValue(i);
 			if (values[i] instanceof DynamicType)
-				values[i] = ((DynamicType)values[i]).getValue(estimators[i]);
+				values[i] = ((DynamicType)values[i]).getValue(interval, estimators[i]);
 		}
 
 		return values;
@@ -197,7 +197,7 @@ public final class DynamicGraphImpl implements DynamicGraph {
 		for (int i = 0; i < attributes.countValues(); ++i) {
 			values[i] = attributes.getValue(i);
 			if (values[i] instanceof DynamicType)
-				values[i] = ((DynamicType)values[i]).getValue(estimators[i]);
+				values[i] = ((DynamicType)values[i]).getValue(interval, estimators[i]);
 		}
 
 		return values;
