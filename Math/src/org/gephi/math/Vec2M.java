@@ -82,22 +82,22 @@ public final class Vec2M extends Vec2Base {
      * Sets the first component of the vector.
      *
      * @param x the new first component of the vector
-     * @return the first component of the vector
+     * @return this
      */
-    public float x(float x) {
+    public Vec2M x(float x) {
         this.x = x;
-        return x;
+        return this;
     }
 
     /**
      * Sets the second component of the vector.
      *
      * @param y the new second component of the vector
-     * @return the second component of the vector
+     * @return this
      */
-    public float y(float y) {
+    public Vec2M y(float y) {
         this.y = y;
-        return y;
+        return this;
     }
 
     /**
@@ -168,7 +168,7 @@ public final class Vec2M extends Vec2Base {
      * current position.
      *
      * @param b the <code>ByteBuffer</code> instance
-     * @return the new mutable 2D vector or <code></code>
+     * @return the new mutable 2D vector or <code>null</code>
      * @throws BufferUnderflowException if there are less than 8 bytes in the
      *         buffer
      */
@@ -183,7 +183,7 @@ public final class Vec2M extends Vec2Base {
      * @param b the <code>ByteBuffer</code> instance
      * @param i the starting position from where to read the vector. It is
      *          updated to point to the next byte after the vector
-     * @return the new mutable 2D vector or <code></code>
+     * @return the new mutable 2D vector or <code>null</code>
      * @throws BufferUnderflowException if there are less than 8 bytes in the
      *         buffer
      */

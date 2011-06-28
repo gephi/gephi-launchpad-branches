@@ -83,33 +83,33 @@ public final class Vec3M extends Vec3Base {
      * Sets the first component of the vector.
      *
      * @param x the new first component of the vector
-     * @return the first component of the vector
+     * @return this
      */
-    public float x(float x) {
+    public Vec3M x(float x) {
         this.x = x;
-        return x;
+        return this;
     }
 
     /**
      * Sets the second component of the vector.
      *
      * @param y the new second component of the vector
-     * @return the second component of the vector
+     * @return this
      */
-    public float y(float y) {
+    public Vec3M y(float y) {
         this.y = y;
-        return y;
+        return this;
     }
 
     /**
      * Sets the third component of the vector.
      *
      * @param y the new third component of the vector
-     * @return the third component of the vector
+     * @return this
      */
-    public float z(float z) {
+    public Vec3M z(float z) {
         this.z = z;
-        return z;
+        return this;
     }
 
     /**
