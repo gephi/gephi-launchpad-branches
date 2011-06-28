@@ -81,8 +81,9 @@ public interface NodeContainer {
      * Adds or removes single node from a temporary selection.
      * @param point the point to determine the closest node.
      * @param select true to select, false to deselect.
+     * @return true if node has been selected.
      */
-    public void selectContinuousSingle(Point point, final boolean select, final int selectionRadius, final int policy);
+    public boolean selectContinuousSingle(Point point, final boolean select, final int selectionRadius, final int policy);
 
     /**
      * Clears single node from a temporary selection.
@@ -96,5 +97,10 @@ public interface NodeContainer {
     public void addNode(Node node);
 
     public void removeNode(Node node);
+
+    /**
+     * Returns the size of a node with maximum size.
+     */
+    public float getMaxNodeSize();
 
 }

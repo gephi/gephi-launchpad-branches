@@ -29,17 +29,12 @@ public interface Shape {
      * Returns true if given 3D coordinate point is inside the projection
      * frustum.
      */
-    public boolean isInside3D(float x, float y, float z, CameraBridge cameraBridge);
+    public boolean isInside3D(float x, float y, float z, float radius, CameraBridge cameraBridge);
 
     /**
      * Determines intersection of box with the shape.
      */
-    public Intersection intersectsBox(float x, float y, float z, float size, CameraBridge cameraBridge);
-
-    /**
-     * Returns true if given 2D screen coordinate point is inside the shape.
-     */
-    public boolean isPointInside(int x, int y);
+    public Intersection intersectsBox(float x, float y, float z, float size, float maxNodeSize, CameraBridge cameraBridge);
 
     Shape singleUpdate(int x, int y);
 

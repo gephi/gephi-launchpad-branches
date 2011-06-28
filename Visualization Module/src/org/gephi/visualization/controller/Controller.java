@@ -22,6 +22,7 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 package org.gephi.visualization.controller;
 
 
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
@@ -31,9 +32,6 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
-import org.gephi.graph.api.Graph;
-import org.gephi.graph.api.GraphController;
-import org.gephi.graph.api.GraphListener;
 import org.gephi.lib.gleem.linalg.Mat4f;
 import org.gephi.lib.gleem.linalg.Vec3f;
 import org.gephi.project.api.ProjectController;
@@ -45,6 +43,7 @@ import org.gephi.visualization.api.selection.SelectionManager;
 import org.gephi.visualization.api.selection.Shape;
 import org.gephi.visualization.camera.Camera;
 import org.gephi.visualization.geometry.AABB;
+import org.gephi.visualization.view.View;
 import org.openide.util.Lookup;
 
 /**
@@ -133,6 +132,20 @@ public class Controller implements KeyListener, MouseListener, MouseMotionListen
 
     public Dimension getViewDimensions() {
         return viewSize;
+    }
+
+    public Point getViewLocationOnScreen() {
+        return view.getCanvas().getLocationOnScreen();
+    }
+
+    // TODO Temporary until a suitable architecture is created
+    private View view;
+    public void setView(View view) {
+        this.view = view;
+    }
+
+    public void setCursor(Cursor cursor) {
+        view.getCanvas().setCursor(cursor);
     }
 
     public Camera getCamera() {

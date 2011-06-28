@@ -23,7 +23,6 @@ package org.gephi.visualization.apiimpl.shape;
 
 import java.awt.Point;
 import org.gephi.visualization.api.selection.CameraBridge;
-import org.gephi.visualization.api.selection.SelectionType;
 import org.gephi.visualization.api.selection.Shape;
 
 /**
@@ -38,17 +37,25 @@ public abstract class AbstractShape implements Shape {
 
     private SelectionModifier selectionModifier;
 
-    public boolean isInside3D(float x, float y, float z, CameraBridge cameraBridge) {
+    // For optimization
+    private float maxSize = 0f;
+    private int projectedMaxSize = 0;
+
+    public boolean isInside3D(float x, float y, float z, float radius, CameraBridge cameraBridge) {
         Point point = cameraBridge.projectPoint(x, y, z);
-        return isPointInside(point.x, point.y);
+        int size = cameraBridge.projectScale(radius);
+        return isPointInside(point.x, point.y, size);
     }
 
-    public Intersection intersectsBox(float x, float y, float z, float size, CameraBridge cameraBridge) {
+    public Intersection intersectsBox(float x, float y, float z, float size, float maxNodeSize, CameraBridge cameraBridge) {
         // Create a sphere around the box and test every corner point for inclusion
         int radius = cameraBridge.projectScale(size * THIRD_ROOT);
+        if (maxSize != maxNodeSize) {
+            projectedMaxSize = cameraBridge.projectScale(maxNodeSize);
+        }
         Point center = cameraBridge.projectPoint(x + size / 2, y + size / 2, z + size / 2);
         // Is shape inside the boxes bounding sphere?
-        if (intersectsCircle(center.x, center.y, radius)) {
+        if (intersectsCircle(center.x, center.y, Integer.MAX_VALUE)) {
             return Intersection.INTERSECT;
         }
         // Is any box corner point inside the shape?
@@ -56,7 +63,7 @@ public abstract class AbstractShape implements Shape {
         boolean inside = true;
         int i = 0;
         while (i < 8 && (!intersect || inside)) {
-            if (isInside3D(x + BOX_CORNERS[i][0] * size, y + BOX_CORNERS[i][1] * size, z + BOX_CORNERS[i][2] * size, cameraBridge)) {
+            if (isInside3D(x + BOX_CORNERS[i][0] * size, y + BOX_CORNERS[i][1] * size, z + BOX_CORNERS[i][2] * size, projectedMaxSize, cameraBridge)) {
                 intersect = true;
             } else {
                 inside = false;
@@ -74,6 +81,11 @@ public abstract class AbstractShape implements Shape {
      * Returns true if shape intersects a given circle.
      */
     protected abstract boolean intersectsCircle(int x, int y, int radius);
+
+    /**
+     * Returns true if given 2D screen coordinate point is inside the shape.
+     */
+    protected abstract boolean isPointInside(int x, int y, int radius);
 
     private static final int[][] BOX_CORNERS = new int[][]{
             new int[]{0, 0, 0},

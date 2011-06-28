@@ -56,6 +56,8 @@ public final class Octree implements NodeContainer {
 
     private boolean changeMarker;
 
+    private float maxNodeSize;
+
     private final Graph graph;
 
     float xmin, xmax, ymin, ymax, zmin, zmax;
@@ -94,6 +96,9 @@ public final class Octree implements NodeContainer {
             }
             if (nd.z() > zmax) {
                 zmax = nd.z();
+            }
+            if (nd.getSize() > maxNodeSize) {
+                maxNodeSize = nd.getSize();
             }
         }
         root = new Octant(null, xmin, ymin, zmin, Math.max(Math.max(xmax - xmin, ymax - ymin), zmax - zmin));
@@ -150,7 +155,7 @@ public final class Octree implements NodeContainer {
         recursiveAddNodes(root, shape, new NodeFunction() {
             @Override
             public void apply(Node node) {
-                if (shape.isInside3D(node.getNodeData().x(), node.getNodeData().y(), node.getNodeData().z(), cameraBridge)) {
+                if (shape.isInside3D(node.getNodeData().x(), node.getNodeData().y(), node.getNodeData().z(), node.getNodeData().getSize(), cameraBridge)) {
                     if (select != node.getNodeData().isSelected()) {
                         node.getNodeData().setSelected(select);
                         nodes.add(node);
@@ -184,7 +189,7 @@ public final class Octree implements NodeContainer {
 
     private void recursiveAddNodes(Octant octant, Shape shape, NodeFunction nodeFunction) {
         final CameraBridge cameraBridge = Controller.getInstance().getCameraBridge();
-        Intersection intersection = shape.intersectsBox(octant.getX(), octant.getY(), octant.getZ(), octant.getSize(), cameraBridge);
+        Intersection intersection = shape.intersectsBox(octant.getX(), octant.getY(), octant.getZ(), octant.getSize(), maxNodeSize, cameraBridge);
 
         switch (intersection) {
             case OUTSIDE:
@@ -211,7 +216,7 @@ public final class Octree implements NodeContainer {
             return;
         }
         final CameraBridge cameraBridge = Controller.getInstance().getCameraBridge();
-        Intersection intersection = shape.intersectsBox(octant.getX(), octant.getY(), octant.getZ(), octant.getSize(), cameraBridge);
+        Intersection intersection = shape.intersectsBox(octant.getX(), octant.getY(), octant.getZ(), octant.getSize(), maxNodeSize, cameraBridge);
 
         switch (intersection) {
             case OUTSIDE:
@@ -246,7 +251,7 @@ public final class Octree implements NodeContainer {
             // TODO implement closest policy
             public void apply(Node node) {
                  if (node.getNodeData().isSelected() != select &&
-                     shape.isInside3D(node.getNodeData().x(), node.getNodeData().y(), node.getNodeData().z(), cameraBridge)) {
+                     shape.isInside3D(node.getNodeData().x(), node.getNodeData().y(), node.getNodeData().z(), node.getNodeData().getSize(), cameraBridge)) {
                     node.getNodeData().setSelected(select);
                     singleFound = true;
                     nodes[0] = node;
@@ -257,9 +262,10 @@ public final class Octree implements NodeContainer {
     }
 
     @Override
-    public void selectContinuousSingle(Point point, final boolean select, final int selectionRadius, final int policy) {
+    public boolean selectContinuousSingle(Point point, final boolean select, final int selectionRadius, final int policy) {
         temporarySingleMod = select;
         temporarySelectedNode = selectSingle(point, select, selectionRadius, policy);
+        return temporarySelectedNode != null;
     }
 
     @Override
@@ -296,6 +302,21 @@ public final class Octree implements NodeContainer {
         if (node.getNodeData().getSpatialData() instanceof OctreeData) {
             ((OctreeData) node.getNodeData().getSpatialData()).getOctant().removeNode(node);
         }
+    }
+
+    /**
+     * Update max node size if changed.
+     */
+    private void nodeSizeUpdated(float size) {
+        if (size > maxNodeSize) {
+            maxNodeSize = size;
+        }
+        // TODO implement occasional maximum checks for optimization
+    }
+
+    @Override
+    public float getMaxNodeSize() {
+        return maxNodeSize;
     }
 
     /**
@@ -546,7 +567,7 @@ public final class Octree implements NodeContainer {
      *
      * @author Vojtech Bardiovsky
      */
-    static class OctreeData implements SpatialData {
+    class OctreeData implements SpatialData {
 
         private final Octant octant;
         private final Node node;
@@ -563,6 +584,11 @@ public final class Octree implements NodeContainer {
         @Override
         public void positionUpdated() {
             octant.nodeUpdated(node);
+        }
+
+        @Override
+        public void sizeUpdated() {
+            nodeSizeUpdated(node.getNodeData().getSize());
         }
 
     }

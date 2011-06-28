@@ -63,7 +63,7 @@ class Polygon extends AbstractShape {
         this.lineInfo = computeLineInfo();
     }
 
-    public boolean isPointInside(int x, int y) {
+    public boolean isPointInside(int x, int y, int radius) {
         if (lineInfo.length <= 2) {
             return false;
         }
@@ -72,7 +72,7 @@ class Polygon extends AbstractShape {
             float vecx = x - convexHull[i].x;
             float vecy = y - convexHull[i].y;
             // Compute inner product
-            if (vecx * lineInfo[i][0] + vecy * lineInfo[i][1] > 0) {
+            if (vecx * lineInfo[i][0] + vecy * lineInfo[i][1] > radius) {
                 return false;
             }
         }

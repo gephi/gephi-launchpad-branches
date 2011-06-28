@@ -48,10 +48,11 @@ class Ellipse extends AbstractShape {
         this(x, y, 0, 0);
     }
 
-    public boolean isPointInside(int x, int y) {
+    @Override
+    protected boolean isPointInside(int x, int y, int radius) {
         return a != 0 && b != 0 &&
-               (origin.x + a - x) * (origin.x + a - x) / (float) (a * a) +
-               (origin.y + b - y) * (origin.y + b - y) / (float) (b * b) <= 1;
+               (origin.x + a - x - radius) * (origin.x + a - x - radius) / (float) (a * a) +
+               (origin.y + b - y - radius) * (origin.y + b - y - radius) / (float) (b * b) <= 1;
     }
 
     public Shape singleUpdate(int x, int y) {

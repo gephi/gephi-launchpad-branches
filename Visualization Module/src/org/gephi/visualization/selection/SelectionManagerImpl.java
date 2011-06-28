@@ -94,8 +94,8 @@ public class SelectionManagerImpl implements SelectionManager {
     }
 
     @Override
-    public void selectContinuousSingle(Point point, boolean select) {
-        nodeContainer.selectContinuousSingle(point, select, getMouseSelectionDiameter() / 2, NodeContainer.SINGLE_NODE_DEFAULT);
+    public boolean selectContinuousSingle(Point point, boolean select) {
+        return nodeContainer.selectContinuousSingle(point, select, getMouseSelectionDiameter() / 2, NodeContainer.SINGLE_NODE_DEFAULT);
     }
 
     @Override

@@ -71,8 +71,9 @@ public interface SelectionManager {
      * Adds or removes single node from a temporary selection.
      * @param point the point to determine the closest node.
      * @param select true to select, false to deselect.
+     * @return true if node has been selected.
      */
-    void selectContinuousSingle(Point point, boolean select);
+    boolean selectContinuousSingle(Point point, boolean select);
 
     /**
      * Clears single node from a temporary selection.

@@ -63,6 +63,9 @@ public final class GraphTopComponent extends TopComponent {
         this.view = new View(this.controller, this.frameDataBridge);
         this.dataManager = new Model(this.controller, this.frameDataBridge, 33);
 
+        // TODO Temporary until a suitable architecture is created
+        this.controller.setView(this.view);
+
         //Init
         //initCollapsePanel();
         initToolPanels();

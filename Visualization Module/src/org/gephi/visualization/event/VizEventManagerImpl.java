@@ -72,13 +72,10 @@ public class VizEventManagerImpl implements VizEventManager {
         handlersList.add(new VizEventTypeHandler(VizEvent.Type.MOUSE_RELEASED, false));
         handlersList.add(new VizEventTypeHandler(VizEvent.Type.NODE_LEFT_PRESS, false));
         handlersList.add(new VizEventTypeHandler(VizEvent.Type.NODE_LEFT_PRESSING, false));
-        Collections.sort(handlersList, new Comparator() {
-
+        Collections.sort(handlersList, new Comparator<VizEventTypeHandler>() {
             @Override
-            public int compare(Object o1, Object o2) {
-                VizEvent.Type t1 = ((VizEventTypeHandler) o1).type;
-                VizEvent.Type t2 = ((VizEventTypeHandler) o2).type;
-                return t1.compareTo(t2);
+            public int compare(VizEventTypeHandler v1, VizEventTypeHandler v2) {
+                return v1.type.compareTo(v2.type);
             }
         });
         handlers = handlersList.toArray(new VizEventTypeHandler[0]);

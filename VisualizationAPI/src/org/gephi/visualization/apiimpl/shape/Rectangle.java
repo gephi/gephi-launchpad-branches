@@ -54,9 +54,9 @@ class Rectangle extends AbstractShape {
         this(x, y, 0, 0);
     }
 
-    public boolean isPointInside(int x, int y) {
-        return ((x >= origin.x && x <= opposite.x) || (x <= origin.x && x >= opposite.x)) &&
-               ((y >= origin.y && y <= opposite.y) || (y <= origin.y && y >= opposite.y));
+    public boolean isPointInside(int x, int y, int radius) {
+        return ((x + radius >= origin.x && x - radius <= opposite.x) || (x - radius <= origin.x && x + radius >= opposite.x)) &&
+               ((y + radius >= origin.y && y - radius <= opposite.y) || (y - radius <= origin.y && y + radius >= opposite.y));
     }
 
     public Shape continuousUpdate(int x, int y) {

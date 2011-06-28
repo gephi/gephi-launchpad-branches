@@ -21,6 +21,7 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 
 package org.gephi.visualization.controller;
 
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
@@ -40,15 +41,17 @@ import org.openide.util.Lookup;
 
 public class MotionManager3D implements MotionManager {
 
+    protected static float MOVE_FACTOR = 5.0f;
+    protected static float ZOOM_FACTOR = 0.008f;
+    protected static float ORBIT_FACTOR = 0.005f;
+
     protected int[] mousePosition = new int[2];
     protected int[] mouseDrag = new int[2];
     protected int[] startDrag = new int[2];
 
     protected Shape selectionShape;
 
-    protected static float MOVE_FACTOR = 5.0f;
-    protected static float ZOOM_FACTOR = 0.008f;
-    protected static float ORBIT_FACTOR = 0.005f;
+    protected boolean dragging;
 
     @Override
     public Shape getSelectionShape() {
@@ -79,10 +82,11 @@ public class MotionManager3D implements MotionManager {
 
     @Override
     public void mousePressed(MouseEvent e) {
-        mousePosition[0] = e.getX();
-        mousePosition[1] = e.getY();
-        startDrag[0] = e.getX();
-        startDrag[1] = e.getY();
+        mousePosition[0] = e.getXOnScreen() - (int) Controller.getInstance().getViewLocationOnScreen().getX();
+        mousePosition[1] = e.getYOnScreen() - (int) Controller.getInstance().getViewLocationOnScreen().getY();
+        startDrag[0] = mousePosition[0];
+        startDrag[1] = mousePosition[1];
+        dragging = true;
 
         SelectionModifier modifier = extractSelectionModifier(e);
         VizConfig vizConfig = Lookup.getDefault().lookup(VizConfig.class);
@@ -119,14 +123,18 @@ public class MotionManager3D implements MotionManager {
         // Movement
         if (SwingUtilities.isRightMouseButton(e)) {
             Controller.getInstance().getCamera().startTranslation();
+
+            Controller.getInstance().setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
         } else if (SwingUtilities.isMiddleMouseButton(e)) {
             Dimension viewDimension = Controller.getInstance().getViewDimensions();
             int dx = e.getX() - viewDimension.width / 2;
             int dy = e.getY() - viewDimension.height / 2;
             float orbitModifier = (float) (Math.sqrt(dx * dx + dy * dy) / Math.sqrt(viewDimension.width * viewDimension.width / 4 + viewDimension.height * viewDimension.height / 4));
             Controller.getInstance().getCamera().startOrbit(orbitModifier);
+            Controller.getInstance().setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
         }
 
+        // TODO do not send events during selection
         VizEventManager vizEventManager = Lookup.getDefault().lookup(VizEventManager.class);
         if (SwingUtilities.isRightMouseButton(e)) {
             vizEventManager.mouseRightPress();
@@ -153,10 +161,12 @@ public class MotionManager3D implements MotionManager {
 
     @Override
     public void mouseDragged(MouseEvent e) {
-        int x = e.getX() - mousePosition[0];
-        int y = e.getY() - mousePosition[1];
-        mousePosition[0] = e.getX();
-        mousePosition[1] = e.getY();
+        int newX = e.getXOnScreen() - (int) Controller.getInstance().getViewLocationOnScreen().getX();
+        int newY = e.getYOnScreen() - (int) Controller.getInstance().getViewLocationOnScreen().getY();
+        int x = newX - mousePosition[0];
+        int y = newY - mousePosition[1];
+        mousePosition[0] = newX;
+        mousePosition[1] = newY;
         mouseDrag[0] = mousePosition[0] - startDrag[0];
         mouseDrag[1] = startDrag[1] - mousePosition[1];
 
@@ -170,6 +180,7 @@ public class MotionManager3D implements MotionManager {
                 selectionManager.applyContinuousSelection(selectionShape);
             }
         } else if (vizConfig.isDraggingEnabled()) {
+            Controller.getInstance().setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
             if (SwingUtilities.isLeftMouseButton(e)) {
                 Vec3f translation = Controller.getInstance().getCamera().projectVectorInverse(MOVE_FACTOR * x, MOVE_FACTOR * y);
                 for (Node node : selectionManager.getSelectedNodes()) {
@@ -191,6 +202,7 @@ public class MotionManager3D implements MotionManager {
     public void mouseReleased(MouseEvent e) {
         VizConfig vizConfig = Lookup.getDefault().lookup(VizConfig.class);
         SelectionManager selectionManager = Lookup.getDefault().lookup(SelectionManager.class);
+        dragging = false;
 
         if (vizConfig.getSelectionType() != SelectionType.NONE && selectionShape != null) {
             selectionShape = ShapeUtils.continuousUpdate(selectionShape, e.getX(), e.getY());
@@ -209,12 +221,13 @@ public class MotionManager3D implements MotionManager {
         }
         Lookup.getDefault().lookup(VizEventManager.class).stopDrag();
         Lookup.getDefault().lookup(VizEventManager.class).mouseReleased();
+        Controller.getInstance().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
     }
 
     @Override
     public void mouseMoved(MouseEvent e) {
-        mousePosition[0] = e.getX();
-        mousePosition[1] = e.getY();
+        mousePosition[0] = e.getXOnScreen() - (int) Controller.getInstance().getViewLocationOnScreen().getX();
+        mousePosition[1] = e.getYOnScreen() - (int) Controller.getInstance().getViewLocationOnScreen().getY();
 
         VizConfig vizConfig = Lookup.getDefault().lookup(VizConfig.class);
         SelectionManager selectionManager = Lookup.getDefault().lookup(SelectionManager.class);
@@ -230,7 +243,12 @@ public class MotionManager3D implements MotionManager {
         if (vizConfig.isDirectMouseSelection()) {
             // TODO temporary
             selectionManager.deselectSingle();
-            selectionManager.selectContinuousSingle(e.getPoint(), modifier.isPositive());
+            boolean selected = selectionManager.selectContinuousSingle(e.getPoint(), modifier.isPositive());
+            if (selected) {
+                Controller.getInstance().setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+            } else {
+                Controller.getInstance().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+            }
         }
     }
 
