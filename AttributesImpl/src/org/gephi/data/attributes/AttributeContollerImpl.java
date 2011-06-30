@@ -45,6 +45,7 @@ import org.gephi.data.attributes.api.AttributeController;
 import org.gephi.data.attributes.api.AttributeModel;
 import org.gephi.data.attributes.model.IndexedAttributeModel;
 import org.gephi.data.attributes.model.TemporaryAttributeModel;
+import org.gephi.data.attributes.store.AttributeStoreController;
 import org.gephi.project.api.ProjectController;
 import org.gephi.project.api.WorkspaceProvider;
 import org.gephi.project.api.Workspace;
@@ -70,6 +71,9 @@ public class AttributeContollerImpl implements AttributeController {
                 if (m == null) {
                     workspace.add(new IndexedAttributeModel());
                 }
+                
+                AttributeStoreController storeController = Lookup.getDefault().lookup(AttributeStoreController.class);
+                storeController.newStore(workspace);
             }
 
             public void select(Workspace workspace) {
@@ -79,11 +83,14 @@ public class AttributeContollerImpl implements AttributeController {
             }
 
             public void close(Workspace workspace) {
+                AttributeStoreController storeController = Lookup.getDefault().lookup(AttributeStoreController.class);
+                storeController.removeStore(workspace);
             }
 
             public void disable() {
             }
         });
+        
         if (projectController.getCurrentProject() != null) {
             for (Workspace workspace : projectController.getCurrentProject().getLookup().lookup(WorkspaceProvider.class).getWorkspaces()) {
                 AttributeModel m = workspace.getLookup().lookup(AttributeModel.class);

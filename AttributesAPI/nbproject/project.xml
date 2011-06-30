@@ -54,6 +54,22 @@
                 <package>org.gephi.data.attributes.type</package>
                 <package>org.gephi.data.properties</package>
             </public-packages>
+            <class-path-extension>
+                <runtime-relative-path>ext/slf4j-api-1.6.1.jar</runtime-relative-path>
+                <binary-origin>release/modules/ext/slf4j-api-1.6.1.jar</binary-origin>
+            </class-path-extension>
+            <class-path-extension>
+                <runtime-relative-path>ext/ehcache-core-2.4.2.jar</runtime-relative-path>
+                <binary-origin>release/modules/ext/ehcache-core-2.4.2.jar</binary-origin>
+            </class-path-extension>
+            <class-path-extension>
+                <runtime-relative-path>ext/slf4j-jdk14-1.6.1.jar</runtime-relative-path>
+                <binary-origin>release/modules/ext/slf4j-jdk14-1.6.1.jar</binary-origin>
+            </class-path-extension>
+            <class-path-extension>
+                <runtime-relative-path>ext/je-4.1.10.jar</runtime-relative-path>
+                <binary-origin>release/modules/ext/je-4.1.10.jar</binary-origin>
+            </class-path-extension>
         </data>
     </configuration>
 </project>

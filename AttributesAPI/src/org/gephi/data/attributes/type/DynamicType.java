@@ -41,6 +41,10 @@ Portions Copyrighted 2011 Gephi Consortium.
 */
 package org.gephi.data.attributes.type;
 
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
 import java.util.ArrayList;
 import java.util.List;
 import org.gephi.data.attributes.api.Estimator;
