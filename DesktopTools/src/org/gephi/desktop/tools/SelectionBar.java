@@ -73,7 +73,7 @@ public class SelectionBar extends javax.swing.JPanel {
         SelectionManager manager = Lookup.getDefault().lookup(SelectionManager.class);
         final MouseSelectionPopupPanel popupPanel = new MouseSelectionPopupPanel();
         popupPanel.setDiameter(manager.getMouseSelectionDiameter());
-        popupPanel.setProportionnalToZoom(manager.isMouseSelectionZoomProportionnal());
+        popupPanel.setProportionnalToZoom(manager.isMouseSelectionZoomProportional());
         popupPanel.setChangeListener(new ChangeListener() {
 
             public void stateChanged(ChangeEvent e) {
@@ -92,10 +92,10 @@ public class SelectionBar extends javax.swing.JPanel {
         SelectionManager manager = Lookup.getDefault().lookup(SelectionManager.class);
         if (manager.isDirectMouseSelection()) {
             statusLabel.setText(NbBundle.getMessage(SelectionBar.class, "SelectionBar.statusLabel.mouseSelection"));
-            mouseSelection = false;
+            mouseSelection = true;
         } else if (manager.isDraggingEnabled()) {
             statusLabel.setText(NbBundle.getMessage(SelectionBar.class, "SelectionBar.statusLabel.dragging"));
-            mouseSelection = false;
+            mouseSelection = true;
         } else if (manager.isMovementEnabled()) {
             statusLabel.setText(NbBundle.getMessage(SelectionBar.class, "SelectionBar.statusLabel.movement"));
             mouseSelection = false;

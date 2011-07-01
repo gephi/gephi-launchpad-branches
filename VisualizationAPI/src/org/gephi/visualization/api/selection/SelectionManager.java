@@ -100,7 +100,7 @@ public interface SelectionManager {
 
     boolean isMovementEnabled();
 
-    boolean isMouseSelectionZoomProportionnal();
+    boolean isMouseSelectionZoomProportional();
 
     boolean isSelectionEnabled();
 

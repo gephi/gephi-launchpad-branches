@@ -67,7 +67,7 @@ public final class GraphTopComponent extends TopComponent {
         this.controller.setView(this.view);
 
         //Init
-        //initCollapsePanel();
+        initCollapsePanel();
         initToolPanels();
 
         final Component canvas = this.view.getCanvas();
@@ -79,6 +79,7 @@ public final class GraphTopComponent extends TopComponent {
                 open();
                 requestActive();
                 add(canvas, BorderLayout.CENTER);
+                remove(waitingLabel);
                 canvas.setVisible(true);
             }
         });
@@ -92,12 +93,21 @@ public final class GraphTopComponent extends TopComponent {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        waitingLabel = new javax.swing.JLabel();
+        collapsePanel = new org.gephi.visualization.components.CollapsePanel();
+
         addComponentListener(new java.awt.event.ComponentAdapter() {
             public void componentResized(java.awt.event.ComponentEvent evt) {
                 formComponentResized(evt);
             }
         });
         setLayout(new java.awt.BorderLayout());
+
+        waitingLabel.setBackground(new java.awt.Color(255, 255, 255));
+        org.openide.awt.Mnemonics.setLocalizedText(waitingLabel, org.openide.util.NbBundle.getMessage(GraphTopComponent.class, "GraphTopComponent.waitingLabel.text_1")); // NOI18N
+        waitingLabel.setVerticalAlignment(javax.swing.SwingConstants.TOP);
+        add(waitingLabel, java.awt.BorderLayout.CENTER);
+        add(collapsePanel, java.awt.BorderLayout.PAGE_END);
     }// </editor-fold>//GEN-END:initComponents
 
     private void formComponentResized(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_formComponentResized
@@ -106,6 +116,8 @@ public final class GraphTopComponent extends TopComponent {
     }//GEN-LAST:event_formComponentResized
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private org.gephi.visualization.components.CollapsePanel collapsePanel;
+    private javax.swing.JLabel waitingLabel;
     // End of variables declaration//GEN-END:variables
     /**
      * Gets default instance. Do not use directly: reserved for *.settings files only,
@@ -119,11 +131,21 @@ public final class GraphTopComponent extends TopComponent {
         return instance;
     }
 
+    private VizBarController vizBarController;
     private SelectionToolbar selectionToolbar;
     private ActionsToolbar actionsToolbar;
     private JComponent toolbar;
     private JComponent propertiesBar;
     private AddonsBar addonsBar;
+
+    private void initCollapsePanel() {/*
+        vizBarController = new VizBarController();
+        if (Lookup.getDefault().lookup(VizConfig.class).isShowVizVar()) {
+            collapsePanel.init(vizBarController.getToolbar(), vizBarController.getExtendedBar(), false);
+        } else {
+            collapsePanel.setVisible(false);
+        }*/
+    }
 
     private void initToolPanels() {
         ToolController tc = Lookup.getDefault().lookup(ToolController.class);

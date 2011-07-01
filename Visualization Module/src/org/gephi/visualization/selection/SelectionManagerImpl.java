@@ -48,6 +48,9 @@ public class SelectionManagerImpl implements SelectionManager {
 
     private boolean blocked;
 
+    private int mouseSelectionDiameter;
+    private boolean mouseSelectionZoomProportional;
+
     private List<ChangeListener> listeners = new ArrayList<ChangeListener>();
 
     @Override
@@ -65,12 +68,16 @@ public class SelectionManagerImpl implements SelectionManager {
                         for (Node node : event.getData().addedNodes()) {
                             nodeContainer.addNode(node);
                         }
+                        break;
                     default:
                         nodeContainer = new Octree(graphController.getModel().getGraph());
                         break;
                 }
             }
         });
+        VizConfig vizConfig = Lookup.getDefault().lookup(VizConfig.class);
+        mouseSelectionDiameter = vizConfig.getMouseSelectionDiameter();
+        mouseSelectionZoomProportional = vizConfig.isMouseSelectionUpdateWhileDragging();
     }
 
     @Override
@@ -144,8 +151,7 @@ public class SelectionManagerImpl implements SelectionManager {
 
     @Override
     public int getMouseSelectionDiameter() {
-        // FIXME
-        return 16;
+        return mouseSelectionDiameter;
     }
 
     @Override
@@ -164,8 +170,8 @@ public class SelectionManagerImpl implements SelectionManager {
     }
 
     @Override
-    public boolean isMouseSelectionZoomProportionnal() {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public boolean isMouseSelectionZoomProportional() {
+        return mouseSelectionZoomProportional;
     }
 
     @Override
@@ -272,12 +278,12 @@ public class SelectionManagerImpl implements SelectionManager {
 
     @Override
     public void setMouseSelectionDiameter(int mouseSelectionDiameter) {
-        //Lookup.getDefault().lookup(VizConfig.class).set
+        this.mouseSelectionDiameter = mouseSelectionDiameter;
     }
 
     @Override
     public void setMouseSelectionZoomProportionnal(boolean mouseSelectionZoomProportionnal) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        this.mouseSelectionZoomProportional = mouseSelectionZoomProportionnal;
     }
 
     @Override
