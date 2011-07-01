@@ -181,9 +181,9 @@ public class Controller implements KeyListener, MouseListener, MouseMotionListen
             centerGraph = false;
         }
         if (centerZero) {
-
             centerZero = false;
         }
+        motionManager.refresh();
     }
 
     /**

@@ -52,6 +52,10 @@ public class VizEventManagerImpl implements VizEventManager {
     private ThreadPoolExecutor pool;
     private VizEventTypeHandler[] handlers;
 
+    // LEFT_PRESSING event attributes
+    private static final int PRESSING_FREQUENCY = 5;
+    private int pressingTick = 0;
+
     public VizEventManagerImpl() {
         pool = new ThreadPoolExecutor(0, 1, 60L, TimeUnit.SECONDS, new LinkedBlockingDeque<Runnable>(10));
 
@@ -148,8 +152,6 @@ public class VizEventManagerImpl implements VizEventManager {
     public void mouseRightPress() {
         handlers[VizEvent.Type.MOUSE_RIGHT_PRESS.ordinal()].dispatch();
     }
-    private static final int PRESSING_FREQUENCY = 5;
-    private int pressingTick = 0;
 
     @Override
     public void mouseLeftPressing() {

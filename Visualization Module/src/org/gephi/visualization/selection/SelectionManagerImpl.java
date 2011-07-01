@@ -57,7 +57,18 @@ public class SelectionManagerImpl implements SelectionManager {
             @Override
             public void graphChanged(GraphEvent event) {
                 GraphController graphController = Lookup.getDefault().lookup(GraphController.class);
-                nodeContainer = new Octree(graphController.getModel().getGraph());
+                if (nodeContainer == null) {
+                    nodeContainer = new Octree(graphController.getModel().getGraph());
+                }
+                switch (event.getEventType()) {
+                    case ADD_NODES:
+                        for (Node node : event.getData().addedNodes()) {
+                            nodeContainer.addNode(node);
+                        }
+                    default:
+                        nodeContainer = new Octree(graphController.getModel().getGraph());
+                        break;
+                }
             }
         });
     }

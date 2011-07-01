@@ -55,4 +55,9 @@ public interface MotionManager {
 
     public void mouseWheelMoved(MouseWheelEvent e);
 
+    /**
+     * Call repeatedly after or before display.
+     */
+    public void refresh();
+
 }

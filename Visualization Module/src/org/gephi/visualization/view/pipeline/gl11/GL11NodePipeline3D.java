@@ -115,14 +115,15 @@ public class GL11NodePipeline3D implements Pipeline {
 
             if (frameData.somethingIsSelected()) {
                 if (node.selected) {
-                    Color selectionColor = Color.RED;
-                    gl2.glColor3f(selectionColor.r, selectionColor.g, selectionColor.b);
+                    //Color selectionColor = Color.RED;
+                    //gl2.glColor3f(selectionColor.r, selectionColor.g, selectionColor.b);
+                    gl2.glColor3f(color.r, color.g, color.b);
                 } else {
-                    Color lightColor = Color.WHITE;
-                    float lightColorFactor = 0.3f;
-                    final float r = color.r + (lightColor.r - color.r) * lightColorFactor;
-                    final float g = color.g + (lightColor.g - color.g) * lightColorFactor;
-                    final float b = color.b + (lightColor.b - color.b) * lightColorFactor;
+                    //Color lightColor = Color.WHITE;
+                    float lightColorFactor = 0.8f;
+                    final float r = color.r + (1.0f - color.r) * lightColorFactor;
+                    final float g = color.g + (1.0f - color.g) * lightColorFactor;
+                    final float b = color.b + (1.0f - color.b) * lightColorFactor;
                     gl2.glColor3f(r, g, b);
                 }
             } else {

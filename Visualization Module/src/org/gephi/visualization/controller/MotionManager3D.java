@@ -23,7 +23,6 @@ package org.gephi.visualization.controller;
 
 import java.awt.Cursor;
 import java.awt.Dimension;
-import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import javax.swing.SwingUtilities;
@@ -38,7 +37,9 @@ import org.gephi.visualization.api.selection.Shape;
 import org.gephi.visualization.api.selection.Shape.SelectionModifier;
 import org.gephi.visualization.apiimpl.shape.ShapeUtils;
 import org.openide.util.Lookup;
+import org.openide.util.lookup.ServiceProvider;
 
+@ServiceProvider(service = MotionManager.class)
 public class MotionManager3D implements MotionManager {
 
     protected static float MOVE_FACTOR = 5.0f;
@@ -52,6 +53,7 @@ public class MotionManager3D implements MotionManager {
     protected Shape selectionShape;
 
     protected boolean dragging;
+    protected boolean pressing;
 
     @Override
     public Shape getSelectionShape() {
@@ -123,7 +125,6 @@ public class MotionManager3D implements MotionManager {
         // Movement
         if (SwingUtilities.isRightMouseButton(e)) {
             Controller.getInstance().getCamera().startTranslation();
-
             Controller.getInstance().setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
         } else if (SwingUtilities.isMiddleMouseButton(e)) {
             Dimension viewDimension = Controller.getInstance().getViewDimensions();
@@ -143,6 +144,7 @@ public class MotionManager3D implements MotionManager {
         } else if (SwingUtilities.isLeftMouseButton(e)) {
             vizEventManager.mouseLeftPress();
             vizEventManager.startDrag();
+            pressing = true;
         }
 
     }
@@ -203,6 +205,7 @@ public class MotionManager3D implements MotionManager {
         VizConfig vizConfig = Lookup.getDefault().lookup(VizConfig.class);
         SelectionManager selectionManager = Lookup.getDefault().lookup(SelectionManager.class);
         dragging = false;
+        pressing = false;
 
         if (vizConfig.getSelectionType() != SelectionType.NONE && selectionShape != null) {
             selectionShape = ShapeUtils.continuousUpdate(selectionShape, e.getX(), e.getY());
@@ -257,10 +260,19 @@ public class MotionManager3D implements MotionManager {
         Controller.getInstance().getCamera().zoom(ZOOM_FACTOR * e.getUnitsToScroll());
     }
 
+
+
     private SelectionModifier extractSelectionModifier(MouseEvent e) {
         return (e.getModifiersEx() & MouseEvent.SHIFT_DOWN_MASK) > 0 ? SelectionModifier.INCREMENTAL :
                (e.getModifiersEx() & MouseEvent.CTRL_DOWN_MASK) > 0 ? SelectionModifier.DECREMENTAL :
                SelectionModifier.DEFAULT;
+    }
+
+    @Override
+    public void refresh() {
+        if (pressing) {
+            Lookup.getDefault().lookup(VizEventManager.class).mouseLeftPressing();
+        }
     }
 
 }

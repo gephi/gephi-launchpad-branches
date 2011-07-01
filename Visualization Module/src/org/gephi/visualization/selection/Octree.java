@@ -255,6 +255,8 @@ public final class Octree implements NodeContainer {
                     node.getNodeData().setSelected(select);
                     singleFound = true;
                     nodes[0] = node;
+                    // TODO may be optimized
+                    changeMarker = true;
                 }
             }
         });

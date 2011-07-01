@@ -30,6 +30,7 @@ import org.gephi.lib.gleem.linalg.Vec3f;
 import org.gephi.project.api.ProjectController;
 import org.gephi.project.api.Workspace;
 import org.gephi.project.api.WorkspaceListener;
+import org.gephi.visualization.api.MotionManager;
 import org.gephi.visualization.api.selection.Shape;
 import org.gephi.visualization.camera.Camera;
 import org.gephi.visualization.controller.Controller;
@@ -126,7 +127,7 @@ public class Model implements Runnable, WorkspaceListener {
 
             this.controller.endUpdateFrame(box);
             this.bridge.endFrame();
-            
+
             long endFrameTime = System.currentTimeMillis();
 
             long time = beginFrameTime - endFrameTime;
@@ -190,4 +191,5 @@ public class Model implements Runnable, WorkspaceListener {
             this.thread = null;
         }
     }
+
 }
