@@ -36,8 +36,6 @@ public class BarabasiAlbertUIImpl implements BarabasiAlbertUI {
 	private BarabasiAlbertPanel panel;
 	private BarabasiAlbert barabasiAlbert;
 
-	public BarabasiAlbertUIImpl() { }
-
 	public JPanel getPanel() {
 		if (panel == null)
 			panel = new BarabasiAlbertPanel();

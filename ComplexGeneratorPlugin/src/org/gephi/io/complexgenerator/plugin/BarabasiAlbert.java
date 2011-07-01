@@ -60,7 +60,7 @@ public class BarabasiAlbert implements Generator {
 
 	@Override
 	public void generate(ContainerLoader container) {
-		Progress.start(progressTicket, N + M);
+		Progress.start(progressTicket, m0 + (N - m0) * M);
 		Random random = new Random();
 		container.setEdgeDefault(EdgeDefault.UNDIRECTED);
 
@@ -92,7 +92,6 @@ public class BarabasiAlbert implements Generator {
 				degrees[i]++;
 				degrees[j]++;
 				container.addEdge(edge);
-				Progress.progress(progressTicket);
 			}
 
 		// Adding N - m0 nodes, each with M edges

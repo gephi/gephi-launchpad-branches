@@ -33,9 +33,9 @@
                       </Group>
                       <EmptySpace min="-2" pref="25" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="1" attributes="0">
-                          <Component id="m0Field" alignment="0" pref="188" max="32767" attributes="1"/>
-                          <Component id="MField" alignment="0" pref="188" max="32767" attributes="1"/>
-                          <Component id="NField" alignment="0" pref="188" max="32767" attributes="1"/>
+                          <Component id="m0Field" alignment="0" pref="122" max="32767" attributes="1"/>
+                          <Component id="MField" alignment="0" pref="122" max="32767" attributes="1"/>
+                          <Component id="NField" alignment="0" pref="122" max="32767" attributes="1"/>
                       </Group>
                   </Group>
                   <Group type="102" alignment="0" attributes="0">
@@ -67,7 +67,7 @@
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="existingCheckBox" min="-2" max="-2" attributes="0"/>
-              <EmptySpace pref="19" max="32767" attributes="0"/>
+              <EmptySpace max="32767" attributes="0"/>
               <Component id="constraintsLabel" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
@@ -78,14 +78,14 @@
     <Component class="javax.swing.JLabel" name="MLabel">
       <Properties>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="org/gephi/ui/generator/plugin/Bundle.properties" key="BarabasiAlbertPanel.MLabel.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+          <ResourceString bundle="org/gephi/ui/complexgenerator/plugin/Bundle.properties" key="BarabasiAlbertPanel.MLabel.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
         </Property>
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="MField">
       <Properties>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="org/gephi/ui/generator/plugin/Bundle.properties" key="BarabasiAlbertPanel.MField.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+          <ResourceString bundle="org/gephi/ui/complexgenerator/plugin/Bundle.properties" key="BarabasiAlbertPanel.MField.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
         </Property>
       </Properties>
       <AuxValues>
@@ -95,7 +95,7 @@
     <Component class="javax.swing.JTextField" name="NField">
       <Properties>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="org/gephi/ui/generator/plugin/Bundle.properties" key="BarabasiAlbertPanel.NField.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+          <ResourceString bundle="org/gephi/ui/complexgenerator/plugin/Bundle.properties" key="BarabasiAlbertPanel.NField.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
         </Property>
       </Properties>
       <AuxValues>
@@ -105,7 +105,7 @@
     <Component class="javax.swing.JTextField" name="m0Field">
       <Properties>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="org/gephi/ui/generator/plugin/Bundle.properties" key="BarabasiAlbertPanel.m0Field.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+          <ResourceString bundle="org/gephi/ui/complexgenerator/plugin/Bundle.properties" key="BarabasiAlbertPanel.m0Field.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
         </Property>
       </Properties>
       <AuxValues>
@@ -115,21 +115,21 @@
     <Component class="javax.swing.JLabel" name="NLabel">
       <Properties>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="org/gephi/ui/generator/plugin/Bundle.properties" key="BarabasiAlbertPanel.NLabel.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+          <ResourceString bundle="org/gephi/ui/complexgenerator/plugin/Bundle.properties" key="BarabasiAlbertPanel.NLabel.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
         </Property>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="m0Label">
       <Properties>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="org/gephi/ui/generator/plugin/Bundle.properties" key="BarabasiAlbertPanel.m0Label.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+          <ResourceString bundle="org/gephi/ui/complexgenerator/plugin/Bundle.properties" key="BarabasiAlbertPanel.m0Label.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
         </Property>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="constraintsLabel">
       <Properties>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="org/gephi/ui/generator/plugin/Bundle.properties" key="BarabasiAlbertPanel.constraintsLabel.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+          <ResourceString bundle="org/gephi/ui/complexgenerator/plugin/Bundle.properties" key="BarabasiAlbertPanel.constraintsLabel.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
         </Property>
       </Properties>
     </Component>
@@ -139,6 +139,9 @@
           <ResourceString bundle="org/gephi/ui/complexgenerator/plugin/Bundle.properties" key="BarabasiAlbertPanel.existingCheckBox.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
         </Property>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="existingCheckBoxActionPerformed"/>
+      </Events>
     </Component>
   </SubComponents>
 </Form>
