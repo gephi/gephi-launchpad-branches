@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    updateCheck="false" 
+    monitoring="autoDetect"
+    dynamicConfig="true">
+
+    <!-- TODO
+        * Exception handler
+        * Cache event listener ?? do i need it anymore ??
+    -->
+        
+<!--        <cacheExceptionHandlerFactory class="org.gephi.data.attributes.store.ehcache.ExceptionListener" properties="logLevel=FINE"/>-->
+
+    <diskStore path="java.io.tmpdir" />
+    
+    <defaultCache
+        maxElementsInMemory="10000"
+        eternal="true"
+        statistics="false"
+        memoryStoreEvictionPolicy="LFU"
+        diskSpoolBufferSizeMB="30"
+        overflowToDisk="false"
+        diskPersistent="false">
+    </defaultCache>
+</ehcache>
