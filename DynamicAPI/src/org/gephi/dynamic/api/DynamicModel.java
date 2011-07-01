@@ -68,6 +68,13 @@ public interface DynamicModel {
     };
 
     /**
+     * Builds a new {@code DynamicGraph} from the current {@code Graph}.
+     *
+     * @return a new a new {@code DynamicGraph}.
+     */
+    public DynamicGraph createDynamicGraph();
+
+	/**
      * Builds a new {@code DynamicGraph} from the given {@code Graph} instance.
      *
      * @param graph the underlying graph
