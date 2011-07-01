@@ -194,7 +194,7 @@ public final class TimelineTopComponent extends TopComponent implements Timeline
         // just an example
         Random r = new Random();
         Calendar c = Calendar.getInstance();
-        for(int i = 0; i < 100; i++) {
+        for(int i = 0; i < 250; i++) {
             int val = r.nextInt(100);
             if(val < 50)
                 val += 50;
