@@ -165,7 +165,6 @@ public class ListSerializer implements Serializer {
         }
     }
     
-    
     public Object readObjectData(DataInputStream dis) {
         try {
             Object value = null;

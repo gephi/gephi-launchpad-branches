@@ -35,19 +35,20 @@ public interface Serializer {
     public static final byte CHARACTER_LIST             = 0x2A;
     public static final byte STRING_LIST                = 0x2B;
     
-    public static final byte DYNAMIC_TYPE               = 0x30;
-    public static final byte DYNAMIC_BYTE               = 0x31;
-    public static final byte DYNAMIC_SHORT              = 0x32;
-    public static final byte DYNAMIC_INTEGER            = 0x33;
-    public static final byte DYNAMIC_LONG               = 0x34;
-    public static final byte DYNAMIC_FLOAT              = 0x35;
-    public static final byte DYNAMIC_DOUBLE             = 0x36;
-    public static final byte DYNAMIC_BIGINTEGER         = 0x37;
-    public static final byte DYNAMIC_BIGDECIMAL         = 0x38;
-    public static final byte DYNAMIC_BOOLEAN            = 0x39;
-    public static final byte DYNAMIC_CHARACTER          = 0x3A;
-    public static final byte DYNAMIC_STRING             = 0x3B;
-
+    public static final byte DYNAMIC_TYPE               = 0x40;
+    public static final byte DYNAMIC_BYTE               = 0x41;
+    public static final byte DYNAMIC_SHORT              = 0x42;
+    public static final byte DYNAMIC_INTEGER            = 0x43;
+    public static final byte DYNAMIC_LONG               = 0x44;
+    public static final byte DYNAMIC_FLOAT              = 0x45;
+    public static final byte DYNAMIC_DOUBLE             = 0x46;
+    public static final byte DYNAMIC_BIGINTEGER         = 0x47;
+    public static final byte DYNAMIC_BIGDECIMAL         = 0x48;
+    public static final byte DYNAMIC_BOOLEAN            = 0x49;
+    public static final byte DYNAMIC_CHARACTER          = 0x4A;
+    public static final byte DYNAMIC_STRING             = 0x4B;
+    public static final byte TIME_INTERVAL              = 0x4C;
+    
     void writeObjectData (DataOutputStream dos, Object o);
 
     Object readObjectData(DataInputStream dis);
