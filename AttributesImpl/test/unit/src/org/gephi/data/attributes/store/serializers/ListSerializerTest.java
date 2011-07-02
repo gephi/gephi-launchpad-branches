@@ -46,7 +46,7 @@ public class ListSerializerTest {
     public void testByteList() {
         System.out.println("testByteList");
         
-        ListSerializer serializer = new ListSerializer();
+        ListTypeSerializer serializer = new ListTypeSerializer();
         
         ByteList expected = new ByteList(newByteArray(MAX_ELEMENTS));
         Object actual = doRoundTrip(serializer, expected);
@@ -58,7 +58,7 @@ public class ListSerializerTest {
     public void testShortList() {
         System.out.println("testShortList");
         
-        ListSerializer serializer = new ListSerializer();
+        ListTypeSerializer serializer = new ListTypeSerializer();
         
         ShortList expected = new ShortList(newShortArray(MAX_ELEMENTS));
         Object actual = doRoundTrip(serializer, expected);
@@ -70,7 +70,7 @@ public class ListSerializerTest {
     public void testIntegerList() {
         System.out.println("testIntegerList");
         
-        ListSerializer serializer = new ListSerializer();
+        ListTypeSerializer serializer = new ListTypeSerializer();
         
         IntegerList expected = new IntegerList(newIntArray(MAX_ELEMENTS));
         Object actual = doRoundTrip(serializer, expected);
@@ -82,7 +82,7 @@ public class ListSerializerTest {
     public void testLongList() {
         System.out.println("testLongList");
         
-        ListSerializer serializer = new ListSerializer();
+        ListTypeSerializer serializer = new ListTypeSerializer();
         
         LongList expected = new LongList(newLongArray(MAX_ELEMENTS));
         Object actual = doRoundTrip(serializer, expected);
@@ -94,7 +94,7 @@ public class ListSerializerTest {
     public void testFloatList() {
         System.out.println("testFloatList");
         
-        ListSerializer serializer = new ListSerializer();
+        ListTypeSerializer serializer = new ListTypeSerializer();
         
         FloatList expected = new FloatList(newFloatArray(MAX_ELEMENTS));
         Object actual = doRoundTrip(serializer, expected);
@@ -106,7 +106,7 @@ public class ListSerializerTest {
     public void testDoubleList() {
         System.out.println("testDoubleList");
         
-        ListSerializer serializer = new ListSerializer();
+        ListTypeSerializer serializer = new ListTypeSerializer();
                 
         DoubleList expected = new DoubleList(newDoubleArray(MAX_ELEMENTS));
         Object actual = doRoundTrip(serializer, expected);
@@ -118,7 +118,7 @@ public class ListSerializerTest {
     public void testBigIntegerList() {
         System.out.println("testBigIntegerList");
         
-        ListSerializer serializer = new ListSerializer();
+        ListTypeSerializer serializer = new ListTypeSerializer();
         
         BigIntegerList expected = new BigIntegerList(newBigIntegerArray(MAX_ELEMENTS));
         Object actual = doRoundTrip(serializer, expected);
@@ -130,7 +130,7 @@ public class ListSerializerTest {
     public void testBigDecimalList() {
         System.out.println("testBigDecimalList");
         
-        ListSerializer serializer = new ListSerializer();
+        ListTypeSerializer serializer = new ListTypeSerializer();
         
         BigDecimalList expected = new BigDecimalList(newBigDecimalArray(MAX_ELEMENTS));
         Object actual = doRoundTrip(serializer, expected);
@@ -142,7 +142,7 @@ public class ListSerializerTest {
     public void testBooleanList() {
         System.out.println("testBooleanList");
         
-        ListSerializer serializer = new ListSerializer();
+        ListTypeSerializer serializer = new ListTypeSerializer();
         
         BooleanList expected = new BooleanList(newBooleanArray(MAX_ELEMENTS));
         Object actual = doRoundTrip(serializer, expected);
@@ -154,7 +154,7 @@ public class ListSerializerTest {
     public void testCharacterList() {
         System.out.println("testCharacterList");
         
-        ListSerializer serializer = new ListSerializer();
+        ListTypeSerializer serializer = new ListTypeSerializer();
         
         CharacterList expected = new CharacterList(newCharArray(MAX_ELEMENTS));
         Object actual = doRoundTrip(serializer, expected);
@@ -166,7 +166,7 @@ public class ListSerializerTest {
     public void testStringList() {
         System.out.println("testStringList");
         
-        ListSerializer serializer = new ListSerializer();
+        ListTypeSerializer serializer = new ListTypeSerializer();
         
         StringList expected = new StringList(newStringArray(MAX_ELEMENTS));
         Object actual = doRoundTrip(serializer, expected);
@@ -174,19 +174,19 @@ public class ListSerializerTest {
         assertEquals(expected, actual);
     }
     
-    private Object doRoundTrip(ListSerializer serializer, Object expected) {
+    private Object doRoundTrip(ListTypeSerializer serializer, Object expected) {
         byte[] bytes = doSerialization(serializer, expected);
         Object actual = doDeserialization(serializer, bytes);
         return actual;
     }
-    private byte[] doSerialization(ListSerializer serializer, Object o) {
+    private byte[] doSerialization(ListTypeSerializer serializer, Object o) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         DataOutputStream os = new DataOutputStream(baos);
         serializer.writeObjectData(os, o);
         return baos.toByteArray();
     }
     
-    private Object doDeserialization(ListSerializer serializer, byte[] bytes) {
+    private Object doDeserialization(ListTypeSerializer serializer, byte[] bytes) {
         ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
         DataInputStream dis = new DataInputStream(bais);
         

@@ -96,7 +96,7 @@ public class DynamicValueSerializerTest {
     private void testDynamicType(Class typeClass) {
         System.out.println("testDynamic" + typeClass.getSimpleName());
         
-        DynamicValueSerializer serializer = new DynamicValueSerializer();
+        DynamicTypeSerializer serializer = new DynamicTypeSerializer();
         
         DynamicType expected = newDynamicType(typeClass);
         Object actual = doRoundTrip(serializer, expected);
@@ -104,20 +104,20 @@ public class DynamicValueSerializerTest {
         assertEquals(expected, actual);
     }
     
-    private Object doRoundTrip(DynamicValueSerializer serializer, Object expected) {
+    private Object doRoundTrip(DynamicTypeSerializer serializer, Object expected) {
         byte[] bytes = doSerialization(serializer, expected);
         Object actual = doDeserialization(serializer, bytes);
         return actual;
     }
     
-    private byte[] doSerialization(DynamicValueSerializer serializer, Object o) {
+    private byte[] doSerialization(DynamicTypeSerializer serializer, Object o) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         DataOutputStream os = new DataOutputStream(baos);
         serializer.writeObjectData(os, o);
         return baos.toByteArray();
     }
     
-    private Object doDeserialization(DynamicValueSerializer serializer, byte[] bytes) {
+    private Object doDeserialization(DynamicTypeSerializer serializer, byte[] bytes) {
         ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
         DataInputStream dis = new DataInputStream(bais);
         

@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.Map;
 import org.gephi.data.attributes.api.AttributeType;
 import org.gephi.data.attributes.type.*;
@@ -14,9 +15,9 @@ import org.gephi.data.attributes.type.*;
  *
  * @author Ernesto A
  */
-public class ListSerializer implements Serializer {
+public class ListTypeSerializer implements Serializer {
     
-    private static final Map<Class<?>, AttributeType> LIST_TYPES = new HashMap<Class<?>, AttributeType>();
+    private static final Map<Class<?>, AttributeType> LIST_TYPES = new IdentityHashMap<Class<?>, AttributeType>();
     static {
         LIST_TYPES.put(ByteList.class, AttributeType.LIST_BYTE);
         LIST_TYPES.put(ShortList.class, AttributeType.LIST_SHORT);

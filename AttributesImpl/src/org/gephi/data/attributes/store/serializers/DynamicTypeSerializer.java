@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import org.gephi.data.attributes.api.AttributeType;
@@ -29,9 +29,9 @@ import org.gephi.data.attributes.type.TimeInterval;
  *
  * @author Ernesto A
  */
-public class DynamicValueSerializer implements Serializer {
+public class DynamicTypeSerializer implements Serializer {
 
-    private static final Map<Class<?>, AttributeType> DYNAMIC_CLASSES = new HashMap<Class<?>, AttributeType>();
+    private static final Map<Class<?>, AttributeType> DYNAMIC_CLASSES = new IdentityHashMap<Class<?>, AttributeType>();
     static {
         DYNAMIC_CLASSES.put(DynamicByte.class, AttributeType.DYNAMIC_BYTE);
         DYNAMIC_CLASSES.put(DynamicShort.class, AttributeType.DYNAMIC_SHORT);
@@ -54,7 +54,7 @@ public class DynamicValueSerializer implements Serializer {
     public void writeObjectData(DataOutputStream dos, Object o) {
         AttributeType type = getDynamicTypeFor(o);
         
-        if (!type.isDynamicType())
+        if (type == null)
             throw new SerializationException("Class " + o.getClass().getName() + " is not a valid dynamic type");
         
         DynamicType value = (DynamicType)o;
