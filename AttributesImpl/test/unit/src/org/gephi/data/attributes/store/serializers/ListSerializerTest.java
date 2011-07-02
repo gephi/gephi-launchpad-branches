@@ -29,7 +29,7 @@ import static org.junit.Assert.*;
  */
 public class ListSerializerTest {
     
-    public static final int MAX_ELEMENTS = 1000;
+    public static final int MAX_ELEMENTS = 10000;
     
     public ListSerializerTest() {
     }
