@@ -29,7 +29,7 @@ import static org.junit.Assert.*;
  *
  * @author Ernesto A
  */
-public class DynamicValueSerializerTest {
+public class DynamicTypeSerializerTest {
     
     public static final int MAX_ELEMENTS = 10000;
     

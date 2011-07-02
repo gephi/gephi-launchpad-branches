@@ -27,11 +27,11 @@ import static org.junit.Assert.*;
  *
  * @author Ernesto A
  */
-public class ListSerializerTest {
+public class ListTypeSerializerTest {
     
     public static final int MAX_ELEMENTS = 10000;
     
-    public ListSerializerTest() {
+    public ListTypeSerializerTest() {
     }
 
     @BeforeClass
