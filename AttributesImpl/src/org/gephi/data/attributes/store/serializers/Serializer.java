@@ -16,8 +16,8 @@ public interface Serializer {
     public static final byte LONG                       = 0x04;
     public static final byte FLOAT                      = 0x05;
     public static final byte DOUBLE                     = 0x06;
-    public static final byte BIG_INTEGER                 = 0x07;
-    public static final byte BIG_DECIMAL                 = 0x08;
+    public static final byte BIG_INTEGER                = 0x07;
+    public static final byte BIG_DECIMAL                = 0x08;
     public static final byte BOOLEAN                    = 0x09;
     public static final byte CHARACTER                  = 0x0A;
     public static final byte STRING                     = 0x0B;
