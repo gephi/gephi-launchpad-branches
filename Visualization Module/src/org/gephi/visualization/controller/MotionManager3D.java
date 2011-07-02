@@ -77,7 +77,7 @@ public class MotionManager3D implements MotionManager {
     }
 
     @Override
-    public float[] getMousePosition3d() {
+    public float[] getMousePosition3d() { // NOT VERY MEANINGFUL
         Vec3f position = Controller.getInstance().getCamera().projectPointInverse(mousePosition[0], mousePosition[1]);
         return new float[]{position.x(), position.y(), position.z()};
     }
@@ -194,7 +194,7 @@ public class MotionManager3D implements MotionManager {
         }
         // Movement
         if (SwingUtilities.isRightMouseButton(e)) {
-            Controller.getInstance().getCamera().updateTranslation(MOVE_FACTOR * x, -MOVE_FACTOR * y);
+            Controller.getInstance().getCamera().updateTranslation(-MOVE_FACTOR * x, -MOVE_FACTOR * y);
         } else if (SwingUtilities.isMiddleMouseButton(e)) {
             Controller.getInstance().getCamera().updateOrbit(ORBIT_FACTOR * x, ORBIT_FACTOR * y);
         }

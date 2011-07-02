@@ -91,9 +91,7 @@ public class GL11UIPipeline implements Pipeline {
                 // fill
                 gl2.glColor4f(style.fillColor().ra(), style.fillColor().ga(), style.fillColor().ba(), style.fillColor().a());
 
-                gl2.glPolygonMode(GL2.GL_FRONT_AND_BACK, GL2.GL_FILL);
-
-                gl2.glBegin(GL2.GL_POLYGON);
+               gl2.glBegin(GL2.GL_TRIANGLE_FAN);
 
                 for (int i = 0; i < poly.numPoints(); ++i) {
                     gl2.glVertex2f(poly.point(i).x(), poly.point(i).y());
@@ -106,17 +104,13 @@ public class GL11UIPipeline implements Pipeline {
 
                 gl2.glLineWidth(style.borderWidth());
 
-                gl2.glPolygonMode(GL2.GL_FRONT_AND_BACK, GL2.GL_LINE);
-
-                gl2.glBegin(GL2.GL_POLYGON);
+                gl2.glBegin(GL2.GL_LINE_LOOP);
 
                 for (int i = 0; i < poly.numPoints(); ++i) {
                     gl2.glVertex2f(poly.point(i).x(), poly.point(i).y());
                 }
 
                 gl2.glEnd();
-
-                gl2.glPolygonMode(GL2.GL_FRONT_AND_BACK, GL2.GL_FILL);
 
             } else {
                 UIShape.UIEllipse ellipse = (UIShape.UIEllipse)shape;
@@ -137,9 +131,7 @@ public class GL11UIPipeline implements Pipeline {
                 // fill
                 gl2.glColor4f(style.fillColor().ra(), style.fillColor().ga(), style.fillColor().ba(), style.fillColor().a());
 
-                gl2.glPolygonMode(GL2.GL_FRONT_AND_BACK, GL2.GL_FILL);
-
-                gl2.glBegin(GL2.GL_POLYGON);
+                gl2.glBegin(GL2.GL_TRIANGLE_FAN);
 
                 for (int i = 0; i < len; ++i) {
                     gl2.glVertex2f(pnts[i].x(), pnts[i].y());
@@ -152,17 +144,13 @@ public class GL11UIPipeline implements Pipeline {
 
                 gl2.glLineWidth(style.borderWidth());
 
-                gl2.glPolygonMode(GL2.GL_FRONT_AND_BACK, GL2.GL_LINE);
-
-                gl2.glBegin(GL2.GL_POLYGON);
+                gl2.glBegin(GL2.GL_LINE_LOOP);
 
                 for (int i = 0; i < len; ++i) {
                     gl2.glVertex2f(pnts[i].x(), pnts[i].y());
                 }
 
                 gl2.glEnd();
-
-                gl2.glPolygonMode(GL2.GL_FRONT_AND_BACK, GL2.GL_FILL);
             }
 
             gl2.glDisable(GL2.GL_BLEND);
