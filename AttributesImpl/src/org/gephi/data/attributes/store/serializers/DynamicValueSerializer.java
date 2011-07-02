@@ -312,7 +312,7 @@ public class DynamicValueSerializer implements Serializer {
                 case DYNAMIC_BOOLEAN:       value = deserializeDynamicBoolean(dis); break;
                 case DYNAMIC_CHARACTER:     value = deserializeDynamicChar(dis); break;
                 case DYNAMIC_STRING:        value = deserializeDynamicString(dis); break;
-                case TIME_INTERVAL:         value = deserializeTimeInterval(dis); break; // TODO
+                case TIME_INTERVAL:         value = deserializeTimeInterval(dis); break;
                 default:                    throw new RuntimeException("Type is not a valid dynamic type");
             }
             
