@@ -183,7 +183,7 @@ public class ListSerializer implements Serializer {
                 case BOOLEAN_LIST:      value = deserializeBooleanList(dis); break;    
                 case CHARACTER_LIST:    value = deserializeCharacterList(dis); break;    
                 case STRING_LIST:       value = deserializeStringList(dis); break;
-                default:                throw new RuntimeException("Type header is not a valid list header");
+                default:                throw new RuntimeException("Type is not a valid list type");
             }
             
             return value;
