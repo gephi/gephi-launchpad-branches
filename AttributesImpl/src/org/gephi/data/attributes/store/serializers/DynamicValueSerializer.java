@@ -55,7 +55,7 @@ public class DynamicValueSerializer implements Serializer {
         AttributeType type = getDynamicTypeFor(o);
         
         if (!type.isDynamicType())
-            throw new RuntimeException("Class " + o.getClass().getName() + " is not a valid dynamic type");
+            throw new SerializationException("Class " + o.getClass().getName() + " is not a valid dynamic type");
         
         DynamicType value = (DynamicType)o;
         
@@ -75,11 +75,11 @@ public class DynamicValueSerializer implements Serializer {
                 case DYNAMIC_CHAR:          serializeDynamicChar(dos, (DynamicCharacter)value); break;
                 case DYNAMIC_STRING:        serializeDynamicString(dos, (DynamicString)value); break;
                 case TIME_INTERVAL:         serializeTimeInterval(dos, (TimeInterval)value); break;
-                default:                    throw new RuntimeException("Type is not a valid dynamic type");
+                default:                    throw new SerializationException("Type is not a valid dynamic type");
             }
         }
         catch (IOException ex) {
-            throw new RuntimeException(ex);
+            throw new SerializationException(ex);
         }
     }
 
@@ -127,6 +127,7 @@ public class DynamicValueSerializer implements Serializer {
             double high = interval.getHigh();
             Integer b = interval.getValue();
             
+            dos.writeByte(encodeEndpoints(interval));
             dos.writeDouble(low);
             dos.writeDouble(high);
             dos.writeInt(b);
@@ -313,13 +314,13 @@ public class DynamicValueSerializer implements Serializer {
                 case DYNAMIC_CHARACTER:     value = deserializeDynamicChar(dis); break;
                 case DYNAMIC_STRING:        value = deserializeDynamicString(dis); break;
                 case TIME_INTERVAL:         value = deserializeTimeInterval(dis); break;
-                default:                    throw new RuntimeException("Type is not a valid dynamic type");
+                default:                    throw new SerializationException("Type is not a valid dynamic type");
             }
             
             return value;
         }
         catch (IOException ex) {
-            throw new RuntimeException(ex);
+            throw new SerializationException(ex);
         }
     }
 

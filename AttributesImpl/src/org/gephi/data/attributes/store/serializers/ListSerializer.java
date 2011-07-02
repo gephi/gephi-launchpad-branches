@@ -39,7 +39,7 @@ public class ListSerializer implements Serializer {
         AttributeType type = getListType(o);
         
         if (type == null) 
-            throw new RuntimeException("Class " + o.getClass().getName() + " is not a valid list class");
+            throw new SerializationException("Class " + o.getClass().getName() + " is not a valid list class");
         
         AbstractList list = (AbstractList) o;
         
@@ -58,11 +58,11 @@ public class ListSerializer implements Serializer {
                 case LIST_BOOLEAN:      serializeBooleanList(dos, (BooleanList)list); break;    
                 case LIST_CHARACTER:    serializeCharacterList(dos, (CharacterList)list); break;    
                 case LIST_STRING:       serializeStringList(dos, (StringList)list); break;
-                default:                throw new RuntimeException("Type is not a valid list type");
+                default:                throw new SerializationException("Type is not a valid list type");
             }
         }
         catch (IOException ex) {
-            throw new RuntimeException(ex);
+            throw new SerializationException(ex);
         }
     }
 
@@ -182,13 +182,13 @@ public class ListSerializer implements Serializer {
                 case BOOLEAN_LIST:      value = deserializeBooleanList(dis); break;    
                 case CHARACTER_LIST:    value = deserializeCharacterList(dis); break;    
                 case STRING_LIST:       value = deserializeStringList(dis); break;
-                default:                throw new RuntimeException("Type is not a valid list type");
+                default:                throw new SerializationException("Type is not a valid list type");
             }
             
             return value;
         }
         catch (IOException ex) {
-            throw new RuntimeException(ex);
+            throw new SerializationException(ex);
         }
     }
     
