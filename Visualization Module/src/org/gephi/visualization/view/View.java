@@ -21,9 +21,14 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 
 package org.gephi.visualization.view;
 
+import com.jogamp.common.nio.Buffers;
 import com.jogamp.opengl.util.FPSAnimator;
+import com.jogamp.opengl.util.awt.TextRenderer;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Font;
+import java.nio.IntBuffer;
 import javax.media.opengl.GL;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLCapabilities;
@@ -60,6 +65,7 @@ public class View implements GLEventListener {
     private boolean rebuildPipeline;
 
     static { GLProfile.initSingleton(true); }
+    private TextRenderer textRenderer;
 
 
     public View(Controller controller, FrameDataBridgeOut bridge) {
@@ -69,6 +75,8 @@ public class View implements GLEventListener {
         final GLCapabilities caps = new GLCapabilities(GLProfile.getDefault());
         caps.setDoubleBuffered(true);
         caps.setHardwareAccelerated(true);
+        caps.setSampleBuffers(true);
+        caps.setNumSamples(2);
         // TODO: change capabilities based on config files
 
         this.canvas = new GLCanvas(caps);
@@ -84,6 +92,8 @@ public class View implements GLEventListener {
         this.bridge.setNodeLayout(new GL11NodesLayout3D());
         this.bridge.setEdgeLayout(new GL11EdgesLayout3D());
         this.bridge.setUILayout(new GL11UILayout());
+
+        this.textRenderer = null;
     }
     
     public Component getCanvas() {
@@ -123,6 +133,16 @@ public class View implements GLEventListener {
         if (!init) {
             gl.glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
         }
+
+        IntBuffer bufs = Buffers.newDirectIntBuffer(2);
+        gl.glGetIntegerv(GL.GL_SAMPLE_BUFFERS, bufs);
+        gl.glGetIntegerv(GL.GL_SAMPLES, bufs);
+        System.out.println("Num. sample buffers: " + bufs.get(0));
+        System.out.println("Num. samples: " + bufs.get(1));
+
+        gl.glEnable(GL.GL_MULTISAMPLE);
+
+        this.textRenderer = new TextRenderer(new Font("SansSerif", Font.PLAIN, 14));
     }
 
     @Override
@@ -147,6 +167,21 @@ public class View implements GLEventListener {
         this.controller.beginRenderFrame();
 
         this.pipeline.draw(gl, frameData);
+
+
+        this.textRenderer.setColor(Color.BLACK);
+        this.textRenderer.beginRendering(glad.getWidth(), glad.getHeight());
+
+        this.textRenderer.draw("Position: " + this.frameData.camera().position(), 10, 10);
+
+        this.textRenderer.draw("Front: " + this.frameData.camera().frontVector(), 10, 30);
+
+        this.textRenderer.draw("Up: " + this.frameData.camera().upVector(), 10, 50);
+
+        this.textRenderer.draw("Right: " + this.frameData.camera().rightVector(), 10, 70);
+
+        this.textRenderer.endRendering();
+
 
         this.controller.endRenderFrame();
 
