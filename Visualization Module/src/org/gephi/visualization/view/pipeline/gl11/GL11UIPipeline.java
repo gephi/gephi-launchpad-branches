@@ -27,7 +27,7 @@ import javax.media.opengl.glu.GLU;
 import javax.media.opengl.glu.gl2.GLUgl2;
 import org.gephi.math.Vec2M;
 import org.gephi.visualization.api.view.ui.UIShape;
-import org.gephi.visualization.camera.Camera;
+import org.gephi.visualization.camera.CameraImpl;
 import org.gephi.visualization.data.FrameData;
 import org.gephi.visualization.view.pipeline.Pipeline;
 import org.gephi.visualization.api.view.ui.UIStyle;
@@ -71,7 +71,7 @@ public class GL11UIPipeline implements Pipeline {
         gl2.glEnable(GL2.GL_BLEND);
         gl2.glBlendFunc(GL2.GL_ONE, GL2.GL_ONE_MINUS_SRC_ALPHA);
 
-        final Camera camera = frameData.camera();
+        final CameraImpl camera = frameData.camera();
 
         gl2.glMatrixMode(GL2.GL_PROJECTION);
 

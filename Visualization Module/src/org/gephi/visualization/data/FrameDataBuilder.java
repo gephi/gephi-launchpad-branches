@@ -24,7 +24,7 @@ package org.gephi.visualization.data;
 import org.gephi.graph.api.Edge;
 import org.gephi.graph.api.Node;
 import org.gephi.visualization.api.view.ui.UIShape;
-import org.gephi.visualization.camera.Camera;
+import org.gephi.visualization.camera.CameraImpl;
 import org.gephi.visualization.data.buffer.BufferBuilder;
 import org.gephi.visualization.data.buffer.Buffer;
 import org.gephi.visualization.data.graph.VizEdge;
@@ -38,7 +38,7 @@ import org.gephi.visualization.data.layout.Layout;
  */
 public class FrameDataBuilder {
 
-    private Camera camera;
+    private CameraImpl camera;
 
     private boolean somethingIsSelected;
 
@@ -66,7 +66,7 @@ public class FrameDataBuilder {
         this.uiBufferBuilder = new BufferBuilder<UIShape, UIShape>(uiBuffer);
     }
 
-    public void setCamera(Camera camera) {
+    public void setCamera(CameraImpl camera) {
         this.camera = camera;
     }
 

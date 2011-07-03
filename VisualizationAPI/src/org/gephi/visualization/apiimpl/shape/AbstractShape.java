@@ -22,7 +22,7 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 package org.gephi.visualization.apiimpl.shape;
 
 import java.awt.Point;
-import org.gephi.visualization.api.selection.CameraBridge;
+import org.gephi.visualization.api.camera.Camera;
 import org.gephi.visualization.api.selection.Shape;
 
 /**
@@ -41,19 +41,19 @@ public abstract class AbstractShape implements Shape {
     private float maxSize = 0f;
     private int projectedMaxSize = 0;
 
-    public boolean isInside3D(float x, float y, float z, float radius, CameraBridge cameraBridge) {
-        Point point = cameraBridge.projectPoint(x, y, z);
-        int size = cameraBridge.projectScale(radius);
+    public boolean isInside3D(float x, float y, float z, float radius, Camera camera) {
+        Point point = camera.projectPoint(x, y, z);
+        int size = camera.projectScale(radius);
         return isPointInside(point.x, point.y, size);
     }
 
-    public Intersection intersectsBox(float x, float y, float z, float size, float maxNodeSize, CameraBridge cameraBridge) {
+    public Intersection intersectsBox(float x, float y, float z, float size, float maxNodeSize, Camera camera) {
         // Create a sphere around the box and test every corner point for inclusion
-        int radius = cameraBridge.projectScale(size * THIRD_ROOT);
+        int radius = camera.projectScale(size * THIRD_ROOT);
         if (maxSize != maxNodeSize) {
-            projectedMaxSize = cameraBridge.projectScale(maxNodeSize);
+            projectedMaxSize = camera.projectScale(maxNodeSize);
         }
-        Point center = cameraBridge.projectPoint(x + size / 2, y + size / 2, z + size / 2);
+        Point center = camera.projectPoint(x + size / 2, y + size / 2, z + size / 2);
         // Is shape inside the boxes bounding sphere?
         if (intersectsCircle(center.x, center.y, Integer.MAX_VALUE)) {
             return Intersection.INTERSECT;
@@ -63,7 +63,7 @@ public abstract class AbstractShape implements Shape {
         boolean inside = true;
         int i = 0;
         while (i < 8 && (!intersect || inside)) {
-            if (isInside3D(x + BOX_CORNERS[i][0] * size, y + BOX_CORNERS[i][1] * size, z + BOX_CORNERS[i][2] * size, projectedMaxSize, cameraBridge)) {
+            if (isInside3D(x + BOX_CORNERS[i][0] * size, y + BOX_CORNERS[i][1] * size, z + BOX_CORNERS[i][2] * size, projectedMaxSize, camera)) {
                 intersect = true;
             } else {
                 inside = false;

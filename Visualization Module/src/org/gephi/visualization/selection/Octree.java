@@ -32,7 +32,7 @@ import org.gephi.graph.api.Node;
 import org.gephi.graph.api.NodeData;
 import org.gephi.graph.api.NodeIterator;
 import org.gephi.graph.spi.SpatialData;
-import org.gephi.visualization.api.selection.CameraBridge;
+import org.gephi.visualization.api.camera.Camera;
 import org.gephi.visualization.api.selection.NodeContainer;
 import org.gephi.visualization.api.selection.Shape.Intersection;
 import org.gephi.visualization.apiimpl.shape.ShapeUtils;
@@ -147,7 +147,7 @@ public final class Octree implements NodeContainer {
 
     @Override
     public List<Node> applySelection(final Shape shape) {
-        final CameraBridge cameraBridge = Controller.getInstance().getCameraBridge();
+        final Camera camera = Controller.getInstance().getCameraCopy();
         final List<Node> nodes = new ArrayList<Node>();
 
         final boolean select = shape.getSelectionModifier().isPositive();
@@ -155,7 +155,7 @@ public final class Octree implements NodeContainer {
         recursiveAddNodes(root, shape, new NodeFunction() {
             @Override
             public void apply(Node node) {
-                if (shape.isInside3D(node.getNodeData().x(), node.getNodeData().y(), node.getNodeData().z(), node.getNodeData().getSize(), cameraBridge)) {
+                if (shape.isInside3D(node.getNodeData().x(), node.getNodeData().y(), node.getNodeData().z(), node.getNodeData().getSize(), camera)) {
                     if (select != node.getNodeData().isSelected()) {
                         node.getNodeData().setSelected(select);
                         nodes.add(node);
@@ -188,8 +188,8 @@ public final class Octree implements NodeContainer {
     }
 
     private void recursiveAddNodes(Octant octant, Shape shape, NodeFunction nodeFunction) {
-        final CameraBridge cameraBridge = Controller.getInstance().getCameraBridge();
-        Intersection intersection = shape.intersectsBox(octant.getX(), octant.getY(), octant.getZ(), octant.getSize(), maxNodeSize, cameraBridge);
+        final Camera camera = Controller.getInstance().getCameraCopy();
+        Intersection intersection = shape.intersectsBox(octant.getX(), octant.getY(), octant.getZ(), octant.getSize(), maxNodeSize, camera);
 
         switch (intersection) {
             case OUTSIDE:
@@ -215,8 +215,8 @@ public final class Octree implements NodeContainer {
         if (singleFound) {
             return;
         }
-        final CameraBridge cameraBridge = Controller.getInstance().getCameraBridge();
-        Intersection intersection = shape.intersectsBox(octant.getX(), octant.getY(), octant.getZ(), octant.getSize(), maxNodeSize, cameraBridge);
+        final Camera camera = Controller.getInstance().getCameraCopy();
+        Intersection intersection = shape.intersectsBox(octant.getX(), octant.getY(), octant.getZ(), octant.getSize(), maxNodeSize, camera);
 
         switch (intersection) {
             case OUTSIDE:
@@ -240,7 +240,7 @@ public final class Octree implements NodeContainer {
     
     @Override
     public Node selectSingle(Point point, final boolean select, final int selectionRadius, final int policy) {
-        final CameraBridge cameraBridge = Controller.getInstance().getCameraBridge();
+        final Camera camera = Controller.getInstance().getCameraCopy();
         Octant octant = root;
         singleFound = false;
         final Node[] nodes = new Node[1];
@@ -251,7 +251,7 @@ public final class Octree implements NodeContainer {
             // TODO implement closest policy
             public void apply(Node node) {
                  if (node.getNodeData().isSelected() != select &&
-                     shape.isInside3D(node.getNodeData().x(), node.getNodeData().y(), node.getNodeData().z(), node.getNodeData().getSize(), cameraBridge)) {
+                     shape.isInside3D(node.getNodeData().x(), node.getNodeData().y(), node.getNodeData().z(), node.getNodeData().getSize(), camera)) {
                     node.getNodeData().setSelected(select);
                     singleFound = true;
                     nodes[0] = node;

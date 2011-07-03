@@ -24,7 +24,7 @@ package org.gephi.visualization.data;
 import org.gephi.graph.api.Edge;
 import org.gephi.graph.api.Node;
 import org.gephi.visualization.api.view.ui.UIShape;
-import org.gephi.visualization.camera.Camera;
+import org.gephi.visualization.camera.CameraImpl;
 import org.gephi.visualization.data.buffer.Buffer;
 import org.gephi.visualization.data.graph.VizEdge;
 import org.gephi.visualization.data.graph.VizNode;
@@ -37,7 +37,7 @@ import org.gephi.visualization.data.layout.Layout;
  */
 public class FrameData {
 
-    private final Camera camera;
+    private final CameraImpl camera;
 
     private final boolean somethingIsSelected;
 
@@ -45,7 +45,7 @@ public class FrameData {
     private final Buffer<Edge, VizEdge> edgeBuffer;
     private final Buffer<UIShape, UIShape> uiBuffer;
 
-    FrameData(Camera camera, boolean somethingIsSelected, Buffer<Node, VizNode> nodeBuffer, Buffer<Edge, VizEdge> edgeBuffer, Buffer<UIShape, UIShape> uiBuffer) {
+    FrameData(CameraImpl camera, boolean somethingIsSelected, Buffer<Node, VizNode> nodeBuffer, Buffer<Edge, VizEdge> edgeBuffer, Buffer<UIShape, UIShape> uiBuffer) {
         this.camera = camera;
         this.somethingIsSelected = somethingIsSelected;
         this.nodeBuffer = nodeBuffer;
@@ -53,7 +53,7 @@ public class FrameData {
         this.uiBuffer = uiBuffer;
     }
 
-    public Camera camera() {
+    public CameraImpl camera() {
         return this.camera;
     }
 

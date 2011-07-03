@@ -32,7 +32,7 @@ import org.gephi.preview.api.supervisors.EdgeSupervisor;
 import org.gephi.preview.api.supervisors.GlobalEdgeSupervisor;
 import org.gephi.preview.updaters.LabelFontAdjuster;
 import org.gephi.preview.updaters.LabelShortener;
-import org.gephi.visualization.VizModel;
+import org.gephi.visualization.api.vizmodel.VizModel;
 import org.openide.util.Lookup;
 
 /**

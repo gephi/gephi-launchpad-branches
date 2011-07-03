@@ -32,16 +32,14 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
-import org.gephi.lib.gleem.linalg.Mat4f;
 import org.gephi.lib.gleem.linalg.Vec3f;
 import org.gephi.project.api.ProjectController;
 import org.gephi.project.api.Workspace;
 import org.gephi.project.api.WorkspaceListener;
 import org.gephi.visualization.api.MotionManager;
-import org.gephi.visualization.api.selection.CameraBridge;
 import org.gephi.visualization.api.selection.SelectionManager;
 import org.gephi.visualization.api.selection.Shape;
-import org.gephi.visualization.camera.Camera;
+import org.gephi.visualization.camera.CameraImpl;
 import org.gephi.visualization.geometry.AABB;
 import org.gephi.visualization.view.View;
 import org.openide.util.Lookup;
@@ -52,8 +50,7 @@ import org.openide.util.Lookup;
  */
 public class Controller implements KeyListener, MouseListener, MouseMotionListener, MouseWheelListener {
 
-    private Camera camera;
-    private CameraBridge cameraBridge;
+    private CameraImpl camera;
     private MotionManager motionManager;
 
     private static Controller instance;
@@ -67,7 +64,7 @@ public class Controller implements KeyListener, MouseListener, MouseMotionListen
 
     private Controller() {
         // Random values
-        this.camera = new Camera(300, 300, 100f, 10000.0f);
+        this.camera = new CameraImpl(300, 300, 100f, 10000.0f);
         this.motionManager = new MotionManager3D();
         this.viewSize = new Dimension();
 
@@ -93,28 +90,6 @@ public class Controller implements KeyListener, MouseListener, MouseMotionListen
             public void disable() {
             }
         });
-
-        this.cameraBridge = new CameraBridge() {
-            @Override
-            public Mat4f viewMatrix() {
-                return Controller.this.camera.viewMatrix();
-            }
-
-            @Override
-            public Mat4f projectiveMatrix() {
-                return Controller.this.camera.projectiveMatrix();
-            }
-            
-            @Override
-            public Point projectPoint(float x, float y, float z) {
-                return Controller.this.camera.projectPoint(x, y, z);
-            }
-
-            @Override
-            public int projectScale(float scale) {
-                return Controller.this.camera.projectScale(scale);
-            }
-        };
 
     }
 
@@ -148,12 +123,12 @@ public class Controller implements KeyListener, MouseListener, MouseMotionListen
         view.getCanvas().setCursor(cursor);
     }
 
-    public Camera getCamera() {
+    CameraImpl getCamera() {
         return this.camera;
     }
 
-    public CameraBridge getCameraBridge() {
-        return this.cameraBridge;
+    public CameraImpl getCameraCopy() {
+        return new CameraImpl(this.camera);
     }
 
     public MotionManager getMotionManager() {

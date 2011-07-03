@@ -218,6 +218,10 @@ public class Vec3f {
     z *= arg.z;
   }
 
+  public float[] toArray() {
+      return new float[] {x, y, z};
+  }
+
   public Vecf toVecf() {
     Vecf out = new Vecf(3);
     for (int i = 0; i < 3; i++) {

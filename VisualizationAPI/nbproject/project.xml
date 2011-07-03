@@ -7,6 +7,14 @@
             <suite-component/>
             <module-dependencies>
                 <dependency>
+                    <code-name-base>org.gephi.data.attributes.api</code-name-base>
+                    <build-prerequisite/>
+                    <compile-dependency/>
+                    <run-dependency>
+                        <specification-version>0.8.0.1</specification-version>
+                    </run-dependency>
+                </dependency>
+                <dependency>
                     <code-name-base>org.gephi.datalab.api</code-name-base>
                     <build-prerequisite/>
                     <compile-dependency/>
@@ -39,6 +47,14 @@
                     </run-dependency>
                 </dependency>
                 <dependency>
+                    <code-name-base>org.gephi.project.api</code-name-base>
+                    <build-prerequisite/>
+                    <compile-dependency/>
+                    <run-dependency>
+                        <specification-version>0.8</specification-version>
+                    </run-dependency>
+                </dependency>
+                <dependency>
                     <code-name-base>org.gephi.ui.utils</code-name-base>
                     <build-prerequisite/>
                     <compile-dependency/>
@@ -64,13 +80,14 @@
                 </dependency>
             </module-dependencies>
             <public-packages>
-                <package>org.gephi.visualization</package>
                 <package>org.gephi.visualization.api</package>
+                <package>org.gephi.visualization.api.camera</package>
                 <package>org.gephi.visualization.api.color</package>
                 <package>org.gephi.visualization.api.config</package>
                 <package>org.gephi.visualization.api.event</package>
                 <package>org.gephi.visualization.api.selection</package>
                 <package>org.gephi.visualization.api.view.ui</package>
+                <package>org.gephi.visualization.api.vizmodel</package>
                 <package>org.gephi.visualization.apiimpl</package>
                 <package>org.gephi.visualization.apiimpl.config</package>
                 <package>org.gephi.visualization.apiimpl.shape</package>

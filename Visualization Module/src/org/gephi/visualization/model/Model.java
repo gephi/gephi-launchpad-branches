@@ -30,9 +30,7 @@ import org.gephi.lib.gleem.linalg.Vec3f;
 import org.gephi.project.api.ProjectController;
 import org.gephi.project.api.Workspace;
 import org.gephi.project.api.WorkspaceListener;
-import org.gephi.visualization.api.MotionManager;
 import org.gephi.visualization.api.selection.Shape;
-import org.gephi.visualization.camera.Camera;
 import org.gephi.visualization.controller.Controller;
 import org.gephi.visualization.data.FrameDataBridgeIn;
 import org.gephi.visualization.geometry.AABB;
@@ -86,14 +84,13 @@ public class Model implements Runnable, WorkspaceListener {
 
     @Override
     public void run() {
-        Camera camera = this.controller.getCamera();
 
         while (true) {
             long beginFrameTime = System.currentTimeMillis();
 
             this.controller.beginUpdateFrame();
             
-            this.bridge.beginFrame(camera);
+            this.bridge.beginFrame(this.controller.getCameraCopy());
 
             final Graph graph;
             synchronized(this.graphModelLock) {

@@ -28,13 +28,14 @@ import org.gephi.lib.gleem.linalg.Mat4f;
 import org.gephi.lib.gleem.linalg.Rotf;
 import org.gephi.lib.gleem.linalg.Vec3f;
 import org.gephi.lib.gleem.linalg.Vec4f;
+import org.gephi.visualization.api.camera.Camera;
 
 /**
  * Class representing a camera. Enables basic camera movement.
  *
  * @author Antonio Patriarca <antoniopatriarca@gmail.com>
  */
-public class Camera {
+public class CameraImpl implements Camera {
     
     private Vec3f front, up;
     private Vec3f position;
@@ -50,7 +51,7 @@ public class Camera {
     private static final float MAX_ORBIT = 2000.0f;
     private static final float MAX_FOVY = 3.0f;
 
-    public Camera(int width, int height, float near, float far) {
+    public CameraImpl(int width, int height, float near, float far) {
         this.imageWidth = width;
         this.imageHeight = height;
         this.fovy = 1.0f;
@@ -62,7 +63,7 @@ public class Camera {
         this.up = new Vec3f(0.0f, 1.0f, 0.0f);
     }
 
-    public Camera(Camera camera) {
+    public CameraImpl(CameraImpl camera) {
         this.imageWidth = camera.imageWidth;
         this.imageHeight = camera.imageHeight;
         this.fovy = camera.fovy;
@@ -74,22 +75,26 @@ public class Camera {
         this.up = camera.up.copy();
     }
 
+    @Override
     public void setImageSize(Dimension size) {
         this.imageWidth = size.width;
         this.imageHeight = size.height;
         requireRecomputeMatrix();
     }
 
+    @Override
     public void moveTo(Vec3f newPos) {
         this.position = newPos.copy();
         requireRecomputeMatrix();
     }
 
+    @Override
     public void translate(Vec3f v) {
         this.position.add(v);
         requireRecomputeMatrix();
     }
 
+    @Override
     public void rotate(Vec3f axis, float angle) {
         Rotf rot = new Rotf(axis, angle);
         this.front = rot.rotateVector(this.front);
@@ -97,6 +102,7 @@ public class Camera {
         requireRecomputeMatrix();
     }
 
+    @Override
     public void rotate(Vec3f origin, Vec3f axis, float angle) {
         Rotf rot = new Rotf(axis, angle);
         this.front = rot.rotateVector(this.front);
@@ -107,6 +113,7 @@ public class Camera {
         requireRecomputeMatrix();
     }
 
+    @Override
     public void lookAt(Vec3f center, Vec3f up) {
         this.front.sub(center, this.position);
         this.front.normalize();
@@ -115,58 +122,78 @@ public class Camera {
         requireRecomputeMatrix();
     }
 
+    @Override
     public void lookAt(Vec3f position, Vec3f center, Vec3f up) {
         this.position = position.copy();
         lookAt(center, up);
     }
 
+    @Override
     public void setFov(float fov) {
         this.fovy = fov;
         requireRecomputeMatrix();
     }
 
+    @Override
     public void setClipPlanes(float near, float far) {
         this.near = near;
         this.far = far;
         requireRecomputeMatrix();
     }
 
+    @Override
     public Vec3f frontVector() {
         return this.front.copy();
     }
 
+    @Override
     public Vec3f upVector() {
         return this.up.copy();
     }
 
+    @Override
     public Vec3f rightVector() {
         return this.front.cross(this.up);
     }
 
+    @Override
     public Vec3f position() {
         return this.position.copy();
     }
 
+    @Override
+    public Vec3f lookAtPoint() {
+        Vec3f point = new Vec3f();
+        point.add(position, front);
+        return point;
+    }
+
+    @Override
     public float imageWidth() {
         return this.imageWidth;
     }
 
+    @Override
     public float imageHeight() {
         return this.imageHeight;
     }
 
+    @Override
     public float near() {
         return this.near;
     }
 
+    @Override
     public float far() {
         return this.far;
     }
 
+    @Override
     public float fov() {
         return this.fovy;
     }
 
+    @Override
     public float projectedDistanceFrom(Vec3f point) {
         this.front.normalize();
         Vec3f pnt = point.copy();
@@ -177,6 +204,7 @@ public class Camera {
     /**
      * Returns the model-view matrix.
      */
+    @Override
     public Mat4f viewMatrix() {
         if (recomputeMatrix) {
             Vec3f right = rightVector();
@@ -196,6 +224,7 @@ public class Camera {
     /**
      * Returns the projective matrix.
      */
+    @Override
     public Mat4f projectiveMatrix() {
         if (recomputeMatrix) {
             Mat4f mat = new Mat4f();
@@ -214,6 +243,7 @@ public class Camera {
     /**
      * Returns the given point as it will appear on the screen.
      */
+    @Override
     public Point projectPoint(float x, float y, float z) {
         Vec4f point = new Vec4f(x, y, z, 1.0f);
         Vec4f screenPoint = new Vec4f();
@@ -232,6 +262,7 @@ public class Camera {
      * Returns a point from camera viewing plane corresponding to the 2D point
      * on screen.
      */
+    @Override
     public Vec3f projectPointInverse(float x, float y) {
         // FIXME
         Vec3f point = this.position.addScaled(getCameraDistance(), this.front);
@@ -249,6 +280,7 @@ public class Camera {
      * Returns a vector from camera viewing plane corresponding to the 2D vector
      * on screen.
      */
+    @Override
     public Vec3f projectVectorInverse(float x, float y) {
         float ratio = (float) Math.sqrt((1 - Math.cos(fovy)) / (1 - Math.cos(1.0)));
         Vec3f rightVector = rightVector();
@@ -269,6 +301,7 @@ public class Camera {
     /**
      * Returns the rescaled size of an object as it would appear on the screen.
      */
+    @Override
     public int projectScale(float scale) {
         // TODO optimize
         Point p1 = projectPoint(scale, 0, 0);
@@ -277,8 +310,10 @@ public class Camera {
         //return (int) Math.sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
     }
 
+    @Override
     public void startTranslation() {}
 
+    @Override
     public void updateTranslation(float horizontal, float vertical) {
         float ratio = (float) Math.sqrt((1 - Math.cos(fovy)) / (1 - Math.cos(1.0)));
         Vec3f rightVector = rightVector();
@@ -305,10 +340,12 @@ public class Camera {
      * Initialize orbiting around a center point.
      * @param orbitModifier must be a value between 0.0 and 1.0.
      */
+    @Override
     public void startOrbit(float orbitModifier) {
         orbitCenter = new Vec3f(position).addScaled(orbitRadius(orbitModifier), front);
     }
 
+    @Override
     public void updateOrbit(float x, float y) {
         Vec3f fromCenter = new Vec3f();
         fromCenter.sub(position, orbitCenter);
@@ -341,6 +378,7 @@ public class Camera {
         //System.out.println("--------------------------");
     }
 
+    @Override
     public void zoom(float by) {
         setFov((float) Math.min(fovy * Math.exp(by), MAX_FOVY));
     }

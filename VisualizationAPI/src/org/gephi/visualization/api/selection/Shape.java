@@ -21,6 +21,7 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 
 package org.gephi.visualization.api.selection;
 
+import org.gephi.visualization.api.camera.Camera;
 import org.gephi.visualization.api.view.ui.UIShape;
 
 public interface Shape {
@@ -29,12 +30,12 @@ public interface Shape {
      * Returns true if given 3D coordinate point is inside the projection
      * frustum.
      */
-    public boolean isInside3D(float x, float y, float z, float radius, CameraBridge cameraBridge);
+    public boolean isInside3D(float x, float y, float z, float radius, Camera camera);
 
     /**
      * Determines intersection of box with the shape.
      */
-    public Intersection intersectsBox(float x, float y, float z, float size, float maxNodeSize, CameraBridge cameraBridge);
+    public Intersection intersectsBox(float x, float y, float z, float size, float maxNodeSize, Camera camera);
 
     Shape singleUpdate(int x, int y);
 

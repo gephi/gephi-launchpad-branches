@@ -138,13 +138,13 @@ public final class GraphTopComponent extends TopComponent {
     private JComponent propertiesBar;
     private AddonsBar addonsBar;
 
-    private void initCollapsePanel() {/*
+    private void initCollapsePanel() {
         vizBarController = new VizBarController();
         if (Lookup.getDefault().lookup(VizConfig.class).isShowVizVar()) {
             collapsePanel.init(vizBarController.getToolbar(), vizBarController.getExtendedBar(), false);
         } else {
             collapsePanel.setVisible(false);
-        }*/
+        }
     }
 
     private void initToolPanels() {
