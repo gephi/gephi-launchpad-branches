@@ -272,6 +272,12 @@ public final class DynamicModelImpl implements DynamicModel {
     }
 
     @Override
+    public DynamicGraph createDynamicGraph() {
+		Graph graph = graphModel.getGraph();
+        return new DynamicGraphImpl(graph);
+    }
+
+	@Override
     public DynamicGraph createDynamicGraph(Graph graph) {
         return new DynamicGraphImpl(graph);
     }

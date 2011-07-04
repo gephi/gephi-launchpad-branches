@@ -21,13 +21,11 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 package org.gephi.desktop.timeline;
 
 import org.gephi.dynamic.api.DynamicController;
+import org.gephi.dynamic.api.DynamicGraph;
 import org.gephi.dynamic.api.DynamicModel;
 import org.gephi.dynamic.api.DynamicModelEvent;
 import org.gephi.dynamic.api.DynamicModelListener;
 import org.gephi.graph.api.Graph;
-import org.gephi.graph.api.GraphEvent;
-import org.gephi.graph.api.GraphListener;
-import org.gephi.graph.api.GraphModel;
 
 import org.gephi.timeline.api.TimelineModel;
 import org.gephi.timeline.api.TimelineModelEvent;
@@ -38,9 +36,9 @@ import org.openide.util.Lookup;
  *
  * @author Julian Bilcke
  */
-public class TimelineModelImpl implements TimelineModel, DynamicModelListener, GraphListener {
+public class TimelineModelImpl implements TimelineModel, DynamicModelListener {
 
-    // Variable
+    //Variable
     private double fromFloat = 0.0f;
     private double toFloat = 1.0f;
     private double fromValue = 0.0f;
@@ -51,33 +49,17 @@ public class TimelineModelImpl implements TimelineModel, DynamicModelListener, G
     private double modelMax = Double.POSITIVE_INFINITY;
     private Class unit = null;
     private boolean enabled = false;
-    // Architecture
+    
+    private DynamicGraph dynamicgraph;
+    //Architecture
     private final TimelineControllerImpl controller;
     private DynamicController dynamicController;
-    private DynamicModel dynamicModel;  
-    // addendum
-    private GraphModel model;
-    
+    private DynamicModel dynamicModel;
+
     public TimelineModelImpl(TimelineControllerImpl controller) {
         this.controller = controller;
-        refreshModel(null);
     }
 
-    public void refreshModel(GraphModel model) {
-        if (this.model != null) {
-            this.model.removeGraphListener(this);
-        }
-        this.model = model;
-        if (this.model != null) {
-            model.addGraphListener(this);
-        }
-    }    
-    
-    public void graphChanged(GraphEvent event) {
-        refreshModel(event.getSource().getGraphModel());
-        //this.underlyingGraph = event.getSource().getGraphModel().getGraph();
-    } 
-    
     public void setup(DynamicModel dynamicModel) {
         dynamicController = Lookup.getDefault().lookup(DynamicController.class);
         this.dynamicModel = dynamicModel;
@@ -92,12 +74,17 @@ public class TimelineModelImpl implements TimelineModel, DynamicModelListener, G
         modelMax = Double.POSITIVE_INFINITY;
         setModelMin(dynamicModel.getMin());
         setModelMax(dynamicModel.getMax());
+
+        dynamicgraph = dynamicModel.createDynamicGraph();
+        
         refreshEnabled();
     }
 
     public void unsetup() {
         dynamicModel = null;
         dynamicController.removeModelListener(this);
+        
+        dynamicgraph = null;
     }
 
     public void disable() {
@@ -234,6 +221,6 @@ public class TimelineModelImpl implements TimelineModel, DynamicModelListener, G
     }
 
     public Graph getSnapshotGraph(double point) {
-        return dynamicModel.createDynamicGraph(model.getGraph()).getSnapshotGraph(point);
+        return dynamicgraph.getSnapshotGraph(point);
     }
 }

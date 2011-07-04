@@ -45,6 +45,7 @@ import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.StandardXYItemRenderer;
+import org.jfree.data.Range;
 import org.jfree.data.general.Series;
 import org.jfree.data.time.Day;
 import org.jfree.data.time.TimeSeries;
@@ -101,14 +102,49 @@ public final class TimelineTopComponent extends TopComponent implements Timeline
         setName(NbBundle.getMessage(TimelineTopComponent.class, "CTL_TimelineTopComponent"));
 //        setToolTipText(NbBundle.getMessage(TimelineTopComponent.class, "HINT_TimelineTopComponent"));
         setIcon(ImageUtilities.loadImage(ICON_PATH, true));
-        putClientProperty(TopComponent.PROP_MAXIMIZATION_DISABLED, Boolean.TRUE);
+        putClientProperty(TopComponent.PROP_MAXIMIZATION_DISABLED, Boolean.TRUE); 
         
-        // setup sparkline data
-        refreshModelData();
+        // Drawer
+        TimelineDrawer drawer = Lookup.getDefault().lookup(TimelineDrawer.class);
+        drawerPanel = (JPanel) drawer;
+        drawerPanel.setOpaque(false);
+        drawerPanel.setEnabled(false);
+        timelinePanel.add(drawerPanel);
                 
-        // The sparkline is created by setting a bunch of the visible properties
-        // on the domain, range axis and the XYPlot to false
-        timeline = new DateAxis();
+        // Animator
+        animator = new TimelineAnimatorImpl();
+        animator.addListener(this);
+
+        // Button
+        enableButton.addActionListener(new ActionListener() {
+
+            public void actionPerformed(ActionEvent e) {
+                TimelineTopComponent.this.setEnabled(enableButton.isSelected());
+                if (model != null) {
+                    model.setEnabled(enableButton.isSelected());
+                    setupSparkline();
+                }
+            }
+        });
+
+        closeButton.addActionListener(new ActionListener() {
+
+            public void actionPerformed(ActionEvent e) {
+                TimelineTopComponent.this.close();
+            }
+        });
+    }
+    
+    private void setupSparkline() {
+         // load data
+        Range timedomain = refreshModelData();
+                
+        // Customize chart into a sparkline graph
+        
+        timeline = (model.getUnit()==DateTime.class) ? new DateAxis() : new NumberAxis();
+
+        timeline.setRange(timedomain);
+        
         timeline.setTickLabelsVisible(true);
         timeline.setTickMarksVisible(true);
         timeline.setAxisLineVisible(true);
@@ -145,65 +181,50 @@ public final class TimelineTopComponent extends TopComponent implements Timeline
         chartPanel.setBounds(0, 2, 300, 30);        
         chartpanel = (JPanel) chartPanel;
                 
-        tlcontainer.add(chartpanel, JLayeredPane.DEFAULT_LAYER); 
-                       
-        // Drawer
-        TimelineDrawer drawer = Lookup.getDefault().lookup(TimelineDrawer.class);
-        drawerPanel = (JPanel) drawer;
-        drawerPanel.setOpaque(false);
-        drawerPanel.setEnabled(false);
-        timelinePanel.add(drawerPanel);
-                
-        // Animator
-        animator = new TimelineAnimatorImpl();
-        animator.addListener(this);
-
-        // Button
-        enableButton.addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                TimelineTopComponent.this.setEnabled(enableButton.isSelected());
-                if (model != null) {
-                    model.setEnabled(enableButton.isSelected());
-                }
-            }
-        });
-
-        closeButton.addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                TimelineTopComponent.this.close();
-            }
-        });
+        chartpanel.setSize(new Dimension(tlcontainer.getWidth(), tlcontainer.getHeight()-6));
+        
+        tlcontainer.add(chartpanel, JLayeredPane.DEFAULT_LAYER);       
     }
     
-    private void refreshModelData() {
-        final int samplepoints = 1000; // another candidate: 840
+    private Range refreshModelData() {        
+        final int samplepoints = 365; // another candidate: 840
         final String metricId = "Number of nodes";
         
+        // testing
         if(model==null) System.out.println("refreshModelData: no model");
 
-//        if(model.getUnit()==DateTime.class) {
+        if (model.getUnit() == DateTime.class) {
             TimeSeriesCollection dataSet = new TimeSeriesCollection();
             TimeSeries data = new TimeSeries(metricId);
-//
-//        } else {
-//            XYSeriesCollection dataSet = new XYSeriesCollection();
-//            XYSeries data = new XYSeries(metricId);
-//        }
-        // just an example
-        Random r = new Random();
-        Calendar c = Calendar.getInstance();
-        for(int i = 0; i < 250; i++) {
-            int val = r.nextInt(100);
-            if(val < 50)
-                val += 50;
-            c.add(Calendar.DATE, 7);
-            Date date = c.getTime();
-            data.add(new Day(date), val);
+            
+            // just an example
+            Random r = new Random();
+            Calendar c = Calendar.getInstance();
+            for (int i = 0; i < samplepoints; i++) {
+                int val = r.nextInt(100);
+                if (val < 50) {
+                    val += 50;
+                }
+                c.add(Calendar.DATE, 7);
+                Date date = c.getTime();
+                data.add(new Day(date), val);
+            }
+            dataSet.addSeries(data);
+            dataset = dataSet;
+            return dataSet.getDomainBounds(true);
+        } else {
+            XYSeriesCollection dataSet = new XYSeriesCollection();
+            XYSeries data = new XYSeries(metricId);
+            
+            for (double t=min; t<=max; t+=(max-min)/(samplepoints-1)) {
+                data.add(t,model.getSnapshotGraph(t).getNodeCount());
+            }
+                
+            dataSet.addSeries(data);
+            dataset = dataSet;
+            return dataSet.getDomainBounds(false);
         }
-        dataSet.addSeries(data);
-        dataset = dataSet;
+
     }
 
     public void timelineModelChanged(TimelineModelEvent event) {
@@ -332,7 +353,9 @@ public final class TimelineTopComponent extends TopComponent implements Timeline
 
     private void tlcontainerResize(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_tlcontainerResize
         timelinePanel.setSize(tlcontainer.getSize());
-        chartpanel.setSize(new Dimension(tlcontainer.getWidth(), tlcontainer.getHeight()-6));  
+        if(chartpanel != null) {
+            chartpanel.setSize(new Dimension(tlcontainer.getWidth(), tlcontainer.getHeight()-6));
+        }
     }//GEN-LAST:event_tlcontainerResize
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
