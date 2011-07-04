@@ -150,7 +150,7 @@ public class Controller implements KeyListener, MouseListener, MouseMotionListen
 
             float d = scale.y() / (float)Math.tan(0.5 * camera.fov());
 
-            final Vec3f origin = new Vec3f(center.x(), center.y(), minVec.z() - d*1.1f);
+            final Vec3f origin = new Vec3f(center.x(), center.y(), maxVec.z() + d*1.1f);
             camera.lookAt(origin, center, Vec3f.Y_AXIS);
             //camera.setClipPlanes(d, maxVec.z() - minVec.z() + d*1.2f);
             centerGraph = false;

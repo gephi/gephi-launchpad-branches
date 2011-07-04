@@ -209,12 +209,9 @@ public class CameraImpl implements Camera {
         if (recomputeMatrix) {
             Vec3f right = rightVector();
             Mat4f mat = new Mat4f();
-            for (int i = 0; i < 3; ++i) {
-                mat.set(i, 0, right.get(i));
-                mat.set(i, 1, this.up.get(i));
-                mat.set(i, 2, this.front.get(i));
-                mat.set(i, 3, this.position.get(i));
-            }
+            mat.setRotation(right, this.up, this.front.times(-1.0f));
+            mat.transpose();
+            mat.setTranslation(this.position.times(-1.0f));
             mat.set(3, 3, 1.0f);
             modelviewMatrix = mat;
         }
@@ -368,8 +365,7 @@ public class CameraImpl implements Camera {
 
         ur.sub(v);
         v.add(orbitCenter);
-        moveTo(v);
-        lookAt(orbitCenter, ur);
+        lookAt(v, orbitCenter, ur);
         
         //System.out.println("Front: " + this.front);
         //System.out.println("Up: " + this.up);

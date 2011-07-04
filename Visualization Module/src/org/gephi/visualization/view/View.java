@@ -180,6 +180,10 @@ public class View implements GLEventListener {
 
         this.textRenderer.draw("Right: " + this.frameData.camera().rightVector(), 10, 70);
 
+        this.textRenderer.draw("View Matrix: " + this.frameData.camera().viewMatrix(), 10, glad.getHeight() - 10);
+
+        this.textRenderer.draw("Proj Matrix: " + this.frameData.camera().projectiveMatrix(), 10, glad.getHeight() - 30);
+
         this.textRenderer.endRendering();
 
 
@@ -195,15 +199,12 @@ public class View implements GLEventListener {
         int h2 = h == 0 ? 1 : h;
 
         gl.glViewport(0, 0, w, h2);
+
+        this.controller.resize(w, h2);
     }
 
     public Dimension getDimension() {
         return this.canvas.getSize();
-    }
-
-    public void updateSize(int x, int y, int w, int h) {
-        this.canvas.setBounds(x, y, w, h);
-        this.controller.resize(w, h);
     }
 
     public void rebuildPipeline() {

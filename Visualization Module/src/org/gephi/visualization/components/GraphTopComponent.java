@@ -96,11 +96,6 @@ public final class GraphTopComponent extends TopComponent {
         waitingLabel = new javax.swing.JLabel();
         collapsePanel = new org.gephi.visualization.components.CollapsePanel();
 
-        addComponentListener(new java.awt.event.ComponentAdapter() {
-            public void componentResized(java.awt.event.ComponentEvent evt) {
-                formComponentResized(evt);
-            }
-        });
         setLayout(new java.awt.BorderLayout());
 
         waitingLabel.setBackground(new java.awt.Color(255, 255, 255));
@@ -109,11 +104,6 @@ public final class GraphTopComponent extends TopComponent {
         add(waitingLabel, java.awt.BorderLayout.CENTER);
         add(collapsePanel, java.awt.BorderLayout.PAGE_END);
     }// </editor-fold>//GEN-END:initComponents
-
-    private void formComponentResized(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_formComponentResized
-        Component comp = evt.getComponent();
-        this.view.updateSize(comp.getX(), comp.getY(), comp.getWidth(), comp.getHeight());
-    }//GEN-LAST:event_formComponentResized
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private org.gephi.visualization.components.CollapsePanel collapsePanel;
