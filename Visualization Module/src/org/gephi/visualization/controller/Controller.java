@@ -65,7 +65,7 @@ public class Controller implements KeyListener, MouseListener, MouseMotionListen
     private Controller() {
         // Random values
         this.camera = new CameraImpl(300, 300, 100f, 10000.0f);
-        this.motionManager = new MotionManager3D();
+        this.motionManager = new MotionManagerImpl();
         this.viewSize = new Dimension();
 
         Lookup.getDefault().lookup(ProjectController.class).addWorkspaceListener(new WorkspaceListener() {

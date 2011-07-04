@@ -224,21 +224,14 @@ public class CameraImpl implements Camera {
     @Override
     public Mat4f projectiveMatrix() {
         if (recomputeMatrix) {
-            Mat4f mat = new Mat4f();/*
+            Mat4f mat = new Mat4f();
             float aspect = imageWidth/imageHeight;
             float f = (float) (1.0 / Math.tan(this.fovy / 2.0));
             mat.set(0, 0, f/aspect);
             mat.set(1, 1, f);
             mat.set(2, 2, (this.far + this.near)/(this.near - this.far));
             mat.set(2, 3, (2.0f * this.far * this.near)/(this.near - this.far));
-            mat.set(3, 2, -1.0f);*/
-            float f = (float) (1.0 / Math.tan(this.fovy / 2.0));
-            mat.set(0, 0, 2 / (imageWidth * f));
-            mat.set(1, 1, 2 / (imageHeight * f));
-            mat.set(2, 2, 2 / (this.near - this.far));
-            mat.set(2, 3, (this.near + this.far) / (this.near - this.far));
-            mat.set(3, 3, 1.0f);
-
+            mat.set(3, 2, -1.0f);
             projectiveMatrix = mat;
         }
         return projectiveMatrix;

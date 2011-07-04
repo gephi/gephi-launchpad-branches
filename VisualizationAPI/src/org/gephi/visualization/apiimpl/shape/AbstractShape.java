@@ -22,6 +22,8 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 package org.gephi.visualization.apiimpl.shape;
 
 import java.awt.Point;
+import java.util.HashSet;
+import java.util.Set;
 import org.gephi.visualization.api.camera.Camera;
 import org.gephi.visualization.api.selection.Shape;
 
@@ -33,7 +35,8 @@ import org.gephi.visualization.api.selection.Shape;
  */
 public abstract class AbstractShape implements Shape {
 
-    private final static float THIRD_ROOT = (float) Math.sqrt(3);
+    private final static float SQUARE_ROOT = (float) Math.sqrt(2);
+    private final static float CUBE_ROOT = (float) Math.sqrt(3);
 
     private SelectionModifier selectionModifier;
 
@@ -47,23 +50,57 @@ public abstract class AbstractShape implements Shape {
         return isPointInside(point.x, point.y, size);
     }
 
-    public Intersection intersectsBox(float x, float y, float z, float size, float maxNodeSize, Camera camera) {
-        // Create a sphere around the box and test every corner point for inclusion
-        int radius = camera.projectScale(size * THIRD_ROOT);
+    public Intersection intersectsSquare(float x, float y, float size, float maxNodeSize, Camera camera) {
+        // Create a sphere around the square and test every corner point for inclusion
+        int radius = camera.projectScale(size * SQUARE_ROOT);
+        if (maxSize != maxNodeSize) {
+            projectedMaxSize = camera.projectScale(maxNodeSize);
+        }
+        Point center = camera.projectPoint(x + size / 2, y + size / 2, 0);
+        // Is shape inside the square's bounding sphere?
+
+        // FIXME after camera is fixed, set radius instead of MAX_VALUE
+        if (intersectsCircle(center.x, center.y, Integer.MAX_VALUE)) {
+            return Intersection.INTERSECT;
+        }
+        // Is any square's corner point inside the shape?
+        boolean intersect = false;
+        boolean inside = true;
+        int i = 0;
+        while (i < 4 && (!intersect || inside)) {
+            if (isInside3D(x + SQUARE_CORNERS[i][0] * size, y + SQUARE_CORNERS[i][1] * size, 0, projectedMaxSize, camera)) {
+                intersect = true;
+            } else {
+                inside = false;
+            }
+            i++;
+        }
+        if (intersect) {
+            return inside ? Intersection.FULLY_INSIDE : Intersection.INTERSECT;
+        } else {
+            return Intersection.OUTSIDE;
+        }
+    }
+
+    public Intersection intersectsCube(float x, float y, float z, float size, float maxNodeSize, Camera camera) {
+        // Create a sphere around the cube and test every corner point for inclusion
+        int radius = camera.projectScale(size * CUBE_ROOT);
         if (maxSize != maxNodeSize) {
             projectedMaxSize = camera.projectScale(maxNodeSize);
         }
         Point center = camera.projectPoint(x + size / 2, y + size / 2, z + size / 2);
-        // Is shape inside the boxes bounding sphere?
+        // Is shape inside the cube's bounding sphere?
+
+        // FIXME after camera is fixed, set radius instead of MAX_VALUE
         if (intersectsCircle(center.x, center.y, Integer.MAX_VALUE)) {
             return Intersection.INTERSECT;
         }
-        // Is any box corner point inside the shape?
+        // Is any cube's corner point inside the shape?
         boolean intersect = false;
         boolean inside = true;
         int i = 0;
         while (i < 8 && (!intersect || inside)) {
-            if (isInside3D(x + BOX_CORNERS[i][0] * size, y + BOX_CORNERS[i][1] * size, z + BOX_CORNERS[i][2] * size, projectedMaxSize, camera)) {
+            if (isInside3D(x + CUBE_CORNERS[i][0] * size, y + CUBE_CORNERS[i][1] * size, z + CUBE_CORNERS[i][2] * size, projectedMaxSize, camera)) {
                 intersect = true;
             } else {
                 inside = false;
@@ -87,7 +124,7 @@ public abstract class AbstractShape implements Shape {
      */
     protected abstract boolean isPointInside(int x, int y, int radius);
 
-    private static final int[][] BOX_CORNERS = new int[][]{
+    private static final int[][] CUBE_CORNERS = new int[][]{
             new int[]{0, 0, 0},
             new int[]{0, 0, 1},
             new int[]{0, 1, 0},
@@ -96,6 +133,13 @@ public abstract class AbstractShape implements Shape {
             new int[]{1, 0, 1},
             new int[]{1, 1, 0},
             new int[]{1, 1, 1}
+    };
+
+    private static final int[][] SQUARE_CORNERS = new int[][]{
+            new int[]{0, 0, 0},
+            new int[]{0, 1, 0},
+            new int[]{1, 0, 0},
+            new int[]{1, 1, 0},
     };
 
     public SelectionModifier getSelectionModifier() {

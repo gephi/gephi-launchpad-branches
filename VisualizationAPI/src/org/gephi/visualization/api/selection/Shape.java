@@ -33,12 +33,25 @@ public interface Shape {
     public boolean isInside3D(float x, float y, float z, float radius, Camera camera);
 
     /**
-     * Determines intersection of box with the shape.
+     * Determines intersection of cube with the shape.
      */
-    public Intersection intersectsBox(float x, float y, float z, float size, float maxNodeSize, Camera camera);
+    public Intersection intersectsCube(float x, float y, float z, float size, float maxNodeSize, Camera camera);
 
+    /**
+     * Determines intersection of square with the shape.
+     */
+    public Intersection intersectsSquare(float x, float y, float size, float maxNodeSize, Camera camera);
+
+    /**
+     * Returns the shape updated with one new permanent pair of coordinates.
+     * Example: Polygon received new point.
+     */
     Shape singleUpdate(int x, int y);
 
+    /**
+     * Returns the shape updated with one new temporary pair of coordinates.
+     * Example: Rectangle corner coordinates updated.
+     */
     Shape continuousUpdate(int x, int y);
 
     /**
