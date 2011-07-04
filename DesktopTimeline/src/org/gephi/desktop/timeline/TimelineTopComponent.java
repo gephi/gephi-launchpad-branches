@@ -28,6 +28,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Random;
 import java.util.logging.Logger;
+import javax.management.timer.Timer;
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
@@ -48,8 +49,16 @@ import org.jfree.chart.renderer.xy.StandardXYItemRenderer;
 import org.jfree.data.Range;
 import org.jfree.data.general.Series;
 import org.jfree.data.time.Day;
+import org.jfree.data.time.Hour;
+import org.jfree.data.time.Millisecond;
+import org.jfree.data.time.Minute;
+import org.jfree.data.time.Month;
+import org.jfree.data.time.RegularTimePeriod;
+import org.jfree.data.time.Second;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
+import org.jfree.data.time.Week;
+import org.jfree.data.time.Year;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
@@ -182,7 +191,7 @@ public final class TimelineTopComponent extends TopComponent implements Timeline
         chartpanel = (JPanel) chartPanel;
                 
         chartpanel.setSize(new Dimension(tlcontainer.getWidth(), tlcontainer.getHeight()-6));
-        
+
         tlcontainer.add(chartpanel, JLayeredPane.DEFAULT_LAYER);       
     }
     
@@ -190,28 +199,45 @@ public final class TimelineTopComponent extends TopComponent implements Timeline
         final int samplepoints = 365; // another candidate: 840
         final String metricId = "Number of nodes";
         
-        // testing
-        if(model==null) System.out.println("refreshModelData: no model");
 
         if (model.getUnit() == DateTime.class) {
             TimeSeriesCollection dataSet = new TimeSeriesCollection();
             TimeSeries data = new TimeSeries(metricId);
-            
-            // just an example
-            Random r = new Random();
-            Calendar c = Calendar.getInstance();
-            for (int i = 0; i < samplepoints; i++) {
-                int val = r.nextInt(100);
-                if (val < 50) {
-                    val += 50;
-                }
-                c.add(Calendar.DATE, 7);
-                Date date = c.getTime();
-                data.add(new Day(date), val);
+//            RegularTimePeriod rtp;
+
+            long min = (long) model.getMinValue();
+            long max = (long) model.getMaxValue();
+            for (long t = min; t <= max; t += (max - min) / (samplepoints - 1)) {
+//                if ((max-min)/samplepoints >= Timer.ONE_DAY * 365) {
+//                    rtp = new Year(new Date(t));
+//                    System.out.println("Year");
+//                } else if ((max-min)/samplepoints >= Timer.ONE_DAY * 30) {
+//                    rtp = new Month(new Date(t));
+//                    System.out.println("Month");
+//                } else if ((max-min)/samplepoints >= Timer.ONE_WEEK) {
+//                    rtp = new Week(new Date(t));
+//                    System.out.println("Week");
+//                } else if ((max-min)/samplepoints >= Timer.ONE_DAY) {
+//                    rtp = new Day(new Date(t));
+//                    System.out.println("Day");
+//                } else if ((max-min)/samplepoints >= Timer.ONE_HOUR) {
+//                    rtp = new Hour(new Date(t));
+//                    System.out.println("Hour");
+//                } else if ((max-min)/samplepoints >= Timer.ONE_MINUTE) {
+//                    rtp = new Minute(new Date(t));
+//                    System.out.println("Minute");
+//                } else if ((max-min)/samplepoints >= Timer.ONE_SECOND) {
+//                    rtp = new Second(new Date(t));
+//                    System.out.println("Sec");
+//                } else {
+//                    System.out.println("mSec");
+//                    rtp = new Millisecond(new Date(t));
+//                }
+                data.add(new Millisecond(new Date(t)), model.getSnapshotGraph(t).getNodeCount());
             }
             dataSet.addSeries(data);
             dataset = dataSet;
-            return dataSet.getDomainBounds(true);
+            return dataSet.getDomainBounds(false);
         } else {
             XYSeriesCollection dataSet = new XYSeriesCollection();
             XYSeries data = new XYSeries(metricId);
