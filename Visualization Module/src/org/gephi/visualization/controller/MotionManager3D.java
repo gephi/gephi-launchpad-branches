@@ -194,7 +194,7 @@ public class MotionManager3D implements MotionManager {
         }
         // Movement
         if (SwingUtilities.isRightMouseButton(e)) {
-            Controller.getInstance().getCamera().updateTranslation(-MOVE_FACTOR * x, -MOVE_FACTOR * y);
+            Controller.getInstance().getCamera().updateTranslation(-MOVE_FACTOR * x, MOVE_FACTOR * y);
         } else if (SwingUtilities.isMiddleMouseButton(e)) {
             Controller.getInstance().getCamera().updateOrbit(ORBIT_FACTOR * x, ORBIT_FACTOR * y);
         }
