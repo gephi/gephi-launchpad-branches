@@ -48,6 +48,8 @@ import org.gephi.data.attributes.api.AttributeRow;
 import org.gephi.data.attributes.api.AttributeType;
 import org.gephi.data.attributes.api.AttributeValue;
 import org.gephi.data.attributes.event.ValueEvent;
+import org.gephi.data.attributes.store.AttributeStore;
+import org.gephi.data.attributes.store.AttributeValuesProxy;
 
 /**
  *
@@ -58,12 +60,14 @@ public class AttributeRowImpl implements AttributeRow {
     
     protected final Object object;
     protected final AttributeTableImpl attributeTable;
-    protected AttributeValueImpl[] values;
+    protected AttributeValuesProxy values;
     protected int rowVersion = -1;
-    
-    public AttributeRowImpl(AttributeTableImpl attributeTable, Object object) {
+    private AttributeStore<Integer, AttributeValue[]> store;
+            
+    public AttributeRowImpl(AttributeStore<Integer, AttributeValue[]> store, AttributeTableImpl attributeTable, Object object) {
         this.attributeTable = attributeTable;
         this.object = object;
+        this.store = store;
         reset();
     }
     
@@ -74,7 +78,9 @@ public class AttributeRowImpl implements AttributeRow {
         for (int i = 0; i < attSize; i++) {
             newValues[i] = attributeTable.getColumn(i).defaultValue;
         }
-        this.values = newValues;
+        
+        values = new AttributeValuesProxy(store);
+        values.setValues(newValues);
     }
     
     public void setValues(AttributeRow attributeRow) {
@@ -138,13 +144,17 @@ public class AttributeRowImpl implements AttributeRow {
     
     private void setValue(int index, AttributeValueImpl value) {
         updateColumns();
-        
+
         AttributeValueImpl oldValue = this.values[index];
         
         this.values[index] = value;
         
         if (!((oldValue == null && value == null) || (oldValue != null && oldValue.equals(value)))
                 && index > 0 && !value.getColumn().getOrigin().equals(AttributeOrigin.COMPUTED)) {    //0 is the index of node id and edge id cols, not useful to send these events
+
+        AttributeValue oldValue = values.get(index);
+        values.set(index, value);
+
             attributeTable.model.fireAttributeEvent(new ValueEvent(EventType.SET_VALUE, attributeTable, object, value));
         }
     }
@@ -156,7 +166,7 @@ public class AttributeRowImpl implements AttributeRow {
         updateColumns();
         int index = column.getIndex();
         if (checkIndexRange(index)) {
-            AttributeValue val = values[index];
+            AttributeValue val = values.get(index);
             if (val.getColumn() == column) {
                 return val.getValue();
             }
@@ -183,19 +193,19 @@ public class AttributeRowImpl implements AttributeRow {
     }
     
     public AttributeValue[] getValues() {
-        return values;
+        return values.getValues();
     }
     
     public AttributeValue getAttributeValueAt(int index) {
         if (checkIndexRange(index)) {
-            return values[index];
+            return values.get(index);
         }
         return null;
     }
     
     public int countValues() {
         updateColumns();
-        return values.length;
+        return values.size();
     }
     
     public AttributeColumn getColumnAt(int index) {
@@ -214,21 +224,22 @@ public class AttributeRowImpl implements AttributeRow {
 
             //Need to update
             AttributeColumnImpl[] columns = attributeTable.getColumns();
+
             AttributeValueImpl[] newValues = new AttributeValueImpl[columns.length];
-            
+
             int j = 0;
             for (int i = 0; i < columns.length; i++) {
                 AttributeColumnImpl tableCol = columns[i];
                 newValues[i] = tableCol.defaultValue;
-                while (j < values.length) {
-                    AttributeValueImpl val = values[j++];
+                while (j < values.size()) {
+                    AttributeValue val = values.get(j++);
                     if (val.getColumn() == tableCol) {
                         newValues[i] = val;
                         break;
                     }
                 }
             }
-            values = newValues;
+            values.setValues(newValues);
 
             //Upd version
             rowVersion = tableVersion;
@@ -236,7 +247,7 @@ public class AttributeRowImpl implements AttributeRow {
     }
     
     private boolean checkIndexRange(int index) {
-        return index < values.length && index >= 0;
+        return index < values.size() && index >= 0;
     }
     
     public int getRowVersion() {
@@ -248,6 +259,6 @@ public class AttributeRowImpl implements AttributeRow {
     }
     
     public void setValues(AttributeValueImpl[] values) {
-        this.values = values;
+        this.values.setValues(values);
     }
 }

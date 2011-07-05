@@ -19,7 +19,6 @@
         eternal="true"
         statistics="false"
         memoryStoreEvictionPolicy="LFU"
-        diskSpoolBufferSizeMB="30"
         overflowToDisk="false"
         diskPersistent="false">
     </defaultCache>

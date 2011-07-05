@@ -9,8 +9,9 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 import net.sf.ehcache.CacheManager;
-import org.gephi.project.api.Workspace;
+import org.gephi.data.attributes.api.AttributeModel;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -20,16 +21,19 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = AttributeStoreController.class)
 public class AttributeStoreControllerImpl implements AttributeStoreController {
     private static final String DB_HOME = "cache";
-
+    
+    private final Logger logger = Logger.getLogger("AttributeStoreController");
+    
     private final CacheManager cacheManager;
     
     private final EnvironmentConfig defaultEnvConfig = new EnvironmentConfig();
     private final DatabaseConfig defaultDbConfig = new DatabaseConfig();
     
-    private final Map<Workspace, Environment> environments = new HashMap<Workspace, Environment>();
-    private final Map<Workspace, Database> databases = new HashMap<Workspace, Database>();
-    private final Map<Workspace, AttributeStore> nodeStores = new HashMap<Workspace, AttributeStore>();
-    private final Map<Workspace, AttributeStore> edgeStores = new HashMap<Workspace, AttributeStore>();
+    private final Map<AttributeModel, Environment> environments = new HashMap<AttributeModel, Environment>();
+    private final Map<AttributeModel, Database> databases = new HashMap<AttributeModel, Database>();
+    
+    private final Map<AttributeModel, AttributeStore> nodeStores = new HashMap<AttributeModel, AttributeStore>();
+    private final Map<AttributeModel, AttributeStore> edgeStores = new HashMap<AttributeModel, AttributeStore>();
 
     public AttributeStoreControllerImpl() {
         URL configURL = getClass().getResource("ehcache.xml");
@@ -46,38 +50,41 @@ public class AttributeStoreControllerImpl implements AttributeStoreController {
         defaultDbConfig.setSortedDuplicates(false);    
     }
     
-    public void newStore(Workspace workspace) {
-        Environment env = getEnvironment(workspace);
+    public void newStore(AttributeModel model) {
+        if (environments.containsKey(model))
+            return;
+        
+        Environment env = getEnvironment(model);
         String dbName = getRandomName();
 
         Database db = env.openDatabase(null, dbName, defaultDbConfig);
-        databases.put(workspace, db);
+        databases.put(model, db);
 
-        AttributeStore nodeStore = new AttributeStoreImpl(dbName + "n", env, db, cacheManager);
-        nodeStores.put(workspace, nodeStore);
-        AttributeStore edgeStore = new AttributeStoreImpl(dbName + "e", env, db, cacheManager);
-        edgeStores.put(workspace, edgeStore);
+        AttributeStore nodeStore = new AttributeStoreImpl(dbName + "n", env, db, cacheManager, model.getNodeTable());
+        nodeStores.put(model, nodeStore);
+        AttributeStore edgeStore = new AttributeStoreImpl(dbName + "e", env, db, cacheManager, model.getEdgeTable());
+        edgeStores.put(model, edgeStore);
     }
     
-    public AttributeStore getNodeStore(Workspace workspace) {
-        return nodeStores.get(workspace);
+    public AttributeStore getNodeStore(AttributeModel model) {
+        return getStore(nodeStores, model);
     }
 
-    public AttributeStore getEdgeStore(Workspace workspace) {
-        return nodeStores.get(workspace);
+    public AttributeStore getEdgeStore(AttributeModel model) {
+        return getStore(edgeStores, model);
     }
 
-    public void removeStore(Workspace workspace) {
-        AttributeStore ns = nodeStores.get(workspace);
+    public void removeStore(AttributeModel model) {
+        AttributeStore ns = nodeStores.get(model);
         ((AttributeStoreImpl) ns).close();
 
-        AttributeStore es = edgeStores.get(workspace);
+        AttributeStore es = edgeStores.get(model);
         ((AttributeStoreImpl) es).close();
 
-        environments.remove(workspace);
-        databases.remove(workspace);
-        nodeStores.remove(workspace);
-        edgeStores.remove(workspace);
+        environments.remove(model);
+        databases.remove(model);
+        nodeStores.remove(model);
+        edgeStores.remove(model);
     }
 
     public void shutdown() {
@@ -90,8 +97,18 @@ public class AttributeStoreControllerImpl implements AttributeStoreController {
         }
     }
     
-    private Environment getEnvironment(Workspace w) {
-        Environment env = environments.get(w);
+    private AttributeStore getStore(Map<AttributeModel, AttributeStore> stores, AttributeModel m) {
+        AttributeStore store = stores.get(m);
+        
+        if (store == null) {
+            newStore(m);
+        }
+        
+        return stores.get(m);
+    }
+    
+    private Environment getEnvironment(AttributeModel m) {
+        Environment env = environments.get(m);
         
         if (env == null) {
             String envName = null;
@@ -103,7 +120,7 @@ public class AttributeStoreControllerImpl implements AttributeStoreController {
             }
             
             env = new Environment(envHome, defaultEnvConfig);
-            environments.put(w, env);
+            environments.put(m, env);
         }
         
         if (!env.isValid()) 

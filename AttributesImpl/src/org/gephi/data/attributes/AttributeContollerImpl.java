@@ -41,6 +41,7 @@ Portions Copyrighted 2011 Gephi Consortium.
  */
 package org.gephi.data.attributes;
 
+import java.util.logging.Logger;
 import org.gephi.data.attributes.api.AttributeController;
 import org.gephi.data.attributes.api.AttributeModel;
 import org.gephi.data.attributes.model.IndexedAttributeModel;
@@ -69,11 +70,12 @@ public class AttributeContollerImpl implements AttributeController {
             public void initialize(Workspace workspace) {
                 AttributeModel m = workspace.getLookup().lookup(AttributeModel.class);
                 if (m == null) {
-                    workspace.add(new IndexedAttributeModel());
+                    m = new IndexedAttributeModel();
+                    workspace.add(m);
                 }
                 
                 AttributeStoreController storeController = Lookup.getDefault().lookup(AttributeStoreController.class);
-                storeController.newStore(workspace);
+                storeController.newStore(m);
             }
 
             public void select(Workspace workspace) {
@@ -84,7 +86,9 @@ public class AttributeContollerImpl implements AttributeController {
 
             public void close(Workspace workspace) {
                 AttributeStoreController storeController = Lookup.getDefault().lookup(AttributeStoreController.class);
-                storeController.removeStore(workspace);
+                AttributeModel m = workspace.getLookup().lookup(AttributeModel.class);
+                storeController.removeStore(m);
+                
             }
 
             public void disable() {
@@ -92,10 +96,14 @@ public class AttributeContollerImpl implements AttributeController {
         });
         
         if (projectController.getCurrentProject() != null) {
+            AttributeStoreController storeController = Lookup.getDefault().lookup(AttributeStoreController.class);
+            
             for (Workspace workspace : projectController.getCurrentProject().getLookup().lookup(WorkspaceProvider.class).getWorkspaces()) {
                 AttributeModel m = workspace.getLookup().lookup(AttributeModel.class);
                 if (m == null) {
-                    workspace.add(new IndexedAttributeModel());
+                    m = new IndexedAttributeModel();
+                    workspace.add(m);
+                    storeController.newStore(m);
                 }
             }
         }

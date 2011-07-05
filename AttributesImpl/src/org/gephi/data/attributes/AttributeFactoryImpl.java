@@ -46,8 +46,11 @@ import org.gephi.data.attributes.api.AttributeOrigin;
 import org.gephi.data.attributes.api.AttributeRowFactory;
 import org.gephi.data.attributes.api.AttributeValueFactory;
 import org.gephi.data.attributes.api.AttributeValue;
+import org.gephi.data.attributes.store.AttributeStore;
+import org.gephi.data.attributes.store.AttributeStoreController;
 import org.gephi.graph.api.EdgeData;
 import org.gephi.graph.api.NodeData;
+import org.openide.util.Lookup;
 
 /**
  *
@@ -56,9 +59,15 @@ import org.gephi.graph.api.NodeData;
 public class AttributeFactoryImpl implements AttributeValueFactory, AttributeRowFactory {
 
     private AbstractAttributeModel model;
-
+    private AttributeStore<Integer, AttributeValue[]> nodeStore;
+    private AttributeStore<Integer, AttributeValue[]> edgeStore;
+    
     public AttributeFactoryImpl(AbstractAttributeModel model) {
         this.model = model;
+        
+        AttributeStoreController controller = Lookup.getDefault().lookup(AttributeStoreController.class);
+        edgeStore = controller.getEdgeStore(model);
+        nodeStore = controller.getNodeStore(model);
     }
 
     public AttributeValue newValue(AttributeColumn column, Object value) {
@@ -77,17 +86,17 @@ public class AttributeFactoryImpl implements AttributeValueFactory, AttributeRow
     }
 
     public AttributeRowImpl newNodeRow(NodeData nodeData) {
-        return new AttributeRowImpl(model.getNodeTable(), nodeData);
+        return new AttributeRowImpl(nodeStore, model.getNodeTable(), nodeData);
     }
 
     public AttributeRowImpl newEdgeRow(EdgeData edgeData) {
-        return new AttributeRowImpl(model.getEdgeTable(), edgeData);
+        return new AttributeRowImpl(edgeStore, model.getEdgeTable(), edgeData);
     }
 
     public AttributeRowImpl newRowForTable(String tableName, Object object) {
         AttributeTableImpl attTable = model.getTable(tableName);
         if (attTable != null) {
-            return new AttributeRowImpl(attTable, object);
+            return new AttributeRowImpl(null, attTable, object);
         }
         return null;
     }

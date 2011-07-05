@@ -6,7 +6,10 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.EnumMap;
-import org.gephi.data.attributes.api.AttributeRow;
+import org.gephi.data.attributes.AttributeColumnImpl;
+import org.gephi.data.attributes.AttributeValueImpl;
+import org.gephi.data.attributes.api.AttributeColumn;
+import org.gephi.data.attributes.api.AttributeTable;
 import org.gephi.data.attributes.api.AttributeType;
 import org.gephi.data.attributes.api.AttributeValue;
 
@@ -14,14 +17,13 @@ import org.gephi.data.attributes.api.AttributeValue;
  *
  * @author Ernesto A
  */
-public class AttributeStoreRowSerializer {
+public class AttributeValueSerializer {
     
-    private final EnumMap<AttributeType, Serializer> SERIALIZERS = new EnumMap<AttributeType, Serializer>(AttributeType.class);
-    private final PrimitiveTypeSerializer primitiveSerializer = new PrimitiveTypeSerializer();
-    private final DynamicTypeSerializer dynamicSerializer = new DynamicTypeSerializer();
-    private final ListTypeSerializer listSerializer = new ListTypeSerializer();
-    
-    public AttributeStoreRowSerializer() {
+    private static final EnumMap<AttributeType, Serializer> SERIALIZERS = new EnumMap<AttributeType, Serializer>(AttributeType.class);
+    private static final PrimitiveTypeSerializer primitiveSerializer = new PrimitiveTypeSerializer();
+    private static final DynamicTypeSerializer dynamicSerializer = new DynamicTypeSerializer();
+    private static final ListTypeSerializer listSerializer = new ListTypeSerializer();
+    static {
         SERIALIZERS.put(AttributeType.BYTE, primitiveSerializer);
         SERIALIZERS.put(AttributeType.SHORT, primitiveSerializer);
         SERIALIZERS.put(AttributeType.INT, primitiveSerializer);
@@ -60,21 +62,24 @@ public class AttributeStoreRowSerializer {
         SERIALIZERS.put(AttributeType.LIST_STRING, listSerializer);
     }
     
-    public byte[] writeRowData(AttributeRow row) {
+    private final AttributeTable attributeTable;
+
+    public AttributeValueSerializer(AttributeTable attributeTable) {
+        this.attributeTable = attributeTable;
+    }
+    
+    public byte[] writeValuesData(AttributeValue[] row) {
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             DataOutputStream dos = new DataOutputStream(baos);
         
             // Total values
-            int totalValues = row.countValues();
+            int totalValues = row.length;
             dos.writeInt(totalValues);
         
-            for (AttributeValue value : row.getValues()) {
+            for (AttributeValue value : row) {
                 AttributeType type = value.getColumn().getType();
                 Serializer serializer = SERIALIZERS.get(type);
-                
-                // Column index
-                dos.writeInt(value.getColumn().getIndex());
                 
                 // Object's data
                 serializer.writeObjectData(dos, value.getValue());
@@ -87,17 +92,15 @@ public class AttributeStoreRowSerializer {
         }
     }
     
-    public AttributeRow readRowData(byte[] data) {
+    public AttributeValue[] readValuesData(byte[] data) {
         try {
             ByteArrayInputStream bais = new ByteArrayInputStream(data);
             DataInputStream dis = new DataInputStream(bais);
             
             // Total values
             int totalValues = dis.readInt();
+            AttributeValueImpl[] vals = new AttributeValueImpl[totalValues];
             for (int i = 0; i < totalValues; i++) {
-                // Column index
-                int columnIndex = dis.readInt();
-                
                 // Object's data
                 Object value = null;
                 byte type = dis.readByte();
@@ -115,10 +118,12 @@ public class AttributeStoreRowSerializer {
                     default:
                         throw new SerializationException("Unknown type");
                 }
+                
+                AttributeColumn column = attributeTable.getColumn(i);
+                vals[i] = new AttributeValueImpl((AttributeColumnImpl)column, value);
             }
-            
-            return null;
-            
+
+            return vals;
         }
         catch (IOException ex) {
             throw new SerializationException(ex);
