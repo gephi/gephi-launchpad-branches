@@ -63,16 +63,15 @@ public class CameraImpl implements Camera {
         this.up = new Vec3f(0.0f, 1.0f, 0.0f);
     }
 
-    public CameraImpl(CameraImpl camera) {
-        this.imageWidth = camera.imageWidth;
-        this.imageHeight = camera.imageHeight;
-        this.fovy = camera.fovy;
-        this.near = camera.near;
-        this.far = camera.far;
+    @Override
+    public Camera copy() {
+        CameraImpl camera = new CameraImpl((int) imageWidth, (int) imageHeight, near, far);
+        camera.fovy = this.fovy;
 
-        this.position = camera.position.copy();
-        this.front = camera.front.copy();
-        this.up = camera.up.copy();
+        camera.position = this.position;
+        camera.front = this.front;
+        camera.up = this.up;
+        return camera;
     }
 
     @Override

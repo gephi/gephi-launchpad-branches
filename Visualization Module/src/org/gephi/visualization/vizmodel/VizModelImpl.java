@@ -449,7 +449,7 @@ public class VizModelImpl implements VizModel {
         writer.writeStartElement("vizmodel");
 
         //Fast refreh
-        Camera camera = Controller.getInstance().getCameraCopy();
+        Camera camera = Controller.getDefault().getCameraCopy();
         cameraPosition = camera.position().toArray();
         cameraTarget = camera.lookAtPoint().toArray();
 

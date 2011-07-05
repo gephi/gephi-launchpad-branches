@@ -31,18 +31,21 @@ import org.gephi.graph.api.Edge;
 import org.gephi.graph.api.GraphController;
 import org.gephi.graph.api.GraphEvent;
 import org.gephi.graph.api.GraphListener;
-import org.gephi.graph.api.GraphModel;
 import org.gephi.graph.api.Node;
+import org.gephi.project.api.ProjectController;
+import org.gephi.project.api.Workspace;
+import org.gephi.project.api.WorkspaceListener;
 import org.gephi.visualization.api.config.VizConfig;
 import org.gephi.visualization.api.selection.NodeContainer;
 import org.gephi.visualization.api.selection.SelectionManager;
 import org.gephi.visualization.api.selection.SelectionType;
 import org.gephi.visualization.api.selection.Shape;
+import org.gephi.visualization.controller.Controller;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.ServiceProvider;
 
 @ServiceProvider(service = SelectionManager.class)
-public class SelectionManagerImpl implements SelectionManager {
+public class SelectionManagerImpl implements SelectionManager, WorkspaceListener, GraphListener {
 
     private NodeContainer nodeContainer;
 
@@ -55,26 +58,8 @@ public class SelectionManagerImpl implements SelectionManager {
 
     @Override
     public void initialize() {
-        GraphModel gm = Lookup.getDefault().lookup(GraphController.class).getModel();
-        gm.addGraphListener(new GraphListener() {
-            @Override
-            public void graphChanged(GraphEvent event) {
-                GraphController graphController = Lookup.getDefault().lookup(GraphController.class);
-                if (nodeContainer == null) {
-                    nodeContainer = new Octree(graphController.getModel().getGraph());
-                }
-                switch (event.getEventType()) {
-                    case ADD_NODES:
-                        for (Node node : event.getData().addedNodes()) {
-                            nodeContainer.addNode(node);
-                        }
-                        break;
-                    default:
-                        nodeContainer = new Octree(graphController.getModel().getGraph());
-                        break;
-                }
-            }
-        });
+        Lookup.getDefault().lookup(GraphController.class).getModel().addGraphListener(this);
+        Lookup.getDefault().lookup(ProjectController.class).addWorkspaceListener(this);
         VizConfig vizConfig = Lookup.getDefault().lookup(VizConfig.class);
         mouseSelectionDiameter = vizConfig.getMouseSelectionDiameter();
         mouseSelectionZoomProportional = vizConfig.isMouseSelectionUpdateWhileDragging();
@@ -128,7 +113,7 @@ public class SelectionManagerImpl implements SelectionManager {
 
     @Override
     public void centerOnNode(Node node) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Controller.getDefault().centerOnNode(node.getNodeData().x(), node.getNodeData().y(), node.getNodeData().z());
     }
 
     @Override
@@ -297,6 +282,51 @@ public class SelectionManagerImpl implements SelectionManager {
         for (ChangeListener l : listeners) {
             l.stateChanged(evt);
         }
+    }
+
+    // Graph event
+    @Override
+    public void graphChanged(GraphEvent event) {
+        GraphController graphController = Lookup.getDefault().lookup(GraphController.class);
+        if (nodeContainer == null) {
+            nodeContainer = new Octree(graphController.getModel().getGraph());
+        }
+        switch (event.getEventType()) {
+            case ADD_NODES:
+                for (Node node : event.getData().addedNodes()) {
+                    nodeContainer.addNode(node);
+                }
+                break;
+            default:
+                nodeContainer = new Octree(graphController.getModel().getGraph());
+                break;
+        }
+    }
+
+    // Workspace event
+    @Override
+    public void initialize(Workspace workspace) {
+    }
+
+    @Override
+    public void select(Workspace workspace) {
+        GraphController graphController = Lookup.getDefault().lookup(GraphController.class);
+        nodeContainer = workspace.getLookup().lookup(NodeContainer.class);
+        if (nodeContainer == null) {
+            nodeContainer = new Octree(graphController.getModel().getGraph());
+        }
+    }
+
+    @Override
+    public void unselect(Workspace workspace) {
+    }
+
+    @Override
+    public void close(Workspace workspace) {
+    }
+
+    @Override
+    public void disable() {
     }
 
 }

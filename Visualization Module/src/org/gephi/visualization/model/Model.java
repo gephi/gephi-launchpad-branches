@@ -30,6 +30,7 @@ import org.gephi.lib.gleem.linalg.Vec3f;
 import org.gephi.project.api.ProjectController;
 import org.gephi.project.api.Workspace;
 import org.gephi.project.api.WorkspaceListener;
+import org.gephi.visualization.api.MotionManager;
 import org.gephi.visualization.api.selection.Shape;
 import org.gephi.visualization.controller.Controller;
 import org.gephi.visualization.data.FrameDataBridgeIn;
@@ -97,19 +98,19 @@ public class Model implements Runnable, WorkspaceListener {
                 graph = this.graphModel.getGraph();
             }
 
-            // TODO only do when controller needs this
             AABB box = null;
-            if (graph != null) {
-                for (Node n : graph.getNodes()) {
-                    NodeData nd = n.getNodeData();
-                    Vec3f p = new Vec3f(nd.x(), nd.y(), nd.z());
-                    Vec3f s = new Vec3f(nd.getSize(), nd.getSize(), nd.getSize());
-                    if (box == null) {
-                        box = new AABB(p, s);
-                    } else {
-                        box.addPoint(p, s);
+            if (this.controller.isCentering()) {
+                if (graph != null) {
+                    for (Node n : graph.getNodes()) {
+                        NodeData nd = n.getNodeData();
+                        Vec3f p = new Vec3f(nd.x(), nd.y(), nd.z());
+                        Vec3f s = new Vec3f(nd.getSize(), nd.getSize(), nd.getSize());
+                        if (box == null) {
+                            box = new AABB(p, s);
+                        } else {
+                            box.addPoint(p, s);
+                        }
                     }
-                    this.bridge.add(n);
                 }
             }
 
@@ -117,7 +118,7 @@ public class Model implements Runnable, WorkspaceListener {
                 this.bridge.add(n);
             }
 
-            Shape selectionShape = this.controller.getSelectionShape();
+            Shape selectionShape = Lookup.getDefault().lookup(MotionManager.class).getSelectionShape();
             if (selectionShape != null) {
                 this.bridge.add(selectionShape.getUIPrimitive());
             }

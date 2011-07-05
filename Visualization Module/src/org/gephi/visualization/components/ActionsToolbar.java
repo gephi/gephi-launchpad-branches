@@ -64,7 +64,7 @@ public class ActionsToolbar extends JToolBar {
         centerOnGraphButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                Controller.getInstance().centerOnGraph();
+                Controller.getDefault().centerOnGraph();
             }
         });
         add(centerOnGraphButton);
@@ -76,7 +76,7 @@ public class ActionsToolbar extends JToolBar {
         centerOnZeroButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                Controller.getInstance().centerOnZero();
+                Controller.getDefault().centerOnZero();
             }
         });
         add(centerOnZeroButton);

@@ -25,9 +25,8 @@ import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 import org.gephi.graph.api.Edge;
 import org.gephi.graph.api.Node;
+import org.gephi.visualization.api.camera.Camera;
 import org.gephi.visualization.api.view.ui.UIShape;
-import org.gephi.visualization.camera.CameraImpl;
-import org.gephi.visualization.data.FrameData;
 import org.gephi.visualization.data.graph.VizEdge;
 import org.gephi.visualization.data.graph.VizNode;
 import org.gephi.visualization.data.layout.Layout;
@@ -68,7 +67,7 @@ public class FrameDataBridge implements FrameDataBridgeIn, FrameDataBridgeOut {
     }
 
     @Override
-    public void beginFrame(CameraImpl camera) {
+    public void beginFrame(Camera camera) {
         if (this.isUpdating) return;
 
         this.isUpdating = true;

@@ -37,7 +37,6 @@ import org.gephi.visualization.api.event.VizEvent;
 import org.gephi.visualization.api.event.VizEventListener;
 import org.gephi.visualization.api.event.VizEventManager;
 import org.gephi.visualization.api.selection.SelectionManager;
-import org.gephi.visualization.controller.Controller;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.ServiceProvider;
 
@@ -102,7 +101,7 @@ public class VizEventManagerImpl implements VizEventManager {
         VizEventTypeHandler mouseLeftHandler = handlers[VizEvent.Type.MOUSE_LEFT_CLICK.ordinal()];
         if (mouseLeftHandler.hasListeners()) {
             SelectionManager selectionManager = Lookup.getDefault().lookup(SelectionManager.class);
-            MotionManager motionManager = Controller.getInstance().getMotionManager();
+            MotionManager motionManager = Lookup.getDefault().lookup(MotionManager.class);
             Collection<Node> nodes = selectionManager.getSelectedNodes();
             if (nodes.isEmpty() || !selectionManager.isSelectionEnabled()) {
                 float[] mousePositionViewport = motionManager.getMousePosition();
@@ -187,7 +186,7 @@ public class VizEventManagerImpl implements VizEventManager {
             draggingTick = 0;
             VizEventTypeHandler handler = handlers[VizEvent.Type.DRAG.ordinal()];
             if (handler.hasListeners()) {
-                MotionManager motionManager = Controller.getInstance().getMotionManager();
+                MotionManager motionManager = Lookup.getDefault().lookup(MotionManager.class);
                 float[] mouseDrag = Arrays.copyOf(motionManager.getDrag(), 5);
                 float[] mouseDrag3d = motionManager.getDrag3d();
                 mouseDrag[2] = mouseDrag3d[0];
@@ -204,24 +203,29 @@ public class VizEventManagerImpl implements VizEventManager {
     }
 
     //Listeners
+    @Override
     public boolean hasListeners(VizEvent.Type type) {
         return handlers[type.ordinal()].hasListeners();
     }
 
+    @Override
     public void addListener(VizEventListener listener) {
         handlers[listener.getType().ordinal()].addListener(listener);
     }
 
+    @Override
     public void removeListener(VizEventListener listener) {
         handlers[listener.getType().ordinal()].removeListener(listener);
     }
 
+    @Override
     public void addListener(VizEventListener[] listeners) {
         for (int i = 0; i < listeners.length; i++) {
             handlers[listeners[i].getType().ordinal()].addListener(listeners[i]);
         }
     }
 
+    @Override
     public void removeListener(VizEventListener[] listeners) {
         for (int i = 0; i < listeners.length; i++) {
             handlers[listeners[i].getType().ordinal()].removeListener(listeners[i]);
@@ -244,7 +248,7 @@ public class VizEventManagerImpl implements VizEventManager {
             this.type = type;
             this.listeners = new ArrayList<WeakReference<VizEventListener>>();
             runnable = new Runnable() {
-
+                @Override
                 public void run() {
                     fireVizEvent(null);
                     running = false;
@@ -283,7 +287,7 @@ public class VizEventManagerImpl implements VizEventManager {
             if (listeners.size() > 0) {
                 running = true;
                 pool.submit(new Runnable() {
-
+                    @Override
                     public void run() {
                         fireVizEvent(data);
                         running = false;

@@ -143,7 +143,7 @@ public final class Quadtree implements NodeContainer {
 
     @Override
     public List<Node> applySelection(final Shape shape) {
-        final Camera camera = Controller.getInstance().getCameraCopy();
+        final Camera camera = Controller.getDefault().getCameraCopy();
         final List<Node> nodes = new ArrayList<Node>();
 
         final boolean select = shape.getSelectionModifier().isPositive();
@@ -184,7 +184,7 @@ public final class Quadtree implements NodeContainer {
     }
 
     private void recursiveAddNodes(Quadrant quadrant, Shape shape, NodeFunction nodeFunction) {
-        final Camera camera = Controller.getInstance().getCameraCopy();
+        final Camera camera = Controller.getDefault().getCameraCopy();
         Intersection intersection = shape.intersectsSquare(quadrant.getX(), quadrant.getY(), quadrant.getSize(), maxNodeSize, camera);
 
         switch (intersection) {
@@ -211,7 +211,7 @@ public final class Quadtree implements NodeContainer {
         if (singleFound) {
             return;
         }
-        final Camera camera = Controller.getInstance().getCameraCopy();
+        final Camera camera = Controller.getDefault().getCameraCopy();
         Intersection intersection = shape.intersectsSquare(quadrant.getX(), quadrant.getY(), quadrant.getSize(), maxNodeSize, camera);
 
         switch (intersection) {
@@ -236,7 +236,7 @@ public final class Quadtree implements NodeContainer {
 
     @Override
     public Node selectSingle(Point point, final boolean select, final int selectionRadius, final int policy) {
-        final Camera camera = Controller.getInstance().getCameraCopy();
+        final Camera camera = Controller.getDefault().getCameraCopy();
         Quadrant quadrant = root;
         singleFound = false;
         final Node[] nodes = new Node[1];

@@ -33,6 +33,8 @@ import org.gephi.lib.gleem.linalg.Vec3f;
  */
 public interface Camera {
 
+    public Camera copy();
+
     public void setImageSize(Dimension size);
 
     public void moveTo(Vec3f newPos);

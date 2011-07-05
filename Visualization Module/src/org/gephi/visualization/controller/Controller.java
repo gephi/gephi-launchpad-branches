@@ -37,8 +37,8 @@ import org.gephi.project.api.ProjectController;
 import org.gephi.project.api.Workspace;
 import org.gephi.project.api.WorkspaceListener;
 import org.gephi.visualization.api.MotionManager;
+import org.gephi.visualization.api.camera.Camera;
 import org.gephi.visualization.api.selection.SelectionManager;
-import org.gephi.visualization.api.selection.Shape;
 import org.gephi.visualization.camera.CameraImpl;
 import org.gephi.visualization.geometry.AABB;
 import org.gephi.visualization.view.View;
@@ -48,52 +48,26 @@ import org.openide.util.Lookup;
  *
  * @author Antonio Patriarca <antoniopatriarca@gmail.com>
  */
-public class Controller implements KeyListener, MouseListener, MouseMotionListener, MouseWheelListener {
+public class Controller implements KeyListener, MouseListener, MouseMotionListener, MouseWheelListener, WorkspaceListener {
 
-    private CameraImpl camera;
-    private MotionManager motionManager;
+    private Camera camera;
 
     private static Controller instance;
 
     private Dimension viewSize;
 
-    private Shape shape;
-
     private boolean centerGraph = true;
     private boolean centerZero;
+    private float[] centerNode;
 
     private Controller() {
         // Random values
-        this.camera = new CameraImpl(300, 300, 100f, 10000.0f);
-        this.motionManager = new MotionManagerImpl();
         this.viewSize = new Dimension();
-
-        Lookup.getDefault().lookup(ProjectController.class).addWorkspaceListener(new WorkspaceListener() {
-            @Override
-            public void initialize(Workspace workspace) {
-            }
-
-            @Override
-            public void select(Workspace workspace) {
-                Lookup.getDefault().lookup(SelectionManager.class).initialize();
-            }
-
-            @Override
-            public void unselect(Workspace workspace) {
-            }
-
-            @Override
-            public void close(Workspace workspace) {
-            }
-
-            @Override
-            public void disable() {
-            }
-        });
-
+        
+        Lookup.getDefault().lookup(ProjectController.class).addWorkspaceListener(this);
     }
 
-    public synchronized static Controller getInstance() {
+    public synchronized static Controller getDefault() {
         if (instance == null) {
             instance = new Controller();
         }
@@ -102,7 +76,9 @@ public class Controller implements KeyListener, MouseListener, MouseMotionListen
 
     public void resize(int width, int height) {
         this.viewSize = new Dimension(width, height);
-        this.camera.setImageSize(viewSize);
+        if (camera != null) {
+            this.camera.setImageSize(viewSize);
+        }
     }
 
     public Dimension getViewDimensions() {
@@ -123,16 +99,28 @@ public class Controller implements KeyListener, MouseListener, MouseMotionListen
         view.getCanvas().setCursor(cursor);
     }
 
-    CameraImpl getCamera() {
+    Camera getCamera() {
         return this.camera;
     }
 
-    public CameraImpl getCameraCopy() {
-        return new CameraImpl(this.camera);
+    public Camera getCameraCopy() {
+        return this.camera.copy();
     }
 
-    public MotionManager getMotionManager() {
-        return motionManager;
+    public void centerOnGraph() {
+        centerGraph = true;
+    }
+
+    public void centerOnZero() {
+        centerZero = true;
+    }
+
+    public void centerOnNode(float x, float y, float z) {
+        centerNode = new float[]{x, y, z};
+    }
+
+    public boolean isCentering() {
+        return centerGraph || centerZero || centerNode != null;
     }
 
     public void beginUpdateFrame() {
@@ -156,16 +144,14 @@ public class Controller implements KeyListener, MouseListener, MouseMotionListen
             centerGraph = false;
         }
         if (centerZero) {
+            camera.lookAt(Vec3f.Z_AXIS, new Vec3f(0, 0, 0), Vec3f.Y_AXIS);
             centerZero = false;
         }
-        motionManager.refresh();
-    }
-
-    /**
-     * Gets shape to be drawn on screen and clears the buffer.
-     */
-    public Shape getSelectionShape() {
-        return motionManager.getSelectionShape();
+        if (centerNode != null) {
+            camera.lookAt(new Vec3f(centerNode[0], centerNode[1], centerNode[2]), Vec3f.Y_AXIS);
+            centerNode = null;
+        }
+        Lookup.getDefault().lookup(MotionManager.class).refresh();
     }
 
     public void beginRenderFrame() {
@@ -174,6 +160,7 @@ public class Controller implements KeyListener, MouseListener, MouseMotionListen
     public void endRenderFrame() {
     }
 
+    // User events
     @Override
     public void keyTyped(KeyEvent e) {
     }
@@ -188,17 +175,17 @@ public class Controller implements KeyListener, MouseListener, MouseMotionListen
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        motionManager.mouseClicked(e);
+        Lookup.getDefault().lookup(MotionManager.class).mouseClicked(e);
     }
 
     @Override
     public void mousePressed(MouseEvent e) {
-        motionManager.mousePressed(e);
+        Lookup.getDefault().lookup(MotionManager.class).mousePressed(e);
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        motionManager.mouseReleased(e);
+        Lookup.getDefault().lookup(MotionManager.class).mouseReleased(e);
     }
 
     @Override
@@ -211,25 +198,43 @@ public class Controller implements KeyListener, MouseListener, MouseMotionListen
 
     @Override
     public void mouseDragged(MouseEvent e) {
-        motionManager.mouseDragged(e);
+        Lookup.getDefault().lookup(MotionManager.class).mouseDragged(e);
     }
 
     @Override
     public void mouseMoved(MouseEvent e) {
-        motionManager.mouseMoved(e);
+        Lookup.getDefault().lookup(MotionManager.class).mouseMoved(e);
     }
 
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
-        motionManager.mouseWheelMoved(e);
+        Lookup.getDefault().lookup(MotionManager.class).mouseWheelMoved(e);
     }
 
-    public void centerOnGraph() {
-        centerGraph = true;
+    // Workspace events
+    @Override
+    public void initialize(Workspace workspace) {
     }
 
-    public void centerOnZero() {
-        centerZero = true;
+    @Override
+    public void select(Workspace workspace) {
+        camera = workspace.getLookup().lookup(Camera.class);
+        if (camera == null) {
+            camera = new CameraImpl(300, 300, 100f, 10000.0f);
+        }
+        Lookup.getDefault().lookup(SelectionManager.class).initialize();
+    }
+
+    @Override
+    public void unselect(Workspace workspace) {
+    }
+
+    @Override
+    public void close(Workspace workspace) {
+    }
+
+    @Override
+    public void disable() {
     }
 
 }

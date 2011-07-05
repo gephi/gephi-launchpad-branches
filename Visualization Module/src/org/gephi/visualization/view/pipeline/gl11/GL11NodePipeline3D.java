@@ -27,8 +27,8 @@ import javax.media.opengl.glu.GLU;
 import javax.media.opengl.glu.GLUquadric;
 import javax.media.opengl.glu.gl2.GLUgl2;
 import org.gephi.math.Vec3;
+import org.gephi.visualization.api.camera.Camera;
 import org.gephi.visualization.api.color.Color;
-import org.gephi.visualization.camera.CameraImpl;
 import org.gephi.visualization.data.FrameData;
 import org.gephi.visualization.data.graph.VizNode;
 import org.gephi.visualization.view.pipeline.Pipeline;
@@ -93,7 +93,7 @@ public class GL11NodePipeline3D implements Pipeline {
 
         final GL2 gl2 = gl.getGL2();
 
-        final CameraImpl camera = frameData.camera();
+        final Camera camera = frameData.camera();
         gl2.glMatrixMode(GL2.GL_PROJECTION);
 
         float[] matrix = new float[16];

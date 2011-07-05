@@ -58,7 +58,7 @@ public final class GraphTopComponent extends TopComponent {
         JPopupMenu.setDefaultLightWeightPopupEnabled(false);
         ToolTipManager.sharedInstance().setLightWeightPopupEnabled(false);
 
-        this.controller = Controller.getInstance();
+        this.controller = Controller.getDefault();
         this.frameDataBridge = new FrameDataBridge();
         this.view = new View(this.controller, this.frameDataBridge);
         this.dataManager = new Model(this.controller, this.frameDataBridge, 33);
