@@ -375,7 +375,7 @@ public class CameraImpl implements Camera {
 
     @Override
     public void zoom(float by) {
-        setFov((float) Math.min(fovy * Math.exp(-by), MAX_FOVY));
+        setFov((float) Math.min(fovy * Math.exp(by), MAX_FOVY));
     }
 
     private void requireRecomputeMatrix() {

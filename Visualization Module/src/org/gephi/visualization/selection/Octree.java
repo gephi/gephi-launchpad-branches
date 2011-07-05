@@ -65,6 +65,9 @@ public final class Octree implements NodeContainer {
 
     float xmin, xmax, ymin, ymax, zmin, zmax;
 
+    // Required for the case when more nodes have same coordinates.
+    private final static int MAX_DEPTH = 15;
+
     public Octree(Graph graph) {
         this.graph = graph;
         this.unassignedNodes = new ArrayList<Node>();
@@ -104,7 +107,7 @@ public final class Octree implements NodeContainer {
                 maxNodeSize = nd.getSize();
             }
         }
-        root = new Octant(null, xmin, ymin, zmin, Math.max(Math.max(xmax - xmin, ymax - ymin), zmax - zmin));
+        root = new Octant(null, xmin, ymin, zmin, Math.max(Math.max(xmax - xmin, ymax - ymin), zmax - zmin), 0);
         iterator = graph.getNodes().iterator();
         while (iterator.hasNext()) {
             root.addNode(iterator.next());
@@ -346,18 +349,20 @@ public final class Octree implements NodeContainer {
         private final float x, y, z;
         private final float size;
         private final Octant parent;
+        private final int depth;
         /**
          * Octant may contain selected nodes.
          */
         private boolean selectFlag;
 
-        public Octant(Octant parent, float x, float y, float z, float size) {
+        public Octant(Octant parent, float x, float y, float z, float size, int depth) {
             this.x = x;
             this.y = y;
             this.z = z;
             this.size = size;
             this.nodes = new ArrayList<Node>();
             this.parent = parent;
+            this.depth = depth;
         }
 
         public float getSize() {
@@ -374,6 +379,10 @@ public final class Octree implements NodeContainer {
 
         public float getZ() {
             return z;
+        }
+
+        public int getDepth() {
+            return depth;
         }
 
         public void nodeUpdated(Node node) {
@@ -407,8 +416,8 @@ public final class Octree implements NodeContainer {
             if (nodes != null) {
                 nodes.add(node);
                 node.getNodeData().setSpatialData(new OctreeData(this, node));
-
-                if (nodes.size() > MAX_NODES) {
+                // Node overflow, create new level - if depth less than maximal
+                if (nodes.size() > MAX_NODES && depth < MAX_DEPTH) {
                     children = new Octant[8];
                     for (Node n : nodes) {
                         int octantPosition = getChildPosition(n.getNodeData().x(), n.getNodeData().y(), n.getNodeData().z());
@@ -431,7 +440,7 @@ public final class Octree implements NodeContainer {
                 float dx = (childPosition & 1) == 1 ? 0 : newSize;
                 float dy = (childPosition & 2) == 2 ? 0 : newSize;
                 float dz = (childPosition & 4) == 4 ? 0 : newSize;
-                children[childPosition] = new Octant(this, x + dx, y + dy, z + dz, newSize);
+                children[childPosition] = new Octant(this, x + dx, y + dy, z + dz, newSize, depth + 1);
             }
             children[childPosition].addNode(node);
         }

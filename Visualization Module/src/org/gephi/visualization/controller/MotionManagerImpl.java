@@ -261,8 +261,6 @@ public class MotionManagerImpl implements MotionManager {
         Controller.getDefault().getCamera().zoom(ZOOM_FACTOR * e.getUnitsToScroll());
     }
 
-
-
     private SelectionModifier extractSelectionModifier(MouseEvent e) {
         return (e.getModifiersEx() & MouseEvent.SHIFT_DOWN_MASK) > 0 ? SelectionModifier.INCREMENTAL :
                (e.getModifiersEx() & MouseEvent.CTRL_DOWN_MASK) > 0 ? SelectionModifier.DECREMENTAL :

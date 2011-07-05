@@ -64,13 +64,14 @@ public final class Quadtree implements NodeContainer {
 
     float xmin, xmax, ymin, ymax;
 
+    private final static int MAX_DEPTH = 15;
+
     public Quadtree(Graph graph) {
         this.graph = graph;
         this.unassignedNodes = new ArrayList<Node>();
         this.selectedNodes = new ArrayList<Node>();
         rebuild();
     }
-
 
     @Override
     public void rebuild() {
@@ -97,7 +98,7 @@ public final class Quadtree implements NodeContainer {
                 maxNodeSize = nd.getSize();
             }
         }
-        root = new Quadrant(null, xmin, ymin, Math.max(xmax - xmin, ymax - ymin));
+        root = new Quadrant(null, xmin, ymin, Math.max(xmax - xmin, ymax - ymin), 0);
         iterator = graph.getNodes().iterator();
         while (iterator.hasNext()) {
             root.addNode(iterator.next());
@@ -338,17 +339,19 @@ public final class Quadtree implements NodeContainer {
         private final float x, y;
         private final float size;
         private final Quadrant parent;
+        private final int depth;
         /**
          * Octant may contain selected nodes.
          */
         private boolean selectFlag;
 
-        public Quadrant(Quadrant parent, float x, float y, float size) {
+        public Quadrant(Quadrant parent, float x, float y, float size, int depth) {
             this.x = x;
             this.y = y;
             this.size = size;
             this.nodes = new ArrayList<Node>();
             this.parent = parent;
+            this.depth = depth;
         }
 
         public float getSize() {
@@ -361,6 +364,10 @@ public final class Quadtree implements NodeContainer {
 
         public float getY() {
             return y;
+        }
+
+        public int getDepth() {
+            return depth;
         }
 
         public void nodeUpdated(Node node) {
@@ -392,8 +399,8 @@ public final class Quadtree implements NodeContainer {
             if (nodes != null) {
                 nodes.add(node);
                 node.getNodeData().setSpatialData(new QuadtreeData(this, node));
-
-                if (nodes.size() > MAX_NODES) {
+                // Node overflow, create new level - if depth less than maximal
+                if (nodes.size() > MAX_NODES && depth < MAX_DEPTH) {
                     children = new Quadrant[4];
                     for (Node n : nodes) {
                         int quadrantPosition = getChildPosition(n.getNodeData().x(), n.getNodeData().y());
@@ -415,7 +422,7 @@ public final class Quadtree implements NodeContainer {
                 float newSize = size / 2;
                 float dx = (childPosition & 1) == 1 ? 0 : newSize;
                 float dy = (childPosition & 2) == 2 ? 0 : newSize;
-                children[childPosition] = new Quadrant(this, x + dx, y + dy, newSize);
+                children[childPosition] = new Quadrant(this, x + dx, y + dy, newSize, depth + 1);
             }
             children[childPosition].addNode(node);
         }
