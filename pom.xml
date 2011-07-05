@@ -94,6 +94,7 @@
     <module>JodaWrapper</module>
     <module>SwingX</module>
     <module>StaxUtils</module>
+    <module>longtask</module>
   </modules>
     <reporting>
         <plugins>

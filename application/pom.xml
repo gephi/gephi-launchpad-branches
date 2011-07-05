@@ -52,6 +52,11 @@
             <artifactId>gephi-graph-api</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.gephi.utils</groupId>
+            <artifactId>longtask</artifactId>
+            <version>0.8</version>
+        </dependency>
     </dependencies>
 
     <build>

@@ -2,10 +2,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-    <artifactId>gephi</artifactId>
-    <groupId>org.gephi</groupId>
-    <version>1.0-SNAPSHOT</version>
-  </parent>
+        <artifactId>gephi</artifactId>
+        <groupId>org.gephi</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
 
     <groupId>org.jdesktop</groupId>
     <artifactId>SwingX</artifactId>
@@ -32,13 +32,17 @@
                 <enabled>false</enabled>
             </snapshots>
         </repository>
+        <repository>
+            <id>thirdparty</id>
+            <url>http://localhost:8081/nexus/content/repositories/thirdparty</url>
+        </repository>
         
        
-     <repository>
-         <id>maven2-release-repository.nbpwr.kenai.com</id>
-         <name>NBPWR Maven Release Repository</name>
-         <url>http://nbpwr.kenai.com/maven-repository/releases</url>
-     </repository>
+        <repository>
+            <id>maven2-release-repository.nbpwr.kenai.com</id>
+            <name>NBPWR Maven Release Repository</name>
+            <url>http://nbpwr.kenai.com/maven-repository/releases</url>
+        </repository>
 
         
     </repositories>
@@ -49,19 +53,19 @@
             <artifactId>org-netbeans-api-annotations-common</artifactId>
             <version>RELEASE70</version>
         </dependency>
-      <!--  
+       
         <dependency>
-    <groupId>com.kenai.nbpwr</groupId>
-    <artifactId>org-swinglabs-swingx</artifactId>
-    <version>1.6</version>
-</dependency>
+            <groupId>org.jdesktop</groupId>
+            <artifactId>swingx</artifactId>
+            <version>1.6.1</version>
+        </dependency>
+ 
+        <dependency>
+            <groupId>org.jdesktop</groupId>
+            <artifactId>swingx-beaninfo</artifactId>
+            <version>1.6.1</version>
+        </dependency>
 
-<dependency>
-    <groupId>org.swinglabs</groupId>
-    <artifactId>swingx-beaninfo</artifactId>
-    <version>1.6.2-2</version>
-</dependency>
--->
 
     </dependencies>
 

@@ -7,12 +7,12 @@
     <version>1.0-SNAPSHOT</version>
   </parent>
 
-    <groupId>org.gephi.lib</groupId>
-    <artifactId>StaxUtils</artifactId>
-    <version>1.0</version>
+    <groupId>org.gephi.utils</groupId>
+    <artifactId>longtask</artifactId>
+    <version>0.8</version>
     <packaging>nbm</packaging>
 
-    <name>StaxUtils</name>
+    <name>LongTask API</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -40,12 +40,21 @@
             <artifactId>org-netbeans-api-annotations-common</artifactId>
             <version>RELEASE70</version>
         </dependency>
-        
-       <dependency>
-    <groupId>stax-utils</groupId>
-    <artifactId>stax-utils</artifactId>
-    <version>snapshot-20040917</version>
-</dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-netbeans-libs-junit4</artifactId>
+            <version>RELEASE70</version>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-openide-util-lookup</artifactId>
+            <version>RELEASE70</version>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-openide-util</artifactId>
+            <version>RELEASE70</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -55,6 +64,13 @@
                 <artifactId>nbm-maven-plugin</artifactId>
                 <version>3.5</version>
                 <extensions>true</extensions>
+                <configuration>
+                    <publicPackages>
+                        <publicPackage>org.gephi.utils.longtask.api</publicPackage>
+                        <publicPackage>org.gephi.utils.longtask.spi</publicPackage>
+                        <publicPackage>org.gephi.utils.progress</publicPackage>
+                    </publicPackages>
+                </configuration>
             </plugin>
 
             <plugin>
