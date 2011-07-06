@@ -93,12 +93,12 @@ public class SelectionManagerImpl implements SelectionManager, WorkspaceListener
 
     @Override
     public void selectSingle(Point point, boolean select) {
-        nodeContainer.selectSingle(point, select, (getMouseSelectionDiameter() + 1) / 2, NodeContainer.SINGLE_NODE_DEFAULT);
+        nodeContainer.selectSingle(point, select, (getMouseSelectionDiameter() + 1) / 2, NodeContainer.SINGLE_NODE_FIRST);
     }
 
     @Override
     public boolean selectContinuousSingle(Point point, boolean select) {
-        return nodeContainer.selectContinuousSingle(point, select, (getMouseSelectionDiameter() + 1) / 2, NodeContainer.SINGLE_NODE_DEFAULT);
+        return nodeContainer.selectContinuousSingle(point, select, (getMouseSelectionDiameter() + 1) / 2, NodeContainer.SINGLE_NODE_FIRST);
     }
 
     @Override
@@ -239,6 +239,7 @@ public class SelectionManagerImpl implements SelectionManager, WorkspaceListener
         clearState();
         VizConfig vizConfig = Lookup.getDefault().lookup(VizConfig.class);
         vizConfig.setDraggingEnable(true);
+        vizConfig.setDirectMouseSelection(true);
         fireChangeEvent();
     }
 

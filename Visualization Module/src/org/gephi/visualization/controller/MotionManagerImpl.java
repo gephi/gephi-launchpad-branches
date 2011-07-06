@@ -55,6 +55,8 @@ public class MotionManagerImpl implements MotionManager {
     protected boolean dragging;
     protected boolean pressing;
 
+    protected boolean enable3D;
+
     @Override
     public Shape getSelectionShape() {
         return selectionShape;
@@ -272,6 +274,14 @@ public class MotionManagerImpl implements MotionManager {
         if (pressing) {
             Lookup.getDefault().lookup(VizEventManager.class).mouseLeftPressing();
         }
+    }
+
+    public boolean isEnable3D() {
+        return enable3D;
+    }
+
+    public void setEnable3D(boolean enable3D) {
+        this.enable3D = enable3D;
     }
 
 }

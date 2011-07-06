@@ -294,16 +294,9 @@ public class CameraImpl implements Camera {
         return result;
     }
 
-    /**
-     * Returns the rescaled size of an object as it would appear on the screen.
-     */
     @Override
-    public int projectScale(float scale) {
-        // TODO optimize
-        Point p1 = projectPoint(scale, 0, 0);
-        Point p2 = projectPoint(0, 0, 0);
+    public int projectNodeRadius(float x, float y, float z, float size) {
         return 5;
-        //return (int) Math.sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
     }
 
     @Override

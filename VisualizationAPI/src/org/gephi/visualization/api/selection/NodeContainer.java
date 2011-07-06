@@ -23,7 +23,6 @@ package org.gephi.visualization.api.selection;
 
 import java.awt.Point;
 import java.util.Collection;
-import java.util.List;
 import org.gephi.graph.api.Node;
 
 /**
@@ -35,9 +34,9 @@ import org.gephi.graph.api.Node;
 public interface NodeContainer {
 
     /**
-     * Select any node among all nodes within radius.
+     * Select first node found among all nodes within radius.
      */
-    public static final int SINGLE_NODE_DEFAULT = 0;
+    public static final int SINGLE_NODE_FIRST = 0;
 
     /**
      * Select the largest node among all nodes within radius.

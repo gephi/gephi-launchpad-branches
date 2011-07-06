@@ -108,9 +108,9 @@ public interface Camera {
     public Vec3f projectVectorInverse(float x, float y);
 
     /**
-     * Returns the rescaled size of an object as it would appear on the screen.
+     * Returns the radius of the node in the screen scale.
      */
-    public int projectScale(float scale);
+    public int projectNodeRadius(float x, float y, float z, float size);
 
     /**
      * Returns the distance of a point [a,b] on the screen to the projection of

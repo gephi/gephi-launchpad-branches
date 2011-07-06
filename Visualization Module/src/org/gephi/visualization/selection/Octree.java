@@ -123,7 +123,7 @@ public final class Octree implements NodeContainer {
 
         selectedNodes = new ArrayList<Node>();
         recursiveGetSelectedNodes(root, selectedNodes);
-        
+
         for (Node node : unassignedNodes) {
             if (node.getNodeData().isSelected()) {
                 selectedNodes.add(node);
@@ -158,7 +158,7 @@ public final class Octree implements NodeContainer {
 
         final boolean select = shape.getSelectionModifier().isPositive();
 
-        recursiveAddNodes(root, shape, new NodeFunction() {
+        NodeFunction nodeFunction = new NodeFunction() {
             @Override
             public void apply(Node node) {
                 if (shape.isInside3D(node.getNodeData().x(), node.getNodeData().y(), node.getNodeData().z(), node.getNodeData().getSize(), camera)) {
@@ -169,15 +169,13 @@ public final class Octree implements NodeContainer {
                     }
                 }
             }
-        });
+        };
+        recursiveAddNodes(root, shape, false, nodeFunction);
+        recursiveAddUnassignedNodes(nodeFunction);
         return nodes;
     }
 
     private void recursiveGetSelectedNodes(Octant octant, Collection<Node> list) {
-        /*
-        if (!octant.isSelectFlag()) {
-            return;
-        }*/
         if (octant.hasChildren()) {
             for (Octant child : octant.getChildren()) {
                 if (child != null) {
@@ -193,34 +191,11 @@ public final class Octree implements NodeContainer {
         }
     }
 
-    private void recursiveAddNodes(Octant octant, Shape shape, NodeFunction nodeFunction) {
-        final Camera camera = Controller.getDefault().getCameraCopy();
-        Intersection intersection = shape.intersectsCube(octant.getX(), octant.getY(), octant.getZ(), octant.getSize(), maxNodeSize, camera);
-
-        switch (intersection) {
-            case OUTSIDE:
-                return;
-            case INTERSECT:
-                if (octant.hasChildren()) {
-                    for (Octant child : octant.getChildren()) {
-                        if (child != null) {
-                            recursiveAddNodes(child, shape, nodeFunction);
-                        }
-                    }
-                } else {
-                    octant.applyFunction(nodeFunction);
-                }
-                break;
-            case FULLY_INSIDE:
-                octant.applyFunction(nodeFunction);
-                break;
-        }
-    }
-
-    private void recursiveFindNode(Octant octant, Shape shape, NodeFunction nodeFunction) {
-        if (singleFound) {
+    private void recursiveAddNodes(Octant octant, Shape shape, boolean singleOnly, NodeFunction nodeFunction) {
+        if (singleOnly && singleFound) {
             return;
         }
+
         final Camera camera = Controller.getDefault().getCameraCopy();
         Intersection intersection = shape.intersectsCube(octant.getX(), octant.getY(), octant.getZ(), octant.getSize(), maxNodeSize, camera);
 
@@ -231,7 +206,7 @@ public final class Octree implements NodeContainer {
                 if (octant.hasChildren()) {
                     for (Octant child : octant.getChildren()) {
                         if (child != null) {
-                            recursiveAddNodes(child, shape, nodeFunction);
+                            recursiveAddNodes(child, shape, singleOnly, nodeFunction);
                         }
                     }
                 } else {
@@ -243,61 +218,72 @@ public final class Octree implements NodeContainer {
                 break;
         }
     }
-    
+
+    private void recursiveAddUnassignedNodes(NodeFunction nodeFunction) {
+        for (Node node : unassignedNodes) {
+            nodeFunction.apply(node);
+        }
+    }
+
     @Override
     public Node selectSingle(final Point point, final boolean select, final int selectionRadius, final int policy) {
-        Octant quadrant = root;
+        Octant octant = root;
         final Camera camera = Controller.getDefault().getCameraCopy();
         final Shape shape = ShapeUtils.createEllipseShape(point.x, point.y, selectionRadius, selectionRadius);
         final Node[] nodes = new Node[1];
         singleFound = false;
 
+        NodeFunction nodeFunction = null;
         switch (policy) {
-            case SINGLE_NODE_DEFAULT:
-                recursiveFindNode(quadrant, shape, new NodeFunction() {
-                    @Override
-                    public void apply(Node node) {
-                        if (node.getNodeData().isSelected() != select &&
-                             shape.isInside3D(node.getNodeData().x(), node.getNodeData().y(), node.getNodeData().z(), node.getNodeData().getSize(), camera)) {
-                            node.getNodeData().setSelected(select);
-                            singleFound = true;
-                            nodes[0] = node;
-                            changeMarker = true;
-                        }
-                    }
-                });
-                return nodes[0];
+            case SINGLE_NODE_FIRST:
+                nodeFunction = new NodeFunction() {
+                                    @Override
+                                    public void apply(Node node) {
+                                        if (node.getNodeData().isSelected() != select &&
+                                             shape.isInside3D(node.getNodeData().x(), node.getNodeData().y(), node.getNodeData().z(), node.getNodeData().getSize(), camera)) {
+                                            singleFound = true;
+                                            nodes[0] = node;
+                                        }
+                                    }
+                                };
+                break;
             case SINGLE_NODE_CLOSEST:
-                recursiveFindNode(quadrant, shape, new NodeFunction() {
-                    private int minDistance = Integer.MAX_VALUE;
-                    @Override
-                    public void apply(Node node) {
-                        int distance = camera.getPlanarDistance(node.getNodeData().x(), node.getNodeData().y(), node.getNodeData().z(), point.x, point.y);
-                        if (node.getNodeData().isSelected() != select &&
-                            distance < minDistance &&
-                            shape.isInside3D(node.getNodeData().x(), node.getNodeData().y(), node.getNodeData().z(), node.getNodeData().getSize(), camera)) {
-                            node.getNodeData().setSelected(select);
-                            nodes[0] = node;
-                            minDistance = distance;
-                            changeMarker = true;
-                        }
-                    }
-                });
+                nodeFunction = new NodeFunction() {
+                                    private int minDistance = Integer.MAX_VALUE;
+                                    @Override
+                                    public void apply(Node node) {
+                                        int distance = camera.getPlanarDistance(node.getNodeData().x(), node.getNodeData().y(), node.getNodeData().z(), point.x, point.y);
+                                        if (node.getNodeData().isSelected() != select &&
+                                            distance < minDistance &&
+                                            shape.isInside3D(node.getNodeData().x(), node.getNodeData().y(), node.getNodeData().z(), node.getNodeData().getSize(), camera)) {
+                                            nodes[0] = node;
+                                            minDistance = distance;
+                                        }
+                                    }
+                                };
+                break;
             case SINGLE_NODE_LARGEST:
-                recursiveFindNode(quadrant, shape, new NodeFunction() {
-                    private float maxSize = 0;
-                    @Override
-                    public void apply(Node node) {
-                        if (node.getNodeData().isSelected() != select &&
-                            node.getNodeData().getSize() > maxSize &&
-                            shape.isInside3D(node.getNodeData().x(), node.getNodeData().y(), node.getNodeData().z(), node.getNodeData().getSize(), camera)) {
-                            node.getNodeData().setSelected(select);
-                            nodes[0] = node;
-                            maxSize = node.getNodeData().getSize();
-                            changeMarker = true;
-                        }
-                    }
-                });
+                nodeFunction = new NodeFunction() {
+                                    private float maxSize = 0;
+                                    @Override
+                                    public void apply(Node node) {
+                                        if (node.getNodeData().isSelected() != select &&
+                                            node.getNodeData().getSize() > maxSize &&
+                                            shape.isInside3D(node.getNodeData().x(), node.getNodeData().y(), node.getNodeData().z(), node.getNodeData().getSize(), camera)) {
+                                            nodes[0] = node;
+                                            maxSize = node.getNodeData().getSize();
+                                        }
+                                    }
+                                };
+                break;
+        }
+        recursiveAddNodes(octant, shape, true, nodeFunction);
+        if (nodes[0] == null || policy != NodeContainer.SINGLE_NODE_FIRST) {
+            recursiveAddUnassignedNodes(nodeFunction);
+        }
+        if (nodes[0] != null) {
+            nodes[0].getNodeData().setSelected(select);
+            changeMarker = true;
         }
         return nodes[0];
     }

@@ -22,8 +22,6 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 package org.gephi.visualization.apiimpl.shape;
 
 import java.awt.Point;
-import java.util.HashSet;
-import java.util.Set;
 import org.gephi.visualization.api.camera.Camera;
 import org.gephi.visualization.api.selection.Shape;
 
@@ -46,23 +44,24 @@ public abstract class AbstractShape implements Shape {
 
     public boolean isInside3D(float x, float y, float z, float radius, Camera camera) {
         Point point = camera.projectPoint(x, y, z);
-        int size = camera.projectScale(radius);
+        int size = camera.projectNodeRadius(x, y, z, radius);
         return isPointInside(point.x, point.y, size);
     }
 
     public Intersection intersectsSquare(float x, float y, float size, float maxNodeSize, Camera camera) {
         // Create a sphere around the square and test every corner point for inclusion
-        int radius = camera.projectScale(size * SQUARE_ROOT);
+        //int radius = camera.projectScale(size * SQUARE_ROOT);
         if (maxSize != maxNodeSize) {
-            projectedMaxSize = camera.projectScale(maxNodeSize);
-        }
+            // TODO wrong - fix after node size scale projection available
+            projectedMaxSize = camera.projectNodeRadius(x, y, 0, maxNodeSize);
+        }/*
         Point center = camera.projectPoint(x + size / 2, y + size / 2, 0);
         // Is shape inside the square's bounding sphere?
 
         // FIXME after camera is fixed, set radius instead of MAX_VALUE
         if (intersectsCircle(center.x, center.y, Integer.MAX_VALUE)) {
             return Intersection.INTERSECT;
-        }
+        }*/
         // Is any square's corner point inside the shape?
         boolean intersect = false;
         boolean inside = true;
@@ -83,16 +82,25 @@ public abstract class AbstractShape implements Shape {
     }
 
     public Intersection intersectsCube(float x, float y, float z, float size, float maxNodeSize, Camera camera) {
-        // Create a sphere around the cube and test every corner point for inclusion
-        int radius = camera.projectScale(size * CUBE_ROOT);
-        if (maxSize != maxNodeSize) {
-            projectedMaxSize = camera.projectScale(maxNodeSize);
-        }
+        Point[] projectedPoints = new Point[8];
+        int maxH = 0, maxV = 0;
         Point center = camera.projectPoint(x + size / 2, y + size / 2, z + size / 2);
+        for (int i = 0; i < 8; i++) {
+            projectedPoints[i] = camera.projectPoint(x + CUBE_CORNERS[i][0] * size, y + CUBE_CORNERS[i][1] * size, z + CUBE_CORNERS[i][2] * size);
+            if (Math.abs(projectedPoints[i].x - center.x) > maxH) {
+                maxH = Math.abs(projectedPoints[i].x - center.x);
+            }
+            if (Math.abs(projectedPoints[i].y - center.y) > maxV) {
+                maxV = Math.abs(projectedPoints[i].y - center.y);
+            }
+        }
+        // Create a sphere around the cube and test every corner point for inclusion
+        if (maxSize != maxNodeSize) {
+            // TODO wrong - fix after node size scale projection available
+            projectedMaxSize = camera.projectNodeRadius(x, y, z, maxNodeSize);
+        }
         // Is shape inside the cube's bounding sphere?
-
-        // FIXME after camera is fixed, set radius instead of MAX_VALUE
-        if (intersectsCircle(center.x, center.y, Integer.MAX_VALUE)) {
+        if (intersectsCircle(center.x, center.y, (int) Math.sqrt(maxH * maxH + maxV * maxV))) {
             return Intersection.INTERSECT;
         }
         // Is any cube's corner point inside the shape?
