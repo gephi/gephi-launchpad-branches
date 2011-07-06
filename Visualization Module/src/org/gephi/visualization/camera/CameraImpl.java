@@ -307,6 +307,12 @@ public class CameraImpl implements Camera {
     }
 
     @Override
+    public int getPlanarDistance(float x, float y, float z, int a, int b) {
+        Point point = projectPoint(x, y, z);
+        return (int) Math.sqrt((point.x - a) * (point.x - a) + (point.y - b) * (point.y - b));
+    }
+
+    @Override
     public void startTranslation() {}
 
     @Override

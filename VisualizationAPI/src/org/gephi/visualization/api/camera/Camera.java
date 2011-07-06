@@ -112,6 +112,12 @@ public interface Camera {
      */
     public int projectScale(float scale);
 
+    /**
+     * Returns the distance of a point [a,b] on the screen to the projection of
+     * point [x,y,z].
+     */
+    public int getPlanarDistance(float x, float y, float z, int a, int b);
+
     public void startTranslation();
 
     public void updateTranslation(float horizontal, float vertical);

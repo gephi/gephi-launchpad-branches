@@ -245,27 +245,60 @@ public final class Octree implements NodeContainer {
     }
     
     @Override
-    public Node selectSingle(Point point, final boolean select, final int selectionRadius, final int policy) {
+    public Node selectSingle(final Point point, final boolean select, final int selectionRadius, final int policy) {
+        Octant quadrant = root;
         final Camera camera = Controller.getDefault().getCameraCopy();
-        Octant octant = root;
-        singleFound = false;
-        final Node[] nodes = new Node[1];
-        
         final Shape shape = ShapeUtils.createEllipseShape(point.x, point.y, selectionRadius, selectionRadius);
-        recursiveFindNode(octant, shape, new NodeFunction() {
-            @Override
-            // TODO implement closest policy
-            public void apply(Node node) {
-                 if (node.getNodeData().isSelected() != select &&
-                     shape.isInside3D(node.getNodeData().x(), node.getNodeData().y(), node.getNodeData().z(), node.getNodeData().getSize(), camera)) {
-                    node.getNodeData().setSelected(select);
-                    singleFound = true;
-                    nodes[0] = node;
-                    // TODO may be optimized
-                    changeMarker = true;
-                }
-            }
-        });
+        final Node[] nodes = new Node[1];
+        singleFound = false;
+
+        switch (policy) {
+            case SINGLE_NODE_DEFAULT:
+                recursiveFindNode(quadrant, shape, new NodeFunction() {
+                    @Override
+                    public void apply(Node node) {
+                        if (node.getNodeData().isSelected() != select &&
+                             shape.isInside3D(node.getNodeData().x(), node.getNodeData().y(), node.getNodeData().z(), node.getNodeData().getSize(), camera)) {
+                            node.getNodeData().setSelected(select);
+                            singleFound = true;
+                            nodes[0] = node;
+                            changeMarker = true;
+                        }
+                    }
+                });
+                return nodes[0];
+            case SINGLE_NODE_CLOSEST:
+                recursiveFindNode(quadrant, shape, new NodeFunction() {
+                    private int minDistance = Integer.MAX_VALUE;
+                    @Override
+                    public void apply(Node node) {
+                        int distance = camera.getPlanarDistance(node.getNodeData().x(), node.getNodeData().y(), node.getNodeData().z(), point.x, point.y);
+                        if (node.getNodeData().isSelected() != select &&
+                            distance < minDistance &&
+                            shape.isInside3D(node.getNodeData().x(), node.getNodeData().y(), node.getNodeData().z(), node.getNodeData().getSize(), camera)) {
+                            node.getNodeData().setSelected(select);
+                            nodes[0] = node;
+                            minDistance = distance;
+                            changeMarker = true;
+                        }
+                    }
+                });
+            case SINGLE_NODE_LARGEST:
+                recursiveFindNode(quadrant, shape, new NodeFunction() {
+                    private float maxSize = 0;
+                    @Override
+                    public void apply(Node node) {
+                        if (node.getNodeData().isSelected() != select &&
+                            node.getNodeData().getSize() > maxSize &&
+                            shape.isInside3D(node.getNodeData().x(), node.getNodeData().y(), node.getNodeData().z(), node.getNodeData().getSize(), camera)) {
+                            node.getNodeData().setSelected(select);
+                            nodes[0] = node;
+                            maxSize = node.getNodeData().getSize();
+                            changeMarker = true;
+                        }
+                    }
+                });
+        }
         return nodes[0];
     }
 
