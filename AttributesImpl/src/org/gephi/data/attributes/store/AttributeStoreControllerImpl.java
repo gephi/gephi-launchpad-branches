@@ -40,13 +40,13 @@ public class AttributeStoreControllerImpl implements AttributeStoreController {
         cacheManager = new CacheManager(configURL);
         
         defaultEnvConfig.setAllowCreate(true);
-        defaultEnvConfig.setTransactional(true);
+        defaultEnvConfig.setTransactional(false);
         defaultEnvConfig.setCachePercent(20);
         defaultEnvConfig.setLockTimeout(10, TimeUnit.MINUTES);
         
         defaultDbConfig.setAllowCreate(true);          
         defaultDbConfig.setExclusiveCreate(true);      
-        defaultDbConfig.setTransactional(true);       
+        defaultDbConfig.setTransactional(false);       
         defaultDbConfig.setSortedDuplicates(false);    
     }
     

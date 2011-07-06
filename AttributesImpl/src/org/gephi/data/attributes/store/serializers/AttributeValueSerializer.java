@@ -146,6 +146,13 @@ public class AttributeValueSerializer {
                 vals[columnIndex] = new AttributeValueImpl((AttributeColumnImpl)column, value);
             }
 
+            for (int i = 0; i < vals.length; i++) {
+                if (vals[i] == null) {
+                    AttributeColumn column = attributeTable.getColumn(i);
+                    vals[i] = new AttributeValueImpl((AttributeColumnImpl)column, column.getDefaultValue());
+                }
+            }
+                        
             return vals;
         }
         catch (IOException ex) {

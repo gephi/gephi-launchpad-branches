@@ -147,8 +147,6 @@ public class AttributeStoreImpl implements AttributeStore<Integer, AttributeValu
                 
                 byte[] arr = serializer.writeValuesData(vals);
                 diskStore.put(key, arr);
-                
-                System.out.println("Evicted " + key);
             }
 
             @Override
