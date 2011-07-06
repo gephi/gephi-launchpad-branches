@@ -41,7 +41,6 @@ Portions Copyrighted 2011 Gephi Consortium.
  */
 package org.gephi.data.attributes;
 
-import java.util.logging.Logger;
 import org.gephi.data.attributes.api.AttributeController;
 import org.gephi.data.attributes.api.AttributeModel;
 import org.gephi.data.attributes.model.IndexedAttributeModel;
@@ -88,7 +87,6 @@ public class AttributeContollerImpl implements AttributeController {
                 AttributeStoreController storeController = Lookup.getDefault().lookup(AttributeStoreController.class);
                 AttributeModel m = workspace.getLookup().lookup(AttributeModel.class);
                 storeController.removeStore(m);
-                
             }
 
             public void disable() {
@@ -118,6 +116,10 @@ public class AttributeContollerImpl implements AttributeController {
             }
             model = new IndexedAttributeModel();
             workspace.add(model);
+            
+            AttributeStoreController storeController = Lookup.getDefault().lookup(AttributeStoreController.class);
+            storeController.newStore(model);
+            
             return model;
         }
         return null;
@@ -130,6 +132,10 @@ public class AttributeContollerImpl implements AttributeController {
         }
         model = new IndexedAttributeModel();
         workspace.add(model);
+        
+        AttributeStoreController storeController = Lookup.getDefault().lookup(AttributeStoreController.class);
+        storeController.newStore(model);
+        
         return model;
     }
 

@@ -99,12 +99,7 @@ public class AttributeStoreControllerImpl implements AttributeStoreController {
     
     private AttributeStore getStore(Map<AttributeModel, AttributeStore> stores, AttributeModel m) {
         AttributeStore store = stores.get(m);
-        
-        if (store == null) {
-            newStore(m);
-        }
-        
-        return stores.get(m);
+        return store;
     }
     
     private Environment getEnvironment(AttributeModel m) {

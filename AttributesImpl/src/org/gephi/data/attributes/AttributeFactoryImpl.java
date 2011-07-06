@@ -43,6 +43,7 @@ package org.gephi.data.attributes;
 
 import org.gephi.data.attributes.api.AttributeColumn;
 import org.gephi.data.attributes.api.AttributeOrigin;
+import org.gephi.data.attributes.api.AttributeRow;
 import org.gephi.data.attributes.api.AttributeRowFactory;
 import org.gephi.data.attributes.api.AttributeValueFactory;
 import org.gephi.data.attributes.api.AttributeValue;
@@ -59,15 +60,10 @@ import org.openide.util.Lookup;
 public class AttributeFactoryImpl implements AttributeValueFactory, AttributeRowFactory {
 
     private AbstractAttributeModel model;
-    private AttributeStore<Integer, AttributeValue[]> nodeStore;
-    private AttributeStore<Integer, AttributeValue[]> edgeStore;
+    private AttributeStoreController controller = Lookup.getDefault().lookup(AttributeStoreController.class);
     
     public AttributeFactoryImpl(AbstractAttributeModel model) {
         this.model = model;
-        
-        AttributeStoreController controller = Lookup.getDefault().lookup(AttributeStoreController.class);
-        edgeStore = controller.getEdgeStore(model);
-        nodeStore = controller.getNodeStore(model);
     }
 
     public AttributeValue newValue(AttributeColumn column, Object value) {
@@ -85,18 +81,28 @@ public class AttributeFactoryImpl implements AttributeValueFactory, AttributeRow
         return new AttributeValueImpl((AttributeColumnImpl) column, managedValue);
     }
 
-    public AttributeRowImpl newNodeRow(NodeData nodeData) {
-        return new AttributeRowImpl(nodeStore, model.getNodeTable(), nodeData);
+    public AttributeRow newNodeRow(NodeData nodeData) {
+        AttributeStore nodeStore = controller.getNodeStore(model);
+        
+        if (nodeStore == null)
+            return new AttributeRowImpl(model.getNodeTable(), nodeData);
+        else 
+            return new AttributeRowProxyImpl(nodeStore, model.getNodeTable(), nodeData);
     }
 
-    public AttributeRowImpl newEdgeRow(EdgeData edgeData) {
-        return new AttributeRowImpl(edgeStore, model.getEdgeTable(), edgeData);
+    public AttributeRow newEdgeRow(EdgeData edgeData) {
+        AttributeStore edgeStore = controller.getEdgeStore(model);
+        
+        if (edgeStore == null)
+            return new AttributeRowImpl(model.getEdgeTable(), edgeData);
+        else
+            return new AttributeRowProxyImpl(edgeStore, model.getEdgeTable(), edgeData);
     }
 
-    public AttributeRowImpl newRowForTable(String tableName, Object object) {
+    public AttributeRow newRowForTable(String tableName, Object object) {
         AttributeTableImpl attTable = model.getTable(tableName);
         if (attTable != null) {
-            return new AttributeRowImpl(null, attTable, object);
+            return new AttributeRowImpl(attTable, object);
         }
         return null;
     }

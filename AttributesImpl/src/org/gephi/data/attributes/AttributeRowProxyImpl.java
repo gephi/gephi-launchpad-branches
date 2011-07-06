@@ -5,70 +5,51 @@ Website : http://www.gephi.org
 
 This file is part of Gephi.
 
-DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+Gephi is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
 
-Copyright 2011 Gephi Consortium. All rights reserved.
+Gephi is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
 
-The contents of this file are subject to the terms of either the GNU
-General Public License Version 3 only ("GPL") or the Common
-Development and Distribution License("CDDL") (collectively, the
-"License"). You may not use this file except in compliance with the
-License. You can obtain a copy of the License at
-http://gephi.org/about/legal/license-notice/
-or /cddl-1.0.txt and /gpl-3.0.txt. See the License for the
-specific language governing permissions and limitations under the
-License.  When distributing the software, include this License Header
-Notice in each file and include the License files at
-/cddl-1.0.txt and /gpl-3.0.txt. If applicable, add the following below the
-License Header, with the fields enclosed by brackets [] replaced by
-your own identifying information:
-"Portions Copyrighted [year] [name of copyright owner]"
-
-If you wish your version of this file to be governed by only the CDDL
-or only the GPL Version 3, indicate your decision by adding
-"[Contributor] elects to include this software in this distribution
-under the [CDDL or GPL Version 3] license." If you do not indicate a
-single choice of license, a recipient has the option to distribute
-your version of this file under either the CDDL, the GPL Version 3 or
-to extend the choice of license to its licensees as provided above.
-However, if you add GPL Version 3 code and therefore, elected the GPL
-Version 3 license, then the option applies only if the new code is
-made subject to such option by the copyright holder.
-
-Contributor(s):
-
-Portions Copyrighted 2011 Gephi Consortium.
+You should have received a copy of the GNU Affero General Public License
+along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.gephi.data.attributes;
 
 import org.gephi.data.attributes.api.AttributeColumn;
 import org.gephi.data.attributes.api.AttributeEvent.EventType;
-import org.gephi.data.attributes.api.AttributeOrigin;
 import org.gephi.data.attributes.api.AttributeRow;
 import org.gephi.data.attributes.api.AttributeType;
 import org.gephi.data.attributes.api.AttributeValue;
 import org.gephi.data.attributes.event.ValueEvent;
+import org.gephi.data.attributes.store.AttributeStore;
+import org.gephi.data.attributes.store.AttributeValuesProxy;
 
 /**
  *
  * @author Mathieu Bastian
  * @author Cezary Bartosiak
  */
-public class AttributeRowImpl implements AttributeRow {
-    
+public class AttributeRowProxyImpl implements AttributeRow {
+
     protected final Object object;
     protected final AttributeTableImpl attributeTable;
-    protected AttributeValueImpl[] values;
+    protected AttributeValuesProxy values;
     protected int rowVersion = -1;
 
     private AttributeStore<Integer, AttributeValue[]> store;
             
-    public AttributeRowImpl(AttributeStore<Integer, AttributeValue[]> store, AttributeTableImpl attributeTable, Object object) {
+    public AttributeRowProxyImpl(AttributeStore<Integer, AttributeValue[]> store, AttributeTableImpl attributeTable, Object object) {
         this.attributeTable = attributeTable;
         this.object = object;
+        this.store = store;
         reset();
     }
-    
+
     public void reset() {
         rowVersion = attributeTable.getVersion();
         int attSize = attributeTable.countColumns();
@@ -76,9 +57,11 @@ public class AttributeRowImpl implements AttributeRow {
         for (int i = 0; i < attSize; i++) {
             newValues[i] = attributeTable.getColumn(i).defaultValue;
         }
-        this.values = newValues;
+        
+        values = new AttributeValuesProxy(store);
+        values.setValues(newValues);
     }
-    
+
     public void setValues(AttributeRow attributeRow) {
         if (attributeRow == null) {
             throw new NullPointerException();
@@ -88,7 +71,7 @@ public class AttributeRowImpl implements AttributeRow {
             setValue(attValues[i]);
         }
     }
-    
+
     public void setValue(int index, Object value) {
         AttributeColumn column = attributeTable.getColumn(index);
         if (column != null) {
@@ -97,7 +80,7 @@ public class AttributeRowImpl implements AttributeRow {
             throw new IllegalArgumentException("The column doesn't exist");
         }
     }
-    
+
     public void setValue(String column, Object value) {
         if (column == null) {
             throw new NullPointerException("Column is null");
@@ -115,48 +98,40 @@ public class AttributeRowImpl implements AttributeRow {
             }
         }
     }
-    
+
     public void setValue(AttributeColumn column, Object value) {
         if (column == null) {
             throw new NullPointerException("Column is null");
         }
-        
+
         AttributeValue attValue = attributeTable.getFactory().newValue(column, value);
         setValue(attValue);
     }
-    
+
     public void setValue(AttributeValue value) {
         AttributeColumn column = value.getColumn();
         if (attributeTable.getColumn(column.getIndex()) != column) {
             column = attributeTable.getColumn(column);
             if (column == null) {
-                throw new IllegalArgumentException("The "+attributeTable.getName()+" value column "+value.getColumn().getId()+" with index "+value.getColumn().getIndex()+" doesn't exist");
+                throw new IllegalArgumentException("The value column doesn't exist");
             }
             value = attributeTable.getFactory().newValue(column, value.getValue());
         }
-        
+
         setValue(column.getIndex(), (AttributeValueImpl) value);
     }
-    
+
     private void setValue(int index, AttributeValueImpl value) {
         updateColumns();
 
-        AttributeValueImpl oldValue = this.values[index];
-        
-        this.values[index] = value;
-        
-        if (!((oldValue == null && value == null) || (oldValue != null && oldValue.equals(value)))
-                && index > 0 && !value.getColumn().getOrigin().equals(AttributeOrigin.COMPUTED)) {    //0 is the index of node id and edge id cols, not useful to send these events
+        AttributeValue oldValue = values.get(index);
+        values.set(index, value);
 
-
-        AttributeValueImpl oldValue = this.values[index];
-
-        this.values[index] = value;
-
+        if (!((oldValue == null && value == null) || (oldValue != null && oldValue.equals(value)))) {
             attributeTable.model.fireAttributeEvent(new ValueEvent(EventType.SET_VALUE, attributeTable, object, value));
         }
     }
-    
+
     public Object getValue(AttributeColumn column) {
         if (column == null) {
             throw new NullPointerException();
@@ -164,14 +139,14 @@ public class AttributeRowImpl implements AttributeRow {
         updateColumns();
         int index = column.getIndex();
         if (checkIndexRange(index)) {
-            AttributeValue val = values[index];
+            AttributeValue val = values.get(index);
             if (val.getColumn() == column) {
                 return val.getValue();
             }
         }
         return null;
     }
-    
+
     public Object getValue(int index) {
         updateColumns();
         if (checkIndexRange(index)) {
@@ -180,7 +155,7 @@ public class AttributeRowImpl implements AttributeRow {
         }
         return null;
     }
-    
+
     public Object getValue(String column) {
         updateColumns();
         AttributeColumn attributeColumn = attributeTable.getColumn(column);
@@ -189,74 +164,73 @@ public class AttributeRowImpl implements AttributeRow {
         }
         return null;
     }
-    
+
     public AttributeValue[] getValues() {
-        return values;
+        return values.getValues();
     }
-    
+
     public AttributeValue getAttributeValueAt(int index) {
         if (checkIndexRange(index)) {
-            return values[index];
+            return values.get(index);
         }
         return null;
     }
-    
+
     public int countValues() {
         updateColumns();
-        return values.length;
+        return values.size();
     }
-    
-    public AttributeColumn getColumnAt(int index) {
-        updateColumns();
-        return attributeTable.getColumn(index);
-    }
-    
+
+     public AttributeColumn getColumnAt(int index){
+         updateColumns();
+         return attributeTable.getColumn(index);
+     }
+
     public Object getObject() {
         return object;
     }
-    
+
     private void updateColumns() {
-        
+
         int tableVersion = attributeTable.getVersion();
         if (rowVersion < tableVersion) {
 
             //Need to update
             AttributeColumnImpl[] columns = attributeTable.getColumns();
-
-            AttributeValueImpl[] newValues = new AttributeValueImpl[columns.length];
+            AttributeValue[] newValues = new AttributeValueImpl[columns.length];
 
             int j = 0;
             for (int i = 0; i < columns.length; i++) {
                 AttributeColumnImpl tableCol = columns[i];
                 newValues[i] = tableCol.defaultValue;
-                while (j < values.length) {
-                    AttributeValueImpl val = values[j++];
+                while (j < values.size()) {
+                    AttributeValue val = values.get(j++);
                     if (val.getColumn() == tableCol) {
                         newValues[i] = val;
                         break;
                     }
                 }
             }
-            values = newValues;
+            values.setValues(newValues);
 
             //Upd version
             rowVersion = tableVersion;
         }
     }
-    
+
     private boolean checkIndexRange(int index) {
-        return index < values.length && index >= 0;
+        return index < values.size() && index >= 0;
     }
-    
+
     public int getRowVersion() {
         return rowVersion;
     }
-    
+
     public void setRowVersion(int rowVersion) {
         this.rowVersion = rowVersion;
     }
-    
+
     public void setValues(AttributeValueImpl[] values) {
-        this.values = values;
+        this.values.setValues(values);
     }
 }

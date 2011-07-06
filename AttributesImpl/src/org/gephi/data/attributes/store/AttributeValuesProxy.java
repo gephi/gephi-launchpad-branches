@@ -37,7 +37,7 @@ public class AttributeValuesProxy {
     }
     
     public int size() {
-        return values().length;
+        return values() == null ? 0 : values().length;
     }
     
     private AttributeValue[] values() {

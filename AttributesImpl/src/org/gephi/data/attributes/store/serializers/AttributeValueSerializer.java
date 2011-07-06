@@ -5,6 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.EnumMap;
 import org.gephi.data.attributes.AttributeColumnImpl;
 import org.gephi.data.attributes.AttributeValueImpl;
@@ -73,17 +74,34 @@ public class AttributeValueSerializer {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             DataOutputStream dos = new DataOutputStream(baos);
         
-            // Total values
-            int totalValues = row.length;
+            // We need to serialize the size of the array (even if some elements
+            // inside might be null and are not serialized), so that when deserialization
+            // takes place the array returned is of the same size and contains the same
+            // elements (actual objects and null values)
+            dos.writeInt(row.length);
+            
+            // Placeholder for the actual total of non-null elements which will
+            // be written to the array after they are serialized, to avoid a double pass
+            // over the array
+            int totalValues = 0;
             dos.writeInt(totalValues);
-        
+            
             for (AttributeValue value : row) {
-                AttributeType type = value.getColumn().getType();
+                if (value == null || value.getValue() == null) continue;
+                
+                AttributeColumn column = value.getColumn();
+                AttributeType type = column.getType();
                 Serializer serializer = SERIALIZERS.get(type);
                 
                 // Object's data
+                dos.writeInt(column.getIndex());
                 serializer.writeObjectData(dos, value.getValue());
+                totalValues++;
             }
+            
+            byte[] arr = baos.toByteArray();
+            // Write total number of persisted objects
+            ByteBuffer.wrap(arr).putInt(4, totalValues);
             
             return baos.toByteArray();
         }
@@ -97,11 +115,16 @@ public class AttributeValueSerializer {
             ByteArrayInputStream bais = new ByteArrayInputStream(data);
             DataInputStream dis = new DataInputStream(bais);
             
-            // Total values
+            // Size of the array
+            int arrayLength = dis.readInt();
+            AttributeValueImpl[] vals = new AttributeValueImpl[arrayLength];
+            
+            // Total of non-null values
             int totalValues = dis.readInt();
-            AttributeValueImpl[] vals = new AttributeValueImpl[totalValues];
+            
             for (int i = 0; i < totalValues; i++) {
                 // Object's data
+                int columnIndex = dis.readInt();
                 Object value = null;
                 byte type = dis.readByte();
                 
@@ -119,8 +142,8 @@ public class AttributeValueSerializer {
                         throw new SerializationException("Unknown type");
                 }
                 
-                AttributeColumn column = attributeTable.getColumn(i);
-                vals[i] = new AttributeValueImpl((AttributeColumnImpl)column, value);
+                AttributeColumn column = attributeTable.getColumn(columnIndex);
+                vals[columnIndex] = new AttributeValueImpl((AttributeColumnImpl)column, value);
             }
 
             return vals;
