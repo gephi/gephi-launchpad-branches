@@ -95,6 +95,7 @@
     <module>SwingX</module>
     <module>StaxUtils</module>
     <module>longtask</module>
+    <module>preview.api</module>
   </modules>
     <reporting>
         <plugins>
