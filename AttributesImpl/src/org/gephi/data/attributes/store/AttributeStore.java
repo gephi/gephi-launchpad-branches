@@ -33,12 +33,13 @@ import net.sf.ehcache.Element;
 import net.sf.ehcache.constructs.blocking.CacheEntryFactory;
 import net.sf.ehcache.constructs.blocking.SelfPopulatingCache;
 import net.sf.ehcache.event.CacheEventListener;
+import org.gephi.data.attributes.store.serializers.AttributeValueSerializer;
 
 /**
  *
  * @author Ernesto A
  */
-public class AttributeStoreImpl<K, V> implements AttributeStore<K, V> {
+public class AttributeStore implements Store<Integer, Object> {
     private final String name;
 
     private final Environment env;
@@ -47,8 +48,10 @@ public class AttributeStoreImpl<K, V> implements AttributeStore<K, V> {
 
     private final CacheManager cacheManager;
     private final Ehcache cache;
-
-    public AttributeStoreImpl(String name, Environment env, Database db, CacheManager manager) {
+    
+    private final AttributeValueSerializer serializer;
+    
+    public AttributeStore(String name, Environment env, Database db, CacheManager manager) {
         this.name = name;
         
         this.env = env;
@@ -61,6 +64,8 @@ public class AttributeStoreImpl<K, V> implements AttributeStore<K, V> {
         manager.addCache(name);
         cache = new SelfPopulatingCache(manager.getEhcache(name), getCacheEntryFactory());
         cache.getCacheEventNotificationService().registerListener(getCacheEventListener());
+     
+        serializer = new AttributeValueSerializer();
     }
 
     @Override
@@ -69,33 +74,33 @@ public class AttributeStoreImpl<K, V> implements AttributeStore<K, V> {
     }
 
     @Override
-    public boolean contains(K key) {
+    public boolean contains(Integer key) {
         Element elem = cache.getQuiet(key);
         return elem != null;
     }
 
     @Override
-    public V get(K key) {
+    public Object get(Integer key) {
         Element elem = cache.get(key);
-        return (V) elem.getObjectValue();
+        return elem.getObjectValue();
     }
 
     @Override
-    public void put(K key, V value) {
+    public void put(Integer key, Object value) {
         Element elem = elementFor(key, value);
         cache.put(elem);
     }
 
     @Override
-    public void putAll(Map<K, V> pairs) {
-        for (Map.Entry<K, V> entry : pairs.entrySet()) {
+    public void putAll(Map<Integer, Object> pairs) {
+        for (Map.Entry<Integer, Object> entry : pairs.entrySet()) {
             Element elem = elementFor(entry.getKey(), entry.getValue());
             cache.put(elem);
         }
     }
 
     @Override
-    public void delete(K key) {
+    public void delete(Integer key) {
         cache.remove(key);
     }
 
@@ -110,7 +115,7 @@ public class AttributeStoreImpl<K, V> implements AttributeStore<K, V> {
         cacheManager.removeCache(name);
     }
 
-    private Element elementFor(K key, V value) {
+    private Element elementFor(Integer key, Object value) {
         return new Element(key, value);
     }
     
@@ -135,10 +140,10 @@ public class AttributeStoreImpl<K, V> implements AttributeStore<K, V> {
 
             @Override
             public void notifyElementEvicted(Ehcache cache, Element element) {
-                Integer key = (Integer)element.getKey();
+                Integer key = (Integer)element.getObjectKey();
+                Object val = element.getObjectValue();
                 
-                // TODO do serialization
-                byte[] arr = element.getObjectValue().toString().getBytes();
+                byte[] arr = serializer.writeValueData(val);
                 diskStore.put(key, arr);
             }
 
@@ -168,11 +173,11 @@ public class AttributeStoreImpl<K, V> implements AttributeStore<K, V> {
                     byte[] arr = diskStore.get((Integer)key);
                     
                     if (arr != null) {
-                        // TODO do deserialization
-                        return null;
+                        Object val = serializer.readValueData(arr);
+                        return val;
                     }
-                    else 
-                        return null;
+                    
+                    return null;
                 }
                 finally {
                     cache.releaseWriteLockOnKey(key);

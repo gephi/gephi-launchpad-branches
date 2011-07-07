@@ -46,8 +46,11 @@ import org.gephi.data.attributes.api.AttributeOrigin;
 import org.gephi.data.attributes.api.AttributeRowFactory;
 import org.gephi.data.attributes.api.AttributeValueFactory;
 import org.gephi.data.attributes.api.AttributeValue;
+import org.gephi.data.attributes.store.Store;
+import org.gephi.data.attributes.store.AttributeStoreController;
 import org.gephi.graph.api.EdgeData;
 import org.gephi.graph.api.NodeData;
+import org.openide.util.Lookup;
 
 /**
  *
@@ -55,20 +58,25 @@ import org.gephi.graph.api.NodeData;
  */
 public class AttributeFactoryImpl implements AttributeValueFactory, AttributeRowFactory {
 
+    private Store store;
     private AbstractAttributeModel model;
 
     public AttributeFactoryImpl(AbstractAttributeModel model) {
         this.model = model;
+        
+        AttributeStoreController storeController = Lookup.getDefault().lookup(AttributeStoreController.class);
+        store = storeController.getStore(model);
     }
 
     public AttributeValue newValue(AttributeColumn column, Object value) {
-        if (value == null) {
-            return new AttributeValueImpl((AttributeColumnImpl) column, null);
+        if (value == null || store == null || column.getOrigin() == AttributeOrigin.DELEGATE) {
+            return new AttributeValueImpl((AttributeColumnImpl) column, value);
         }
 
         if (value.getClass() != column.getType().getType() && value.getClass() == String.class) {
             value = column.getType().parse((String) value);
         }
+
         Object managedValue = value;
         if (!column.getOrigin().equals(AttributeOrigin.PROPERTY)) {
             managedValue = model.getManagedValue(value, column.getType());
@@ -94,5 +102,8 @@ public class AttributeFactoryImpl implements AttributeValueFactory, AttributeRow
 
     public void setModel(AbstractAttributeModel model) {
         this.model = model;
+        
+        AttributeStoreController storeController = Lookup.getDefault().lookup(AttributeStoreController.class);
+        this.store = storeController.getStore(model);
     }
 }

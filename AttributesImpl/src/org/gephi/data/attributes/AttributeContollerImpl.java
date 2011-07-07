@@ -69,11 +69,12 @@ public class AttributeContollerImpl implements AttributeController {
             public void initialize(Workspace workspace) {
                 AttributeModel m = workspace.getLookup().lookup(AttributeModel.class);
                 if (m == null) {
-                    workspace.add(new IndexedAttributeModel());
+                    m = new IndexedAttributeModel();
+                    workspace.add(m);
                 }
                 
                 AttributeStoreController storeController = Lookup.getDefault().lookup(AttributeStoreController.class);
-                storeController.newStore(workspace);
+                storeController.newStore(m);
             }
 
             public void select(Workspace workspace) {
@@ -84,7 +85,8 @@ public class AttributeContollerImpl implements AttributeController {
 
             public void close(Workspace workspace) {
                 AttributeStoreController storeController = Lookup.getDefault().lookup(AttributeStoreController.class);
-                storeController.removeStore(workspace);
+                AttributeModel m = workspace.getLookup().lookup(AttributeModel.class);
+                storeController.removeStore(m);
             }
 
             public void disable() {
@@ -95,7 +97,11 @@ public class AttributeContollerImpl implements AttributeController {
             for (Workspace workspace : projectController.getCurrentProject().getLookup().lookup(WorkspaceProvider.class).getWorkspaces()) {
                 AttributeModel m = workspace.getLookup().lookup(AttributeModel.class);
                 if (m == null) {
-                    workspace.add(new IndexedAttributeModel());
+                    m = new IndexedAttributeModel();
+                    workspace.add(m);
+                    
+                    AttributeStoreController storeController = Lookup.getDefault().lookup(AttributeStoreController.class);
+                    storeController.newStore(m);
                 }
             }
         }
@@ -110,6 +116,10 @@ public class AttributeContollerImpl implements AttributeController {
             }
             model = new IndexedAttributeModel();
             workspace.add(model);
+            
+            AttributeStoreController storeController = Lookup.getDefault().lookup(AttributeStoreController.class);
+            storeController.newStore(model);
+            
             return model;
         }
         return null;
@@ -122,6 +132,10 @@ public class AttributeContollerImpl implements AttributeController {
         }
         model = new IndexedAttributeModel();
         workspace.add(model);
+        
+        AttributeStoreController storeController = Lookup.getDefault().lookup(AttributeStoreController.class);
+        storeController.newStore(model);
+
         return model;
     }
 

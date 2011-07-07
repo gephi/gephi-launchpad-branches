@@ -1,6 +1,6 @@
 package org.gephi.data.attributes.store;
 
-import org.gephi.project.api.Workspace;
+import org.gephi.data.attributes.api.AttributeModel;
 
 /**
  *
@@ -8,13 +8,11 @@ import org.gephi.project.api.Workspace;
  */
 public interface AttributeStoreController {
     
-    void newStore(Workspace workspace);
+    void newStore(AttributeModel model);
     
-    AttributeStore getNodeStore(Workspace workspace);
+    Store getStore(AttributeModel model);
     
-    AttributeStore getEdgeStore(Workspace workspace);
-    
-    void  removeStore(Workspace workspace);
+    void removeStore(AttributeModel model);
     
     void shutdown();
 

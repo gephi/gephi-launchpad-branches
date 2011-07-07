@@ -26,13 +26,13 @@ import java.util.Map;
  *
  * @author Ernesto A
  */
-public interface AttributeStore<K, V> {
+public interface Store<K, V> {
     
     String getName();
     
     boolean contains(K key);
     
-    V get(K key);
+    Object get(K key);
     
     void put(K key, V value);
     
