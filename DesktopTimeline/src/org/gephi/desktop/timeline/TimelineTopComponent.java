@@ -198,7 +198,6 @@ public final class TimelineTopComponent extends TopComponent implements Timeline
     private Range refreshModelData() {        
         final int samplepoints = 365; // another candidate: 840
         final String metricId = "Number of nodes";
-        
 
         if (model.getUnit() == DateTime.class) {
             TimeSeriesCollection dataSet = new TimeSeriesCollection();
