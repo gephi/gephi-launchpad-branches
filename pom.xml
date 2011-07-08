@@ -97,6 +97,7 @@
     <module>longtask</module>
     <module>preview.api</module>
     <module>jogl</module>
+    <module>processing</module>
   </modules>
     <reporting>
         <plugins>
