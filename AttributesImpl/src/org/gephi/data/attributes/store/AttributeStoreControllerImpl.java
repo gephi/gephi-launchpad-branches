@@ -99,7 +99,7 @@ public class AttributeStoreControllerImpl implements AttributeStoreController {
     
     private File getEnvHomeDir(String envName) {
         String netbeansPath = System.getProperty("netbeans.user");
-        String sep = File.pathSeparator;
+        String sep = File.separator;
         
         File dir = null;
         

@@ -8,11 +8,10 @@
     <diskStore path="java.io.tmpdir" />
     
     <defaultCache
-        maxElementsInMemory="5000"
+        maxElementsInMemory="1000"
         eternal="true"
         statistics="false"
         memoryStoreEvictionPolicy="LFU"
-        diskSpoolBufferSizeMB="30"
         overflowToDisk="false"
         diskPersistent="false">
     </defaultCache>
