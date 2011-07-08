@@ -2,17 +2,17 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <artifactId>gephi</artifactId>
-        <groupId>org.gephi</groupId>
-        <version>1.0-SNAPSHOT</version>
-    </parent>
+    <artifactId>gephi</artifactId>
+    <groupId>org.gephi</groupId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
 
-    <groupId>org.jdesktop</groupId>
-    <artifactId>SwingX</artifactId>
-    <version>1.6.1</version>
+    <groupId>org.gephi.lib</groupId>
+    <artifactId>jogl</artifactId>
+    <version>1.1.0.1</version>
     <packaging>nbm</packaging>
 
-    <name>SwingX</name>
+    <name>JOGL Wrapper</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -32,19 +32,11 @@
                 <enabled>false</enabled>
             </snapshots>
         </repository>
-        <repository>
+          <repository>
             <id>thirdparty</id>
             <url>http://localhost:8081/nexus/content/repositories/thirdparty</url>
         </repository>
-        
-       
-        <repository>
-            <id>maven2-release-repository.nbpwr.kenai.com</id>
-            <name>NBPWR Maven Release Repository</name>
-            <url>http://nbpwr.kenai.com/maven-repository/releases</url>
-        </repository>
-
-        
+    
     </repositories>
 
     <dependencies>
@@ -53,20 +45,31 @@
             <artifactId>org-netbeans-api-annotations-common</artifactId>
             <version>RELEASE70</version>
         </dependency>
-       
         <dependency>
-            <groupId>org.jdesktop</groupId>
-            <artifactId>swingx</artifactId>
-            <version>1.6.1</version>
-        </dependency>
- 
+			<groupId>com.sun.gluegen.runtime</groupId>
+			<artifactId>gluegen-rt</artifactId>
+			<version>1.1.1-a</version>
+		</dependency>
+                <dependency>
+      <groupId>com.sun.opengl</groupId>
+      <artifactId>jogl</artifactId>
+      <version>1.1.1-a</version>
+    </dependency>
         <dependency>
-            <groupId>org.jdesktop</groupId>
-            <artifactId>swingx-beaninfo</artifactId>
-            <version>1.6.1</version>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-openide-util</artifactId>
+            <version>RELEASE70</version>
         </dependency>
-
-
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-openide-modules</artifactId>
+            <version>RELEASE70</version>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-openide-dialogs</artifactId>
+            <version>RELEASE70</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -78,8 +81,13 @@
                 <extensions>true</extensions>
                 <configuration>
                     <publicPackages>
-                        <publicPackage>org.jdesktop.beans</publicPackage>
-                        <publicPackage>org.jdesktop.swingx.*</publicPackage>
+                        <publicPackage>com.sun.gluegen.runtime</publicPackage>
+                        <publicPackage>com.sun.opengl.cg</publicPackage>
+                        <publicPackage>com.sun.opengl.impl.*</publicPackage>
+                        <publicPackage>com.sun.opengl.util.*</publicPackage>
+                        <publicPackage>javax.media.opengl</publicPackage>
+                        <publicPackage>javax.media.opengl.glu</publicPackage>
+                        <publicPackage>org.gephi.lib.jogl</publicPackage>
                     </publicPackages>
                 </configuration>
             </plugin>

@@ -96,6 +96,7 @@
     <module>StaxUtils</module>
     <module>longtask</module>
     <module>preview.api</module>
+    <module>jogl</module>
   </modules>
     <reporting>
         <plugins>

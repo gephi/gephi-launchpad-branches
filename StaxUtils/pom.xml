@@ -55,6 +55,11 @@
                 <artifactId>nbm-maven-plugin</artifactId>
                 <version>3.5</version>
                 <extensions>true</extensions>
+                <configuration>
+                    <publicPackages>
+                        <publicPackage>javanet.staxutils.*</publicPackage>
+                    </publicPackages>
+                </configuration>
             </plugin>
 
             <plugin>
