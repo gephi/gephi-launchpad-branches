@@ -22,7 +22,9 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 package org.gephi.data.attributes;
 
 import java.util.concurrent.atomic.AtomicInteger;
+import org.gephi.data.attributes.api.AttributeOrigin;
 import org.gephi.data.attributes.api.AttributeValue;
+import org.gephi.data.attributes.spi.AttributeValueDelegateProvider;
 import org.gephi.data.attributes.store.Store;
 
 /**
@@ -38,14 +40,20 @@ public final class AttributeValueProxyImpl implements AttributeValue {
     
     private final Store store;
     private final AttributeColumnImpl column;
+    private final Object value;
     
     public AttributeValueProxyImpl(Store store, AttributeColumnImpl column, Object value) {
         this.store = store;
         this.column = column;
-        
-        if (value != null) {
-            store.put(id, value);
+
+        if (store == null || value == null) {
+            this.value = value;
         }
+        else {
+            store.put(id, value);
+            this.value = null;
+        }
+        
     }
 
     public AttributeColumnImpl getColumn() {
@@ -53,7 +61,37 @@ public final class AttributeValueProxyImpl implements AttributeValue {
     }
 
     public Object getValue() {
-        return store.get(id);
+        if (column.getOrigin() != AttributeOrigin.DELEGATE) {
+            if (store == null) {
+                return value;
+            }
+            else {
+                return store.get(id);
+            }
+        }
+        else {
+            if (value == null)
+                return null;
+
+            AttributeValueDelegateProvider attributeValueDelegateProvider = column.getProvider();
+
+            Object result;
+            if (AttributeUtilsImpl.getDefault().isEdgeColumn(column))
+                result = attributeValueDelegateProvider.getEdgeAttributeValue(value, column);
+            else if (AttributeUtilsImpl.getDefault().isNodeColumn(column))
+                result = attributeValueDelegateProvider.getNodeAttributeValue(value, column);
+            else
+                throw new AssertionError();
+
+            // important for Neo4j and in future also for other storing engines
+            // the conversion can be necessary because of types mismatch
+            // for Neo4j return type can be array of primitive type which must be
+            // converted into List type
+            if (result.getClass().isArray())
+                result = ListFactory.fromArray(result);
+
+            return result;
+        }
     }
 
     @Override

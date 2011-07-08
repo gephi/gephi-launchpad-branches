@@ -5,17 +5,10 @@
     monitoring="autoDetect"
     dynamicConfig="true">
 
-    <!-- TODO
-        * Exception handler
-        * Cache event listener ?? do i need it anymore ??
-    -->
-        
-<!--        <cacheExceptionHandlerFactory class="org.gephi.data.attributes.store.ehcache.ExceptionListener" properties="logLevel=FINE"/>-->
-
     <diskStore path="java.io.tmpdir" />
     
     <defaultCache
-        maxElementsInMemory="10000"
+        maxElementsInMemory="5000"
         eternal="true"
         statistics="false"
         memoryStoreEvictionPolicy="LFU"

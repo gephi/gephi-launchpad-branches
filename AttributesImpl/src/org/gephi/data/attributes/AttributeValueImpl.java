@@ -41,23 +41,45 @@ Portions Copyrighted 2011 Gephi Consortium.
  */
 package org.gephi.data.attributes;
 
+import java.util.concurrent.atomic.AtomicInteger;
 import org.gephi.data.attributes.api.AttributeOrigin;
 import org.gephi.data.attributes.api.AttributeValue;
 import org.gephi.data.attributes.spi.AttributeValueDelegateProvider;
+import org.gephi.data.attributes.store.Store;
 
 /**
  *
  * @author Mathieu Bastian
  * @author Martin Škurla
+ * @author Ernesto Aneiros
  */
 public final class AttributeValueImpl implements AttributeValue {
 
+    private static final AtomicInteger ID_COUNTER = new AtomicInteger();
+    
+    private final int id = ID_COUNTER.incrementAndGet();
+    
+    private final Store store;
     private final AttributeColumnImpl column;
     private final Object value;
-
+    
     public AttributeValueImpl(AttributeColumnImpl column, Object value) {
+        this(null, column, value);
+    }
+
+    public AttributeValueImpl(Store store, AttributeColumnImpl column, Object value) {
         this.column = column;
-        this.value = value;
+
+        if (store == null || value == null || column.getOrigin() == AttributeOrigin.DELEGATE) {
+            this.store = null;
+            this.value = value;
+        }
+        else {
+            this.store = store;
+            this.value = null;
+            
+            store.put(id, value);
+        }
     }
 
     public AttributeColumnImpl getColumn() {
@@ -65,10 +87,7 @@ public final class AttributeValueImpl implements AttributeValue {
     }
 
     public Object getValue() {
-        if (column.getOrigin() != AttributeOrigin.DELEGATE) {
-            return value;
-        }
-        else {
+        if (column.getOrigin() == AttributeOrigin.DELEGATE) {
             if (value == null)
                 return null;
 
@@ -91,6 +110,9 @@ public final class AttributeValueImpl implements AttributeValue {
 
             return result;
         }
+        else {
+            return (store == null) ? value : store.get(id);
+        }
     }
 
     @Override
@@ -110,4 +132,5 @@ public final class AttributeValueImpl implements AttributeValue {
         }
         return false;
     }
+    
 }
