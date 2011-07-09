@@ -71,10 +71,10 @@ public class AttributeContollerImpl implements AttributeController {
                 if (m == null) {
                     m = new IndexedAttributeModel();
                     workspace.add(m);
+                    
+                    StoreController storeController = Lookup.getDefault().lookup(StoreController.class);
+                    storeController.newStore(m);
                 }
-                
-                StoreController storeController = Lookup.getDefault().lookup(StoreController.class);
-                storeController.newStore(m);
             }
 
             public void select(Workspace workspace) {

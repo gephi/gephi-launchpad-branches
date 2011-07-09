@@ -45,7 +45,6 @@ import org.gephi.data.attributes.api.AttributeColumn;
 import org.gephi.data.attributes.api.AttributeRowFactory;
 import org.gephi.data.attributes.api.AttributeValueFactory;
 import org.gephi.data.attributes.api.AttributeValue;
-import org.gephi.data.attributes.store.AttributeStore;
 import org.gephi.data.attributes.store.Store;
 import org.gephi.data.attributes.store.StoreController;
 import org.gephi.graph.api.EdgeData;
