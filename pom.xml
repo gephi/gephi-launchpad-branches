@@ -79,8 +79,7 @@
 
     <modules>
         <module>branding</module>
-        <module>application</module>
-        <module>gephi-graph-api</module>
+        <module>application</module>        
         <module>batik</module>
         <module>beansbinding</module>
         <module>CommonsCompress</module>
@@ -98,6 +97,8 @@
     <module>preview.api</module>
     <module>jogl</module>
     <module>processing</module>
+    <module>project.api</module>
+    <module>graph.api</module>
   </modules>
     <reporting>
         <plugins>

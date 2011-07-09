@@ -48,13 +48,13 @@
         </dependency>
         -->
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>gephi-graph-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.gephi.utils</groupId>
             <artifactId>longtask</artifactId>
+            <version>0.8</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>graph.api</artifactId>
             <version>0.8</version>
         </dependency>
     </dependencies>
