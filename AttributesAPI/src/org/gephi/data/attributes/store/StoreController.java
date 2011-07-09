@@ -6,7 +6,7 @@ import org.gephi.data.attributes.api.AttributeModel;
  *
  * @author Ernesto A
  */
-public interface AttributeStoreController {
+public interface StoreController {
     
     void newStore(AttributeModel model);
     

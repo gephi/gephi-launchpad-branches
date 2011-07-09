@@ -12,3 +12,4 @@ dist
 dist/*
 build
 build/*
+patch.diff

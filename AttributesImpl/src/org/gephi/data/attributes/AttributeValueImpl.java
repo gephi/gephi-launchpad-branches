@@ -63,10 +63,6 @@ public final class AttributeValueImpl implements AttributeValue {
     private final AttributeColumnImpl column;
     private final Object value;
     
-    public AttributeValueImpl(AttributeColumnImpl column, Object value) {
-        this(null, column, value);
-    }
-
     public AttributeValueImpl(Store store, AttributeColumnImpl column, Object value) {
         this.column = column;
 

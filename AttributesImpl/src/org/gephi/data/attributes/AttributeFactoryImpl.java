@@ -42,12 +42,12 @@ Portions Copyrighted 2011 Gephi Consortium.
 package org.gephi.data.attributes;
 
 import org.gephi.data.attributes.api.AttributeColumn;
-import org.gephi.data.attributes.api.AttributeOrigin;
 import org.gephi.data.attributes.api.AttributeRowFactory;
 import org.gephi.data.attributes.api.AttributeValueFactory;
 import org.gephi.data.attributes.api.AttributeValue;
+import org.gephi.data.attributes.store.AttributeStore;
 import org.gephi.data.attributes.store.Store;
-import org.gephi.data.attributes.store.AttributeStoreController;
+import org.gephi.data.attributes.store.StoreController;
 import org.gephi.graph.api.EdgeData;
 import org.gephi.graph.api.NodeData;
 import org.openide.util.Lookup;
@@ -58,14 +58,12 @@ import org.openide.util.Lookup;
  */
 public class AttributeFactoryImpl implements AttributeValueFactory, AttributeRowFactory {
 
-    private Store store;
+    private Store store = null;
+    private boolean hasStore = true;
     private AbstractAttributeModel model;
 
     public AttributeFactoryImpl(AbstractAttributeModel model) {
         this.model = model;
-        
-        AttributeStoreController storeController = Lookup.getDefault().lookup(AttributeStoreController.class);
-        store = storeController.getStore(model);
     }
 
     public AttributeValue newValue(AttributeColumn column, Object value) {
@@ -98,5 +96,21 @@ public class AttributeFactoryImpl implements AttributeValueFactory, AttributeRow
 
     public void setModel(AbstractAttributeModel model) {
         this.model = model;
+    }
+    
+    private Store getStore() {
+        if (!hasStore) return null;
+        
+        if (store == null) {
+            StoreController storeController = Lookup.getDefault().lookup(StoreController.class);
+            store = storeController.getStore(model);
+
+            // if lookup of a store returns null twice then we assume that
+            // there is not (and is not going to be) a store associated to
+            // this AttributeModel and therefore return null always
+            if (store == null) hasStore = false;
+        }
+        
+        return store;
     }
 }

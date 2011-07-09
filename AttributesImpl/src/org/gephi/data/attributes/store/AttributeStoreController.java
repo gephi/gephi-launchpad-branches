@@ -17,10 +17,10 @@ import org.openide.util.lookup.ServiceProvider;
  *
  * @author Ernesto A
  */
-@ServiceProvider(service = AttributeStoreController.class)
-public class AttributeStoreControllerImpl implements AttributeStoreController {
+@ServiceProvider(service = StoreController.class)
+public class AttributeStoreController implements StoreController {
     private static final String DB_HOME = "cache";
-
+    
     private final CacheManager cacheManager;
     
     private final EnvironmentConfig defaultEnvConfig = new EnvironmentConfig();
@@ -30,7 +30,7 @@ public class AttributeStoreControllerImpl implements AttributeStoreController {
     private final Map<AttributeModel, Database> databases = new HashMap<AttributeModel, Database>();
     private final Map<AttributeModel, Store> stores = new HashMap<AttributeModel, Store>();
 
-    public AttributeStoreControllerImpl() {
+    public AttributeStoreController() {
         URL configURL = getClass().getResource("ehcache.xml");
         cacheManager = new CacheManager(configURL);
         
@@ -42,7 +42,7 @@ public class AttributeStoreControllerImpl implements AttributeStoreController {
         defaultDbConfig.setAllowCreate(true);          
         defaultDbConfig.setExclusiveCreate(true);      
         defaultDbConfig.setTransactional(false);       
-        defaultDbConfig.setSortedDuplicates(false);    
+        defaultDbConfig.setSortedDuplicates(false);
     }
     
     public void newStore(AttributeModel model) {
@@ -54,6 +54,9 @@ public class AttributeStoreControllerImpl implements AttributeStoreController {
 
         Store store = new AttributeStore(dbName, env, db, cacheManager);
         stores.put(model, store);
+        
+        String log = String.format("Attribute store created (name=%s, location=%s)", dbName, env.getHome().getAbsolutePath());
+        System.out.println(log);
     }
     
     public Store getStore(AttributeModel model) {
@@ -62,11 +65,17 @@ public class AttributeStoreControllerImpl implements AttributeStoreController {
 
     public void removeStore(AttributeModel model) {
         Store ns = stores.get(model);
+        
+        if (ns == null) return;
+        
         ((AttributeStore) ns).close();
 
         environments.remove(model);
         databases.remove(model);
         stores.remove(model);
+        
+        String log = String.format("Attribute store deleted (name=%s)", ns.getName());
+        System.out.println(log);
     }
 
     public void shutdown() {
