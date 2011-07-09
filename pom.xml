@@ -99,6 +99,10 @@
     <module>processing</module>
     <module>project.api</module>
     <module>graph.api</module>
+    <module>attributes.api</module>
+    <module>dynamic.api</module>
+    <module>algorithms</module>
+    <module>propertyeditor</module>
   </modules>
     <reporting>
         <plugins>

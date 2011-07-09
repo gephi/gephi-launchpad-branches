@@ -7,12 +7,12 @@
     <version>1.0-SNAPSHOT</version>
   </parent>
 
-    <groupId>org.gephi.</groupId>
-    <artifactId>graph.api</artifactId>
+    <groupId>org.gephi.data</groupId>
+    <artifactId>attributes.api</artifactId>
     <version>0.8</version>
     <packaging>nbm</packaging>
 
-    <name>Graph API</name>
+    <name>Attributes API</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -42,8 +42,23 @@
         </dependency>
         <dependency>
             <groupId>org.gephi</groupId>
+            <artifactId>graph.api</artifactId>
+            <version>0.8</version>
+        </dependency>
+        <dependency>
+            <groupId>org.gephi</groupId>
             <artifactId>project.api</artifactId>
             <version>0.8</version>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-openide-util-lookup</artifactId>
+            <version>RELEASE70</version>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-openide-util</artifactId>
+            <version>RELEASE70</version>
         </dependency>
     </dependencies>
 
@@ -56,8 +71,10 @@
                 <extensions>true</extensions>
                 <configuration>
                     <publicPackages>
-                        <publicPackage>org.gephi.graph.api</publicPackage>
-                        <publicPackage>org.gephi.graph.spi</publicPackage>
+                        <publicPackage>org.gephi.data.attributes.api</publicPackage>
+                        <publicPackage>org.gephi.data.attributes.spi</publicPackage>
+                        <publicPackage>org.gephi.data.attributes.type</publicPackage>
+                        <publicPackage>org.gephi.data.properties</publicPackage>
                     </publicPackages>
                 </configuration>
             </plugin>

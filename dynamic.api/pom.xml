@@ -8,11 +8,11 @@
   </parent>
 
     <groupId>org.gephi.</groupId>
-    <artifactId>graph.api</artifactId>
+    <artifactId>dynamic.api</artifactId>
     <version>0.8</version>
     <packaging>nbm</packaging>
 
-    <name>Graph API</name>
+    <name>Dynamic API</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -41,9 +41,24 @@
             <version>RELEASE70</version>
         </dependency>
         <dependency>
+            <groupId>org.gephi.data</groupId>
+            <artifactId>attributes.api</artifactId>
+            <version>0.8</version>
+        </dependency>
+        <dependency>
+            <groupId>org.gephi</groupId>
+            <artifactId>graph.api</artifactId>
+            <version>0.8</version>
+        </dependency>
+        <dependency>
             <groupId>org.gephi</groupId>
             <artifactId>project.api</artifactId>
             <version>0.8</version>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-openide-util</artifactId>
+            <version>RELEASE70</version>
         </dependency>
     </dependencies>
 
@@ -56,8 +71,8 @@
                 <extensions>true</extensions>
                 <configuration>
                     <publicPackages>
-                        <publicPackage>org.gephi.graph.api</publicPackage>
-                        <publicPackage>org.gephi.graph.spi</publicPackage>
+                        <publicPackage>org.gephi.dynamic</publicPackage>
+                        <publicPackage>org.gephi.dynamic.api</publicPackage>
                     </publicPackages>
                 </configuration>
             </plugin>

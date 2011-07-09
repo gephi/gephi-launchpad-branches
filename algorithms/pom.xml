@@ -8,11 +8,11 @@
   </parent>
 
     <groupId>org.gephi.</groupId>
-    <artifactId>graph.api</artifactId>
+    <artifactId>algorithms</artifactId>
     <version>0.8</version>
     <packaging>nbm</packaging>
 
-    <name>Graph API</name>
+    <name>Algorithms</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -41,9 +41,29 @@
             <version>RELEASE70</version>
         </dependency>
         <dependency>
+            <groupId>org.gephi.data</groupId>
+            <artifactId>attributes.api</artifactId>
+            <version>0.8</version>
+        </dependency>
+        <dependency>
+            <groupId>org.gephi</groupId>
+            <artifactId>dynamic.api</artifactId>
+            <version>0.8</version>
+        </dependency>
+        <dependency>
+            <groupId>org.gephi</groupId>
+            <artifactId>graph.api</artifactId>
+            <version>0.8</version>
+        </dependency>
+        <dependency>
             <groupId>org.gephi</groupId>
             <artifactId>project.api</artifactId>
             <version>0.8</version>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-openide-util-lookup</artifactId>
+            <version>RELEASE70</version>
         </dependency>
     </dependencies>
 
@@ -56,8 +76,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <publicPackages>
-                        <publicPackage>org.gephi.graph.api</publicPackage>
-                        <publicPackage>org.gephi.graph.spi</publicPackage>
+                        <publicPackage>org.gephi.algorithms.shortestpath</publicPackage>
                     </publicPackages>
                 </configuration>
             </plugin>
