@@ -107,6 +107,8 @@
     <module>clustering.api</module>
     <module>clustering.plugin</module>
     <module>collection</module>
+    <module>datalab.api</module>
+    <module>utils</module>
   </modules>
     <reporting>
         <plugins>
