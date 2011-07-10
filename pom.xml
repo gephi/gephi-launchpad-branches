@@ -105,6 +105,8 @@
     <module>propertyeditor</module>
     <module>attributes</module>
     <module>clustering.api</module>
+    <module>clustering.plugin</module>
+    <module>collection</module>
   </modules>
     <reporting>
         <plugins>
