@@ -103,6 +103,8 @@
     <module>dynamic.api</module>
     <module>algorithms</module>
     <module>propertyeditor</module>
+    <module>attributes</module>
+    <module>clustering.api</module>
   </modules>
     <reporting>
         <plugins>
