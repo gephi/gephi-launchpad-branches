@@ -42,8 +42,11 @@ Portions Copyrighted 2011 Gephi Consortium.
 package org.gephi.data.attributes.model;
 
 import org.gephi.data.attributes.AbstractAttributeModel;
+import org.gephi.data.attributes.AttributeFactoryImpl;
 import org.gephi.data.attributes.api.AttributeType;
 import org.gephi.data.attributes.event.AttributeEventManager;
+import org.gephi.data.attributes.store.StoreController;
+import org.openide.util.Lookup;
 
 /**
  *
@@ -59,6 +62,12 @@ public class IndexedAttributeModel extends AbstractAttributeModel {
         eventManager = new AttributeEventManager(this);
         createPropertiesColumn();
 
+        StoreController storeController = Lookup.getDefault().lookup(StoreController.class);
+        storeController.newStore(this);
+        
+        // quick hack: recreate factory so it can see the new store
+        factory = new AttributeFactoryImpl(this);
+        
         eventManager.start();
     }
 

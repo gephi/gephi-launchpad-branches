@@ -51,7 +51,9 @@ import org.gephi.data.attributes.api.AttributeType;
 import org.gephi.data.attributes.api.AttributeValueFactory;
 import org.gephi.data.attributes.event.AbstractEvent;
 import org.gephi.data.attributes.event.AttributeEventManager;
+import org.gephi.data.attributes.store.StoreController;
 import org.gephi.data.properties.PropertiesColumn;
+import org.openide.util.Lookup;
 import org.openide.util.NbBundle;
 
 /**
@@ -66,7 +68,7 @@ public abstract class AbstractAttributeModel implements AttributeModel {
     private AttributeTableImpl nodeTable;
     private AttributeTableImpl edgeTable;
     //Factory
-    private AttributeFactoryImpl factory;
+    protected AttributeFactoryImpl factory;
     //Events
     protected AttributeEventManager eventManager;
 

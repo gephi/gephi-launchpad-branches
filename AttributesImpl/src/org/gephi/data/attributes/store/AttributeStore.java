@@ -160,8 +160,6 @@ public class AttributeStore implements Store<Integer, Object> {
 
                 byte[] arr = serializer.writeValueData(val);
                 diskStore.put(key, arr);
-                
-                System.out.println("Evicted " + key);
             }
 
             @Override
