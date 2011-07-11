@@ -1,0 +1,1002 @@
+#
+# A fatal error has been detected by the Java Runtime Environment:
+#
+#  SIGSEGV (0xb) at pc=0x0004160a, pid=3441, tid=1813134192
+#
+# JRE version: 6.0_24-b07
+# Java VM: Java HotSpot(TM) Server VM (19.1-b02 mixed mode linux-x86 )
+# Problematic frame:
+# C  0x0004160a
+#
+# If you would like to submit a bug report, please visit:
+#   http://java.sun.com/webapps/bugreport/crash.jsp
+# The crash happened outside the Java Virtual Machine in native code.
+# See problematic frame for where to report the bug.
+#
+
+---------------  T H R E A D  ---------------
+
+Current thread (0x098ae800):  JavaThread "AWT-EventQueue-1" [_thread_in_native, id=3468, stack(0x6c0d3000,0x6c124000)]
+
+siginfo:si_signo=SIGSEGV: si_errno=0, si_code=1 (SEGV_MAPERR), si_addr=0x0004160a
+
+Registers:
+EAX=0x700b90e0, EBX=0x6c1ff588, ECX=0x04a00091, EDX=0x6bae5e80
+ESP=0x6c12260c, EBP=0x6c122658, ESI=0x6c122688, EDI=0x098ae800
+EIP=0x0004160a, CR2=0x0004160a, EFLAGS=0x00010216
+
+Register to memory mapping:
+
+EAX=0x700b90e0
+0x700b90e0 is pointing to unknown location
+
+EBX=0x6c1ff588
+
+[error occurred during error reporting (printing registers, top of stack, instructions near pc), id 0xb]
+
+Stack: [0x6c0d3000,0x6c124000],  sp=0x6c12260c,  free space=317k
+Native frames: (J=compiled Java code, j=interpreted, Vv=VM code, C=native code)
+C  0x0004160a
+J  com.sun.opengl.impl.x11.GLX.glXMakeCurrent(JJJ)Z
+
+Java frames: (J=compiled Java code, j=interpreted, Vv=VM code)
+J  com.sun.opengl.impl.x11.GLX.glXMakeCurrent(JJJ)Z
+J  com.sun.opengl.impl.GLDrawableHelper.invokeGL(Ljavax/media/opengl/GLDrawable;Ljavax/media/opengl/GLContext;Ljava/lang/Runnable;Ljava/lang/Runnable;)V
+J  java.awt.event.InvocationEvent.dispatch()V
+J  java.awt.EventQueue$1.run()Ljava/lang/Object;
+v  ~StubRoutines::call_stub
+J  java.security.AccessController.doPrivileged(Ljava/security/PrivilegedAction;Ljava/security/AccessControlContext;)Ljava/lang/Object;
+J  org.netbeans.core.TimableEventQueue.dispatchEvent(Ljava/awt/AWTEvent;)V
+J  java.awt.EventDispatchThread.pumpOneEventForFilters(I)Z
+J  java.awt.EventDispatchThread.pumpEventsForFilter(ILjava/awt/Conditional;Ljava/awt/EventFilter;)V
+j  java.awt.EventDispatchThread.pumpEventsForHierarchy(ILjava/awt/Conditional;Ljava/awt/Component;)V+11
+j  java.awt.EventDispatchThread.pumpEvents(ILjava/awt/Conditional;)V+4
+j  java.awt.EventDispatchThread.pumpEvents(Ljava/awt/Conditional;)V+3
+j  java.awt.EventDispatchThread.run()V+9
+v  ~StubRoutines::call_stub
+
+---------------  P R O C E S S  ---------------
+
+Java Threads: ( => current thread )
+  0x0a2b9000 JavaThread "File Watcher" daemon [_thread_in_native, id=3516, stack(0x6ac5e000,0x6acaf000)]
+  0x09d43c00 JavaThread "attribute-event-bus" daemon [_thread_blocked, id=3488, stack(0x6aa0d000,0x6aa5e000)]
+  0x09925c00 JavaThread "graph-event-bus" daemon [_thread_blocked, id=3487, stack(0x6aa5e000,0x6aaaf000)]
+  0x0a85f400 JavaThread "DHNS View Destructor" daemon [_thread_blocked, id=3486, stack(0x6aaaf000,0x6ab00000)]
+  0x6f490c00 JavaThread "SimpleFPSAnimator" daemon [_thread_blocked, id=3479, stack(0x6b21e000,0x6b26f000)]
+  0x0a2c0c00 JavaThread "Timer-1" daemon [_thread_blocked, id=3472, stack(0x6bca5000,0x6bcf6000)]
+  0x6f60dc00 JavaThread "Dynamic Model EventDispatchThread" daemon [_thread_blocked, id=3471, stack(0x6bcf6000,0x6bd47000)]
+  0x70059c00 JavaThread "DestroyJavaVM" [_thread_blocked, id=3442, stack(0xb698d000,0xb69de000)]
+=>0x098ae800 JavaThread "AWT-EventQueue-1" [_thread_in_native, id=3468, stack(0x6c0d3000,0x6c124000)]
+  0x098ac400 JavaThread "TimerQueue" daemon [_thread_blocked, id=3467, stack(0x6c519000,0x6c56a000)]
+  0x09af3400 JavaThread "Thread-2" daemon [_thread_blocked, id=3466, stack(0x6c56a000,0x6c5bb000)]
+  0x6f77d000 JavaThread "AWT-Shutdown" [_thread_blocked, id=3461, stack(0x6fa50000,0x6faa1000)]
+  0x6f76f000 JavaThread "AWT-XAWT" daemon [_thread_blocked, id=3460, stack(0x6fb53000,0x6fba4000)]
+  0x700cc400 JavaThread "Java2D Disposer" daemon [_thread_blocked, id=3458, stack(0x6fc24000,0x6fc75000)]
+  0x70056400 JavaThread "CLI Requests Server" daemon [_thread_in_native, id=3455, stack(0x6ffaf000,0x70000000)]
+  0x70250000 JavaThread "Active Reference Queue Daemon" daemon [_thread_blocked, id=3454, stack(0x701af000,0x70200000)]
+  0x70ae2000 JavaThread "Timer-0" daemon [_thread_blocked, id=3453, stack(0x70343000,0x70394000)]
+  0x70a8b000 JavaThread "Low Memory Detector" daemon [_thread_blocked, id=3451, stack(0x70422000,0x70473000)]
+  0x70a89400 JavaThread "CompilerThread1" daemon [_thread_blocked, id=3450, stack(0x70473000,0x704f4000)]
+  0x70a87000 JavaThread "CompilerThread0" daemon [_thread_blocked, id=3449, stack(0x704f4000,0x70575000)]
+  0x70a85800 JavaThread "Signal Dispatcher" daemon [_thread_blocked, id=3448, stack(0x70575000,0x705c6000)]
+  0x70a77400 JavaThread "Finalizer" daemon [_thread_blocked, id=3447, stack(0x707c6000,0x70817000)]
+  0x70a75c00 JavaThread "Reference Handler" daemon [_thread_blocked, id=3446, stack(0x70817000,0x70868000)]
+
+Other Threads:
+  0x70a72000 VMThread [stack: 0x70b06000,0x70b87000] [id=3445]
+  0x70a8cc00 WatcherThread [stack: 0x703a1000,0x70422000] [id=3452]
+
+VM state:not at safepoint (normal execution)
+
+VM Mutex/Monitor currently owned by a thread: None
+
+Heap
+ PSYoungGen      total 74048K, used 46768K [0x9eaf0000, 0xa4040000, 0xb3840000)
+  eden space 59968K, 76% used [0x9eaf0000,0xa18000d8,0xa2580000)
+  from space 14080K, 4% used [0xa3280000,0xa331c000,0xa4040000)
+  to   space 13312K, 0% used [0xa2580000,0xa2580000,0xa3280000)
+ PSOldGen        total 174784K, used 21911K [0x75040000, 0x7faf0000, 0x9eaf0000)
+  object space 174784K, 12% used [0x75040000,0x765a5c90,0x7faf0000)
+ PSPermGen       total 37632K, used 37596K [0x71040000, 0x73500000, 0x75040000)
+  object space 37632K, 99% used [0x71040000,0x734f70e8,0x73500000)
+
+Dynamic libraries:
+08048000-08052000 r-xp 00000000 08:05 4469969    /usr/lib/jvm/java-6-sun-1.6.0.24/jre/bin/java
+08052000-08053000 rwxp 00009000 08:05 4469969    /usr/lib/jvm/java-6-sun-1.6.0.24/jre/bin/java
+094cd000-0b129000 rwxp 00000000 00:00 0          [heap]
+67a00000-67af5000 rwxp 00000000 00:00 0 
+67af5000-67b00000 ---p 00000000 00:00 0 
+67b00000-67bd9000 rwxp 00000000 00:00 0 
+67bd9000-67c00000 ---p 00000000 00:00 0 
+67c00000-67cf0000 rwxp 00000000 00:00 0 
+67cf0000-67d00000 ---p 00000000 00:00 0 
+67d00000-67dff000 rwxp 00000000 00:00 0 
+67dff000-67e00000 ---p 00000000 00:00 0 
+67e00000-67ef7000 rwxp 00000000 00:00 0 
+67ef7000-67f00000 ---p 00000000 00:00 0 
+67f83000-67f84000 rwxs 1a2a6000 00:05 7672       /dev/dri/card0
+67f84000-67fa4000 rwxs 1a7af000 00:05 7672       /dev/dri/card0
+67fa4000-67fa5000 rwxs 1a2a5000 00:05 7672       /dev/dri/card0
+67fa5000-67fa6000 rwxs 1a2a4000 00:05 7672       /dev/dri/card0
+67fa6000-67fa7000 rwxs 1a2c4000 00:05 7672       /dev/dri/card0
+67fa7000-67fa8000 rwxs 1a2c3000 00:05 7672       /dev/dri/card0
+67fa8000-67fc8000 rwxs 1a78f000 00:05 7672       /dev/dri/card0
+67fc8000-69e9d000 rwxp 00000000 00:00 0 
+6a29d000-6a2bd000 rwxs 00000000 00:04 62586940   /SYSV00000000 (deleted)
+6a2bd000-6a300000 rwxs 00000000 00:04 62455864   /SYSV00000000 (deleted)
+6a399000-6a39d000 rwxs 00000000 00:04 67469365   /SYSV00000000 (deleted)
+6a39d000-6a3a1000 rwxs 00000000 00:04 67436669   /SYSV00000000 (deleted)
+6a3a1000-6a3a5000 rwxs 00000000 00:04 67403900   /SYSV00000000 (deleted)
+6a3a5000-6a3ad000 rwxs 00000000 00:04 67371131   /SYSV00000000 (deleted)
+6a3ad000-6a3b5000 rwxs 00000000 00:04 67338362   /SYSV00000000 (deleted)
+6a3bd000-6a3c8000 rwxs 00000000 00:04 64290898   /SYSV00000000 (deleted)
+6a45e000-6a461000 ---p 00000000 00:00 0 
+6a461000-6a4af000 rwxp 00000000 00:00 0 
+6a4af000-6a4b2000 ---p 00000000 00:00 0 
+6a4b2000-6a500000 rwxp 00000000 00:00 0 
+6a500000-6a6f3000 rwxp 00000000 00:00 0 
+6a6f3000-6a700000 ---p 00000000 00:00 0 
+6a700000-6a900000 rwxp 00000000 00:00 0 
+6a900000-6a9fe000 rwxp 00000000 00:00 0 
+6a9fe000-6aa00000 ---p 00000000 00:00 0 
+6aa0d000-6aa10000 ---p 00000000 00:00 0 
+6aa10000-6aa5e000 rwxp 00000000 00:00 0 
+6aa5e000-6aa61000 ---p 00000000 00:00 0 
+6aa61000-6aaaf000 rwxp 00000000 00:00 0 
+6aaaf000-6aab2000 ---p 00000000 00:00 0 
+6aab2000-6ab00000 rwxp 00000000 00:00 0 
+6ab00000-6ac00000 rwxp 00000000 00:00 0 
+6ac0d000-6ac10000 ---p 00000000 00:00 0 
+6ac10000-6ac5e000 rwxp 00000000 00:00 0 
+6ac5e000-6ac61000 ---p 00000000 00:00 0 
+6ac61000-6acaf000 rwxp 00000000 00:00 0 
+6acaf000-6acb2000 ---p 00000000 00:00 0 
+6acb2000-6ad00000 rwxp 00000000 00:00 0 
+6ad00000-6adf9000 rwxp 00000000 00:00 0 
+6adf9000-6ae00000 ---p 00000000 00:00 0 
+6ae15000-6ae19000 rwxs 00000000 00:04 78872640   /SYSV00000000 (deleted)
+6ae19000-6ae1d000 rwxs 00000000 00:04 78839871   /SYSV00000000 (deleted)
+6ae1d000-6b21e000 rwxp 00000000 00:00 0 
+6b21e000-6b221000 ---p 00000000 00:00 0 
+6b221000-6b26f000 rwxp 00000000 00:00 0 
+6b26f000-6b335000 r-xp 00000000 08:05 4470045    /usr/lib/jvm/java-6-sun-1.6.0.24/jre/lib/i386/libmlib_image.so
+6b335000-6b336000 rwxp 000c5000 08:05 4470045    /usr/lib/jvm/java-6-sun-1.6.0.24/jre/lib/i386/libmlib_image.so
+6b336000-6b700000 rwxs 00000000 00:04 61374476   /SYSV00000000 (deleted)
+6b700000-6b7f8000 rwxp 00000000 00:00 0 
+6b7f8000-6b800000 ---p 00000000 00:00 0 
+6b800000-6b8fe000 rwxp 00000000 00:00 0 
+6b8fe000-6b900000 ---p 00000000 00:00 0 
+6b900000-6b9ed000 rwxp 00000000 00:00 0 
+6b9ed000-6ba00000 ---p 00000000 00:00 0 
+6ba00000-6bae6000 rwxp 00000000 00:00 0 
+6bae6000-6bb00000 ---p 00000000 00:00 0 
+6bb00000-6bbff000 rwxp 00000000 00:00 0 
+6bbff000-6bc00000 ---p 00000000 00:00 0 
+6bc01000-6bc07000 rwxs 00000000 00:04 61964319   /SYSV00000000 (deleted)
+6bc07000-6bc0f000 rwxs 00000000 00:04 61931550   /SYSV00000000 (deleted)
+6bc0f000-6bc2a000 rwxs 00000000 00:04 61898781   /SYSV00000000 (deleted)
+6bc2a000-6bc45000 rwxs 00000000 00:04 61866012   /SYSV00000000 (deleted)
+6bc45000-6bca5000 rwxs 00000000 00:04 61407245   /SYSV00000000 (deleted)
+6bca5000-6bca8000 ---p 00000000 00:00 0 
+6bca8000-6bcf6000 rwxp 00000000 00:00 0 
+6bcf6000-6bcf9000 ---p 00000000 00:00 0 
+6bcf9000-6bd47000 rwxp 00000000 00:00 0 
+6bd47000-6be31000 r-xp 00000000 08:05 4349248    /usr/lib/dri/libglsl.so
+6be31000-6be35000 r-xp 000ea000 08:05 4349248    /usr/lib/dri/libglsl.so
+6be35000-6be36000 rwxp 000ee000 08:05 4349248    /usr/lib/dri/libglsl.so
+6be36000-6be37000 rwxp 00000000 00:00 0 
+6be37000-6c012000 r-xp 00000000 08:05 4349249    /usr/lib/dri/libdricore.so
+6c012000-6c018000 r-xp 001db000 08:05 4349249    /usr/lib/dri/libdricore.so
+6c018000-6c01a000 rwxp 001e1000 08:05 4349249    /usr/lib/dri/libdricore.so
+6c01a000-6c02a000 rwxp 00000000 00:00 0 
+6c02a000-6c0ce000 r-xp 00000000 08:05 4349235    /usr/lib/dri/i965_dri.so
+6c0ce000-6c0d1000 r-xp 000a3000 08:05 4349235    /usr/lib/dri/i965_dri.so
+6c0d1000-6c0d3000 rwxp 000a6000 08:05 4349235    /usr/lib/dri/i965_dri.so
+6c0d3000-6c0d6000 ---p 00000000 00:00 0 
+6c0d6000-6c124000 rwxp 00000000 00:00 0 
+6c124000-6c1ff000 r-xp 00000000 08:05 2492638    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/lib/linux-i586/libjogl.so
+6c1ff000-6c200000 rwxp 000da000 08:05 2492638    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/lib/linux-i586/libjogl.so
+6c200000-6c2ff000 rwxp 00000000 00:00 0 
+6c2ff000-6c300000 ---p 00000000 00:00 0 
+6c306000-6c30c000 rwxs 00000000 00:04 62619709   /SYSV00000000 (deleted)
+6c311000-6c315000 rwxs 00000000 00:04 61997088   /SYSV00000000 (deleted)
+6c315000-6c3f4000 r-xp 00000000 08:05 4331457    /usr/lib/i386-linux-gnu/libstdc++.so.6.0.14
+6c3f4000-6c3f8000 r-xp 000de000 08:05 4331457    /usr/lib/i386-linux-gnu/libstdc++.so.6.0.14
+6c3f8000-6c3f9000 rwxp 000e2000 08:05 4331457    /usr/lib/i386-linux-gnu/libstdc++.so.6.0.14
+6c3f9000-6c400000 rwxp 00000000 00:00 0 
+6c400000-6c4fd000 rwxp 00000000 00:00 0 
+6c4fd000-6c500000 ---p 00000000 00:00 0 
+6c502000-6c50a000 rwxs 00000000 00:04 61472783   /SYSV00000000 (deleted)
+6c50a000-6c512000 rwxs 00000000 00:04 61440014   /SYSV00000000 (deleted)
+6c512000-6c518000 r-xp 00000000 08:05 4470056    /usr/lib/jvm/java-6-sun-1.6.0.24/jre/lib/i386/libmanagement.so
+6c518000-6c519000 rwxp 00005000 08:05 4470056    /usr/lib/jvm/java-6-sun-1.6.0.24/jre/lib/i386/libmanagement.so
+6c519000-6c51c000 ---p 00000000 00:00 0 
+6c51c000-6c56a000 rwxp 00000000 00:00 0 
+6c56a000-6c56d000 ---p 00000000 00:00 0 
+6c56d000-6c5bb000 rwxp 00000000 00:00 0 
+6c5bb000-6c5d5000 r-xp 00000000 08:05 3539183    /lib/i386-linux-gnu/libgcc_s.so.1
+6c5d5000-6c5d6000 r-xp 00019000 08:05 3539183    /lib/i386-linux-gnu/libgcc_s.so.1
+6c5d6000-6c5d7000 rwxp 0001a000 08:05 3539183    /lib/i386-linux-gnu/libgcc_s.so.1
+6c5d7000-6c5df000 r-xp 00000000 08:05 3539143    /lib/i386-linux-gnu/libdrm.so.2.4.0
+6c5df000-6c5e0000 r-xp 00007000 08:05 3539143    /lib/i386-linux-gnu/libdrm.so.2.4.0
+6c5e0000-6c5e1000 rwxp 00008000 08:05 3539143    /lib/i386-linux-gnu/libdrm.so.2.4.0
+6c5e1000-6c5e5000 r-xp 00000000 08:05 4329490    /usr/lib/i386-linux-gnu/libXxf86vm.so.1.0.0
+6c5e5000-6c5e6000 r-xp 00003000 08:05 4329490    /usr/lib/i386-linux-gnu/libXxf86vm.so.1.0.0
+6c5e6000-6c5e7000 rwxp 00004000 08:05 4329490    /usr/lib/i386-linux-gnu/libXxf86vm.so.1.0.0
+6c5e7000-6c630000 r-xp 00000000 08:05 4328243    /usr/lib/mesa/libGL.so.1.2
+6c630000-6c631000 ---p 00049000 08:05 4328243    /usr/lib/mesa/libGL.so.1.2
+6c631000-6c636000 r-xp 00049000 08:05 4328243    /usr/lib/mesa/libGL.so.1.2
+6c636000-6c63c000 rwxp 0004e000 08:05 4328243    /usr/lib/mesa/libGL.so.1.2
+6c63c000-6c63d000 rwxp 00000000 00:00 0 
+6c63d000-6c63e000 ---p 00000000 00:00 0 
+6c63e000-6ce3e000 rwxp 00000000 00:00 0 
+6ce3e000-6ce3f000 ---p 00000000 00:00 0 
+6ce3f000-6d63f000 rwxp 00000000 00:00 0 
+6d63f000-6d654000 r-xp 00000000 08:05 4325840    /usr/lib/libdbusmenu-glib.so.3.0.14
+6d654000-6d655000 r-xp 00014000 08:05 4325840    /usr/lib/libdbusmenu-glib.so.3.0.14
+6d655000-6d656000 rwxp 00015000 08:05 4325840    /usr/lib/libdbusmenu-glib.so.3.0.14
+6d656000-6d664000 r-xp 00000000 08:05 4326996    /usr/lib/libdbusmenu-gtk.so.3.0.14
+6d664000-6d665000 r-xp 0000d000 08:05 4326996    /usr/lib/libdbusmenu-gtk.so.3.0.14
+6d665000-6d666000 rwxp 0000e000 08:05 4326996    /usr/lib/libdbusmenu-gtk.so.3.0.14
+6d666000-6d66e000 r-xs 00115000 08:05 4470149    /usr/lib/jvm/java-6-sun-1.6.0.24/jre/lib/resources.jar
+6d66e000-6d677000 r-xp 00000000 08:05 3539009    /lib/i386-linux-gnu/libdrm_intel.so.1.0.0
+6d677000-6d678000 r-xp 00008000 08:05 3539009    /lib/i386-linux-gnu/libdrm_intel.so.1.0.0
+6d678000-6d679000 rwxp 00009000 08:05 3539009    /lib/i386-linux-gnu/libdrm_intel.so.1.0.0
+6d679000-6d67a000 r-xp 00000000 08:05 2492639    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/lib/linux-i586/libjogl_awt.so
+6d67a000-6d67b000 rwxp 00000000 08:05 2492639    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/lib/linux-i586/libjogl_awt.so
+6d67b000-6d67f000 r-xp 00000000 08:05 4339973    /usr/lib/gtk-2.0/2.10.0/menuproxies/libappmenu.so
+6d67f000-6d680000 r-xp 00003000 08:05 4339973    /usr/lib/gtk-2.0/2.10.0/menuproxies/libappmenu.so
+6d680000-6d681000 rwxp 00004000 08:05 4339973    /usr/lib/gtk-2.0/2.10.0/menuproxies/libappmenu.so
+6d681000-6d6d0000 r-xp 00000000 08:05 5244500    /usr/share/fonts/truetype/ttf-dejavu/DejaVuSansMono.ttf
+6d6d0000-6d728000 r-xp 00000000 08:05 5243956    /usr/share/fonts/truetype/ubuntu-font-family/Ubuntu-R.ttf
+6d728000-6d72a000 r-xp 00000000 08:05 4725402    /usr/lib/i386-linux-gnu/pango/1.6.0/modules/pango-basic-fc.so
+6d72a000-6d72b000 r-xp 00001000 08:05 4725402    /usr/lib/i386-linux-gnu/pango/1.6.0/modules/pango-basic-fc.so
+6d72b000-6d72c000 rwxp 00002000 08:05 4725402    /usr/lib/i386-linux-gnu/pango/1.6.0/modules/pango-basic-fc.so
+6d72c000-6d72d000 r-xs 00000000 08:05 1575980    /var/cache/fontconfig/26de28bc8622bbc1fb67fd234c21975f-le32d4.cache-3
+6d72d000-6d72e000 r-xs 00000000 08:05 1576028    /var/cache/fontconfig/c05880de57d1f5e948fdfacc138775d9-le32d4.cache-3
+6d72e000-6d734000 r-xs 00000000 08:05 1576020    /var/cache/fontconfig/945677eb7aeaf62f1d50efc3fb3ec7d8-le32d4.cache-3
+6d734000-6d736000 r-xs 00000000 08:05 1575744    /var/cache/fontconfig/99e8ed0e538f840c565b6ed5dad60d56-le32d4.cache-3
+6d736000-6d739000 r-xs 00000000 08:05 1576002    /var/cache/fontconfig/e383d7ea5fbe662a33d9b44caf393297-le32d4.cache-3
+6d739000-6d73e000 r-xs 00000000 08:05 1575986    /var/cache/fontconfig/401a5dd6b567794a1d18dd9342dfa604-le32d4.cache-3
+6d73e000-6d740000 r-xs 00000000 08:05 1575983    /var/cache/fontconfig/2cd17615ca594fa2959ae173292e504c-le32d4.cache-3
+6d740000-6d741000 r-xs 00000000 08:05 1575740    /var/cache/fontconfig/e7071f4a29fa870f4323321c154eba04-le32d4.cache-3
+6d741000-6d743000 r-xs 00000000 08:05 1576599    /var/cache/fontconfig/b5ea634b0fb353b8ea17632d1f9ef766-le32d4.cache-3
+6d743000-6d747000 r-xs 00000000 08:05 1575958    /var/cache/fontconfig/926e794c3d5e5dffcaf2fa83ef8d36c2-le32d4.cache-3
+6d747000-6d74a000 r-xs 00000000 08:05 1575945    /var/cache/fontconfig/6eb3985aa4124903f6ff08ba781cd364-le32d4.cache-3
+6d74a000-6d74b000 r-xs 00000000 08:05 1575924    /var/cache/fontconfig/4c73fe0c47614734b17d736dbde7580a-le32d4.cache-3
+6d74b000-6d74c000 r-xs 00000000 08:05 1575918    /var/cache/fontconfig/0d8c3b2ac0904cb8a57a757ad11a4a08-le32d4.cache-3
+6d74c000-6d74d000 r-xs 00000000 08:05 1575917    /var/cache/fontconfig/6a53c69dea097a2d716e069445527da8-le32d4.cache-3
+6d74d000-6d751000 r-xs 00000000 08:05 1575788    /var/cache/fontconfig/a755afe4a08bf5b97852ceb7400b47bc-le32d4.cache-3
+6d751000-6d755000 r-xs 00000000 08:05 1575915    /var/cache/fontconfig/515ca1ebc4b18308bea979be5704f9db-le32d4.cache-3
+6d755000-6d75c000 r-xs 00000000 08:05 1575886    /var/cache/fontconfig/6d41288fd70b0be22e8c3a91e032eec0-le32d4.cache-3
+6d75c000-6d767000 r-xs 00000000 08:05 1575845    /var/cache/fontconfig/0f34bcd4b6ee430af32735b75db7f02b-le32d4.cache-3
+6d767000-6d789000 r-xs 00000000 08:05 1575808    /var/cache/fontconfig/365b55f210c0a22e9a19e35191240f32-le32d4.cache-3
+6d789000-6d791000 r-xs 00000000 08:05 1575802    /var/cache/fontconfig/d52a8644073d54c13679302ca1180695-le32d4.cache-3
+6d791000-6d79f000 r-xs 00000000 08:05 1575126    /var/cache/fontconfig/e13b20fdb08344e0e664864cc2ede53d-le32d4.cache-3
+6d79f000-6d7ad000 r-xs 00000000 08:05 1576043    /var/cache/fontconfig/865f88548240fee46819705c6468c165-le32d4.cache-3
+6d7ad000-6d7c5000 r-xs 00000000 08:05 1579274    /var/cache/fontconfig/165b9254a84ccada37e340049ffc8b30-le32d4.cache-3
+6d7c5000-6d7d3000 r-xs 00679000 08:05 4469899    /usr/lib/jvm/java-6-sun-1.6.0.24/jre/lib/charsets.jar
+6d7d4000-6d7dd000 rwxs 00000000 00:04 61833243   /SYSV00000000 (deleted)
+6d7dd000-6d7e6000 rwxs 00000000 00:04 61800474   /SYSV00000000 (deleted)
+6d7e6000-6d7e9000 rwxs 00000000 00:04 61767705   /SYSV00000000 (deleted)
+6d7e9000-6d7ec000 rwxs 00000000 00:04 61734936   /SYSV00000000 (deleted)
+6d7ec000-6d7f3000 rwxs 00000000 00:04 61702167   /SYSV00000000 (deleted)
+6d7f3000-6d7fa000 rwxs 00000000 00:04 61669398   /SYSV00000000 (deleted)
+6d7fa000-6d800000 rwxs 00000000 00:04 61636629   /SYSV00000000 (deleted)
+6d800000-6d806000 rwxs 00000000 00:04 61603860   /SYSV00000000 (deleted)
+6d806000-6d80a000 rwxs 1a297000 00:05 7672       /dev/dri/card0
+6d80a000-6d812000 rwxs 1a28f000 00:05 7672       /dev/dri/card0
+6d812000-6d81a000 rwxs 1a287000 00:05 7672       /dev/dri/card0
+6d81a000-6d822000 rwxs 1a27f000 00:05 7672       /dev/dri/card0
+6d822000-6d82a000 rwxs 1a277000 00:05 7672       /dev/dri/card0
+6d82a000-6d832000 rwxs 1a26f000 00:05 7672       /dev/dri/card0
+6d832000-6d836000 rwxs 1a26b000 00:05 7672       /dev/dri/card0
+6d836000-6e222000 rwxp 00000000 00:00 0 
+6e222000-6e225000 ---p 00000000 00:00 0 
+6e225000-6e273000 rwxp 00000000 00:00 0 
+6e273000-6e286000 r-xp 00000000 08:05 2755800    /tmp/jna4656349582901292930.tmp
+6e286000-6e287000 rwxp 00013000 08:05 2755800    /tmp/jna4656349582901292930.tmp
+6e287000-6e29c000 r-xp 00000000 08:05 4470039    /usr/lib/jvm/java-6-sun-1.6.0.24/jre/lib/i386/libdcpr.so
+6e29c000-6e2af000 rwxp 00014000 08:05 4470039    /usr/lib/jvm/java-6-sun-1.6.0.24/jre/lib/i386/libdcpr.so
+6e2af000-6e2b0000 rwxs 1c14f000 00:05 7672       /dev/dri/card0
+6e2b0000-6e2b1000 rwxs 1c148000 00:05 7672       /dev/dri/card0
+6e2b1000-6e2b2000 rwxs 1c145000 00:05 7672       /dev/dri/card0
+6e2b2000-6e2b3000 rwxs 1c13c000 00:05 7672       /dev/dri/card0
+6e2b3000-6e2bd000 rwxs 00000000 00:04 62521402   /SYSV00000000 (deleted)
+6e2bd000-6e2c3000 rwxs 00000000 00:04 62488633   /SYSV00000000 (deleted)
+6e2c3000-6e2c7000 rwxs 00000000 00:04 62390324   /SYSV00000000 (deleted)
+6e2c7000-6e2cb000 rwxs 00000000 00:04 62357555   /SYSV00000000 (deleted)
+6e2cb000-6e2e6000 rwxs 00000000 00:04 62324786   /SYSV00000000 (deleted)
+6e2e6000-6e301000 rwxs 00000000 00:04 62292016   /SYSV00000000 (deleted)
+6e301000-6e305000 rwxs 00000000 00:04 62259247   /SYSV00000000 (deleted)
+6e305000-6e308000 rwxs 00000000 00:04 62226478   /SYSV00000000 (deleted)
+6e308000-6e30b000 rwxs 00000000 00:04 62193709   /SYSV00000000 (deleted)
+6e30b000-6e314000 rwxs 00000000 00:04 62160937   /SYSV00000000 (deleted)
+6e314000-6e31d000 rwxs 00000000 00:04 62128164   /SYSV00000000 (deleted)
+6e31d000-6e323000 rwxs 00000000 00:04 62095395   /SYSV00000000 (deleted)
+6e323000-6e32a000 rwxs 00000000 00:04 62062626   /SYSV00000000 (deleted)
+6e32a000-6e331000 rwxs 00000000 00:04 62029843   /SYSV00000000 (deleted)
+6e331000-6e335000 rwxs 1a2dd000 00:05 7672       /dev/dri/card0
+6e335000-6e389000 r-xp 00000000 08:05 4470041    /usr/lib/jvm/java-6-sun-1.6.0.24/jre/lib/i386/libcmm.so
+6e389000-6e38c000 rwxp 00054000 08:05 4470041    /usr/lib/jvm/java-6-sun-1.6.0.24/jre/lib/i386/libcmm.so
+6e38c000-6e3a5000 rwxs 00000000 00:04 61538322   /SYSV00000000 (deleted)
+6e3a5000-6e3fa000 rwxs 00000000 00:04 61505552   /SYSV00000000 (deleted)
+6e3fa000-6e40e000 r-xp 00000000 08:05 4326695    /usr/lib/gtk-2.0/modules/libglobalmenu-plugin.so
+6e40e000-6e40f000 r-xp 00013000 08:05 4326695    /usr/lib/gtk-2.0/modules/libglobalmenu-plugin.so
+6e40f000-6e410000 rwxp 00014000 08:05 4326695    /usr/lib/gtk-2.0/modules/libglobalmenu-plugin.so
+6e410000-6e43d000 r-xp 00000000 08:05 4325876    /usr/lib/gtk-2.0/2.10.0/engines/libmurrine.so
+6e43d000-6e43e000 r-xp 0002c000 08:05 4325876    /usr/lib/gtk-2.0/2.10.0/engines/libmurrine.so
+6e43e000-6e43f000 rwxp 0002d000 08:05 4325876    /usr/lib/gtk-2.0/2.10.0/engines/libmurrine.so
+6e43f000-6e444000 r-xp 00000000 08:05 4328876    /usr/lib/libogg.so.0.7.0
+6e444000-6e445000 r-xp 00004000 08:05 4328876    /usr/lib/libogg.so.0.7.0
+6e445000-6e446000 rwxp 00005000 08:05 4328876    /usr/lib/libogg.so.0.7.0
+6e446000-6e46b000 r-xp 00000000 08:05 4329115    /usr/lib/libvorbis.so.0.4.5
+6e46b000-6e46c000 r-xp 00025000 08:05 4329115    /usr/lib/libvorbis.so.0.4.5
+6e46c000-6e46d000 rwxp 00026000 08:05 4329115    /usr/lib/libvorbis.so.0.4.5
+6e46d000-6e474000 r-xp 00000000 08:05 4327081    /usr/lib/libltdl.so.7.2.1
+6e474000-6e475000 r-xp 00006000 08:05 4327081    /usr/lib/libltdl.so.7.2.1
+6e475000-6e476000 rwxp 00007000 08:05 4327081    /usr/lib/libltdl.so.7.2.1
+6e476000-6e485000 r-xp 00000000 08:05 4326562    /usr/lib/libtdb.so.1.2.9
+6e485000-6e486000 r-xp 0000e000 08:05 4326562    /usr/lib/libtdb.so.1.2.9
+6e486000-6e487000 rwxp 0000f000 08:05 4326562    /usr/lib/libtdb.so.1.2.9
+6e487000-6e488000 rwxs 1c13b000 00:05 7672       /dev/dri/card0
+6e488000-6e489000 r-xp 00000000 08:05 4470022    /usr/lib/jvm/java-6-sun-1.6.0.24/jre/lib/i386/libjawt.so
+6e489000-6e48a000 rwxp 00000000 08:05 4470022    /usr/lib/jvm/java-6-sun-1.6.0.24/jre/lib/i386/libjawt.so
+6e48a000-6e48b000 r-xp 00000000 08:05 2492637    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/lib/linux-i586/libgluegen-rt.so
+6e48b000-6e48c000 rwxp 00000000 08:05 2492637    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/lib/linux-i586/libgluegen-rt.so
+6e48c000-6e48d000 r-xp 00000000 08:05 4331894    /usr/lib/gtk-2.0/2.10.0/immodules/im-cedilla.so
+6e48d000-6e48e000 r-xp 00000000 08:05 4331894    /usr/lib/gtk-2.0/2.10.0/immodules/im-cedilla.so
+6e48e000-6e48f000 rwxp 00001000 08:05 4331894    /usr/lib/gtk-2.0/2.10.0/immodules/im-cedilla.so
+6e48f000-6e492000 r-xs 00000000 08:05 1575843    /var/cache/fontconfig/d60319d88cac85ba9e1a07bd06cfbb8c-le32d4.cache-3
+6e492000-6e499000 r-xp 00000000 08:05 4328482    /usr/lib/gtk-2.0/2.10.0/engines/libpixmap.so
+6e499000-6e49a000 ---p 00007000 08:05 4328482    /usr/lib/gtk-2.0/2.10.0/engines/libpixmap.so
+6e49a000-6e49b000 r-xp 00007000 08:05 4328482    /usr/lib/gtk-2.0/2.10.0/engines/libpixmap.so
+6e49b000-6e49c000 rwxp 00008000 08:05 4328482    /usr/lib/gtk-2.0/2.10.0/engines/libpixmap.so
+6e49c000-6e4c2000 r-xp 00000000 08:05 3538983    /lib/i386-linux-gnu/libexpat.so.1.5.2
+6e4c2000-6e4c3000 ---p 00026000 08:05 3538983    /lib/i386-linux-gnu/libexpat.so.1.5.2
+6e4c3000-6e4c5000 r-xp 00026000 08:05 3538983    /lib/i386-linux-gnu/libexpat.so.1.5.2
+6e4c5000-6e4c6000 rwxp 00028000 08:05 3538983    /lib/i386-linux-gnu/libexpat.so.1.5.2
+6e4c6000-6e4df000 r-xp 00000000 08:05 3538994    /lib/i386-linux-gnu/libselinux.so.1
+6e4df000-6e4e0000 r-xp 00018000 08:05 3538994    /lib/i386-linux-gnu/libselinux.so.1
+6e4e0000-6e4e1000 rwxp 00019000 08:05 3538994    /lib/i386-linux-gnu/libselinux.so.1
+6e4e1000-6e4f2000 r-xp 00000000 08:05 3542500    /lib/i386-linux-gnu/libresolv-2.13.so
+6e4f2000-6e4f3000 r-xp 00010000 08:05 3542500    /lib/i386-linux-gnu/libresolv-2.13.so
+6e4f3000-6e4f4000 rwxp 00011000 08:05 3542500    /lib/i386-linux-gnu/libresolv-2.13.so
+6e4f4000-6e4f6000 rwxp 00000000 00:00 0 
+6e4f6000-6e533000 r-xp 00000000 08:05 3539185    /lib/i386-linux-gnu/libpcre.so.3.12.1
+6e533000-6e534000 r-xp 0003c000 08:05 3539185    /lib/i386-linux-gnu/libpcre.so.3.12.1
+6e534000-6e535000 rwxp 0003d000 08:05 3539185    /lib/i386-linux-gnu/libpcre.so.3.12.1
+6e535000-6e548000 r-xp 00000000 08:05 3538986    /lib/i386-linux-gnu/libz.so.1.2.3.4
+6e548000-6e549000 r-xp 00012000 08:05 3538986    /lib/i386-linux-gnu/libz.so.1.2.3.4
+6e549000-6e54a000 rwxp 00013000 08:05 3538986    /lib/i386-linux-gnu/libz.so.1.2.3.4
+6e54a000-6e56d000 r-xp 00000000 08:05 3539147    /lib/i386-linux-gnu/libpng12.so.0.44.0
+6e56d000-6e56e000 r-xp 00022000 08:05 3539147    /lib/i386-linux-gnu/libpng12.so.0.44.0
+6e56e000-6e56f000 rwxp 00023000 08:05 3539147    /lib/i386-linux-gnu/libpng12.so.0.44.0
+6e56f000-6e5d6000 r-xp 00000000 08:05 4326388    /usr/lib/libpixman-1.so.0.20.2
+6e5d6000-6e5d7000 ---p 00067000 08:05 4326388    /usr/lib/libpixman-1.so.0.20.2
+6e5d7000-6e5da000 r-xp 00067000 08:05 4326388    /usr/lib/libpixman-1.so.0.20.2
+6e5da000-6e5db000 rwxp 0006a000 08:05 4326388    /usr/lib/libpixman-1.so.0.20.2
+6e5db000-6e620000 r-xp 00000000 08:05 4328915    /usr/lib/i386-linux-gnu/libgobject-2.0.so.0.2800.6
+6e620000-6e621000 r-xp 00044000 08:05 4328915    /usr/lib/i386-linux-gnu/libgobject-2.0.so.0.2800.6
+6e621000-6e622000 rwxp 00045000 08:05 4328915    /usr/lib/i386-linux-gnu/libgobject-2.0.so.0.2800.6
+6e622000-6e647000 r-xp 00000000 08:05 4325713    /usr/lib/i386-linux-gnu/libpangoft2-1.0.so.0.2800.4
+6e647000-6e648000 ---p 00025000 08:05 4325713    /usr/lib/i386-linux-gnu/libpangoft2-1.0.so.0.2800.4
+6e648000-6e649000 r-xp 00025000 08:05 4325713    /usr/lib/i386-linux-gnu/libpangoft2-1.0.so.0.2800.4
+6e649000-6e64a000 rwxp 00026000 08:05 4325713    /usr/lib/i386-linux-gnu/libpangoft2-1.0.so.0.2800.4
+6e64a000-6e748000 r-xp 00000000 08:05 4332912    /usr/lib/i386-linux-gnu/libgio-2.0.so.0.2800.6
+6e748000-6e749000 ---p 000fe000 08:05 4332912    /usr/lib/i386-linux-gnu/libgio-2.0.so.0.2800.6
+6e749000-6e74b000 r-xp 000fe000 08:05 4332912    /usr/lib/i386-linux-gnu/libgio-2.0.so.0.2800.6
+6e74b000-6e74c000 rwxp 00100000 08:05 4332912    /usr/lib/i386-linux-gnu/libgio-2.0.so.0.2800.6
+6e74c000-6e74d000 rwxp 00000000 00:00 0 
+6e74d000-6e7fb000 r-xp 00000000 08:05 4326380    /usr/lib/libcairo.so.2.11000.2
+6e7fb000-6e7fc000 ---p 000ae000 08:05 4326380    /usr/lib/libcairo.so.2.11000.2
+6e7fc000-6e7fd000 r-xp 000ae000 08:05 4326380    /usr/lib/libcairo.so.2.11000.2
+6e7fd000-6e7fe000 rwxp 000af000 08:05 4326380    /usr/lib/libcairo.so.2.11000.2
+6e7fe000-6e800000 rwxp 00000000 00:00 0 
+6e800000-6e803000 r-xs 00000000 08:05 1576598    /var/cache/fontconfig/7ef2298fde41cc6eeb7af42e48b7d293-le32d4.cache-3
+6e803000-6e80a000 r-xp 00000000 08:05 4329060    /usr/lib/libvorbisfile.so.3.3.4
+6e80a000-6e80b000 r-xp 00006000 08:05 4329060    /usr/lib/libvorbisfile.so.3.3.4
+6e80b000-6e80c000 rwxp 00007000 08:05 4329060    /usr/lib/libvorbisfile.so.3.3.4
+6e80c000-6e80f000 r-xp 00000000 08:05 4332911    /usr/lib/i386-linux-gnu/libgthread-2.0.so.0.2800.6
+6e80f000-6e810000 r-xp 00003000 08:05 4332911    /usr/lib/i386-linux-gnu/libgthread-2.0.so.0.2800.6
+6e810000-6e811000 rwxp 00004000 08:05 4332911    /usr/lib/i386-linux-gnu/libgthread-2.0.so.0.2800.6
+6e811000-6e813000 r-xp 00000000 08:05 4332910    /usr/lib/i386-linux-gnu/libgmodule-2.0.so.0.2800.6
+6e813000-6e814000 r-xp 00002000 08:05 4332910    /usr/lib/i386-linux-gnu/libgmodule-2.0.so.0.2800.6
+6e814000-6e815000 rwxp 00003000 08:05 4332910    /usr/lib/i386-linux-gnu/libgmodule-2.0.so.0.2800.6
+6e815000-6e842000 r-xp 00000000 08:05 4325572    /usr/lib/i386-linux-gnu/libfontconfig.so.1.4.4
+6e842000-6e843000 r-xp 0002c000 08:05 4325572    /usr/lib/i386-linux-gnu/libfontconfig.so.1.4.4
+6e843000-6e844000 rwxp 0002d000 08:05 4325572    /usr/lib/i386-linux-gnu/libfontconfig.so.1.4.4
+6e844000-6e8c5000 r-xp 00000000 08:05 4325689    /usr/lib/i386-linux-gnu/libfreetype.so.6.6.2
+6e8c5000-6e8c9000 r-xp 00080000 08:05 4325689    /usr/lib/i386-linux-gnu/libfreetype.so.6.6.2
+6e8c9000-6e8ca000 rwxp 00084000 08:05 4325689    /usr/lib/i386-linux-gnu/libfreetype.so.6.6.2
+6e8ca000-6e908000 r-xp 00000000 08:05 4325711    /usr/lib/i386-linux-gnu/libpango-1.0.so.0.2800.4
+6e908000-6e909000 r-xp 0003e000 08:05 4325711    /usr/lib/i386-linux-gnu/libpango-1.0.so.0.2800.4
+6e909000-6e90a000 rwxp 0003f000 08:05 4325711    /usr/lib/i386-linux-gnu/libpango-1.0.so.0.2800.4
+6e90a000-6e925000 r-xp 00000000 08:05 4326627    /usr/lib/libgdk_pixbuf-2.0.so.0.2300.3
+6e925000-6e926000 r-xp 0001a000 08:05 4326627    /usr/lib/libgdk_pixbuf-2.0.so.0.2300.3
+6e926000-6e927000 rwxp 0001b000 08:05 4326627    /usr/lib/libgdk_pixbuf-2.0.so.0.2300.3
+6e927000-6ecf8000 r-xp 00000000 08:05 4331892    /usr/lib/libgtk-x11-2.0.so.0.2400.4
+6ecf8000-6ecfc000 r-xp 003d0000 08:05 4331892    /usr/lib/libgtk-x11-2.0.so.0.2400.4
+6ecfc000-6ecfe000 rwxp 003d4000 08:05 4331892    /usr/lib/libgtk-x11-2.0.so.0.2400.4
+6ecfe000-6ed00000 rwxp 00000000 00:00 0 
+6ed00000-6edfe000 rwxp 00000000 00:00 0 
+6edfe000-6ee00000 ---p 00000000 00:00 0 
+6ee00000-6ee01000 rwxs 1c0cf000 00:05 7672       /dev/dri/card0
+6ee01000-6ee0f000 r-xp 00000000 08:05 4326490    /usr/lib/libcanberra.so.0.2.5
+6ee0f000-6ee10000 r-xp 0000d000 08:05 4326490    /usr/lib/libcanberra.so.0.2.5
+6ee10000-6ee11000 rwxp 0000e000 08:05 4326490    /usr/lib/libcanberra.so.0.2.5
+6ee11000-6ee17000 r-xp 00000000 08:05 4325996    /usr/lib/i386-linux-gnu/libxcb-render.so.0.0.0
+6ee17000-6ee18000 r-xp 00005000 08:05 4325996    /usr/lib/i386-linux-gnu/libxcb-render.so.0.0.0
+6ee18000-6ee19000 rwxp 00006000 08:05 4325996    /usr/lib/i386-linux-gnu/libxcb-render.so.0.0.0
+6ee19000-6ee1b000 r-xp 00000000 08:05 4326159    /usr/lib/i386-linux-gnu/libxcb-shm.so.0.0.0
+6ee1b000-6ee1c000 r-xp 00001000 08:05 4326159    /usr/lib/i386-linux-gnu/libxcb-shm.so.0.0.0
+6ee1c000-6ee1d000 rwxp 00002000 08:05 4326159    /usr/lib/i386-linux-gnu/libxcb-shm.so.0.0.0
+6ee1d000-6ee23000 r-xp 00000000 08:05 4333381    /usr/lib/i386-linux-gnu/libXrandr.so.2.2.0
+6ee23000-6ee24000 r-xp 00005000 08:05 4333381    /usr/lib/i386-linux-gnu/libXrandr.so.2.2.0
+6ee24000-6ee25000 rwxp 00006000 08:05 4333381    /usr/lib/i386-linux-gnu/libXrandr.so.2.2.0
+6ee25000-6ee27000 r-xp 00000000 08:05 4333368    /usr/lib/i386-linux-gnu/libXinerama.so.1.0.0
+6ee27000-6ee28000 r-xp 00001000 08:05 4333368    /usr/lib/i386-linux-gnu/libXinerama.so.1.0.0
+6ee28000-6ee29000 rwxp 00002000 08:05 4333368    /usr/lib/i386-linux-gnu/libXinerama.so.1.0.0
+6ee29000-6eefe000 r-xp 00000000 08:05 3539080    /lib/i386-linux-gnu/libglib-2.0.so.0.2800.6
+6eefe000-6eeff000 r-xp 000d4000 08:05 3539080    /lib/i386-linux-gnu/libglib-2.0.so.0.2800.6
+6eeff000-6ef00000 rwxp 000d5000 08:05 3539080    /lib/i386-linux-gnu/libglib-2.0.so.0.2800.6
+6ef00000-6eff5000 rwxp 00000000 00:00 0 
+6eff5000-6f000000 ---p 00000000 00:00 0 
+6f000000-6f0ff000 rwxp 00000000 00:00 0 
+6f0ff000-6f100000 ---p 00000000 00:00 0 
+6f100000-6f1fd000 rwxp 00000000 00:00 0 
+6f1fd000-6f200000 ---p 00000000 00:00 0 
+6f200000-6f201000 rwxp 00000000 00:00 0 
+6f201000-6f21a000 r-xp 00000000 08:05 4326135    /usr/lib/i386-linux-gnu/libatk-1.0.so.0.9.1
+6f21a000-6f21b000 ---p 00019000 08:05 4326135    /usr/lib/i386-linux-gnu/libatk-1.0.so.0.9.1
+6f21b000-6f21c000 r-xp 00019000 08:05 4326135    /usr/lib/i386-linux-gnu/libatk-1.0.so.0.9.1
+6f21c000-6f21d000 rwxp 0001a000 08:05 4326135    /usr/lib/i386-linux-gnu/libatk-1.0.so.0.9.1
+6f21d000-6f21f000 r-xp 00000000 08:05 4333357    /usr/lib/i386-linux-gnu/libXdamage.so.1.1.0
+6f21f000-6f220000 r-xp 00001000 08:05 4333357    /usr/lib/i386-linux-gnu/libXdamage.so.1.1.0
+6f220000-6f221000 rwxp 00002000 08:05 4333357    /usr/lib/i386-linux-gnu/libXdamage.so.1.1.0
+6f221000-6f223000 r-xp 00000000 08:05 4333341    /usr/lib/i386-linux-gnu/libXcomposite.so.1.0.0
+6f223000-6f224000 r-xp 00001000 08:05 4333341    /usr/lib/i386-linux-gnu/libXcomposite.so.1.0.0
+6f224000-6f225000 rwxp 00002000 08:05 4333341    /usr/lib/i386-linux-gnu/libXcomposite.so.1.0.0
+6f225000-6f22f000 r-xp 00000000 08:05 4325712    /usr/lib/i386-linux-gnu/libpangocairo-1.0.so.0.2800.4
+6f22f000-6f230000 r-xp 00009000 08:05 4325712    /usr/lib/i386-linux-gnu/libpangocairo-1.0.so.0.2800.4
+6f230000-6f231000 rwxp 0000a000 08:05 4325712    /usr/lib/i386-linux-gnu/libpangocairo-1.0.so.0.2800.4
+6f231000-6f2c6000 r-xp 00000000 08:05 4349290    /usr/lib/libgdk-x11-2.0.so.0.2400.4
+6f2c6000-6f2c7000 ---p 00095000 08:05 4349290    /usr/lib/libgdk-x11-2.0.so.0.2400.4
+6f2c7000-6f2c9000 r-xp 00095000 08:05 4349290    /usr/lib/libgdk-x11-2.0.so.0.2400.4
+6f2c9000-6f2ca000 rwxp 00097000 08:05 4349290    /usr/lib/libgdk-x11-2.0.so.0.2400.4
+6f2ca000-6f2cd000 r-xp 00000000 08:05 4329344    /usr/lib/libcanberra-gtk.so.0.1.8
+6f2cd000-6f2ce000 r-xp 00002000 08:05 4329344    /usr/lib/libcanberra-gtk.so.0.1.8
+6f2ce000-6f2cf000 rwxp 00003000 08:05 4329344    /usr/lib/libcanberra-gtk.so.0.1.8
+6f2cf000-6f2d3000 r-xp 00000000 08:05 4327695    /usr/lib/gtk-2.0/modules/libcanberra-gtk-module.so
+6f2d3000-6f2d4000 r-xp 00003000 08:05 4327695    /usr/lib/gtk-2.0/modules/libcanberra-gtk-module.so
+6f2d4000-6f2d5000 rwxp 00004000 08:05 4327695    /usr/lib/gtk-2.0/modules/libcanberra-gtk-module.so
+6f2d5000-6f2dd000 r-xp 00000000 08:05 4325660    /usr/lib/liboverlay-scrollbar-0.1.so.0.0.12
+6f2dd000-6f2de000 r-xp 00007000 08:05 4325660    /usr/lib/liboverlay-scrollbar-0.1.so.0.0.12
+6f2de000-6f2df000 rwxp 00008000 08:05 4325660    /usr/lib/liboverlay-scrollbar-0.1.so.0.0.12
+6f2df000-6f2e2000 r-xs 0002c000 08:05 2496759    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-branding-desktop.jar
+6f2e2000-6f2e3000 r-xs 0000c000 08:05 2493103    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-clustering-plugin.jar
+6f2e3000-6f2e5000 r-xs 00018000 08:05 2493864    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-data-attributes.jar
+6f2e5000-6f2f0000 r-xs 000b1000 08:05 2496628    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-datalab-plugin.jar
+6f2f0000-6f2f2000 r-xs 00013000 08:05 2496495    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-desktop-clustering.jar
+6f2f2000-6f2f3000 r-xs 00003000 08:05 2493099    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-clustering-api.jar
+6f2f3000-6f2f5000 r-xs 0000a000 08:05 2495744    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-desktop-context.jar
+6f2f5000-6f2f7000 r-xs 00003000 08:05 2496591    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/ext/spark-1.2.jar
+6f2f7000-6f2fc000 r-xs 00052000 08:05 2496589    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-desktop-datalab.jar
+6f2fc000-6f2ff000 r-xs 00029000 08:05 2494622    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-desktop-filters.jar
+6f2ff000-6f300000 r-xs 00005000 08:05 2494573    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-desktop-generate.jar
+6f300000-6f302000 r-xs 00012000 08:05 2496762    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-desktop-hierarchy.jar
+6f302000-6f305000 r-xs 0001a000 08:05 2494689    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-desktop-importer.jar
+6f305000-6f307000 r-xs 00012000 08:05 2496748    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-desktop-layout.jar
+6f307000-6f309000 r-xs 00010000 08:05 2494793    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-desktop-partition.jar
+6f309000-6f30c000 r-xs 0001a000 08:05 2496767    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-desktop-preview.jar
+6f30c000-6f30e000 r-xs 00017000 08:05 2494685    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-desktop-io-export.jar
+6f30e000-6f30f000 r-xs 00002000 08:05 2492869    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-desktop-progress.jar
+6f30f000-6f312000 r-xs 00020000 08:05 2494746    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-desktop-ranking.jar
+6f312000-6f314000 r-xs 00002000 08:05 2494618    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-desktop-recentfiles.jar
+6f314000-6f315000 r-xs 00008000 08:05 2494598    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-desktop-spigot.jar
+6f315000-6f316000 r-xs 00010000 08:05 2495949    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-desktop-statistics.jar
+6f316000-6f318000 r-xs 00023000 08:05 2496775    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-desktop-timeline.jar
+6f318000-6f31a000 r-xs 00011000 08:05 2496548    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-desktop-tools.jar
+6f31a000-6f31c000 r-xs 00119000 08:05 2496586    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-desktop-welcome.jar
+6f31c000-6f31e000 r-xs 0000d000 08:05 2495689    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-dynamic.jar
+6f31e000-6f320000 r-xs 00014000 08:05 2494109    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-filters.jar
+6f320000-6f324000 r-xs 0005f000 08:05 2493942    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-graph-dhns.jar
+6f324000-6f329000 r-xs 0003c000 08:05 2493789    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-layout-plugin.jar
+6f329000-6f32b000 r-xs 00008000 08:05 2493140    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-layout-api.jar
+6f32b000-6f32d000 r-xs 00007000 08:05 2492717    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-newslider.jar
+6f32d000-6f330000 r-xs 00040000 08:05 2494236    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-preview.jar
+6f330000-6f333000 r-xs 00036000 08:05 2492674    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/ext/core.jar
+6f333000-6f334000 r-xs 00001000 08:05 2492672    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-lib-processing.jar
+6f334000-6f338000 r-xs 00037000 08:05 2496745    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-tools-plugin.jar
+6f338000-6f33a000 r-xs 00010000 08:05 2494532    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-desktop-perspective.jar
+6f33a000-6f33b000 r-xs 00005000 08:05 2493337    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-algorithms.jar
+6f33b000-6f33e000 r-xs 00017000 08:05 2494408    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/ext/TimingFramework-1.0.jar
+6f33e000-6f340000 r-xs 0001e000 08:05 2494406    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-ui-components-SplineEditor.jar
+6f340000-6f341000 r-xs 00010000 08:05 2493334    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-ui-exporter-plugin.jar
+6f341000-6f343000 r-xs 0001d000 08:05 2493294    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-io-exporter-plugin.jar
+6f343000-6f346000 r-xs 0001d000 08:05 2492692    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/ext/stax-utils.jar
+6f346000-6f347000 r-xs 00001000 08:05 2492690    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-lib-staxutils.jar
+6f347000-6f348000 r-xs 0000c000 08:05 2494354    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-ui-exporter-preview.jar
+6f348000-6f34a000 r-xs 0000d000 08:05 2493017    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-io-exporter-preview.jar
+6f34a000-6f34c000 r-xs 00008000 08:05 2492778    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-preview-api.jar
+6f34c000-6f34e000 r-xs 00005000 08:05 2492982    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-io-exporter-api.jar
+6f34e000-6f352000 r-xs 00038000 08:05 2492565    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/ext/batik-gvt.jar
+6f352000-6f354000 r-xs 00010000 08:05 2492566    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/ext/batik-parser.jar
+6f354000-6f357000 r-xs 0001d000 08:05 2492570    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/ext/batik-util.jar
+6f357000-6f362000 r-xs 000ad000 08:05 2492572    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/ext/pdf-transcoder.jar
+6f362000-6f365000 r-xs 00015000 08:05 2492547    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/ext/batik-anim.jar
+6f365000-6f372000 r-xs 00087000 08:05 2492568    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/ext/batik-svg-dom.jar
+6f372000-6f377000 r-xs 00010000 08:05 2492573    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/ext/xml-apis-ext.jar
+6f377000-6f381000 r-xs 00080000 08:05 2492561    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/ext/batik-bridge.jar
+6f381000-6f383000 r-xs 0001c000 08:05 2492569    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/ext/batik-transcoder.jar
+6f383000-6f384000 r-xs 00002000 08:05 2492564    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/ext/batik-ext.jar
+6f384000-6f388000 r-xs 00027000 08:05 2492563    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/ext/batik-dom.jar
+6f388000-6f390000 r-xs 00045000 08:05 2492562    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/ext/batik-css.jar
+6f390000-6f391000 r-xs 00007000 08:05 2492571    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/ext/batik-xml.jar
+6f391000-6f394000 r-xs 0000d000 08:05 2492567    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/ext/batik-script.jar
+6f394000-6f39b000 r-xs 0005c000 08:05 2492548    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/ext/batik-awt-util.jar
+6f39b000-6f39d000 r-xs 00001000 08:05 2492545    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-lib-batik.jar
+6f39d000-6f3aa000 r-xs 00162000 08:05 2492588    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/ext/iText-5.0.1.jar
+6f3aa000-6f3ab000 r-xs 00001000 08:05 2492586    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-lib-itext.jar
+6f3ab000-6f3ae000 r-xs 00024000 08:05 2496059    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-ui-filters-plugin.jar
+6f3ae000-6f3b2000 r-xs 00042000 08:05 2495658    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-filters-plugin.jar
+6f3b2000-6f3b3000 r-xs 00003000 08:05 2494010    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-timeline.jar
+6f3b3000-6f3b5000 r-xs 00007000 08:05 2493980    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-filters-api.jar
+6f3b5000-6f3b6000 r-xs 00003000 08:05 2493578    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-ui-generator-plugin.jar
+6f3b6000-6f3b7000 r-xs 00004000 08:05 2493553    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-io-generator-plugin.jar
+6f3b7000-6f3b8000 r-xs 00002000 08:05 2493526    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-io-generator-api.jar
+6f3b8000-6f3b9000 r-xs 0000e000 08:05 2494290    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-ui-importer-plugin.jar
+6f3b9000-6f3bc000 r-xs 00049000 08:05 2493858    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-io-importer-plugin.jar
+6f3bc000-6f3bf000 r-xs 0000e000 08:05 2496754    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-ui-partition-plugin.jar
+6f3bf000-6f3c1000 r-xs 00003000 08:05 2493939    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-partition-plugin.jar
+6f3c1000-6f3c3000 r-xs 00011000 08:05 2493911    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-partition-api.jar
+6f3c3000-6f3c4000 r-xs 00009000 08:05 2494322    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-ui-processor-plugin.jar
+6f3c4000-6f3c6000 r-xs 0000c000 08:05 2494040    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-io-processor-plugin.jar
+6f3c6000-6f3cd000 r-xs 00094000 08:05 2492577    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/ext/beansbinding-1.2.1.jar
+6f3cd000-6f3ce000 r-xs 00001000 08:05 2492575    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-lib-beansbinding.jar
+6f3ce000-6f3d0000 r-xs 00003000 08:05 2493039    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-ui-project.jar
+6f3d0000-6f3d2000 r-xs 00005000 08:05 2493633    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-ui-propertyeditor.jar
+6f3d2000-6f3d4000 r-xs 0000d000 08:05 2496099    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-ui-ranking-plugin.jar
+6f3d4000-6f3d6000 r-xs 0001c000 08:05 2493416    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-ranking-api.jar
+6f3d6000-6f3d8000 r-xs 0001a000 08:05 2494682    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-ui-spigot-plugin.jar
+6f3d8000-6f3da000 r-xs 00010000 08:05 2493630    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-io-spigot-plugin.jar
+6f3da000-6f3db000 r-xs 00004000 08:05 2492596    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/ext/dsn.jar
+6f3db000-6f3e0000 r-xs 00039000 08:05 2492599    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/ext/mailapi.jar
+6f3e0000-6f3e1000 r-xs 00008000 08:05 2492600    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/ext/pop3.jar
+6f3e1000-6f3e2000 r-xs 0000a000 08:05 2492601    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/ext/smtp.jar
+6f3e2000-6f3e5000 r-xs 00028000 08:05 2492597    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/ext/imap.jar
+6f3e5000-6f3ec000 r-xs 0006a000 08:05 2492598    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/ext/mail.jar
+6f3ec000-6f3ee000 r-xs 00000000 08:05 2492594    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-lib-javamail.jar
+6f3ee000-6f3f1000 r-xs 0001c000 08:05 2492605    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/ext/jcalendar-1.3.3.jar
+6f3f1000-6f3f9000 r-xs 00052000 08:05 2492606    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/ext/looks-2.0.1.jar
+6f3f9000-6f3fb000 r-xs 00000000 08:05 2492603    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-lib-jcalendar.jar
+6f3fb000-6f3fe000 r-xs 00020000 08:05 2495741    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-ui-statistics-plugin.jar
+6f3fe000-6f400000 r-xs 00020000 08:05 2494848    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-statistics-plugin.jar
+6f400000-6f4fe000 rwxp 00000000 00:00 0 
+6f4fe000-6f500000 ---p 00000000 00:00 0 
+6f500000-6f501000 r-xs 00000000 08:05 1575697    /var/cache/fontconfig/4794a0821666d79190d59a36cb4f44b5-le32d4.cache-3
+6f501000-6f507000 r-xs 00070000 08:05 919446     /home/daniel/netbeans-7.0/platform/modules/org-netbeans-modules-masterfs.jar
+6f507000-6f50b000 r-xs 000e3000 08:05 1051091    /home/daniel/netbeans-7.0/platform/modules/ext/jna-3.2.7.jar
+6f50b000-6f50d000 r-xs 00000000 08:05 919568     /home/daniel/netbeans-7.0/platform/modules/org-netbeans-libs-jna.jar
+6f50d000-6f511000 r-xs 0004b000 08:05 919340     /home/daniel/netbeans-7.0/platform/modules/org-netbeans-modules-options-keymap.jar
+6f511000-6f516000 r-xs 00061000 08:05 919389     /home/daniel/netbeans-7.0/platform/modules/org-netbeans-modules-options-api.jar
+6f516000-6f51c000 r-xs 0008f000 08:05 919604     /home/daniel/netbeans-7.0/platform/modules/org-netbeans-core.jar
+6f51c000-6f51e000 r-xs 00001000 08:05 919474     /home/daniel/netbeans-7.0/platform/modules/org-netbeans-modules-keyring.jar
+6f51e000-6f522000 r-xs 0003e000 08:05 919507     /home/daniel/netbeans-7.0/platform/modules/org-netbeans-modules-print.jar
+6f522000-6f524000 r-xs 0001f000 08:05 919391     /home/daniel/netbeans-7.0/platform/modules/org-netbeans-modules-progress-ui.jar
+6f524000-6f526000 r-xs 00011000 08:05 919447     /home/daniel/netbeans-7.0/platform/modules/org-netbeans-modules-sendopts.jar
+6f526000-6f528000 r-xs 0003e000 08:05 919450     /home/daniel/netbeans-7.0/platform/modules/org-netbeans-modules-settings.jar
+6f528000-6f52b000 r-xs 00022000 08:05 919475     /home/daniel/netbeans-7.0/platform/modules/org-netbeans-spi-quicksearch.jar
+6f52b000-6f52c000 r-xs 00002000 08:05 919353     /home/daniel/netbeans-7.0/platform/modules/org-netbeans-api-annotations-common.jar
+6f52c000-6f52f000 r-xs 0002a000 08:05 2496779    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-netbeans-swing-dirchooser.jar
+6f52f000-6f532000 r-xs 00036000 08:05 919549     /home/daniel/netbeans-7.0/platform/modules/org-netbeans-swing-plaf.jar
+6f532000-6f534000 r-xs 0000a000 08:05 919617     /home/daniel/netbeans-7.0/platform/modules/org-openide-io.jar
+6f534000-6f53d000 r-xs 0013a000 08:05 919588     /home/daniel/netbeans-7.0/platform/modules/org-openide-loaders.jar
+6f53d000-6f53f000 r-xs 0000a000 08:05 919476     /home/daniel/netbeans-7.0/platform/modules/org-netbeans-modules-queries.jar
+6f53f000-6f542000 r-xs 00032000 08:05 919589     /home/daniel/netbeans-7.0/platform/modules/org-openide-actions.jar
+6f542000-6f54f000 r-xs 0019d000 08:05 919573     /home/daniel/netbeans-7.0/platform/modules/org-openide-explorer.jar
+6f54f000-6f552000 r-xs 00039000 08:05 919506     /home/daniel/netbeans-7.0/platform/modules/org-netbeans-swing-outline.jar
+6f552000-6f55f000 r-xs 000de000 08:05 919449     /home/daniel/netbeans-7.0/platform/modules/org-netbeans-swing-tabcontrol.jar
+6f55f000-6f563000 r-xs 0005f000 08:05 919609     /home/daniel/netbeans-7.0/platform/modules/org-openide-text.jar
+6f563000-6f565000 r-xs 0000b000 08:05 919314     /home/daniel/netbeans-7.0/platform/modules/org-netbeans-modules-editor-mimelookup.jar
+6f565000-6f567000 r-xs 00025000 08:05 919587     /home/daniel/netbeans-7.0/platform/modules/org-openide-windows.jar
+6f567000-6f56c000 r-xs 00080000 08:05 919605     /home/daniel/netbeans-7.0/platform/modules/org-openide-nodes.jar
+6f56c000-6f56e000 r-xs 0002e000 08:05 919590     /home/daniel/netbeans-7.0/platform/modules/org-openide-dialogs.jar
+6f56e000-6f570000 r-xs 00010000 08:05 919523     /home/daniel/netbeans-7.0/platform/modules/org-netbeans-api-progress.jar
+6f570000-6f575000 r-xs 00085000 08:05 919613     /home/daniel/netbeans-7.0/platform/modules/org-openide-awt.jar
+6f575000-6f600000 rwxs 00000000 00:04 61341703   /SYSV00000000 (deleted)
+6f600000-6f6f4000 rwxp 00000000 00:00 0 
+6f6f4000-6f700000 ---p 00000000 00:00 0 
+6f700000-6f7fc000 rwxp 00000000 00:00 0 
+6f7fc000-6f800000 ---p 00000000 00:00 0 
+6f800000-6f80b000 r-xs 000e0000 08:05 2496491    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-visualization.jar
+6f80b000-6f80d000 r-xs 0000a000 08:05 2494569    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-desktop-project.jar
+6f80d000-6f80e000 r-xs 00002000 08:05 2492536    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-desktop-mrufiles-api.jar
+6f80e000-6f811000 r-xs 00023000 08:05 2493500    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-io-importer-api.jar
+6f811000-6f818000 r-xs 000a7000 08:05 2492541    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/ext/mysql-connector-java-5.1.7-bin.jar
+6f818000-6f81d000 r-xs 0006d000 08:05 2492543    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/ext/sqljdbc4.jar
+6f81d000-6f823000 r-xs 00077000 08:05 2492542    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/ext/postgresql-8.4-701.jdbc4.jar
+6f823000-6f824000 r-xs 00003000 08:05 2492539    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-io-database-drivers.jar
+6f824000-6f828000 r-xs 00024000 08:05 2492581    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/ext/commons-compress-1.1.jar
+6f828000-6f829000 r-xs 00000000 08:05 2492579    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-lib-commonscompress.jar
+6f829000-6f82b000 r-xs 0000a000 08:05 2495903    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/ext/FontChooser.jar
+6f82b000-6f82d000 r-xs 00011000 08:05 2495904    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/ext/MigLayout-3.7.1.jar
+6f82d000-6f830000 r-xs 0002c000 08:05 2495905    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/ext/colorchooser.jar
+6f830000-6f835000 r-xs 00055000 08:05 2495901    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-ui-components.jar
+6f835000-6f837000 r-xs 0000d000 08:05 2492553    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/ext/commons-codec-1.4.jar
+6f837000-6f838000 r-xs 00001000 08:05 2492550    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-lib-commons-codec.jar
+6f838000-6f846000 r-xs 00090000 08:05 2492558    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/ext/flamingo.jar
+6f846000-6f847000 r-xs 00001000 08:05 2492556    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-lib-flamingo.jar
+6f847000-6f853000 r-xs 00081000 08:05 2492813    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/ext/google-collect-1.0.jar
+6f853000-6f862000 r-xs 000ba000 08:05 2492814    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/ext/trove-2.1.0.jar
+6f862000-6f864000 r-xs 00009000 08:05 2492811    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-utils-collection.jar
+6f864000-6f86f000 r-xs 00108000 08:05 2492628    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/ext/jogl.jar
+6f86f000-6f870000 r-xs 00004000 08:05 2492627    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/ext/gluegen-rt.jar
+6f870000-6f872000 r-xs 00004000 08:05 2492625    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-lib-jogl.jar
+6f872000-6f874000 r-xs 0000f000 08:05 2492583    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-lib-gleem.jar
+6f874000-6f876000 r-xs 0000d000 08:05 2494455    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-ui-utils.jar
+6f876000-6f87a000 r-xs 0003e000 08:05 2492715    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/ext/ValidationAPI.jar
+6f87a000-6f87b000 r-xs 00003000 08:05 2492713    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-lib-validation.jar
+6f87b000-6f87d000 r-xs 00002000 08:05 2493170    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-tools-api.jar
+6f87d000-6f87e000 r-xs 00003000 08:05 2494068    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-visualization-api.jar
+6f87e000-6f881000 r-xs 00024000 08:05 2493861    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-datalab-api.jar
+6f881000-6f882000 r-xs 00008000 08:05 2493200    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-dynamic-api.jar
+6f882000-6f885000 r-xs 00030000 08:05 2493173    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-data-attributes-api.jar
+6f885000-6f886000 r-xs 00007000 08:05 2492808    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-utils.jar
+6f886000-6f888000 r-xs 00002000 08:05 2492592    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/ext/javacsv.jar
+6f888000-6f889000 r-xs 00001000 08:05 2492590    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-lib-javacsv.jar
+6f889000-6f88b000 r-xs 00007000 08:05 2493095    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-graph-api.jar
+6f88b000-6f88d000 r-xs 00014000 08:05 2492939    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-project-api.jar
+6f88d000-6f88e000 r-xs 00006000 08:05 2492846    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-utils-longtask.jar
+6f88e000-6f894000 r-xs 00031000 08:05 2494254    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/ext/swingx-beaninfo-1.6.1.jar
+6f894000-6f8af000 r-xs 00139000 08:05 2494253    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/ext/swingx-1.6.1.jar
+6f8af000-6f8b2000 ---p 00000000 00:00 0 
+6f8b2000-6f900000 rwxp 00000000 00:00 0 
+6f900000-6f9fa000 rwxp 00000000 00:00 0 
+6f9fa000-6fa00000 ---p 00000000 00:00 0 
+6fa00000-6fa02000 r-xs 00009000 08:05 2493242    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-statistics-api.jar
+6fa02000-6fa04000 r-xs 00009000 08:05 2496625    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-gephi-ui-workspace.jar
+6fa04000-6fa15000 r-xs 0014c000 08:05 2494420    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/ext/jfreechart-1.0.13.jar
+6fa15000-6fa1b000 r-xs 00046000 08:05 2494419    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/ext/jcommon-1.0.16.jar
+6fa1b000-6fa2a000 r-xs 00074000 08:05 2496772    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/ext/joda-time-1.6.jar
+6fa2a000-6fa50000 rwxs 00000000 00:04 61308934   /SYSV00000000 (deleted)
+6fa50000-6fa53000 ---p 00000000 00:00 0 
+6fa53000-6faa1000 rwxp 00000000 00:00 0 
+6faa1000-6faa2000 r-xs 00000000 08:05 1575980    /var/cache/fontconfig/26de28bc8622bbc1fb67fd234c21975f-le32d4.cache-3
+6faa2000-6faa3000 r-xs 00000000 08:05 1576028    /var/cache/fontconfig/c05880de57d1f5e948fdfacc138775d9-le32d4.cache-3
+6faa3000-6faa9000 r-xs 00000000 08:05 1576020    /var/cache/fontconfig/945677eb7aeaf62f1d50efc3fb3ec7d8-le32d4.cache-3
+6faa9000-6faab000 r-xs 00000000 08:05 1575744    /var/cache/fontconfig/99e8ed0e538f840c565b6ed5dad60d56-le32d4.cache-3
+6faab000-6faae000 r-xs 00000000 08:05 1576002    /var/cache/fontconfig/e383d7ea5fbe662a33d9b44caf393297-le32d4.cache-3
+6faae000-6fab3000 r-xs 00000000 08:05 1575986    /var/cache/fontconfig/401a5dd6b567794a1d18dd9342dfa604-le32d4.cache-3
+6fab3000-6fab5000 r-xs 00000000 08:05 1575983    /var/cache/fontconfig/2cd17615ca594fa2959ae173292e504c-le32d4.cache-3
+6fab5000-6fab6000 r-xs 00000000 08:05 1575740    /var/cache/fontconfig/e7071f4a29fa870f4323321c154eba04-le32d4.cache-3
+6fab6000-6fab8000 r-xs 00000000 08:05 1576599    /var/cache/fontconfig/b5ea634b0fb353b8ea17632d1f9ef766-le32d4.cache-3
+6fab8000-6fabc000 r-xs 00000000 08:05 1575958    /var/cache/fontconfig/926e794c3d5e5dffcaf2fa83ef8d36c2-le32d4.cache-3
+6fabc000-6fabf000 r-xs 00000000 08:05 1575945    /var/cache/fontconfig/6eb3985aa4124903f6ff08ba781cd364-le32d4.cache-3
+6fabf000-6fac0000 r-xs 00000000 08:05 1575924    /var/cache/fontconfig/4c73fe0c47614734b17d736dbde7580a-le32d4.cache-3
+6fac0000-6fac1000 r-xs 00000000 08:05 1575918    /var/cache/fontconfig/0d8c3b2ac0904cb8a57a757ad11a4a08-le32d4.cache-3
+6fac1000-6fac2000 r-xs 00000000 08:05 1575917    /var/cache/fontconfig/6a53c69dea097a2d716e069445527da8-le32d4.cache-3
+6fac2000-6fac6000 r-xs 00000000 08:05 1575788    /var/cache/fontconfig/a755afe4a08bf5b97852ceb7400b47bc-le32d4.cache-3
+6fac6000-6faca000 r-xs 00000000 08:05 1575915    /var/cache/fontconfig/515ca1ebc4b18308bea979be5704f9db-le32d4.cache-3
+6faca000-6fad1000 r-xs 00000000 08:05 1575886    /var/cache/fontconfig/6d41288fd70b0be22e8c3a91e032eec0-le32d4.cache-3
+6fad1000-6fadc000 r-xs 00000000 08:05 1575845    /var/cache/fontconfig/0f34bcd4b6ee430af32735b75db7f02b-le32d4.cache-3
+6fadc000-6fadf000 r-xs 00000000 08:05 1575843    /var/cache/fontconfig/d60319d88cac85ba9e1a07bd06cfbb8c-le32d4.cache-3
+6fadf000-6fae0000 r-xs 00000000 08:05 1575697    /var/cache/fontconfig/4794a0821666d79190d59a36cb4f44b5-le32d4.cache-3
+6fae0000-6fb02000 r-xs 00000000 08:05 1575808    /var/cache/fontconfig/365b55f210c0a22e9a19e35191240f32-le32d4.cache-3
+6fb02000-6fb0a000 r-xs 00000000 08:05 1575802    /var/cache/fontconfig/d52a8644073d54c13679302ca1180695-le32d4.cache-3
+6fb0a000-6fb18000 r-xs 00000000 08:05 1575126    /var/cache/fontconfig/e13b20fdb08344e0e664864cc2ede53d-le32d4.cache-3
+6fb18000-6fb30000 r-xs 00000000 08:05 1579274    /var/cache/fontconfig/165b9254a84ccada37e340049ffc8b30-le32d4.cache-3
+6fb30000-6fb31000 r-xs 00001000 08:05 2494251    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-jdesktop-swingx.jar
+6fb31000-6fb33000 r-xs 00013000 08:05 2496889    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/ext/orson-0.5.0.jar
+6fb33000-6fb34000 r-xs 00000000 08:05 2494417    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-jfree.jar
+6fb34000-6fb35000 r-xs 00000000 08:05 2496770    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/org-joda-time.jar
+6fb35000-6fb37000 r-xs 00008000 08:05 919547     /home/daniel/netbeans-7.0/platform/modules/org-netbeans-core-io-ui.jar
+6fb37000-6fb40000 r-xs 000ba000 08:05 1051086    /home/daniel/netbeans-7.0/platform/modules/ext/platform-3.2.7.jar
+6fb40000-6fb41000 r-xs 00001000 08:05 919425     /home/daniel/netbeans-7.0/platform/modules/org-netbeans-core-nativeaccess.jar
+6fb41000-6fb4d000 r-xs 001b9000 08:05 919518     /home/daniel/netbeans-7.0/platform/modules/org-netbeans-core-windows.jar
+6fb4d000-6fb53000 r-xs 00034000 08:05 1053531    /home/daniel/netbeans-7.0/platform/modules/ext/junit-4.8.2.jar
+6fb53000-6fb56000 ---p 00000000 00:00 0 
+6fb56000-6fba4000 rwxp 00000000 00:00 0 
+6fba4000-6fba8000 r-xp 00000000 08:05 4329147    /usr/lib/i386-linux-gnu/libXfixes.so.3.1.0
+6fba8000-6fba9000 r-xp 00003000 08:05 4329147    /usr/lib/i386-linux-gnu/libXfixes.so.3.1.0
+6fba9000-6fbaa000 rwxp 00004000 08:05 4329147    /usr/lib/i386-linux-gnu/libXfixes.so.3.1.0
+6fbaa000-6fbb2000 r-xp 00000000 08:05 4326287    /usr/lib/i386-linux-gnu/libXrender.so.1.3.0
+6fbb2000-6fbb3000 r-xp 00007000 08:05 4326287    /usr/lib/i386-linux-gnu/libXrender.so.1.3.0
+6fbb3000-6fbb4000 rwxp 00008000 08:05 4326287    /usr/lib/i386-linux-gnu/libXrender.so.1.3.0
+6fbb4000-6fbbc000 r-xp 00000000 08:05 4333346    /usr/lib/i386-linux-gnu/libXcursor.so.1.0.2
+6fbbc000-6fbbd000 r-xp 00007000 08:05 4333346    /usr/lib/i386-linux-gnu/libXcursor.so.1.0.2
+6fbbd000-6fbbe000 rwxp 00008000 08:05 4333346    /usr/lib/i386-linux-gnu/libXcursor.so.1.0.2
+6fbbe000-6fbc3000 r-xs 00062000 08:05 919574     /home/daniel/netbeans-7.0/platform/modules/org-netbeans-core-ui.jar
+6fbc3000-6fbc4000 r-xs 00000000 08:05 919650     /home/daniel/netbeans-7.0/platform/modules/org-netbeans-libs-junit4.jar
+6fbc4000-6fbcc000 r-xs 000e2000 08:05 919355     /home/daniel/netbeans-7.0/platform/modules/org-netbeans-modules-autoupdate-ui.jar
+6fbcc000-6fbce000 r-xs 00039000 08:05 1051095    /home/daniel/netbeans-7.0/platform/modules/ext/updater.jar
+6fbce000-6fbd3000 r-xs 000ab000 08:05 919267     /home/daniel/netbeans-7.0/platform/modules/org-netbeans-modules-autoupdate-services.jar
+6fbd3000-6fbd6000 ---p 00000000 00:00 0 
+6fbd6000-6fc24000 rwxp 00000000 00:00 0 
+6fc24000-6fc27000 ---p 00000000 00:00 0 
+6fc27000-6fc75000 rwxp 00000000 00:00 0 
+6fc75000-6fcee000 r-xp 00000000 08:05 4470066    /usr/lib/jvm/java-6-sun-1.6.0.24/jre/lib/i386/libfontmanager.so
+6fcee000-6fcf8000 rwxp 00078000 08:05 4470066    /usr/lib/jvm/java-6-sun-1.6.0.24/jre/lib/i386/libfontmanager.so
+6fcf8000-6fcfd000 rwxp 00000000 00:00 0 
+6fcfd000-6fe13000 r-xp 00000000 08:05 4337845    /usr/lib/i386-linux-gnu/libX11.so.6.3.0
+6fe13000-6fe14000 ---p 00116000 08:05 4337845    /usr/lib/i386-linux-gnu/libX11.so.6.3.0
+6fe14000-6fe15000 r-xp 00116000 08:05 4337845    /usr/lib/i386-linux-gnu/libX11.so.6.3.0
+6fe15000-6fe17000 rwxp 00117000 08:05 4337845    /usr/lib/i386-linux-gnu/libX11.so.6.3.0
+6fe17000-6fe18000 rwxp 00000000 00:00 0 
+6fe18000-6fe5b000 r-xp 00000000 08:05 4470051    /usr/lib/jvm/java-6-sun-1.6.0.24/jre/lib/i386/xawt/libmawt.so
+6fe5b000-6fe5d000 rwxp 00043000 08:05 4470051    /usr/lib/jvm/java-6-sun-1.6.0.24/jre/lib/i386/xawt/libmawt.so
+6fe5d000-6fe5e000 rwxp 00000000 00:00 0 
+6fe5e000-6fee2000 r-xp 00000000 08:05 4470018    /usr/lib/jvm/java-6-sun-1.6.0.24/jre/lib/i386/libawt.so
+6fee2000-6fee9000 rwxp 00084000 08:05 4470018    /usr/lib/jvm/java-6-sun-1.6.0.24/jre/lib/i386/libawt.so
+6fee9000-6ff0d000 rwxp 00000000 00:00 0 
+6ff0d000-6ff10000 ---p 00000000 00:00 0 
+6ff10000-6ff5e000 rwxp 00000000 00:00 0 
+6ff5e000-6ff61000 ---p 00000000 00:00 0 
+6ff61000-6ffaf000 rwxp 00000000 00:00 0 
+6ffaf000-6ffb2000 ---p 00000000 00:00 0 
+6ffb2000-70000000 rwxp 00000000 00:00 0 
+70000000-700ff000 rwxp 00000000 00:00 0 
+700ff000-70100000 ---p 00000000 00:00 0 
+70100000-70103000 r-xs 00032000 08:05 919427     /home/daniel/netbeans-7.0/platform/modules/org-netbeans-modules-favorites.jar
+70103000-70107000 r-xp 00000000 08:05 4335172    /usr/lib/i386-linux-gnu/libXdmcp.so.6.0.0
+70107000-70108000 r-xp 00003000 08:05 4335172    /usr/lib/i386-linux-gnu/libXdmcp.so.6.0.0
+70108000-70109000 rwxp 00004000 08:05 4335172    /usr/lib/i386-linux-gnu/libXdmcp.so.6.0.0
+70109000-7010b000 r-xp 00000000 08:05 4334188    /usr/lib/i386-linux-gnu/libXau.so.6.0.0
+7010b000-7010c000 r-xp 00001000 08:05 4334188    /usr/lib/i386-linux-gnu/libXau.so.6.0.0
+7010c000-7010d000 rwxp 00002000 08:05 4334188    /usr/lib/i386-linux-gnu/libXau.so.6.0.0
+7010d000-70124000 r-xp 00000000 08:05 4337830    /usr/lib/i386-linux-gnu/libxcb.so.1.1.0
+70124000-70125000 r-xp 00016000 08:05 4337830    /usr/lib/i386-linux-gnu/libxcb.so.1.1.0
+70125000-70126000 rwxp 00017000 08:05 4337830    /usr/lib/i386-linux-gnu/libxcb.so.1.1.0
+70126000-70133000 r-xp 00000000 08:05 4337957    /usr/lib/i386-linux-gnu/libXi.so.6.1.0
+70133000-70134000 r-xp 0000c000 08:05 4337957    /usr/lib/i386-linux-gnu/libXi.so.6.1.0
+70134000-70135000 rwxp 0000d000 08:05 4337957    /usr/lib/i386-linux-gnu/libXi.so.6.1.0
+70135000-70139000 r-xp 00000000 08:05 4337963    /usr/lib/libXtst.so.6.1.0
+70139000-7013a000 r-xp 00003000 08:05 4337963    /usr/lib/libXtst.so.6.1.0
+7013a000-7013b000 rwxp 00004000 08:05 4337963    /usr/lib/libXtst.so.6.1.0
+7013b000-7014f000 r-xp 00000000 08:05 4470064    /usr/lib/jvm/java-6-sun-1.6.0.24/jre/lib/i386/libnet.so
+7014f000-70150000 rwxp 00013000 08:05 4470064    /usr/lib/jvm/java-6-sun-1.6.0.24/jre/lib/i386/libnet.so
+70150000-701af000 r-xs 00baa000 08:05 4601474    /usr/lib/jvm/java-6-sun-1.6.0.24/lib/tools.jar
+701af000-701b2000 ---p 00000000 00:00 0 
+701b2000-70200000 rwxp 00000000 00:00 0 
+70200000-702fc000 rwxp 00000000 00:00 0 
+702fc000-70300000 ---p 00000000 00:00 0 
+70300000-70301000 r-xs 00000000 08:05 2492521    /home/daniel/gephi/gephibzr/gephi/build/cluster/modules/locale/org-netbeans-core-windows_gephi.jar
+70301000-7030e000 r-xp 00000000 08:05 4332391    /usr/lib/i386-linux-gnu/libXext.so.6.4.0
+7030e000-7030f000 r-xp 0000c000 08:05 4332391    /usr/lib/i386-linux-gnu/libXext.so.6.4.0
+7030f000-70310000 rwxp 0000d000 08:05 4332391    /usr/lib/i386-linux-gnu/libXext.so.6.4.0
+70310000-70312000 r-xs 0000b000 08:05 919226     /home/daniel/netbeans-7.0/platform/modules/org-netbeans-modules-editor-mimelookup-impl.jar
+70312000-70314000 r-xs 0000f000 08:05 919368     /home/daniel/netbeans-7.0/platform/modules/org-netbeans-modules-keyring-impl.jar
+70314000-70317000 r-xs 00000000 08:05 1576598    /var/cache/fontconfig/7ef2298fde41cc6eeb7af42e48b7d293-le32d4.cache-3
+70317000-70325000 r-xs 00000000 08:05 1576043    /var/cache/fontconfig/865f88548240fee46819705c6468c165-le32d4.cache-3
+70325000-7032c000 r-xp 00000000 08:05 4470019    /usr/lib/jvm/java-6-sun-1.6.0.24/jre/lib/i386/libnio.so
+7032c000-7032d000 rwxp 00006000 08:05 4470019    /usr/lib/jvm/java-6-sun-1.6.0.24/jre/lib/i386/libnio.so
+7032d000-70333000 r-xs 0001e000 08:05 4601472    /usr/lib/jvm/java-6-sun-1.6.0.24/lib/dt.jar
+70333000-70334000 r-xs 00001000 08:05 919529     /home/daniel/netbeans-7.0/platform/lib/locale/org-openide-util_zh_CN.jar
+70334000-70335000 r-xs 00001000 08:05 919564     /home/daniel/netbeans-7.0/platform/lib/locale/org-openide-util_ru.jar
+70335000-70336000 r-xs 00001000 08:05 919530     /home/daniel/netbeans-7.0/platform/lib/locale/org-openide-util_pt_BR.jar
+70336000-70337000 r-xs 00001000 08:05 919563     /home/daniel/netbeans-7.0/platform/lib/locale/org-openide-util_ja.jar
+70337000-70338000 r-xs 00000000 08:05 919412     /home/daniel/netbeans-7.0/platform/lib/locale/org-openide-util-lookup_zh_CN.jar
+70338000-70339000 r-xs 00000000 08:05 919469     /home/daniel/netbeans-7.0/platform/lib/locale/org-openide-util-lookup_ru.jar
+70339000-7033a000 r-xs 00000000 08:05 919411     /home/daniel/netbeans-7.0/platform/lib/locale/org-openide-util-lookup_pt_BR.jar
+7033a000-7033b000 r-xs 00000000 08:05 919470     /home/daniel/netbeans-7.0/platform/lib/locale/org-openide-util-lookup_ja.jar
+7033b000-7033c000 r-xs 00000000 08:05 919488     /home/daniel/netbeans-7.0/platform/lib/locale/org-openide-modules_zh_CN.jar
+7033c000-7033d000 r-xs 00000000 08:05 919528     /home/daniel/netbeans-7.0/platform/lib/locale/org-openide-modules_ru.jar
+7033d000-7033e000 r-xs 00000000 08:05 919489     /home/daniel/netbeans-7.0/platform/lib/locale/org-openide-modules_pt_BR.jar
+7033e000-7033f000 r-xs 00000000 08:05 919531     /home/daniel/netbeans-7.0/platform/lib/locale/org-openide-modules_ja.jar
+7033f000-70340000 r-xs 00000000 08:05 919623     /home/daniel/netbeans-7.0/platform/lib/locale/boot_zh_CN.jar
+70340000-70341000 r-xs 00000000 08:05 919628     /home/daniel/netbeans-7.0/platform/lib/locale/boot_ru.jar
+70341000-70342000 r-xs 00000000 08:05 919622     /home/daniel/netbeans-7.0/platform/lib/locale/boot_pt_BR.jar
+70342000-70343000 r-xs 00000000 08:05 919627     /home/daniel/netbeans-7.0/platform/lib/locale/boot_ja.jar
+70343000-70346000 ---p 00000000 00:00 0 
+70346000-70394000 rwxp 00000000 00:00 0 
+70394000-7039a000 r-xs 000a7000 08:05 919624     /home/daniel/netbeans-7.0/platform/lib/org-openide-util.jar
+7039a000-7039c000 r-xs 00008000 08:05 2492519    /home/daniel/gephi/gephibzr/gephi/build/cluster/core/locale/core_gephi.jar
+7039c000-7039d000 r-xs 00001000 08:05 919620     /home/daniel/netbeans-7.0/platform/core/locale/core_zh_CN.jar
+7039d000-7039e000 r-xs 00001000 08:05 919626     /home/daniel/netbeans-7.0/platform/core/locale/core_ja.jar
+7039e000-7039f000 r-xs 00001000 08:05 919384     /home/daniel/netbeans-7.0/platform/core/locale/org-openide-filesystems_pt_BR.jar
+7039f000-703a0000 r-xs 00001000 08:05 919619     /home/daniel/netbeans-7.0/platform/core/locale/core_pt_BR.jar
+703a0000-703a1000 r-xs 00001000 08:05 919625     /home/daniel/netbeans-7.0/platform/core/locale/core_ru.jar
+703a1000-703a2000 ---p 00000000 00:00 0 
+703a2000-70422000 rwxp 00000000 00:00 0 
+70422000-70425000 ---p 00000000 00:00 0 
+70425000-70473000 rwxp 00000000 00:00 0 
+70473000-70476000 ---p 00000000 00:00 0 
+70476000-704f4000 rwxp 00000000 00:00 0 
+704f4000-704f7000 ---p 00000000 00:00 0 
+704f7000-70575000 rwxp 00000000 00:00 0 
+70575000-70578000 ---p 00000000 00:00 0 
+70578000-705c6000 rwxp 00000000 00:00 0 
+705c6000-707c6000 r-xp 00000000 08:05 4326790    /usr/lib/locale/locale-archive
+707c6000-707c9000 ---p 00000000 00:00 0 
+707c9000-70817000 rwxp 00000000 00:00 0 
+70817000-7081a000 ---p 00000000 00:00 0 
+7081a000-70868000 rwxp 00000000 00:00 0 
+70868000-70a00000 r-xs 03027000 08:05 4470089    /usr/lib/jvm/java-6-sun-1.6.0.24/jre/lib/rt.jar
+70a00000-70af9000 rwxp 00000000 00:00 0 
+70af9000-70b00000 ---p 00000000 00:00 0 
+70b00000-70b06000 r-xs 000d0000 08:05 919577     /home/daniel/netbeans-7.0/platform/core/org-openide-filesystems.jar
+70b06000-70b07000 ---p 00000000 00:00 0 
+70b07000-70bbb000 rwxp 00000000 00:00 0 
+70bbb000-70bbc000 ---p 00000000 00:00 0 
+70bbc000-70c3c000 rwxp 00000000 00:00 0 
+70c3c000-70c3d000 ---p 00000000 00:00 0 
+70c3d000-70cd0000 rwxp 00000000 00:00 0 
+70cd0000-70cdd000 rwxp 00000000 00:00 0 
+70cdd000-70d33000 rwxp 00000000 00:00 0 
+70d33000-70e2b000 rwxp 00000000 00:00 0 
+70e2b000-70e3e000 rwxp 00000000 00:00 0 
+70e3e000-70e4b000 rwxp 00000000 00:00 0 
+70e4b000-70ea1000 rwxp 00000000 00:00 0 
+70ea1000-70f98000 rwxp 00000000 00:00 0 
+70f98000-70fc3000 rwxp 00000000 00:00 0 
+70fc3000-70fcd000 ---p 00000000 00:00 0 
+70fcd000-7103f000 rwxp 00000000 00:00 0 
+7103f000-73500000 rwxp 00000000 00:00 0 
+73500000-75040000 rwxp 00000000 00:00 0 
+75040000-7faf0000 rwxp 00000000 00:00 0 
+7faf0000-9eaf0000 rwxp 00000000 00:00 0 
+9eaf0000-a4040000 rwxp 00000000 00:00 0 
+a4040000-a5390000 ---p 00000000 00:00 0 
+a5390000-b3840000 rwxp 00000000 00:00 0 
+b3840000-b3841000 r-xs 00001000 08:05 919385     /home/daniel/netbeans-7.0/platform/core/locale/org-openide-filesystems_zh_CN.jar
+b3841000-b3842000 r-xs 00001000 08:05 919437     /home/daniel/netbeans-7.0/platform/core/locale/org-openide-filesystems_ru.jar
+b3842000-b3843000 r-xs 00001000 08:05 919436     /home/daniel/netbeans-7.0/platform/core/locale/org-openide-filesystems_ja.jar
+b3843000-b3850000 rwxp 00000000 00:00 0 
+b3850000-b3903000 rwxp 00000000 00:00 0 
+b3903000-b3c23000 rwxp 00000000 00:00 0 
+b3c23000-b6903000 rwxp 00000000 00:00 0 
+b6903000-b6912000 r-xp 00000000 08:05 4470020    /usr/lib/jvm/java-6-sun-1.6.0.24/jre/lib/i386/libzip.so
+b6912000-b6914000 rwxp 0000e000 08:05 4470020    /usr/lib/jvm/java-6-sun-1.6.0.24/jre/lib/i386/libzip.so
+b6914000-b691e000 r-xp 00000000 08:05 3547576    /lib/i386-linux-gnu/libnss_files-2.13.so
+b691e000-b691f000 r-xp 00009000 08:05 3547576    /lib/i386-linux-gnu/libnss_files-2.13.so
+b691f000-b6920000 rwxp 0000a000 08:05 3547576    /lib/i386-linux-gnu/libnss_files-2.13.so
+b6920000-b6929000 r-xp 00000000 08:05 3547561    /lib/i386-linux-gnu/libnss_nis-2.13.so
+b6929000-b692a000 r-xp 00008000 08:05 3547561    /lib/i386-linux-gnu/libnss_nis-2.13.so
+b692a000-b692b000 rwxp 00009000 08:05 3547561    /lib/i386-linux-gnu/libnss_nis-2.13.so
+b692b000-b6931000 r-xp 00000000 08:05 3547562    /lib/i386-linux-gnu/libnss_compat-2.13.so
+b6931000-b6932000 r-xp 00005000 08:05 3547562    /lib/i386-linux-gnu/libnss_compat-2.13.so
+b6932000-b6933000 rwxp 00006000 08:05 3547562    /lib/i386-linux-gnu/libnss_compat-2.13.so
+b6933000-b6946000 r-xp 00000000 08:05 3547557    /lib/i386-linux-gnu/libnsl-2.13.so
+b6946000-b6947000 r-xp 00012000 08:05 3547557    /lib/i386-linux-gnu/libnsl-2.13.so
+b6947000-b6948000 rwxp 00013000 08:05 3547557    /lib/i386-linux-gnu/libnsl-2.13.so
+b6948000-b694a000 rwxp 00000000 00:00 0 
+b694a000-b694f000 r-xs 000b8000 08:05 919629     /home/daniel/netbeans-7.0/platform/core/core.jar
+b694f000-b6952000 r-xs 00047000 08:05 919593     /home/daniel/netbeans-7.0/platform/lib/org-openide-util-lookup.jar
+b6952000-b6953000 r-xs 00009000 08:05 919615     /home/daniel/netbeans-7.0/platform/lib/org-openide-modules.jar
+b6953000-b6956000 r-xs 0005a000 08:05 919630     /home/daniel/netbeans-7.0/platform/lib/boot.jar
+b6956000-b6957000 r-xp 002a1000 08:05 4326790    /usr/lib/locale/locale-archive
+b6957000-b695f000 rwxs 00000000 08:05 2755799    /tmp/hsperfdata_daniel/3441
+b695f000-b6982000 r-xp 00000000 08:05 4470015    /usr/lib/jvm/java-6-sun-1.6.0.24/jre/lib/i386/libjava.so
+b6982000-b6984000 rwxp 00023000 08:05 4470015    /usr/lib/jvm/java-6-sun-1.6.0.24/jre/lib/i386/libjava.so
+b6984000-b698b000 r-xp 00000000 08:05 3547553    /lib/i386-linux-gnu/librt-2.13.so
+b698b000-b698c000 r-xp 00006000 08:05 3547553    /lib/i386-linux-gnu/librt-2.13.so
+b698c000-b698d000 rwxp 00007000 08:05 3547553    /lib/i386-linux-gnu/librt-2.13.so
+b698d000-b6990000 ---p 00000000 00:00 0 
+b6990000-b69de000 rwxp 00000000 00:00 0 
+b69de000-b6a02000 r-xp 00000000 08:05 3547572    /lib/i386-linux-gnu/libm-2.13.so
+b6a02000-b6a03000 r-xp 00023000 08:05 3547572    /lib/i386-linux-gnu/libm-2.13.so
+b6a03000-b6a04000 rwxp 00024000 08:05 3547572    /lib/i386-linux-gnu/libm-2.13.so
+b6a04000-b7191000 r-xp 00000000 08:05 4470035    /usr/lib/jvm/java-6-sun-1.6.0.24/jre/lib/i386/server/libjvm.so
+b7191000-b71e4000 rwxp 0078d000 08:05 4470035    /usr/lib/jvm/java-6-sun-1.6.0.24/jre/lib/i386/server/libjvm.so
+b71e4000-b7603000 rwxp 00000000 00:00 0 
+b7603000-b775d000 r-xp 00000000 08:05 3542501    /lib/i386-linux-gnu/libc-2.13.so
+b775d000-b775e000 ---p 0015a000 08:05 3542501    /lib/i386-linux-gnu/libc-2.13.so
+b775e000-b7760000 r-xp 0015a000 08:05 3542501    /lib/i386-linux-gnu/libc-2.13.so
+b7760000-b7761000 rwxp 0015c000 08:05 3542501    /lib/i386-linux-gnu/libc-2.13.so
+b7761000-b7764000 rwxp 00000000 00:00 0 
+b7764000-b7766000 r-xp 00000000 08:05 3547569    /lib/i386-linux-gnu/libdl-2.13.so
+b7766000-b7767000 r-xp 00001000 08:05 3547569    /lib/i386-linux-gnu/libdl-2.13.so
+b7767000-b7768000 rwxp 00002000 08:05 3547569    /lib/i386-linux-gnu/libdl-2.13.so
+b7768000-b776f000 r-xp 00000000 08:05 4470024    /usr/lib/jvm/java-6-sun-1.6.0.24/jre/lib/i386/jli/libjli.so
+b776f000-b7771000 rwxp 00006000 08:05 4470024    /usr/lib/jvm/java-6-sun-1.6.0.24/jre/lib/i386/jli/libjli.so
+b7771000-b7772000 rwxp 00000000 00:00 0 
+b7772000-b7787000 r-xp 00000000 08:05 3547567    /lib/i386-linux-gnu/libpthread-2.13.so
+b7787000-b7788000 r-xp 00015000 08:05 3547567    /lib/i386-linux-gnu/libpthread-2.13.so
+b7788000-b7789000 rwxp 00016000 08:05 3547567    /lib/i386-linux-gnu/libpthread-2.13.so
+b7789000-b778b000 rwxp 00000000 00:00 0 
+b778b000-b7791000 r-xp 00000000 08:05 4470038    /usr/lib/jvm/java-6-sun-1.6.0.24/jre/lib/i386/native_threads/libhpi.so
+b7791000-b7792000 rwxp 00006000 08:05 4470038    /usr/lib/jvm/java-6-sun-1.6.0.24/jre/lib/i386/native_threads/libhpi.so
+b7792000-b7793000 rwxp 00000000 00:00 0 
+b7793000-b7794000 r-xp 00000000 00:00 0 
+b7794000-b779f000 r-xp 00000000 08:05 4470049    /usr/lib/jvm/java-6-sun-1.6.0.24/jre/lib/i386/libverify.so
+b779f000-b77a0000 rwxp 0000b000 08:05 4470049    /usr/lib/jvm/java-6-sun-1.6.0.24/jre/lib/i386/libverify.so
+b77a0000-b77a2000 rwxp 00000000 00:00 0 
+b77a2000-b77a3000 r-xp 00000000 00:00 0          [vdso]
+b77a3000-b77bf000 r-xp 00000000 08:05 3547574    /lib/i386-linux-gnu/ld-2.13.so
+b77bf000-b77c0000 r-xp 0001b000 08:05 3547574    /lib/i386-linux-gnu/ld-2.13.so
+b77c0000-b77c1000 rwxp 0001c000 08:05 3547574    /lib/i386-linux-gnu/ld-2.13.so
+bffcb000-bffec000 rwxp 00000000 00:00 0          [stack]
+
+VM Arguments:
+jvm_args: -Djdk.home=/usr/lib/jvm/java-6-sun-1.6.0.24 -Dnetbeans.system_http_proxy=DIRECT -Dnetbeans.system_http_non_proxy_hosts= -Dnetbeans.dirs=/home/daniel/gephi/gephibzr/gephi/build/cluster:/home/daniel/netbeans-7.0/platform -Dnetbeans.home=/home/daniel/netbeans-7.0/platform -Dnetbeans.logger.console=true -ea -Xms256m -Xmx1000m -Dsun.java2d.noddraw=true -Dsun.awt.noerasebackground=true -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/home/daniel/gephi/gephibzr/gephi/build/testuserdir/var/log/heapdump.hprof 
+java_command: org.netbeans.Main --userdir /home/daniel/gephi/gephibzr/gephi/build/testuserdir --branding gephi
+Launcher Type: SUN_STANDARD
+
+Environment Variables:
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games
+USERNAME=daniel
+LD_LIBRARY_PATH=/usr/lib/jvm/java-6-sun-1.6.0.24/jre/lib/i386/server:/usr/lib/jvm/java-6-sun-1.6.0.24/jre/lib/i386:/usr/lib/jvm/java-6-sun-1.6.0.24/jre/../lib/i386:/usr/lib/jvm/java-6-sun-1.6.0.24/jre/lib/i386/client:/usr/lib/jvm/java-6-sun-1.6.0.24/jre/lib/i386:/usr/lib/jvm/java-6-sun-1.6.0.24/jre/../lib/i386
+SHELL=/bin/bash
+DISPLAY=:0
+
+Signal Handlers:
+SIGSEGV: [libjvm.so+0x708f80], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGBUS: [libjvm.so+0x708f80], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGFPE: [libjvm.so+0x5c4100], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGPIPE: SIG_IGN, sa_mask[0]=0x00001000, sa_flags=0x10000000
+SIGXFSZ: [libjvm.so+0x5c4100], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGILL: [libjvm.so+0x5c4100], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGUSR1: SIG_DFL, sa_mask[0]=0x00000000, sa_flags=0x00000000
+SIGUSR2: [libjvm.so+0x5c70e0], sa_mask[0]=0x00000004, sa_flags=0x10000004
+SIGHUP: [libjvm.so+0x5c6cc0], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGINT: SIG_IGN, sa_mask[0]=0x00000000, sa_flags=0x00000000
+SIGTERM: [libjvm.so+0x5c6cc0], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGQUIT: [libjvm.so+0x5c6cc0], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+
+
+---------------  S Y S T E M  ---------------
+
+OS:squeeze/sid
+
+uname:Linux 2.6.38-8-generic #42-Ubuntu SMP Mon Apr 11 03:31:50 UTC 2011 i686
+libc:glibc 2.13 NPTL 2.13 
+rlimit: STACK 8192k, CORE 0k, NPROC infinity, NOFILE 4096, AS infinity
+load average:0.00 0.01 0.05
+
+/proc/meminfo:
+MemTotal:        1955572 kB
+MemFree:           58692 kB
+Buffers:           91000 kB
+Cached:           584724 kB
+SwapCached:           72 kB
+Active:          1080264 kB
+Inactive:         711260 kB
+Active(anon):     810924 kB
+Inactive(anon):   432804 kB
+Active(file):     269340 kB
+Inactive(file):   278456 kB
+Unevictable:          48 kB
+Mlocked:              48 kB
+HighTotal:       1081776 kB
+HighFree:           1552 kB
+LowTotal:         873796 kB
+LowFree:           57140 kB
+SwapTotal:       4476924 kB
+SwapFree:        4476112 kB
+Dirty:               264 kB
+Writeback:           100 kB
+AnonPages:       1115804 kB
+Mapped:           150784 kB
+Shmem:            127908 kB
+Slab:              61736 kB
+SReclaimable:      43808 kB
+SUnreclaim:        17928 kB
+KernelStack:        3040 kB
+PageTables:         7872 kB
+NFS_Unstable:          0 kB
+Bounce:                0 kB
+WritebackTmp:          0 kB
+CommitLimit:     5454708 kB
+Committed_AS:    3383136 kB
+VmallocTotal:     122880 kB
+VmallocUsed:       34648 kB
+VmallocChunk:      82500 kB
+HardwareCorrupted:     0 kB
+HugePages_Total:       0
+HugePages_Free:        0
+HugePages_Rsvd:        0
+HugePages_Surp:        0
+Hugepagesize:       4096 kB
+DirectMap4k:       16376 kB
+DirectMap4M:      892928 kB
+
+
+CPU:total 2 (2 cores per cpu, 1 threads per core) family 6 model 23 stepping 10, cmov, cx8, fxsr, mmx, sse, sse2, sse3, ssse3, sse4.1
+
+Memory: 4k page, physical 1955572k(58692k free), swap 4476924k(4476112k free)
+
+vm_info: Java HotSpot(TM) Server VM (19.1-b02) for linux-x86 JRE (1.6.0_24-b07), built on Feb  2 2011 16:51:52 by "java_re" with gcc 3.2.1-7a (J2SE release)
+
+time: Mon Jun 20 00:52:26 2011
+elapsed time: 7917 seconds
+

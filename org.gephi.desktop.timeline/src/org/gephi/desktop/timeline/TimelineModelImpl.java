@@ -21,11 +21,9 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 package org.gephi.desktop.timeline;
 
 import org.gephi.dynamic.api.DynamicController;
-import org.gephi.dynamic.api.DynamicGraph;
 import org.gephi.dynamic.api.DynamicModel;
 import org.gephi.dynamic.api.DynamicModelEvent;
 import org.gephi.dynamic.api.DynamicModelListener;
-import org.gephi.graph.api.Graph;
 
 import org.gephi.timeline.api.TimelineModel;
 import org.gephi.timeline.api.TimelineModelEvent;
@@ -34,7 +32,7 @@ import org.openide.util.Lookup;
 
 /**
  *
- * @author Julian Bilcke, Daniel Bernardes
+ * @author Julian Bilcke
  */
 public class TimelineModelImpl implements TimelineModel, DynamicModelListener {
 
@@ -49,8 +47,6 @@ public class TimelineModelImpl implements TimelineModel, DynamicModelListener {
     private double modelMax = Double.POSITIVE_INFINITY;
     private Class unit = null;
     private boolean enabled = false;
-    
-    private DynamicGraph dynamicgraph;
     //Architecture
     private final TimelineControllerImpl controller;
     private DynamicController dynamicController;
@@ -74,17 +70,12 @@ public class TimelineModelImpl implements TimelineModel, DynamicModelListener {
         modelMax = Double.POSITIVE_INFINITY;
         setModelMin(dynamicModel.getMin());
         setModelMax(dynamicModel.getMax());
-
-        dynamicgraph = dynamicModel.createDynamicGraph();
-        
         refreshEnabled();
     }
 
     public void unsetup() {
         dynamicModel = null;
         dynamicController.removeModelListener(this);
-        
-        dynamicgraph = null;
     }
 
     public void disable() {
@@ -218,9 +209,5 @@ public class TimelineModelImpl implements TimelineModel, DynamicModelListener {
 
     private void fireTimelineModelEvent(TimelineModelEvent event) {
         controller.fireTimelineModelEvent(event);
-    }
-
-    public Graph getSnapshotGraph(double point) {
-        return dynamicgraph.getSnapshotGraph(point);
     }
 }

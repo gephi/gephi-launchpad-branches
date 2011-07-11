@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this template, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE library PUBLIC "-//NetBeans//DTD Library Declaration 1.0//EN" "http://www.netbeans.org/dtds/library-declaration-1_0.dtd">
+<library version="1.0">
+    <name>Orson-0.5.0</name>
+    <type>j2se</type>
+    <localizing-bundle>org.jfree.Bundle</localizing-bundle>
+    <volume>
+        <type>classpath</type>
+        <resource>jar:nbinst://org.jfree/libs/orson-0.5.0.jar!/</resource>
+    </volume>
+    <volume>
+        <type>src</type>
+        <resource>jar:nbinst://org.jfree/sources/Orson-0.5.0-source.zip!/</resource>
+    </volume>
+    <volume>
+        <type>javadoc</type>
+        <resource>jar:nbinst://org.jfree/docs/Orson-0.5.0-javadoc.zip!/</resource>
+    </volume>
+</library>
