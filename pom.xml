@@ -114,6 +114,7 @@
     <module>validation</module>
 <!--    <module>ui.utils</module>
     <module>ui.components</module>-->
+    <module>database.drivers</module>
   </modules>
     <reporting>
         <plugins>
