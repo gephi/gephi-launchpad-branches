@@ -31,11 +31,12 @@ import org.gephi.lib.gleem.linalg.Vec4f;
 import org.gephi.visualization.api.camera.Camera;
 
 /**
- * Class representing a camera. Enables basic camera movement.
+ * Class representing a camera for three dimensions. Enables basic camera movement.
  *
  * @author Antonio Patriarca <antoniopatriarca@gmail.com>
+ * @author Vojtech Bardiovsky <vojtech.bardiovsky@gmail.com>
  */
-public class CameraImpl implements Camera {
+public class Camera3d implements Camera {
     
     private Vec3f front, up;
     private Vec3f position;
@@ -51,7 +52,7 @@ public class CameraImpl implements Camera {
     private static final float MAX_ORBIT = 2000.0f;
     private static final float MAX_FOVY = 3.0f;
 
-    public CameraImpl(int width, int height, float near, float far) {
+    public Camera3d(int width, int height, float near, float far) {
         this.imageWidth = width;
         this.imageHeight = height;
         this.fovy = 1.0f;
@@ -65,9 +66,8 @@ public class CameraImpl implements Camera {
 
     @Override
     public Camera copy() {
-        CameraImpl camera = new CameraImpl((int) imageWidth, (int) imageHeight, near, far);
+        Camera3d camera = new Camera3d((int) imageWidth, (int) imageHeight, near, far);
         camera.fovy = this.fovy;
-
         camera.position = this.position;
         camera.front = this.front;
         camera.up = this.up;
@@ -296,6 +296,7 @@ public class CameraImpl implements Camera {
 
     @Override
     public int projectNodeRadius(float x, float y, float z, float size) {
+        // FIXME
         return 5;
     }
 
