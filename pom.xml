@@ -115,6 +115,8 @@
 <!--    <module>ui.utils</module>
     <module>ui.components</module>-->
     <module>database.drivers</module>
+    <module>timeline</module>
+    <module>filters.api</module>
   </modules>
     <reporting>
         <plugins>
