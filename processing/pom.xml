@@ -2,10 +2,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-    <artifactId>gephi</artifactId>
-    <groupId>org.gephi</groupId>
-    <version>1.0-SNAPSHOT</version>
-  </parent>
+        <artifactId>gephi</artifactId>
+        <groupId>org.gephi</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
 
     <groupId>org.gephi.lib</groupId>
     <artifactId>processing</artifactId>
@@ -32,7 +32,7 @@
                 <enabled>false</enabled>
             </snapshots>
         </repository>
-         <repository>
+        <repository>
             <id>thirdparty</id>
             <url>http://localhost:8081/nexus/content/repositories/thirdparty</url>
         </repository>
@@ -45,10 +45,12 @@
             <version>RELEASE70</version>
         </dependency>
         <dependency>
-  <groupId>org.processing</groupId>
-  <artifactId>processing-core</artifactId>
-  <version>1.0.9</version>
-</dependency>
+            <groupId>org.processing</groupId>
+            <artifactId>processing-core</artifactId>
+            <version>1.0.9</version>
+<!--            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/core.jar</systemPath>-->
+        </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>jogl</artifactId>

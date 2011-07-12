@@ -2,10 +2,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-    <artifactId>gephi</artifactId>
-    <groupId>org.gephi</groupId>
-    <version>1.0-SNAPSHOT</version>
-  </parent>
+        <artifactId>gephi</artifactId>
+        <groupId>org.gephi</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
 
     <groupId>org.gephi.lib</groupId>
     <artifactId>jogl</artifactId>
@@ -32,7 +32,7 @@
                 <enabled>false</enabled>
             </snapshots>
         </repository>
-          <repository>
+        <repository>
             <id>thirdparty</id>
             <url>http://localhost:8081/nexus/content/repositories/thirdparty</url>
         </repository>
@@ -46,15 +46,19 @@
             <version>RELEASE70</version>
         </dependency>
         <dependency>
-			<groupId>com.sun.gluegen.runtime</groupId>
-			<artifactId>gluegen-rt</artifactId>
-			<version>1.1.1-a</version>
-		</dependency>
-                <dependency>
-      <groupId>com.sun.opengl</groupId>
-      <artifactId>jogl</artifactId>
-      <version>1.1.1-a</version>
-    </dependency>
+            <groupId>com.sun.gluegen.runtime</groupId>
+            <artifactId>gluegen-rt</artifactId>
+            <version>1.1.1-a</version>
+<!--            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/gluegen-rt.jar</systemPath>-->
+        </dependency>
+        <dependency>
+            <groupId>com.sun.opengl</groupId>
+            <artifactId>jogl</artifactId>
+            <version>1.1.1-a</version>
+<!--            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/jogl.jar</systemPath>-->
+        </dependency>
         <dependency>
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-openide-util</artifactId>

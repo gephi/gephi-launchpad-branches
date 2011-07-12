@@ -58,12 +58,16 @@
             <groupId>org.jdesktop</groupId>
             <artifactId>swingx</artifactId>
             <version>1.6.1</version>
+<!--            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/swingx-1.6.1.jar</systemPath>-->
         </dependency>
  
         <dependency>
             <groupId>org.jdesktop</groupId>
             <artifactId>swingx-beaninfo</artifactId>
             <version>1.6.1</version>
+<!--            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/swingx-beaninfo-1.6.1.jar</systemPath>-->
         </dependency>
 
 
