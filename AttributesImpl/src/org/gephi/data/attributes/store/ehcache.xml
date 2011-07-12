@@ -3,7 +3,8 @@
 <ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     updateCheck="false" 
     monitoring="autoDetect"
-    dynamicConfig="true">
+    dynamicConfig="true"
+    maxBytesLocalOnHeap="40%">
 
     <diskStore path="java.io.tmpdir" />
     
