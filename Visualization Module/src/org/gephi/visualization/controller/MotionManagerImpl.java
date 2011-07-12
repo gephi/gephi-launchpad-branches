@@ -63,8 +63,8 @@ public class MotionManagerImpl implements MotionManager {
     }
 
     @Override
-    public float[] getDrag() {
-        return new float[] {mouseDrag[0], mouseDrag[1]};
+    public int[] getDrag() {
+        return new int[] {mouseDrag[0], mouseDrag[1]};
     }
 
     @Override
@@ -74,8 +74,8 @@ public class MotionManagerImpl implements MotionManager {
     }
 
     @Override
-    public float[] getMousePosition() {
-        return new float[] {mousePosition[0], mousePosition[1]};
+    public int[] getMousePosition() {
+        return new int[] {mousePosition[0], mousePosition[1]};
     }
 
     @Override

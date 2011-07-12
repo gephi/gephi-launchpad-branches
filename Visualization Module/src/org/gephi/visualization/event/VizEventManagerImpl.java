@@ -104,7 +104,7 @@ public class VizEventManagerImpl implements VizEventManager {
             MotionManager motionManager = Lookup.getDefault().lookup(MotionManager.class);
             Collection<Node> nodes = selectionManager.getSelectedNodes();
             if (nodes.isEmpty() || !selectionManager.isSelectionEnabled()) {
-                float[] mousePositionViewport = motionManager.getMousePosition();
+                int[] mousePositionViewport = motionManager.getMousePosition();
                 float[] mousePosition3d = motionManager.getMousePosition3d();
                 float[] mousePos = new float[]{mousePositionViewport[0], mousePositionViewport[1], mousePosition3d[0], mousePosition3d[1], mousePosition3d[2]};
                 handlers[VizEvent.Type.MOUSE_LEFT_CLICK.ordinal()].dispatch(mousePos);
@@ -187,8 +187,10 @@ public class VizEventManagerImpl implements VizEventManager {
             VizEventTypeHandler handler = handlers[VizEvent.Type.DRAG.ordinal()];
             if (handler.hasListeners()) {
                 MotionManager motionManager = Lookup.getDefault().lookup(MotionManager.class);
-                float[] mouseDrag = Arrays.copyOf(motionManager.getDrag(), 5);
+                float[] mouseDrag = new float[5];
                 float[] mouseDrag3d = motionManager.getDrag3d();
+                mouseDrag[0] = motionManager.getDrag()[0];
+                mouseDrag[1] = motionManager.getDrag()[1];
                 mouseDrag[2] = mouseDrag3d[0];
                 mouseDrag[3] = mouseDrag3d[1];
                 mouseDrag[4] = mouseDrag3d[2];

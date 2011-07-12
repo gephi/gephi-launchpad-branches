@@ -40,6 +40,7 @@ import org.gephi.visualization.api.selection.NodeContainer;
 import org.gephi.visualization.api.selection.SelectionManager;
 import org.gephi.visualization.api.selection.SelectionType;
 import org.gephi.visualization.api.selection.Shape;
+import org.gephi.visualization.apiimpl.shape.ShapeUtils;
 import org.gephi.visualization.controller.Controller;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.ServiceProvider;
@@ -53,6 +54,8 @@ public class SelectionManagerImpl implements SelectionManager, WorkspaceListener
 
     private int mouseSelectionDiameter;
     private boolean mouseSelectionZoomProportional;
+
+    private Shape singleNodeSelectionShape;
 
     private List<ChangeListener> listeners = new ArrayList<ChangeListener>();
 
@@ -85,7 +88,6 @@ public class SelectionManagerImpl implements SelectionManager, WorkspaceListener
         nodeContainer.cancelContinuousSelection();
     }
 
-
     @Override
     public void clearSelection() {
         nodeContainer.clearSelection();
@@ -93,12 +95,14 @@ public class SelectionManagerImpl implements SelectionManager, WorkspaceListener
 
     @Override
     public void selectSingle(Point point, boolean select) {
-        nodeContainer.selectSingle(point, select, (getMouseSelectionDiameter() + 1) / 2, NodeContainer.SINGLE_NODE_FIRST);
+        singleNodeSelectionShape = ShapeUtils.createEllipseShape(point.x -(mouseSelectionDiameter + 1) / 2, point.y -(mouseSelectionDiameter + 1) / 2, mouseSelectionDiameter, mouseSelectionDiameter);
+        nodeContainer.selectSingle(singleNodeSelectionShape, point, select, NodeContainer.SINGLE_NODE_FIRST);
     }
 
     @Override
     public boolean selectContinuousSingle(Point point, boolean select) {
-        return nodeContainer.selectContinuousSingle(point, select, (getMouseSelectionDiameter() + 1) / 2, NodeContainer.SINGLE_NODE_FIRST);
+        singleNodeSelectionShape = ShapeUtils.createEllipseShape(point.x -(mouseSelectionDiameter + 1) / 2, point.y -(mouseSelectionDiameter + 1) / 2, mouseSelectionDiameter, mouseSelectionDiameter);
+        return nodeContainer.selectContinuousSingle(singleNodeSelectionShape, point, select, NodeContainer.SINGLE_NODE_FIRST);
     }
 
     @Override
@@ -137,6 +141,11 @@ public class SelectionManagerImpl implements SelectionManager, WorkspaceListener
     @Override
     public int getMouseSelectionDiameter() {
         return mouseSelectionDiameter;
+    }
+
+    @Override
+    public Shape getNodePointerShape() {
+        return isDirectMouseSelection() ? singleNodeSelectionShape : null;
     }
 
     @Override

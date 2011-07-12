@@ -37,10 +37,6 @@ public interface Camera {
 
     public void setImageSize(Dimension size);
 
-    public void moveTo(Vec3f newPos);
-
-    public void translate(Vec3f v);
-
     public void rotate(Vec3f axis, float angle);
 
     public void rotate(Vec3f origin, Vec3f axis, float angle);

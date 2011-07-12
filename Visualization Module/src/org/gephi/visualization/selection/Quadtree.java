@@ -34,7 +34,6 @@ import org.gephi.visualization.api.camera.Camera;
 import org.gephi.visualization.api.selection.NodeContainer;
 import org.gephi.visualization.api.selection.Shape;
 import org.gephi.visualization.api.selection.Shape.Intersection;
-import org.gephi.visualization.apiimpl.shape.ShapeUtils;
 import org.gephi.visualization.controller.Controller;
 
 /**
@@ -217,10 +216,9 @@ public final class Quadtree implements NodeContainer {
     }
 
     @Override
-    public Node selectSingle(final Point point, final boolean select, final int selectionRadius, final int policy) {
+    public Node selectSingle(final Shape shape, final Point point, final boolean select, final int policy) {
         Quadrant quadrant = root;
         final Camera camera = Controller.getDefault().getCameraCopy();
-        final Shape shape = ShapeUtils.createEllipseShape(point.x, point.y, selectionRadius, selectionRadius);
         final Node[] nodes = new Node[1];
         singleFound = false;
 
@@ -280,9 +278,9 @@ public final class Quadtree implements NodeContainer {
     }
 
     @Override
-    public boolean selectContinuousSingle(Point point, final boolean select, final int selectionRadius, final int policy) {
+    public boolean selectContinuousSingle(final Shape shape, final Point point, final boolean select, final int policy) {
         temporarySingleMod = select;
-        temporarySelectedNode = selectSingle(point, select, selectionRadius, policy);
+        temporarySelectedNode = selectSingle(shape, point, select, policy);
         return temporarySelectedNode != null;
     }
 

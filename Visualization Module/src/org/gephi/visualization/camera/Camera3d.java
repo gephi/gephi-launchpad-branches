@@ -81,14 +81,7 @@ public class Camera3d implements Camera {
         requireRecomputeMatrix();
     }
 
-    @Override
-    public void moveTo(Vec3f newPos) {
-        this.position = newPos.copy();
-        requireRecomputeMatrix();
-    }
-
-    @Override
-    public void translate(Vec3f v) {
+    private void translate(Vec3f v) {
         this.position.add(v);
         requireRecomputeMatrix();
     }

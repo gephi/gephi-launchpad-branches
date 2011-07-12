@@ -75,14 +75,7 @@ public class Camera2d implements Camera {
         requireRecomputeMatrix();
     }
 
-    @Override
-    public void moveTo(Vec3f newPos) {
-        this.position = convertTo2d(newPos).copy();
-        requireRecomputeMatrix();
-    }
-
-    @Override
-    public void translate(Vec3f v) {
+    private void translate(Vec3f v) {
         this.position.add(convertTo2d(v));
         requireRecomputeMatrix();
     }

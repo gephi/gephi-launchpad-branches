@@ -71,23 +71,25 @@ public interface NodeContainer {
 
     /**
      * Adds or removes single node from a permanent selection.
-     * @param point the point to determine the closest node.
+     * @param shape the shape to determine the selected node.
+     * @param point the position of the mouse to determine the closest node in
+     * case of the CLOSEST policy.
      * @param select true to select, false to deselect.
      */
-    public Node selectSingle(Point point, final boolean select, final int selectionRadius, final int policy);
+    public Node selectSingle(Shape shape, Point point, final boolean select, final int policy);
 
     /**
      * Adds or removes single node from a temporary selection.
-     * @param point the point to determine the closest node.
+     * @param shape the shape to determine the selected node.
+     * @param point the position of the mouse to determine the closest node in
+     * case of the CLOSEST policy.
      * @param select true to select, false to deselect.
      * @return true if node has been selected.
      */
-    public boolean selectContinuousSingle(Point point, final boolean select, final int selectionRadius, final int policy);
+    public boolean selectContinuousSingle(Shape shape, Point point, final boolean select, final int policy);
 
     /**
      * Clears single node from a temporary selection.
-     * @param point the point to determine the closest node.
-     * @param select true to select, false to deselect.
      */
     public void deselectSingle();
 

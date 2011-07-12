@@ -31,6 +31,7 @@ import org.gephi.project.api.ProjectController;
 import org.gephi.project.api.Workspace;
 import org.gephi.project.api.WorkspaceListener;
 import org.gephi.visualization.api.MotionManager;
+import org.gephi.visualization.api.selection.SelectionManager;
 import org.gephi.visualization.api.selection.Shape;
 import org.gephi.visualization.controller.Controller;
 import org.gephi.visualization.data.FrameDataBridgeIn;
@@ -121,6 +122,11 @@ public class Model implements Runnable, WorkspaceListener {
             Shape selectionShape = Lookup.getDefault().lookup(MotionManager.class).getSelectionShape();
             if (selectionShape != null) {
                 this.bridge.add(selectionShape.getUIPrimitive());
+            }
+
+            Shape pointerShape = Lookup.getDefault().lookup(SelectionManager.class).getNodePointerShape();
+            if (pointerShape != null) {
+                this.bridge.add(pointerShape.getUIPrimitive());
             }
 
             this.controller.endUpdateFrame(box);

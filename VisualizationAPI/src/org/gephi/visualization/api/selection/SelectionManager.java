@@ -90,6 +90,12 @@ public interface SelectionManager {
 
     int getMouseSelectionDiameter();
 
+    /**
+     * Returns the shape that is drawn around the pointer for single selection,
+     * usually a zero radius circle.
+     */
+    Shape getNodePointerShape();
+
     public void centerOnNode(Node node);
 
     boolean isBlocked();

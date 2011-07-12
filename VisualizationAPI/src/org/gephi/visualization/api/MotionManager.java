@@ -35,11 +35,11 @@ public interface MotionManager {
 
     public Shape getSelectionShape();
 
-    public float[] getDrag();
+    public int[] getDrag();
 
     public float[] getDrag3d();
 
-    public float[] getMousePosition();
+    public int[] getMousePosition();
 
     public float[] getMousePosition3d();
 
