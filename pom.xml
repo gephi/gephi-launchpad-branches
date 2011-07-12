@@ -117,6 +117,7 @@
     <module>database.drivers</module>
     <module>timeline</module>
     <module>filters.api</module>
+    <module>visualization.api</module>
   </modules>
     <reporting>
         <plugins>
