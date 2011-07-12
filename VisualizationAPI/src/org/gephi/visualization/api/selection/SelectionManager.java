@@ -96,7 +96,7 @@ public interface SelectionManager {
      */
     Shape getNodePointerShape();
 
-    public void centerOnNode(Node node);
+    void centerOnNode(Node node);
 
     boolean isBlocked();
 

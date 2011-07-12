@@ -284,4 +284,9 @@ public class MotionManagerImpl implements MotionManager {
         this.enable3D = enable3D;
     }
 
+    @Override
+    public boolean isPressing() {
+        return pressing;
+    }
+
 }

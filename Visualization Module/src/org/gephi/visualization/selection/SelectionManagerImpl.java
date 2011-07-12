@@ -35,6 +35,7 @@ import org.gephi.graph.api.Node;
 import org.gephi.project.api.ProjectController;
 import org.gephi.project.api.Workspace;
 import org.gephi.project.api.WorkspaceListener;
+import org.gephi.visualization.api.MotionManager;
 import org.gephi.visualization.api.config.VizConfig;
 import org.gephi.visualization.api.selection.NodeContainer;
 import org.gephi.visualization.api.selection.SelectionManager;
@@ -95,14 +96,14 @@ public class SelectionManagerImpl implements SelectionManager, WorkspaceListener
 
     @Override
     public void selectSingle(Point point, boolean select) {
-        singleNodeSelectionShape = ShapeUtils.createEllipseShape(point.x -(mouseSelectionDiameter + 1) / 2, point.y -(mouseSelectionDiameter + 1) / 2, mouseSelectionDiameter, mouseSelectionDiameter);
-        nodeContainer.selectSingle(singleNodeSelectionShape, point, select, NodeContainer.SINGLE_NODE_FIRST);
+        singleNodeSelectionShape = ShapeUtils.createEllipseShape(point.x - mouseSelectionDiameter, point.y - mouseSelectionDiameter, mouseSelectionDiameter, mouseSelectionDiameter);
+        nodeContainer.selectSingle(singleNodeSelectionShape, point, select, NodeContainer.SINGLE_NODE_CLOSEST);
     }
 
     @Override
     public boolean selectContinuousSingle(Point point, boolean select) {
-        singleNodeSelectionShape = ShapeUtils.createEllipseShape(point.x -(mouseSelectionDiameter + 1) / 2, point.y -(mouseSelectionDiameter + 1) / 2, mouseSelectionDiameter, mouseSelectionDiameter);
-        return nodeContainer.selectContinuousSingle(singleNodeSelectionShape, point, select, NodeContainer.SINGLE_NODE_FIRST);
+        singleNodeSelectionShape = ShapeUtils.createEllipseShape(point.x - mouseSelectionDiameter, point.y - mouseSelectionDiameter, mouseSelectionDiameter, mouseSelectionDiameter);
+        return nodeContainer.selectContinuousSingle(singleNodeSelectionShape, point, select, NodeContainer.SINGLE_NODE_CLOSEST);
     }
 
     @Override
@@ -145,7 +146,8 @@ public class SelectionManagerImpl implements SelectionManager, WorkspaceListener
 
     @Override
     public Shape getNodePointerShape() {
-        return isDirectMouseSelection() ? singleNodeSelectionShape : null;
+        MotionManager motionManager = Lookup.getDefault().lookup(MotionManager.class);
+        return isDirectMouseSelection() && !motionManager.isPressing() && mouseSelectionDiameter > 1 ? singleNodeSelectionShape : null;
     }
 
     @Override

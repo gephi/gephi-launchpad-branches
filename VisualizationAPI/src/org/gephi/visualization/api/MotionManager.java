@@ -43,6 +43,8 @@ public interface MotionManager {
 
     public float[] getMousePosition3d();
 
+    public boolean isPressing();
+
     public void mousePressed(MouseEvent e);
 
     public void mouseClicked(MouseEvent e);
