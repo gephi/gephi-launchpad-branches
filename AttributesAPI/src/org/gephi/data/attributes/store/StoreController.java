@@ -8,7 +8,7 @@ import org.gephi.data.attributes.api.AttributeModel;
  */
 public interface StoreController {
     
-    void newStore(AttributeModel model);
+    Store newStore(AttributeModel model);
     
     Store getStore(AttributeModel model);
     

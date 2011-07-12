@@ -45,7 +45,7 @@ public class AttributeStoreController implements StoreController {
         defaultDbConfig.setSortedDuplicates(false);
     }
     
-    public void newStore(AttributeModel model) {
+    public Store newStore(AttributeModel model) {
         Environment env = getEnvironment(model);
         String dbName = getRandomName();
 
@@ -57,6 +57,8 @@ public class AttributeStoreController implements StoreController {
         
         String log = String.format("Attribute store created (name=%s, location=%s)", dbName, env.getHome().getAbsolutePath());
         System.out.println(log);
+        
+        return store;
     }
     
     public Store getStore(AttributeModel model) {
