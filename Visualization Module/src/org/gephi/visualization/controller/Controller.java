@@ -220,7 +220,7 @@ public class Controller implements KeyListener, MouseListener, MouseMotionListen
     public void select(Workspace workspace) {
         camera = workspace.getLookup().lookup(Camera.class);
         if (camera == null) {
-            camera = new Camera3d(300, 300, 100f, 10000.0f);
+            camera = new Camera3d(viewSize.width, viewSize.height, 100f, 10000.0f);
         }
         Lookup.getDefault().lookup(SelectionManager.class).initialize();
     }
