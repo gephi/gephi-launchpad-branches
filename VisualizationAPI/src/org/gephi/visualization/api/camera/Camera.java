@@ -85,9 +85,13 @@ public interface Camera {
     public Mat4f projectiveMatrix();
 
     /**
-     * Returns the given point as it will appear on the screen.
+     * Returns the given point as it will appear on the screen together with its
+     * size on screen after transformation have been applied.
+     * @return array of integers, where
+     * [0,1] -> point coordinates on screen
+     * [2]   -> size of the node
      */
-    public Point projectPoint(float x, float y, float z);
+    public int[] projectPoint(float x, float y, float z, float size);
 
     /**
      * Returns a point from camera viewing plane corresponding to the 2D point
@@ -102,11 +106,6 @@ public interface Camera {
      * on screen.
      */
     public Vec3f projectVectorInverse(float x, float y);
-
-    /**
-     * Returns the radius of the node in the screen scale.
-     */
-    public int projectNodeRadius(float x, float y, float z, float size);
 
     /**
      * Returns the distance of a point [a,b] on the screen to the projection of

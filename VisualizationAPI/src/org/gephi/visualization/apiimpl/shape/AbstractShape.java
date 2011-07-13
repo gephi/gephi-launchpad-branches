@@ -21,7 +21,6 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 
 package org.gephi.visualization.apiimpl.shape;
 
-import java.awt.Point;
 import org.gephi.visualization.api.camera.Camera;
 import org.gephi.visualization.api.selection.Shape;
 
@@ -38,36 +37,29 @@ public abstract class AbstractShape implements Shape {
 
     private SelectionModifier selectionModifier;
 
-    // For optimization
-    private float maxSize = 0f;
-    private int projectedMaxSize = 0;
-
     public boolean isInside3D(float x, float y, float z, float radius, Camera camera) {
-        Point point = camera.projectPoint(x, y, z);
-        int size = camera.projectNodeRadius(x, y, z, radius);
-        return isPointInside(point.x, point.y, size);
+        int[] point = camera.projectPoint(x, y, z, radius);
+        return isPointInside(point[0], point[1], point[2]);
     }
 
     public Intersection intersectsSquare(float x, float y, float size, float maxNodeSize, Camera camera) {
-        // Create a sphere around the square and test every corner point for inclusion
-        //int radius = camera.projectScale(size * SQUARE_ROOT);
-        if (maxSize != maxNodeSize) {
-            // TODO wrong - fix after node size scale projection available
-            projectedMaxSize = camera.projectNodeRadius(x, y, 0, maxNodeSize);
-        }/*
-        Point center = camera.projectPoint(x + size / 2, y + size / 2, 0);
+        int[][] projectedPoints = new int[4][3];
+        int[] center = camera.projectPoint(x + size / 2, y + size / 2, 0, 0);
+        for (int i = 0; i < 4; i++) {
+            projectedPoints[i] = camera.projectPoint(x + SQUARE_CORNERS[i][0] * size, y + SQUARE_CORNERS[i][1] * size, 0, 0);
+        }
+        int H = projectedPoints[0][0] - center[0];
+        int V = projectedPoints[0][1] - center[1];
         // Is shape inside the square's bounding sphere?
-
-        // FIXME after camera is fixed, set radius instead of MAX_VALUE
-        if (intersectsCircle(center.x, center.y, Integer.MAX_VALUE)) {
+        if (intersectsCircle(center[0], center[1], (int) Math.sqrt(H * H + V * V))) {
             return Intersection.INTERSECT;
-        }*/
+        }
         // Is any square's corner point inside the shape?
         boolean intersect = false;
         boolean inside = true;
         int i = 0;
         while (i < 4 && (!intersect || inside)) {
-            if (isInside3D(x + SQUARE_CORNERS[i][0] * size, y + SQUARE_CORNERS[i][1] * size, 0, projectedMaxSize, camera)) {
+            if (isPointInside(projectedPoints[i][0], projectedPoints[i][1], projectedPoints[i][2])) {
                 intersect = true;
             } else {
                 inside = false;
@@ -82,25 +74,20 @@ public abstract class AbstractShape implements Shape {
     }
 
     public Intersection intersectsCube(float x, float y, float z, float size, float maxNodeSize, Camera camera) {
-        Point[] projectedPoints = new Point[8];
+        int[][] projectedPoints = new int[8][3];
         int maxH = 0, maxV = 0;
-        Point center = camera.projectPoint(x + size / 2, y + size / 2, z + size / 2);
+        int[] center = camera.projectPoint(x + size / 2, y + size / 2, z + size / 2, 0);
         for (int i = 0; i < 8; i++) {
-            projectedPoints[i] = camera.projectPoint(x + CUBE_CORNERS[i][0] * size, y + CUBE_CORNERS[i][1] * size, z + CUBE_CORNERS[i][2] * size);
-            if (Math.abs(projectedPoints[i].x - center.x) > maxH) {
-                maxH = Math.abs(projectedPoints[i].x - center.x);
+            projectedPoints[i] = camera.projectPoint(x + CUBE_CORNERS[i][0] * size, y + CUBE_CORNERS[i][1] * size, z + CUBE_CORNERS[i][2] * size, 0);
+            if (Math.abs(projectedPoints[i][0] - center[0]) > maxH) {
+                maxH = Math.abs(projectedPoints[i][0] - center[0]);
             }
-            if (Math.abs(projectedPoints[i].y - center.y) > maxV) {
-                maxV = Math.abs(projectedPoints[i].y - center.y);
+            if (Math.abs(projectedPoints[i][1] - center[1]) > maxV) {
+                maxV = Math.abs(projectedPoints[i][1] - center[1]);
             }
-        }
-        // Create a sphere around the cube and test every corner point for inclusion
-        if (maxSize != maxNodeSize) {
-            // TODO wrong - fix after node size scale projection available
-            projectedMaxSize = camera.projectNodeRadius(x, y, z, maxNodeSize);
         }
         // Is shape inside the cube's bounding sphere?
-        if (intersectsCircle(center.x, center.y, (int) Math.sqrt(maxH * maxH + maxV * maxV))) {
+        if (intersectsCircle(center[0], center[1], (int) Math.sqrt(maxH * maxH + maxV * maxV))) {
             return Intersection.INTERSECT;
         }
         // Is any cube's corner point inside the shape?
@@ -108,7 +95,7 @@ public abstract class AbstractShape implements Shape {
         boolean inside = true;
         int i = 0;
         while (i < 8 && (!intersect || inside)) {
-            if (isInside3D(x + CUBE_CORNERS[i][0] * size, y + CUBE_CORNERS[i][1] * size, z + CUBE_CORNERS[i][2] * size, projectedMaxSize, camera)) {
+            if (isPointInside(projectedPoints[i][0], projectedPoints[i][1], projectedPoints[i][2])) {
                 intersect = true;
             } else {
                 inside = false;

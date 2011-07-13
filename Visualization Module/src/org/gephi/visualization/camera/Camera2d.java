@@ -22,7 +22,6 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 package org.gephi.visualization.camera;
 
 import java.awt.Dimension;
-import java.awt.Point;
 import org.gephi.lib.gleem.linalg.Mat4f;
 import org.gephi.lib.gleem.linalg.Rotf;
 import org.gephi.lib.gleem.linalg.Vec2f;
@@ -220,10 +219,14 @@ public class Camera2d implements Camera {
     }
 
     /**
-     * Returns the given point as it will appear on the screen.
+     * Returns the given point as it will appear on the screen together with its
+     * size on screen after transformation have been applied.
+     * @return array of integers, where
+     * [0,1] -> point coordinates on screen
+     * [2]   -> size of the node
      */
     @Override
-    public Point projectPoint(float x, float y, float z) {
+    public int[] projectPoint(float x, float y, float z, float size) {
         // TODO
         /*
         Vec4f point = new Vec4f(x, y, z, 1.0f);
@@ -237,7 +240,7 @@ public class Camera2d implements Camera {
         int px = (int) ((screenPoint.x() + 1.0f) * imageWidth / 2.0f);
         int py = (int) ((1.0f - screenPoint.y()) * imageHeight / 2.0f);
         */
-        return new Point(0, 0);
+        return new int[]{0,0,5};
     }
 
     /**
@@ -264,15 +267,9 @@ public class Camera2d implements Camera {
     }
 
     @Override
-    public int projectNodeRadius(float x, float y, float z, float size) {
-        // FIXME
-        return 5;
-    }
-
-    @Override
     public int getPlanarDistance(float x, float y, float z, int a, int b) {
-        Point point = projectPoint(x, y, z);
-        return (int) Math.sqrt((point.x - a) * (point.x - a) + (point.y - b) * (point.y - b));
+        int [] point = projectPoint(x, y, z, 0);
+        return (int) Math.sqrt((point[0] - a) * (point[0] - a) + (point[1] - b) * (point[1] - b));
     }
 
     @Override
