@@ -216,7 +216,7 @@ public class Camera3d implements Camera {
     public Mat4f projectiveMatrix() {
         if (recomputeMatrix) {
             Mat4f mat = new Mat4f();
-            float aspect = imageWidth/imageHeight;
+            float aspect = imageWidth / imageHeight;
             float f = (float) (1.0 / Math.tan(this.fovy / 2.0));
             mat.set(0, 0, f/aspect);
             mat.set(1, 1, f);
@@ -357,12 +357,6 @@ public class Camera3d implements Camera {
         ur.sub(v);
         v.add(orbitCenter);
         lookAt(v, orbitCenter, ur);
-        
-        //System.out.println("Front: " + this.front);
-        //System.out.println("Up: " + this.up);
-        //System.out.println("Right: " + rightVector());
-        //System.out.println("Position: " + position);
-        //System.out.println("--------------------------");
     }
 
     @Override

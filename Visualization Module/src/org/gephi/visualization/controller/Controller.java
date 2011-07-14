@@ -39,6 +39,7 @@ import org.gephi.project.api.WorkspaceListener;
 import org.gephi.visualization.api.MotionManager;
 import org.gephi.visualization.api.camera.Camera;
 import org.gephi.visualization.api.selection.SelectionManager;
+import org.gephi.visualization.camera.Camera2d;
 import org.gephi.visualization.camera.Camera3d;
 import org.gephi.visualization.geometry.AABB;
 import org.gephi.visualization.view.View;
@@ -220,7 +221,7 @@ public class Controller implements KeyListener, MouseListener, MouseMotionListen
     public void select(Workspace workspace) {
         camera = workspace.getLookup().lookup(Camera.class);
         if (camera == null) {
-            camera = new Camera3d(viewSize.width, viewSize.height, 100f, 10000.0f);
+            camera = new Camera2d(viewSize.width, viewSize.height, 100f, 10000.0f);
         }
         Lookup.getDefault().lookup(SelectionManager.class).initialize();
     }

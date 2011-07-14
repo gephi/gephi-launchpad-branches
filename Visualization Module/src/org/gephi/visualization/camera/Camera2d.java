@@ -22,10 +22,12 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 package org.gephi.visualization.camera;
 
 import java.awt.Dimension;
+import org.gephi.lib.gleem.linalg.Mat3f;
 import org.gephi.lib.gleem.linalg.Mat4f;
 import org.gephi.lib.gleem.linalg.Rotf;
 import org.gephi.lib.gleem.linalg.Vec2f;
 import org.gephi.lib.gleem.linalg.Vec3f;
+import org.gephi.lib.gleem.linalg.Vec4f;
 import org.gephi.visualization.api.camera.Camera;
 
 /**
@@ -38,6 +40,7 @@ public class Camera2d implements Camera {
 
     private Vec2f up;
     private Vec2f position;
+    private final Vec3f front;
 
     private Mat4f projectiveMatrix;
     private Mat4f modelviewMatrix;
@@ -56,6 +59,7 @@ public class Camera2d implements Camera {
 
         this.position = new Vec2f();
         this.up = new Vec2f(0.0f, 1.0f);
+        this.front = Vec3f.NEG_Z_AXIS;
     }
 
     @Override
@@ -84,7 +88,7 @@ public class Camera2d implements Camera {
      */
     @Override
     public void rotate(Vec3f axis, float angle) {
-        Rotf rot = new Rotf(Vec3f.NEG_Z_AXIS, angle);
+        Rotf rot = new Rotf(front, angle);
         this.up = convertTo2d(rot.rotateVector(upVector()));
         requireRecomputeMatrix();
     }
@@ -94,7 +98,7 @@ public class Camera2d implements Camera {
      */
     @Override
     public void rotate(Vec3f origin, Vec3f axis, float angle) {
-        Rotf rot = new Rotf(Vec3f.NEG_Z_AXIS, angle);
+        Rotf rot = new Rotf(front, angle);
         this.up = convertTo2d(rot.rotateVector(upVector()));
 
         Vec3f diff = new Vec3f(position.x(), position.y(), 0).minus(new Vec3f(origin.x(), origin.y(), origin.z()));
@@ -137,7 +141,7 @@ public class Camera2d implements Camera {
 
     @Override
     public Vec3f frontVector() {
-        return Vec3f.NEG_Z_AXIS;
+        return this.front;
     }
 
     @Override
@@ -152,7 +156,7 @@ public class Camera2d implements Camera {
 
     @Override
     public Vec3f position() {
-        return new Vec3f(position.x(), position.y(), 0);
+        return new Vec3f(position.x(), position.y(), 5550);
     }
 
     @Override
@@ -197,9 +201,14 @@ public class Camera2d implements Camera {
      */
     @Override
     public Mat4f viewMatrix() {
+        // FIXME may have better implementation or even return type
         if (recomputeMatrix) {
+            Vec3f right = rightVector();
             Mat4f mat = new Mat4f();
-            // TODO
+            mat.setRotation(right, upVector(), this.front.times(-1.0f));
+            mat.transpose();
+            mat.setTranslation(this.position().times(-1.0f));
+            mat.set(3, 3, 1.0f);
             modelviewMatrix = mat;
         }
         return modelviewMatrix;
@@ -210,9 +219,16 @@ public class Camera2d implements Camera {
      */
     @Override
     public Mat4f projectiveMatrix() {
+        // FIXME may have better implementation or even return type
         if (recomputeMatrix) {
             Mat4f mat = new Mat4f();
-            // TODO
+            float aspect = imageWidth / imageHeight;
+            float f = (float) (1.0 / Math.tan(this.fovy / 2.0));
+            mat.set(0, 0, f/aspect);
+            mat.set(1, 1, f);
+            mat.set(2, 2, (this.far + this.near)/(this.near - this.far));
+            mat.set(2, 3, (2.0f * this.far * this.near)/(this.near - this.far));
+            mat.set(3, 2, -1.0f);
             projectiveMatrix = mat;
         }
         return projectiveMatrix;
@@ -227,8 +243,8 @@ public class Camera2d implements Camera {
      */
     @Override
     public int[] projectPoint(float x, float y, float z, float size) {
-        // TODO
-        /*
+        // FIXME may have better implementation
+        int[] res = new int[3];
         Vec4f point = new Vec4f(x, y, z, 1.0f);
         Vec4f screenPoint = new Vec4f();
         Mat4f viewProjMatrix = projectiveMatrix().mul(viewMatrix());
@@ -237,10 +253,10 @@ public class Camera2d implements Camera {
         screenPoint.scale(1.0f/screenPoint.w());
         // to NDC
         // point.scale(1 / point.w());
-        int px = (int) ((screenPoint.x() + 1.0f) * imageWidth / 2.0f);
-        int py = (int) ((1.0f - screenPoint.y()) * imageHeight / 2.0f);
-        */
-        return new int[]{0,0,5};
+        res[0] = (int) ((screenPoint.x() + 1.0f) * imageWidth / 2.0f);
+        res[1] = (int) ((1.0f - screenPoint.y()) * imageHeight / 2.0f);
+        res[2] = 5;
+        return res;
     }
 
     /**
@@ -290,7 +306,19 @@ public class Camera2d implements Camera {
 
     @Override
     public void updateOrbit(float x, float y) {
-        // TODO
+        // FIXME may have better implementation
+        Mat3f rotationMatrix = new Mat3f();
+        float sx = (float) Math.sin(x);
+        float cx = (float) Math.cos(x);
+        rotationMatrix.setCol(0, new Vec3f(cx, sx, 0));
+        rotationMatrix.setCol(1, new Vec3f(-sx, cx, 0));
+        rotationMatrix.setCol(2, new Vec3f(0, 0, 1));
+        Vec3f u = new Vec3f(upVector());
+        Vec3f ur = new Vec3f();
+
+        rotationMatrix.xformVec(u, ur);
+        this.up = convertTo2d(ur);
+        requireRecomputeMatrix();
     }
 
     @Override
@@ -304,5 +332,9 @@ public class Camera2d implements Camera {
 
     private Vec2f convertTo2d(Vec3f v) {
         return new Vec2f(v.x(), v.y());
+    }
+
+    private Vec3f convertTo3d(Vec2f v) {
+        return new Vec3f(v.x(), v.y(), 0);
     }
 }
