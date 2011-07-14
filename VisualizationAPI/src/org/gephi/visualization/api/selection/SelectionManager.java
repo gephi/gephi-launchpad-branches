@@ -96,8 +96,6 @@ public interface SelectionManager {
      */
     Shape getNodePointerShape();
 
-    void centerOnNode(Node node);
-
     boolean isBlocked();
 
     boolean isDirectMouseSelection();

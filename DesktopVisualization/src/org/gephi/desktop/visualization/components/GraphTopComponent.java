@@ -1,8 +1,4 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-package org.gephi.visualization.components;
+package org.gephi.desktop.visualization.components;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -20,11 +16,8 @@ import org.gephi.project.api.WorkspaceListener;
 import org.gephi.tools.api.ToolController;
 import org.gephi.ui.utils.UIUtils;
 import org.gephi.visualization.api.config.VizConfig;
+import org.gephi.visualization.api.controller.VisualizationController;
 import org.gephi.visualization.apiimpl.PropertiesBarAddon;
-import org.gephi.visualization.controller.Controller;
-import org.gephi.visualization.data.FrameDataBridge;
-import org.gephi.visualization.model.Model;
-import org.gephi.visualization.view.View;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 import org.openide.windows.WindowManager;
@@ -44,10 +37,8 @@ public final class GraphTopComponent extends TopComponent {
 //    static final String ICON_PATH = "SET/PATH/TO/ICON/HERE";
     private static final String PREFERRED_ID = "GraphTopComponent";
 
-    private final View view;
-    private final Model dataManager;
-    private final Controller controller;
-    private final FrameDataBridge frameDataBridge;
+    //private final View view;
+    private final VisualizationController controller;
 
     public GraphTopComponent() {
         initComponents();
@@ -58,19 +49,13 @@ public final class GraphTopComponent extends TopComponent {
         JPopupMenu.setDefaultLightWeightPopupEnabled(false);
         ToolTipManager.sharedInstance().setLightWeightPopupEnabled(false);
 
-        this.controller = Controller.getDefault();
-        this.frameDataBridge = new FrameDataBridge();
-        this.view = new View(this.controller, this.frameDataBridge);
-        this.dataManager = new Model(this.controller, this.frameDataBridge, 33);
-
-        // TODO Temporary until a suitable architecture is created
-        this.controller.setView(this.view);
+        this.controller = Lookup.getDefault().lookup(VisualizationController.class);
 
         //Init
         initCollapsePanel();
         initToolPanels();
 
-        final Component canvas = this.view.getCanvas();
+        final Component canvas = controller.getViewCanvas();
 
         WindowManager.getDefault().invokeWhenUIReady(new Runnable() {
 
@@ -94,7 +79,7 @@ public final class GraphTopComponent extends TopComponent {
     private void initComponents() {
 
         waitingLabel = new javax.swing.JLabel();
-        collapsePanel = new org.gephi.visualization.components.CollapsePanel();
+        collapsePanel = new org.gephi.desktop.visualization.components.CollapsePanel();
 
         setLayout(new java.awt.BorderLayout());
 
@@ -106,7 +91,7 @@ public final class GraphTopComponent extends TopComponent {
     }// </editor-fold>//GEN-END:initComponents
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private org.gephi.visualization.components.CollapsePanel collapsePanel;
+    private org.gephi.desktop.visualization.components.CollapsePanel collapsePanel;
     private javax.swing.JLabel waitingLabel;
     // End of variables declaration//GEN-END:variables
     /**
@@ -248,17 +233,13 @@ public final class GraphTopComponent extends TopComponent {
     protected void componentShowing() {
         super.componentShowing();
         this.validateTree();
-
-        this.dataManager.start();
-        this.view.start();
+        this.controller.start();
     }
 
     @Override
     protected void componentHidden() {
         super.componentHidden();
-
-        this.dataManager.stop();
-        this.view.stop();
+        this.controller.stop();
     }
 
     @Override
@@ -268,8 +249,7 @@ public final class GraphTopComponent extends TopComponent {
 
     @Override
     public void componentClosed() {
-        this.dataManager.stop();
-        this.view.stop();
+        this.controller.stop();
     }
 
     void writeProperties(java.util.Properties p) {

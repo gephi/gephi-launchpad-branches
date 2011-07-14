@@ -84,6 +84,7 @@
                 <package>org.gephi.visualization.api.camera</package>
                 <package>org.gephi.visualization.api.color</package>
                 <package>org.gephi.visualization.api.config</package>
+                <package>org.gephi.visualization.api.controller</package>
                 <package>org.gephi.visualization.api.event</package>
                 <package>org.gephi.visualization.api.selection</package>
                 <package>org.gephi.visualization.api.view.ui</package>

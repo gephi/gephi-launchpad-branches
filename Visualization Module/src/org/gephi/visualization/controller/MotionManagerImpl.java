@@ -39,8 +39,16 @@ import org.gephi.visualization.apiimpl.shape.ShapeUtils;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.ServiceProvider;
 
+/**
+ * Class for handling all basic user events that lead to motion. Handles graph
+ * dragging, selection shape creation, camera rotation etc.
+ *
+ * @author Vojtech Bardiovsky
+ */
 @ServiceProvider(service = MotionManager.class)
 public class MotionManagerImpl implements MotionManager {
+
+    private VisualizationControllerImpl controller;
 
     protected static float MOVE_FACTOR = 5.0f;
     protected static float ZOOM_FACTOR = 0.008f;
@@ -56,6 +64,10 @@ public class MotionManagerImpl implements MotionManager {
     protected boolean pressing;
 
     protected boolean enable3D;
+
+    public MotionManagerImpl() {
+        this.controller = VisualizationControllerImpl.getDefault();
+    }
 
     @Override
     public Shape getSelectionShape() {
@@ -80,14 +92,14 @@ public class MotionManagerImpl implements MotionManager {
 
     @Override
     public float[] getMousePosition3d() {
-        Vec3f position = Controller.getDefault().getCamera().projectPointInverse(mousePosition[0], mousePosition[1]);
+        Vec3f position = controller.getCamera().projectPointInverse(mousePosition[0], mousePosition[1]);
         return new float[]{position.x(), position.y(), position.z()};
     }
 
     @Override
     public void mousePressed(MouseEvent e) {
-        mousePosition[0] = e.getXOnScreen() - (int) Controller.getDefault().getViewLocationOnScreen().getX();
-        mousePosition[1] = e.getYOnScreen() - (int) Controller.getDefault().getViewLocationOnScreen().getY();
+        mousePosition[0] = e.getXOnScreen() - (int) controller.getViewLocationOnScreen().getX();
+        mousePosition[1] = e.getYOnScreen() - (int) controller.getViewLocationOnScreen().getY();
         startDrag[0] = mousePosition[0];
         startDrag[1] = mousePosition[1];
         dragging = true;
@@ -127,15 +139,15 @@ public class MotionManagerImpl implements MotionManager {
         
         // Movement
         if (SwingUtilities.isRightMouseButton(e)) {
-            Controller.getDefault().getCamera().startTranslation();
-            Controller.getDefault().setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
+            controller.getCamera().startTranslation();
+            controller.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
         } else if (SwingUtilities.isMiddleMouseButton(e)) {
-            Dimension viewDimension = Controller.getDefault().getViewDimensions();
+            Dimension viewDimension = VisualizationControllerImpl.getDefault().getViewDimensions();
             int dx = e.getX() - viewDimension.width / 2;
             int dy = e.getY() - viewDimension.height / 2;
             float orbitModifier = (float) (Math.sqrt(dx * dx + dy * dy) / Math.sqrt(viewDimension.width * viewDimension.width / 4 + viewDimension.height * viewDimension.height / 4));
-            Controller.getDefault().getCamera().startOrbit(orbitModifier);
-            Controller.getDefault().setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
+            controller.getCamera().startOrbit(orbitModifier);
+            controller.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
         }
 
         // TODO do not send events during selection
@@ -166,8 +178,8 @@ public class MotionManagerImpl implements MotionManager {
 
     @Override
     public void mouseDragged(MouseEvent e) {
-        int newX = e.getXOnScreen() - (int) Controller.getDefault().getViewLocationOnScreen().getX();
-        int newY = e.getYOnScreen() - (int) Controller.getDefault().getViewLocationOnScreen().getY();
+        int newX = e.getXOnScreen() - (int) controller.getViewLocationOnScreen().getX();
+        int newY = e.getYOnScreen() - (int) controller.getViewLocationOnScreen().getY();
         int x = newX - mousePosition[0];
         int y = newY - mousePosition[1];
         mousePosition[0] = newX;
@@ -185,9 +197,9 @@ public class MotionManagerImpl implements MotionManager {
                 selectionManager.applyContinuousSelection(selectionShape);
             }
         } else if (vizConfig.isDraggingEnabled()) {
-            Controller.getDefault().setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+            controller.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
             if (SwingUtilities.isLeftMouseButton(e)) {
-                Vec3f translation = Controller.getDefault().getCamera().projectVectorInverse(MOVE_FACTOR * x, MOVE_FACTOR * y);
+                Vec3f translation = controller.getCamera().projectVectorInverse(MOVE_FACTOR * x, MOVE_FACTOR * y);
                 for (Node node : selectionManager.getSelectedNodes()) {
                     node.getNodeData().setPosition(node.getNodeData().x() - translation.x(), node.getNodeData().y() - translation.y(), node.getNodeData().z() - translation.z());
                 }
@@ -197,9 +209,9 @@ public class MotionManagerImpl implements MotionManager {
         }
         // Movement
         if (SwingUtilities.isRightMouseButton(e)) {
-            Controller.getDefault().getCamera().updateTranslation(-MOVE_FACTOR * x, MOVE_FACTOR * y);
+            controller.getCamera().updateTranslation(-MOVE_FACTOR * x, MOVE_FACTOR * y);
         } else if (SwingUtilities.isMiddleMouseButton(e)) {
-            Controller.getDefault().getCamera().updateOrbit(ORBIT_FACTOR * x, ORBIT_FACTOR * y);
+            controller.getCamera().updateOrbit(ORBIT_FACTOR * x, ORBIT_FACTOR * y);
         }
     }
 
@@ -227,13 +239,13 @@ public class MotionManagerImpl implements MotionManager {
         }
         Lookup.getDefault().lookup(VizEventManager.class).stopDrag();
         Lookup.getDefault().lookup(VizEventManager.class).mouseReleased();
-        Controller.getDefault().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+        controller.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
     }
 
     @Override
     public void mouseMoved(MouseEvent e) {
-        mousePosition[0] = e.getXOnScreen() - (int) Controller.getDefault().getViewLocationOnScreen().getX();
-        mousePosition[1] = e.getYOnScreen() - (int) Controller.getDefault().getViewLocationOnScreen().getY();
+        mousePosition[0] = e.getXOnScreen() - (int) controller.getViewLocationOnScreen().getX();
+        mousePosition[1] = e.getYOnScreen() - (int) controller.getViewLocationOnScreen().getY();
 
         VizConfig vizConfig = Lookup.getDefault().lookup(VizConfig.class);
         SelectionManager selectionManager = Lookup.getDefault().lookup(SelectionManager.class);
@@ -251,16 +263,16 @@ public class MotionManagerImpl implements MotionManager {
             selectionManager.deselectSingle();
             boolean selected = selectionManager.selectContinuousSingle(e.getPoint(), modifier.isPositive());
             if (selected) {
-                Controller.getDefault().setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                controller.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
             } else {
-                Controller.getDefault().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+                controller.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
             }
         }
     }
 
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
-        Controller.getDefault().getCamera().zoom(ZOOM_FACTOR * e.getUnitsToScroll());
+        controller.getCamera().zoom(ZOOM_FACTOR * e.getUnitsToScroll());
     }
 
     private SelectionModifier extractSelectionModifier(MouseEvent e) {

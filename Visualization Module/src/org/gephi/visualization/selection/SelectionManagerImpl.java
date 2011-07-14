@@ -42,7 +42,6 @@ import org.gephi.visualization.api.selection.SelectionManager;
 import org.gephi.visualization.api.selection.SelectionType;
 import org.gephi.visualization.api.selection.Shape;
 import org.gephi.visualization.apiimpl.shape.ShapeUtils;
-import org.gephi.visualization.controller.Controller;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.ServiceProvider;
 
@@ -114,11 +113,6 @@ public class SelectionManagerImpl implements SelectionManager, WorkspaceListener
     @Override
     public void addChangeListener(ChangeListener changeListener) {
         listeners.add(changeListener);
-    }
-
-    @Override
-    public void centerOnNode(Node node) {
-        Controller.getDefault().centerOnNode(node.getNodeData().x(), node.getNodeData().y(), node.getNodeData().z());
     }
 
     @Override

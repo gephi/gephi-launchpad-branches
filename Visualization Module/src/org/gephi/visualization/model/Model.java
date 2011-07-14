@@ -33,7 +33,7 @@ import org.gephi.project.api.WorkspaceListener;
 import org.gephi.visualization.api.MotionManager;
 import org.gephi.visualization.api.selection.SelectionManager;
 import org.gephi.visualization.api.selection.Shape;
-import org.gephi.visualization.controller.Controller;
+import org.gephi.visualization.controller.VisualizationControllerImpl;
 import org.gephi.visualization.data.FrameDataBridgeIn;
 import org.gephi.visualization.geometry.AABB;
 import org.openide.util.Lookup;
@@ -48,14 +48,14 @@ public class Model implements Runnable, WorkspaceListener {
     private boolean isRunning;
     private int frameDuration;
 
-    final private Controller controller;
+    final private VisualizationControllerImpl controller;
     final private FrameDataBridgeIn bridge;
 
     private boolean workspaceSelected;
     private GraphModel graphModel;
     final private Object graphModelLock;
 
-    public Model(Controller controller, FrameDataBridgeIn bridge, int frameDuration) {
+    public Model(VisualizationControllerImpl controller, FrameDataBridgeIn bridge, int frameDuration) {
         this.thread = null;
         this.frameDuration = frameDuration;
 

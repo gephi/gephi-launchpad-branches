@@ -22,6 +22,7 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 package org.gephi.visualization.controller;
 
 
+import java.awt.Canvas;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Point;
@@ -32,28 +33,38 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import org.gephi.graph.api.Node;
 import org.gephi.lib.gleem.linalg.Vec3f;
 import org.gephi.project.api.ProjectController;
 import org.gephi.project.api.Workspace;
 import org.gephi.project.api.WorkspaceListener;
 import org.gephi.visualization.api.MotionManager;
 import org.gephi.visualization.api.camera.Camera;
+import org.gephi.visualization.api.controller.VisualizationController;
 import org.gephi.visualization.api.selection.SelectionManager;
 import org.gephi.visualization.camera.Camera2d;
-import org.gephi.visualization.camera.Camera3d;
+import org.gephi.visualization.data.FrameDataBridge;
 import org.gephi.visualization.geometry.AABB;
+import org.gephi.visualization.model.Model;
 import org.gephi.visualization.view.View;
 import org.openide.util.Lookup;
+import org.openide.util.lookup.ServiceProvider;
 
 /**
+ * Implementation of visualization controller.
  *
  * @author Antonio Patriarca <antoniopatriarca@gmail.com>
+ * @author Vojtech Bardiovsky <vojtech.bardiovsky@gmail.com>
  */
-public class Controller implements KeyListener, MouseListener, MouseMotionListener, MouseWheelListener, WorkspaceListener {
+@ServiceProvider(service = VisualizationController.class)
+public class VisualizationControllerImpl implements VisualizationController, KeyListener, MouseListener, MouseMotionListener, MouseWheelListener, WorkspaceListener {
 
     private Camera camera;
 
-    private static Controller instance;
+    private static VisualizationControllerImpl instance;
+    private final View view;
+    private final Model dataManager;
+    private final FrameDataBridge frameDataBridge;
 
     private Dimension viewSize;
 
@@ -61,16 +72,20 @@ public class Controller implements KeyListener, MouseListener, MouseMotionListen
     private boolean centerZero;
     private float[] centerNode;
 
-    private Controller() {
+    public VisualizationControllerImpl() {
         // Random values
         this.viewSize = new Dimension();
-        
+
+        this.frameDataBridge = new FrameDataBridge();
+        this.view = new View(this, this.frameDataBridge);
+        this.dataManager = new Model(this, this.frameDataBridge, 33);
+
         Lookup.getDefault().lookup(ProjectController.class).addWorkspaceListener(this);
     }
 
-    public synchronized static Controller getDefault() {
+    synchronized static VisualizationControllerImpl getDefault() {
         if (instance == null) {
-            instance = new Controller();
+            instance = (VisualizationControllerImpl) Lookup.getDefault().lookup(VisualizationController.class);
         }
         return instance;
     }
@@ -82,18 +97,19 @@ public class Controller implements KeyListener, MouseListener, MouseMotionListen
         }
     }
 
+    @Override
     public Dimension getViewDimensions() {
         return viewSize;
     }
 
+    @Override
     public Point getViewLocationOnScreen() {
         return view.getCanvas().getLocationOnScreen();
     }
 
-    // TODO Temporary until a suitable architecture is created
-    private View view;
-    public void setView(View view) {
-        this.view = view;
+    @Override
+    public Canvas getViewCanvas() {
+        return view.getCanvas();
     }
 
     public void setCursor(Cursor cursor) {
@@ -104,22 +120,27 @@ public class Controller implements KeyListener, MouseListener, MouseMotionListen
         return this.camera;
     }
 
+    @Override
     public Camera getCameraCopy() {
         return this.camera.copy();
     }
 
+    @Override
     public void centerOnGraph() {
         centerGraph = true;
     }
 
+    @Override
     public void centerOnZero() {
         centerZero = true;
     }
 
-    public void centerOnNode(float x, float y, float z) {
-        centerNode = new float[]{x, y, z};
+    @Override
+    public void centerOnNode(Node node) {
+        centerNode = new float[]{node.getNodeData().x(), node.getNodeData().y(), node.getNodeData().z()};
     }
 
+    @Override
     public boolean isCentering() {
         return centerGraph || centerZero || centerNode != null;
     }
@@ -159,6 +180,18 @@ public class Controller implements KeyListener, MouseListener, MouseMotionListen
     }
 
     public void endRenderFrame() {
+    }
+
+    @Override
+    public void start() {
+        this.dataManager.start();
+        this.view.start();
+    }
+
+    @Override
+    public void stop() {
+        this.dataManager.stop();
+        this.view.stop();
     }
 
     // User events

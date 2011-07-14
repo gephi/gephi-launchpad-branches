@@ -33,9 +33,10 @@ import org.gephi.graph.api.NodeData;
 import org.gephi.graph.api.NodeIterator;
 import org.gephi.graph.spi.SpatialData;
 import org.gephi.visualization.api.camera.Camera;
+import org.gephi.visualization.api.controller.VisualizationController;
 import org.gephi.visualization.api.selection.NodeContainer;
 import org.gephi.visualization.api.selection.Shape.Intersection;
-import org.gephi.visualization.controller.Controller;
+import org.openide.util.Lookup;
 
 /**
  * @author Vojtech Bardiovsky
@@ -152,7 +153,7 @@ public final class Octree implements NodeContainer {
 
     @Override
     public List<Node> applySelection(final Shape shape) {
-        final Camera camera = Controller.getDefault().getCameraCopy();
+        final Camera camera = Lookup.getDefault().lookup(VisualizationController.class).getCameraCopy();
         final List<Node> nodes = new ArrayList<Node>();
 
         final boolean select = shape.getSelectionModifier().isPositive();
@@ -195,7 +196,7 @@ public final class Octree implements NodeContainer {
             return;
         }
 
-        final Camera camera = Controller.getDefault().getCameraCopy();
+        final Camera camera = Lookup.getDefault().lookup(VisualizationController.class).getCameraCopy();
         Intersection intersection = shape.intersectsCube(octant.getX(), octant.getY(), octant.getZ(), octant.getSize(), maxNodeSize, camera);
 
         switch (intersection) {
@@ -227,7 +228,7 @@ public final class Octree implements NodeContainer {
     @Override
     public Node selectSingle(final Shape shape, final Point point, final boolean select, final int policy) {
         Octant octant = root;
-        final Camera camera = Controller.getDefault().getCameraCopy();
+        final Camera camera = Lookup.getDefault().lookup(VisualizationController.class).getCameraCopy();
         final Node[] nodes = new Node[1];
         singleFound = false;
 

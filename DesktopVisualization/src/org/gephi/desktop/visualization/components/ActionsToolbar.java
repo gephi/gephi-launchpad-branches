@@ -18,7 +18,7 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.gephi.visualization.components;
+package org.gephi.desktop.visualization.components;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -37,7 +37,7 @@ import org.gephi.graph.api.GraphController;
 import org.gephi.graph.api.Node;
 import org.gephi.ui.components.JColorButton;
 import org.gephi.ui.utils.UIUtils;
-import org.gephi.visualization.controller.Controller;
+import org.gephi.visualization.api.controller.VisualizationController;
 import org.openide.util.Lookup;
 import org.openide.util.NbBundle;
 
@@ -64,7 +64,7 @@ public class ActionsToolbar extends JToolBar {
         centerOnGraphButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                Controller.getDefault().centerOnGraph();
+                Lookup.getDefault().lookup(VisualizationController.class).centerOnGraph();
             }
         });
         add(centerOnGraphButton);
@@ -76,7 +76,7 @@ public class ActionsToolbar extends JToolBar {
         centerOnZeroButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                Controller.getDefault().centerOnZero();
+                Lookup.getDefault().lookup(VisualizationController.class).centerOnZero();
             }
         });
         add(centerOnZeroButton);

@@ -24,8 +24,8 @@ package org.gephi.visualization.view;
 import com.jogamp.common.nio.Buffers;
 import com.jogamp.opengl.util.FPSAnimator;
 import com.jogamp.opengl.util.awt.TextRenderer;
+import java.awt.Canvas;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.nio.IntBuffer;
@@ -35,7 +35,7 @@ import javax.media.opengl.GLCapabilities;
 import javax.media.opengl.GLEventListener;
 import javax.media.opengl.GLProfile;
 import javax.media.opengl.awt.GLCanvas;
-import org.gephi.visualization.controller.Controller;
+import org.gephi.visualization.controller.VisualizationControllerImpl;
 import org.gephi.visualization.data.FrameData;
 import org.gephi.visualization.data.FrameDataBridgeOut;
 import org.gephi.visualization.view.pipeline.Pipeline;
@@ -55,7 +55,7 @@ public class View implements GLEventListener {
     private GLCanvas canvas;
     private FPSAnimator animator;
 
-    final private Controller controller;
+    final private VisualizationControllerImpl controller;
     final private FrameDataBridgeOut bridge;
 
     private FrameData frameData = null;
@@ -68,7 +68,7 @@ public class View implements GLEventListener {
     private TextRenderer textRenderer;
 
 
-    public View(Controller controller, FrameDataBridgeOut bridge) {
+    public View(VisualizationControllerImpl controller, FrameDataBridgeOut bridge) {
         this.controller = controller;
         this.bridge = bridge;
 
@@ -96,7 +96,7 @@ public class View implements GLEventListener {
         this.textRenderer = null;
     }
     
-    public Component getCanvas() {
+    public Canvas getCanvas() {
         return this.canvas;
     }
 

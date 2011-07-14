@@ -34,9 +34,9 @@ import org.gephi.project.api.Workspace;
 import org.gephi.ui.utils.ColorUtils;
 import org.gephi.visualization.api.camera.Camera;
 import org.gephi.visualization.api.config.VizConfig;
+import org.gephi.visualization.api.controller.VisualizationController;
 import org.gephi.visualization.api.vizmodel.TextModel;
 import org.gephi.visualization.api.vizmodel.VizModel;
-import org.gephi.visualization.controller.Controller;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.ServiceProvider;
 
@@ -449,7 +449,7 @@ public class VizModelImpl implements VizModel {
         writer.writeStartElement("vizmodel");
 
         //Fast refreh
-        Camera camera = Controller.getDefault().getCameraCopy();
+        Camera camera = Lookup.getDefault().lookup(VisualizationController.class).getCameraCopy();
         cameraPosition = camera.position().toArray();
         cameraTarget = camera.lookAtPoint().toArray();
 
