@@ -255,6 +255,7 @@ public class VisualizationControllerImpl implements VisualizationController, Key
         camera = workspace.getLookup().lookup(Camera.class);
         if (camera == null) {
             camera = new Camera2d(viewSize.width, viewSize.height, 100f, 10000.0f);
+            workspace.add(camera);
         }
         Lookup.getDefault().lookup(SelectionManager.class).initialize();
     }

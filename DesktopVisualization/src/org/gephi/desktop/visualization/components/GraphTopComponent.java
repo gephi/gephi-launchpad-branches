@@ -26,10 +26,9 @@ import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.util.Lookup;
 
 /**
- * Top component which displays something.
+ * Top component for visualization.
  */
-@ConvertAsProperties(dtd = "-//org.gephi.visualization.components//Graph//EN",
-autostore = false)
+@ConvertAsProperties(dtd = "-//org.gephi.visualization.components//Graph//EN", autostore = false)
 public final class GraphTopComponent extends TopComponent {
 
     private static GraphTopComponent instance;
@@ -70,6 +69,7 @@ public final class GraphTopComponent extends TopComponent {
         });
     }
 
+
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
@@ -84,7 +84,7 @@ public final class GraphTopComponent extends TopComponent {
         setLayout(new java.awt.BorderLayout());
 
         waitingLabel.setBackground(new java.awt.Color(255, 255, 255));
-        org.openide.awt.Mnemonics.setLocalizedText(waitingLabel, org.openide.util.NbBundle.getMessage(GraphTopComponent.class, "GraphTopComponent.waitingLabel.text_1")); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(waitingLabel, org.openide.util.NbBundle.getMessage(GraphTopComponent.class, "GraphTopComponent.waitingLabel.text")); // NOI18N
         waitingLabel.setVerticalAlignment(javax.swing.SwingConstants.TOP);
         add(waitingLabel, java.awt.BorderLayout.CENTER);
         add(collapsePanel, java.awt.BorderLayout.PAGE_END);
@@ -278,7 +278,7 @@ public final class GraphTopComponent extends TopComponent {
     }
 
     private static class AddonsBar extends JPanel {
-        
+
         public AddonsBar() {
             super(new FlowLayout(FlowLayout.RIGHT, 0, 0));
         }

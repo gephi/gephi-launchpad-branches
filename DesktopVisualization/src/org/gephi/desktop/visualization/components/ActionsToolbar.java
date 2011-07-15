@@ -60,7 +60,7 @@ public class ActionsToolbar extends JToolBar {
         //Center on graph
         final JButton centerOnGraphButton = new JButton();
         centerOnGraphButton.setToolTipText(NbBundle.getMessage(ActionsToolbar.class, "ActionsToolbar.centerOnGraph"));
-        centerOnGraphButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/gephi/visualization/components/centerOnGraph.png")));
+        centerOnGraphButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/gephi/desktop/visualization/components/centerOnGraph.png")));
         centerOnGraphButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -72,7 +72,7 @@ public class ActionsToolbar extends JToolBar {
         //Center on zero
         final JButton centerOnZeroButton = new JButton();
         centerOnZeroButton.setToolTipText(NbBundle.getMessage(ActionsToolbar.class, "ActionsToolbar.centerOnZero"));
-        centerOnZeroButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/gephi/visualization/components/centerOnZero.png")));
+        centerOnZeroButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/gephi/desktop/visualization/components/centerOnZero.png")));
         centerOnZeroButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -108,7 +108,7 @@ public class ActionsToolbar extends JToolBar {
 
         //Reset sizes
         final JButton resetSizeButton = new JButton();
-        resetSizeButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/gephi/visualization/components/resetSize.png")));
+        resetSizeButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/gephi/desktop/visualization/components/resetSize.png")));
         resetSizeButton.setToolTipText(NbBundle.getMessage(ActionsToolbar.class, "ActionsToolbar.resetSizes"));
         resetSizeButton.addActionListener(new ActionListener() {
             @Override
@@ -140,7 +140,7 @@ public class ActionsToolbar extends JToolBar {
 
         //Reset label colors
         final JButton resetLabelColorButton = new JButton();
-        resetLabelColorButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/gephi/visualization/components/resetLabelColor.png")));
+        resetLabelColorButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/gephi/desktop/visualization/components/resetLabelColor.png")));
         resetLabelColorButton.setToolTipText(NbBundle.getMessage(ActionsToolbar.class, "ActionsToolbar.resetLabelColors"));
         resetLabelColorButton.addActionListener(new ActionListener() {
             @Override
@@ -159,7 +159,7 @@ public class ActionsToolbar extends JToolBar {
 
         //Reset label colors
         final JButton resetLabelVisibleButton = new JButton();
-        resetLabelVisibleButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/gephi/visualization/components/resetLabelVisible.png")));
+        resetLabelVisibleButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/gephi/desktop/visualization/components/resetLabelVisible.png")));
         resetLabelVisibleButton.setToolTipText(NbBundle.getMessage(ActionsToolbar.class, "ActionsToolbar.resetLabelVisible"));
         resetLabelVisibleButton.addActionListener(new ActionListener() {
             @Override
@@ -178,7 +178,7 @@ public class ActionsToolbar extends JToolBar {
 
         //Reset label size
         JButton resetLabelSizeButton = new JButton();
-        resetLabelSizeButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/gephi/visualization/components/resetLabelSize.png")));
+        resetLabelSizeButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/gephi/desktop/visualization/components/resetLabelSize.png")));
         resetLabelSizeButton.setToolTipText(NbBundle.getMessage(ActionsToolbar.class, "ActionsToolbar.resetLabelSizes"));
         resetLabelSizeButton.addActionListener(new ActionListener() {
             @Override

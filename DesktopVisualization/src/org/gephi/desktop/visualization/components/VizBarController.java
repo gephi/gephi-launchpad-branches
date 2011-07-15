@@ -142,7 +142,7 @@ public class VizBarController {
                 }
             });
             screenshotPopup.add(configureScreenshotItem);
-            final JButton screenshotButton = new JDropDownButton(new javax.swing.ImageIcon(getClass().getResource("/org/gephi/visualization/components/screenshot.png")), screenshotPopup);
+            final JButton screenshotButton = new JDropDownButton(new javax.swing.ImageIcon(getClass().getResource("/org/gephi/desktop/visualization/components/screenshot.png")), screenshotPopup);
             screenshotButton.setToolTipText(NbBundle.getMessage(VizBarController.class, "VizToolbar.Global.screenshot"));
             screenshotButton.addActionListener(new ActionListener() {
 
@@ -190,7 +190,7 @@ public class VizBarController {
             final JToggleButton showLabelsButton = new JToggleButton();
             showLabelsButton.setSelected(vizModel.getTextModel().isShowNodeLabels());
             showLabelsButton.setToolTipText(NbBundle.getMessage(VizBarController.class, "VizToolbar.Nodes.showLabels"));
-            showLabelsButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/gephi/visualization/components/showNodeLabels.png")));
+            showLabelsButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/gephi/desktop/visualization/components/showNodeLabels.png")));
             showLabelsButton.addActionListener(new ActionListener() {
 
                 public void actionPerformed(ActionEvent e) {
@@ -213,7 +213,7 @@ public class VizBarController {
             final JToggleButton showHullsButton = new JToggleButton();
             showHullsButton.setSelected(vizModel.isShowHulls());
             showHullsButton.setToolTipText(NbBundle.getMessage(VizBarController.class, "VizToolbar.Nodes.showHulls"));
-            showHullsButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/gephi/visualization/components/showHulls.png")));
+            showHullsButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/gephi/desktop/visualization/components/showHulls.png")));
             showHullsButton.addActionListener(new ActionListener() {
 
                 public void actionPerformed(ActionEvent e) {
@@ -273,7 +273,7 @@ public class VizBarController {
             final JToggleButton showEdgeButton = new JToggleButton();
             showEdgeButton.setSelected(vizModel.isShowEdges());
             showEdgeButton.setToolTipText(NbBundle.getMessage(VizBarController.class, "VizToolbar.Edges.showEdges"));
-            showEdgeButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/gephi/visualization/components/showEdges.png")));
+            showEdgeButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/gephi/desktop/visualization/components/showEdges.png")));
             showEdgeButton.addActionListener(new ActionListener() {
 
                 public void actionPerformed(ActionEvent e) {
@@ -298,7 +298,7 @@ public class VizBarController {
             final JToggleButton edgeHasNodeColorButton = new JToggleButton();
             edgeHasNodeColorButton.setSelected(!vizModel.isEdgeHasUniColor());
             edgeHasNodeColorButton.setToolTipText(NbBundle.getMessage(VizBarController.class, "VizToolbar.Edges.edgeNodeColor"));
-            edgeHasNodeColorButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/gephi/visualization/components/edgeNodeColor.png")));
+            edgeHasNodeColorButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/gephi/desktop/visualization/components/edgeNodeColor.png")));
             edgeHasNodeColorButton.addActionListener(new ActionListener() {
 
                 public void actionPerformed(ActionEvent e) {
@@ -324,7 +324,7 @@ public class VizBarController {
             final JToggleButton showLabelsButton = new JToggleButton();
             showLabelsButton.setSelected(vizModel.getTextModel().isShowEdgeLabels());
             showLabelsButton.setToolTipText(NbBundle.getMessage(VizBarController.class, "VizToolbar.Edges.showLabels"));
-            showLabelsButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/gephi/visualization/components/showEdgeLabels.png")));
+            showLabelsButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/gephi/desktop/visualization/components/showEdgeLabels.png")));
             showLabelsButton.addActionListener(new ActionListener() {
 
                 public void actionPerformed(ActionEvent e) {

@@ -22,10 +22,9 @@
             <file name="GraphTopComponent.settings" url="GraphTopComponentSettings.xml"/>
         </folder>
         <folder name="Modes">
-            <folder name="graphmode">
+            <folder name="editor">
                 <file name="GraphTopComponent.wstcref" url="GraphTopComponentWstcref.xml"/>
             </folder>
-            <file name="graphmode.wsmode" url="graphmodeWsmode.xml"/>
         </folder>
     </folder>
 </filesystem>

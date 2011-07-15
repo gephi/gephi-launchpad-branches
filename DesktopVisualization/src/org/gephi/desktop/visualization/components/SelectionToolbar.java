@@ -56,7 +56,7 @@ public class SelectionToolbar extends JToolBar {
     private void initContent() {
 
         //Mouse
-        final JToggleButton mouseButton = new JToggleButton(new ImageIcon(getClass().getResource("/org/gephi/visualization/components/mouse.png")));
+        final JToggleButton mouseButton = new JToggleButton(new ImageIcon(getClass().getResource("/org/gephi/desktop/visualization/components/mouse.png")));
         mouseButton.setToolTipText(NbBundle.getMessage(SelectionToolbar.class, "SelectionToolbar.mouse.tooltip"));
         mouseButton.addActionListener(new ActionListener() {
             @Override
@@ -69,7 +69,7 @@ public class SelectionToolbar extends JToolBar {
         add(mouseButton);
 
         //Rectangle
-        final JToggleButton rectangleButton = new JToggleButton(new ImageIcon(getClass().getResource("/org/gephi/visualization/components/rectangle.png")));
+        final JToggleButton rectangleButton = new JToggleButton(new ImageIcon(getClass().getResource("/org/gephi/desktop/visualization/components/rectangle.png")));
         rectangleButton.setToolTipText(NbBundle.getMessage(SelectionToolbar.class, "SelectionToolbar.rectangle.tooltip"));
         rectangleButton.addActionListener(new ActionListener() {
             @Override
@@ -82,7 +82,7 @@ public class SelectionToolbar extends JToolBar {
         add(rectangleButton);
 
         //Polygon
-        final JToggleButton polygonButton = new JToggleButton(new ImageIcon(getClass().getResource("/org/gephi/visualization/components/polygon.png")));
+        final JToggleButton polygonButton = new JToggleButton(new ImageIcon(getClass().getResource("/org/gephi/desktop/visualization/components/polygon.png")));
         polygonButton.setToolTipText(NbBundle.getMessage(SelectionToolbar.class, "SelectionToolbar.polygon.tooltip"));
         polygonButton.addActionListener(new ActionListener() {
             @Override
@@ -95,7 +95,7 @@ public class SelectionToolbar extends JToolBar {
         add(polygonButton);
 
         //Ellipse
-        final JToggleButton ellipseButton = new JToggleButton(new ImageIcon(getClass().getResource("/org/gephi/visualization/components/ellipse.png")));
+        final JToggleButton ellipseButton = new JToggleButton(new ImageIcon(getClass().getResource("/org/gephi/desktop/visualization/components/ellipse.png")));
         ellipseButton.setToolTipText(NbBundle.getMessage(SelectionToolbar.class, "SelectionToolbar.ellipse.tooltip"));
         ellipseButton.addActionListener(new ActionListener() {
             @Override
@@ -108,7 +108,7 @@ public class SelectionToolbar extends JToolBar {
         add(ellipseButton);
 
         //Drag
-        final JToggleButton dragButton = new JToggleButton(new ImageIcon(getClass().getResource("/org/gephi/visualization/components/hand.png")));
+        final JToggleButton dragButton = new JToggleButton(new ImageIcon(getClass().getResource("/org/gephi/desktop/visualization/components/hand.png")));
         dragButton.setToolTipText(NbBundle.getMessage(SelectionToolbar.class, "SelectionToolbar.drag.tooltip"));
         dragButton.addActionListener(new ActionListener() {
             @Override
