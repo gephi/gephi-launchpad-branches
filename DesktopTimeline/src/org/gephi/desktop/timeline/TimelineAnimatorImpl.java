@@ -26,14 +26,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.Timer;
-import javax.swing.event.ChangeEvent;
 import org.gephi.timeline.api.TimelineAnimator;
+import org.gephi.timeline.api.TimelineAnimatorEvent;
 import org.gephi.timeline.api.TimelineAnimatorListener;
 import org.gephi.timeline.api.TimelinePlayMode;
 
 /**
  *
- * @author Julian Bilcke
+ * @author Julian Bilcke, Daniel Bernardes
  */
 public class TimelineAnimatorImpl 
         implements TimelineAnimator, ActionListener {
@@ -54,10 +54,13 @@ public class TimelineAnimatorImpl
 
     public TimelineAnimatorImpl() {
         listeners = new ArrayList<TimelineAnimatorListener>();
-        playMode = playMode.OLDEST;
+        playMode = playMode.BOTH;
         stepByTick = 0.01;
         paused = new AtomicBoolean(true);
 
+        timer = new Timer(250, this); // 0.1 sec
+        timer.setInitialDelay(2000); // 2.0 sec        
+        
         relativeSelectionStart = 0.0;
         relativeSelectionEnd = 1.0;
     }
@@ -98,16 +101,15 @@ public class TimelineAnimatorImpl
         return relativeSelectionEnd;
     }
 
-    public synchronized void play() {
-        timer = new Timer(100, this); // 0.1
-        timer.setInitialDelay(1900); // 1.9 sec
+    public synchronized void play(double selectionStart, double selectionEnd) {
+        setInterval(selectionStart, selectionEnd);
         paused.set(false);
         timer.start();
     }
 
-    public synchronized void play(TimelinePlayMode playMode) {
+    public synchronized void play(double selectionStart, double selectionEnd, TimelinePlayMode playMode) {
         setTimelinePlayMode(playMode);
-        play();
+        play(selectionStart, selectionEnd);
     }
 
     public synchronized boolean togglePause() {
@@ -131,18 +133,15 @@ public class TimelineAnimatorImpl
         return !timer.isRunning();
     }
 
-   
-
     public synchronized void setTimelinePlayMode(TimelinePlayMode playMode) {
         this.playMode = playMode;
     }
+    
     public synchronized TimelinePlayMode getTimelinePlayMode() {
       return playMode;
     }
-
-
     
-   public synchronized void setStepByTick(double s) {
+    public synchronized void setStepByTick(double s) {
         stepByTick = s;
     }
     public synchronized double getStepByTick() {
@@ -160,7 +159,7 @@ public class TimelineAnimatorImpl
     }
 
     public void fireChangeEvent() {
-        ChangeEvent evt = new ChangeEvent(this);
+        TimelineAnimatorEvent evt = new TimelineAnimatorEvent(getFrom(),getTo(), isStopped());
         for (TimelineAnimatorListener listener : listeners) {
             listener.timelineAnimatorChanged(evt);
         }
@@ -174,7 +173,10 @@ public class TimelineAnimatorImpl
 
         double f = getFrom();
         double t = getTo();
+        
+        System.out.println("tic. f: "+f+" to: "+t);
 
+        
         switch(getTimelinePlayMode()) {
             case YOUNGEST:
                 f += s;
@@ -202,6 +204,8 @@ public class TimelineAnimatorImpl
         }
         setInterval(f, t);
         fireChangeEvent();
+        System.out.println("toc");
+
     }
 
 }

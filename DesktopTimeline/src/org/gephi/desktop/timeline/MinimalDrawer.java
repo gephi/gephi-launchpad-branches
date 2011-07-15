@@ -35,17 +35,12 @@ import javax.swing.JPanel;
 import javax.swing.Timer;
 import javax.swing.event.ChangeEvent;
 import org.gephi.timeline.api.TimelineAnimator;
+import org.gephi.timeline.api.TimelineAnimatorEvent;
 import org.gephi.timeline.api.TimelineAnimatorListener;
 import org.gephi.timeline.api.TimelineModel;
 import org.gephi.timeline.api.TimelineModelListener;
 import org.gephi.timeline.spi.TimelineDrawer;
 import org.joda.time.DateTime;
-import org.joda.time.Days;
-import org.joda.time.Hours;
-import org.joda.time.Interval;
-import org.joda.time.Months;
-import org.joda.time.Period;
-import org.joda.time.PeriodType;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.openide.util.lookup.ServiceProvider;
@@ -185,12 +180,31 @@ public class MinimalDrawer extends JPanel
 
     public void setAnimator(TimelineAnimator animator) {
         this.animator = animator;
+        animator.addListener(this);
     }
 
     public TimelineAnimator getAnimator() {
         return animator;
     }
-
+    
+    public void timelineAnimatorChanged(TimelineAnimatorEvent event) {
+        // get new position
+        newfrom = event.getRelFrom();
+        newto   = event.getRelTo();
+        // update model
+        if (model != null) {
+            if (newfrom != oldfrom || newto != oldto) {
+                model.setRangeFromFloat(newfrom, newto);
+                oldfrom = newfrom;
+                oldto = newto;
+            }
+        }
+        // move the drawer
+        sf = newfrom * (double) getWidth();
+        st = newto * (double) getWidth();
+        repaint();
+    }
+    
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
@@ -381,223 +395,6 @@ public class MinimalDrawer extends JPanel
         }
     }
 
-    private void paintUpperRulerForInterval(Graphics2D g2d, DateTime dtFrom, DateTime dtTo) {
-
-        g2d.setFont(settings.graduations.font);
-        g2d.setColor(settings.graduations.fontColor);
-        int leftMargin = settings.graduations.leftMargin;
-        int textTopPosition = settings.graduations.textTopPosition;
-        int width = getWidth();
-        int height = getHeight();
-        // TODO take these from the model
-
-
-        Interval interval = new Interval(dtFrom, dtTo);
-
-        Period p = interval.toPeriod(PeriodType.days());
-        // try to determine length if we had to show milliseconds
-
-        int n = p.getDays();
-        int unitSize = (int) (settings.graduations.fontMetrics.getStringBounds("wednesday  ", null)).getWidth();
-        if (n < (width / unitSize)) {
-            //System.out.println("jour");
-            for (int i = 0; i < n; i++) {
-                g2d.drawString(dtFrom.plusDays(i).dayOfWeek().getAsText(LOCALE),
-                        leftMargin + 2 + i * (width / n),
-                        textTopPosition);
-                g2d.drawLine(leftMargin + i * (width / n), 2, leftMargin + i * (width / n), height - settings.graduations.textBottomMargin);
-                paintSmallGraduations(g2d,
-                        leftMargin + i * (width / n),
-                        leftMargin + (i + 1) * (width / n),
-                        Hours.hoursBetween(dtFrom.plusDays(i), dtFrom.plusDays(i + 1)).getHours());
-            }
-            return;
-        }
-
-
-        unitSize = (int) (settings.graduations.fontMetrics.getStringBounds("wed ", null)).getWidth();
-        if (n < (width / unitSize)) {
-            //System.out.println("jou");
-            for (int i = 0; i < n; i++) {
-                g2d.drawString(dtFrom.plusDays(i).dayOfWeek().getAsShortText(LOCALE),
-                        leftMargin + 2 + i * (width / n),
-                        textTopPosition);
-                g2d.drawLine(leftMargin + i * (width / n), 2, leftMargin + i * (width / n), height - settings.graduations.textBottomMargin);
-
-                paintSmallGraduations(g2d,
-                        leftMargin + i * (width / n),
-                        leftMargin + (i + 1) * (width / n),
-                        Hours.hoursBetween(dtFrom.plusDays(i), dtFrom.plusDays(i + 1)).getHours());
-            }
-            return;
-        }
-
-
-        p = interval.toPeriod(PeriodType.days());
-        n = p.getDays();
-        unitSize = (int) (settings.graduations.fontMetrics.getStringBounds("30", null)).getWidth();
-        if (n < (width / unitSize)) {
-            //System.out.println("j");
-            for (int i = 0; i < n; i++) {
-                g2d.drawString("" + (dtFrom.getDayOfMonth() + i),
-                        leftMargin + 2 + i * (width / n),
-                        textTopPosition);
-                g2d.drawLine(leftMargin + i * (width / n), 2, leftMargin + i * (width / n), height - settings.graduations.textBottomMargin);
-
-                paintSmallGraduations(g2d,
-                        leftMargin + i * (width / n),
-                        leftMargin + (i + 1) * (width / n),
-                        Hours.hoursBetween(dtFrom.plusDays(i), dtFrom.plusDays(i + 1)).getHours());
-            }
-            return;
-        }
-
-        p = interval.toPeriod(PeriodType.months());
-        n = p.getMonths();
-        unitSize = (int) (settings.graduations.fontMetrics.getStringBounds("September  ", null)).getWidth();
-        if (n < (width / unitSize)) {
-            //System.out.println("mois");
-            for (int i = 0; i < n; i++) {
-                g2d.drawString(dtFrom.plusMonths(i).monthOfYear().getAsText(LOCALE),
-                        leftMargin + 2 + i * (width / n),
-                        textTopPosition);
-                g2d.drawLine(leftMargin + i * (width / n), 2, leftMargin + i * (width / n), height - settings.graduations.textBottomMargin);
-
-                paintSmallGraduations(g2d,
-                        leftMargin + i * (width / n),
-                        leftMargin + (i + 1) * (width / n),
-                        Days.daysBetween(dtFrom.plusMonths(i), dtFrom.plusMonths(i + 1)).getDays());
-            }
-            return;
-        }
-
-
-        unitSize = (int) (settings.graduations.fontMetrics.getStringBounds("dec ", null)).getWidth();
-        if (n < (width / unitSize)) {
-            //System.out.println("mo");
-            for (int i = 0; i < n; i++) {
-                g2d.drawString(dtFrom.plusMonths(i).monthOfYear().getAsShortText(LOCALE),
-                        leftMargin + 2 + i * (width / n),
-                        textTopPosition);
-                g2d.drawLine(leftMargin + i * (width / n), 2, leftMargin + i * (width / n), height - settings.graduations.textBottomMargin);
-                paintSmallGraduations(g2d,
-                        leftMargin + i * (width / n),
-                        leftMargin + (i + 1) * (width / n),
-                        Days.daysBetween(dtFrom.plusMonths(i), dtFrom.plusMonths(i + 1)).getDays());
-            }
-            return;
-        }
-
-        unitSize = (int) (settings.graduations.fontMetrics.getStringBounds("29 ", null)).getWidth();
-        if (n < (width / unitSize)) {
-            //System.out.println("m");
-            for (int i = 0; i < n; i++) {
-                g2d.drawString("" + (dtFrom.getMonthOfYear() + i), leftMargin + 2 + i * (width / n),
-                        textTopPosition);
-                g2d.drawLine(leftMargin + i * (width / n), 2, leftMargin + i * (width / n), height - settings.graduations.textBottomMargin);
-                paintSmallGraduations(g2d,
-                        leftMargin + i * (width / n),
-                        leftMargin + (i + 1) * (width / n),
-                        Days.daysBetween(dtFrom.plusMonths(i), dtFrom.plusMonths(i + 1)).getDays());
-            }
-            return;
-        }
-
-        p = interval.toPeriod(PeriodType.years());
-        n = p.getYears();
-        unitSize = (int) (settings.graduations.fontMetrics.getStringBounds("1980 ", null)).getWidth();
-        if (n < (width / unitSize)) {
-            //System.out.println("year");
-            for (int i = 0; i < n; i++) {
-                g2d.drawString("" + (dtFrom.getYear() + i), leftMargin + 2 + i * (width / n),
-                        textTopPosition);
-                g2d.drawLine(leftMargin + i * (width / n), 2, leftMargin + i * (width / n), height - settings.graduations.textBottomMargin);
-                paintSmallGraduations(g2d,
-                        leftMargin + i * (width / n),
-                        leftMargin + (i + 1) * (width / n),
-                        Months.monthsBetween(dtFrom.plusYears(i), dtFrom.plusYears(i + 1)).getMonths());
-            }
-            return;
-        }
-
-        int group = 10;
-        n = p.getYears() / group;
-        if (n < (width / unitSize)) {
-            //System.out.println("10 years");
-            for (int i = 0; i < n; i++) {
-                g2d.drawString("" + (dtFrom.getYear() + i * group), leftMargin + 2 + i * (width / n),
-                        textTopPosition);
-                g2d.drawLine(leftMargin + i * (width / n), 2, leftMargin + i * (width / n), height - settings.graduations.textBottomMargin);
-                paintSmallGraduations(g2d,
-                        leftMargin + i * (width / n),
-                        leftMargin + (i + 1) * (width / n),
-                        Months.monthsBetween(dtFrom.plusYears(i * group), dtFrom.plusYears((i + 1) * group)).getMonths());
-            }
-            return;
-        }
-        group = 20;
-        n = p.getYears() / group;
-        if (n < (width / unitSize)) {
-            //System.out.println("20 years");
-            for (int i = 0; i < n; i++) {
-                g2d.drawString("" + (dtFrom.getYear() + i * group), leftMargin + 2 + i * (width / n),
-                        textTopPosition);
-                g2d.drawLine(leftMargin + i * (width / n), 2, leftMargin + i * (width / n), height - settings.graduations.textBottomMargin);
-                paintSmallGraduations(g2d,
-                        leftMargin + i * (width / n),
-                        leftMargin + (i + 1) * (width / n),
-                        Months.monthsBetween(dtFrom.plusYears(i * group), dtFrom.plusYears((i + 1) * group)).getMonths());
-            }
-            return;
-        }
-        group = 50;
-        n = p.getYears() / group;
-        if (n < (width / unitSize)) {
-            //System.out.println("50 years");
-            for (int i = 0; i < n; i++) {
-                g2d.drawString("" + (dtFrom.getYear() + i * group), leftMargin + 2 + i * (width / n),
-                        textTopPosition);
-                g2d.drawLine(leftMargin + i * (width / n), 2, leftMargin + i * (width / n), height - settings.graduations.textBottomMargin);
-                paintSmallGraduations(g2d,
-                        leftMargin + i * (width / n),
-                        leftMargin + (i + 1) * (width / n),
-                        Months.monthsBetween(dtFrom.plusYears(i * group), dtFrom.plusYears((i + 1) * group)).getMonths());
-            }
-            return;
-        }
-        group = 100;
-        n = p.getYears() / group;
-        if (n / 100 < (width / unitSize)) {
-            //System.out.println("100 years");
-            for (int i = 0; i < n; i++) {
-                g2d.drawString("" + (dtFrom.getYear() + i * group), leftMargin + 2 + i * (width / n),
-                        textTopPosition);
-                g2d.drawLine(leftMargin + i * (width / n), 2, leftMargin + i * (width / n), height - settings.graduations.textBottomMargin);
-                paintSmallGraduations(g2d,
-                        leftMargin + i * (width / n),
-                        leftMargin + (i + 1) * (width / n),
-                        Months.monthsBetween(dtFrom.plusYears(i * group), dtFrom.plusYears((i + 1) * group)).getMonths());
-            }
-        }
-        return;
-    }
-
-    private void paintSmallGraduations(Graphics2D g2d, int x, int y, int numOfGrads) {
-        double width = y - x;
-        int height = getHeight();
-        int topMargin = height - settings.graduations.fontSize - 2;
-        int bottomMargin = height - settings.graduations.textBottomMargin;
-        int unitSize = 3;
-
-        if (numOfGrads > (width / unitSize)) {
-            return;
-        }
-        for (double i = 1; i < numOfGrads; i++) {
-            double xi = x + i * (width / (double) numOfGrads);
-            g2d.drawLine((int) xi, topMargin, (int) xi, bottomMargin);
-        }
-    }
-
     private boolean inRange(int x, int a, int b) {
         return (a < x && x < b);
     }
@@ -704,10 +501,6 @@ public class MinimalDrawer extends JPanel
             currentMousePositionX = latestMousePositionX;
         }
         mouseInside = false;
-        repaint();
-    }
-
-    public void timelineAnimatorChanged(ChangeEvent event) {
         repaint();
     }
 

@@ -23,7 +23,7 @@ package org.gephi.timeline.api;
 
 /**
  *
- * @author jbilcke
+ * @author jbilcke, Daniel Bernardes
  */
 public interface TimelineAnimator {
 
@@ -38,20 +38,20 @@ public interface TimelineAnimator {
     public double getTo();
 
     /**
-     * Play the timeline using the current playmode
+     * Play the timeline (with given bounds) using the default playmode
      *
      * @return a comparable
      */
-    public void play();
+    public void play(double selectionStart, double selectionEnd);
 
     /**
-     * Play the timeline using another playmode. Will stop current playmode if
-     * necessary, and start the new one.
+     * Play the timeline (with given bounds) using another playmode.
+     * Will stop current playmode if necessary, and start the new one.
      *
      * @return a comparable
      */
-    public void play(TimelinePlayMode playMode);
-
+    public void play(double selectionStart, double selectionEnd, TimelinePlayMode playMode);
+    
     /**
      * Switch between pause and play mode.
      *

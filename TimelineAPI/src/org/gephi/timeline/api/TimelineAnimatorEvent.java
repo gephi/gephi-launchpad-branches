@@ -1,5 +1,5 @@
 /*
-Copyright 2008-2010 Gephi
+Copyright 2008-2011 Gephi
 Authors : Mathieu Bastian <mathieu.bastian@gephi.org>
 Website : http://www.gephi.org
 
@@ -17,14 +17,36 @@ GNU Affero General Public License for more details.
 
 You should have received a copy of the GNU Affero General Public License
 along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
-*/
-
+ */
 package org.gephi.timeline.api;
 
 /**
  *
- * @author jbilcke, Daniel Bernardes
+ * @author Daniel Bernardes
  */
-public interface TimelineAnimatorListener  {
-    public void timelineAnimatorChanged(TimelineAnimatorEvent event);
+public final class TimelineAnimatorEvent {
+    
+    // relative bounds, with range in [0,1]
+    private final double from;
+    private final double to;
+    private final boolean stopped;
+
+    public TimelineAnimatorEvent (double from, double to, boolean stopped) {
+        this.from = from;
+        this.to = to;
+        this.stopped = stopped;
+    }
+
+    public double getRelFrom() {
+        return from;
+    }
+
+    public double getRelTo() {
+        return to;
+    }
+
+    public boolean getStopped() {
+        return stopped;
+    }
+    
 }
