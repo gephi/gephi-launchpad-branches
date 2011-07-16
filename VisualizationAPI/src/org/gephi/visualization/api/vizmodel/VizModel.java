@@ -132,7 +132,7 @@ public interface VizModel {
 
     public void setMetaEdgeScale(float metaEdgeScale);
 
-    //public float getCameraDistance();
+    public float getCameraDistance();
 
     public void setCameraDistance(float distance);
 

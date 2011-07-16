@@ -22,7 +22,6 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 package org.gephi.visualization.api.camera;
 
 import java.awt.Dimension;
-import java.awt.Point;
 import org.gephi.lib.gleem.linalg.Mat4f;
 import org.gephi.lib.gleem.linalg.Vec3f;
 
@@ -126,5 +125,16 @@ public interface Camera {
     public void updateOrbit(float x, float y);
 
     public void zoom(float by);
+
+    /**
+     * Returns the relative camera zoom.
+     */
+    public float getZoom();
+
+    /**
+     * Sets the relative camera zoom.
+     * @param relativeZoom float from interval [0.0, 1.0]
+     */
+    public void setZoom(float relativeZoom);
 
 }

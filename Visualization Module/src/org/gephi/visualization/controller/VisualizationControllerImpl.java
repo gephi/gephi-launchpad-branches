@@ -72,6 +72,9 @@ public class VisualizationControllerImpl implements VisualizationController, Key
     private boolean centerZero;
     private float[] centerNode;
 
+    // TODO remove when architecture bugs fixed
+    private static final Camera DEFAULT_CAMERA = new Camera2d(300, 300, 100f, 10000.0f);
+
     public VisualizationControllerImpl() {
         // Random values
         this.viewSize = new Dimension();
@@ -116,12 +119,17 @@ public class VisualizationControllerImpl implements VisualizationController, Key
         view.getCanvas().setCursor(cursor);
     }
 
-    Camera getCamera() {
+    @Override
+    public Camera getCamera() {
         return this.camera;
     }
 
     @Override
     public Camera getCameraCopy() {
+        // TODO remove when architecture bugs fixed
+        if (camera == null) {
+            return DEFAULT_CAMERA.copy();
+        }
         return this.camera.copy();
     }
 

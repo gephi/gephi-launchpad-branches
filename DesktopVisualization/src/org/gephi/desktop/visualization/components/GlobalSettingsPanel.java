@@ -28,6 +28,7 @@ import java.beans.PropertyChangeListener;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import org.gephi.ui.components.JColorButton;
+import org.gephi.visualization.api.controller.VisualizationController;
 import org.gephi.visualization.api.vizmodel.VizModel;
 import org.openide.util.Lookup;
 
@@ -46,6 +47,7 @@ public class GlobalSettingsPanel extends javax.swing.JPanel {
         VizModel vizModel = Lookup.getDefault().lookup(VizModel.class);
         vizModel.addPropertyChangeListener(new PropertyChangeListener() {
 
+            @Override
             public void propertyChange(PropertyChangeEvent evt) {
                 if (evt.getPropertyName().equals("init")) {
                     refreshSharedConfig();
@@ -57,12 +59,15 @@ public class GlobalSettingsPanel extends javax.swing.JPanel {
                     refreshSharedConfig();
                 } else if (evt.getPropertyName().equals("use3d")) {
                     refreshSharedConfig();
+                } else if (evt.getPropertyName().equals("cameraDistance")) {
+                    refreshSharedConfig();
                 }
             }
         });
         refreshSharedConfig();
         hightlightCheckBox.addItemListener(new ItemListener() {
 
+            @Override
             public void itemStateChanged(ItemEvent e) {
                 VizModel vizModel = Lookup.getDefault().lookup(VizModel.class);
                 vizModel.setLightenNonSelectedAuto(hightlightCheckBox.isSelected());
@@ -70,6 +75,7 @@ public class GlobalSettingsPanel extends javax.swing.JPanel {
         });
         ((JColorButton) backgroundColorButton).addPropertyChangeListener(JColorButton.EVENT_COLOR, new PropertyChangeListener() {
 
+            @Override
             public void propertyChange(PropertyChangeEvent evt) {
                 VizModel vizModel = Lookup.getDefault().lookup(VizModel.class);
                 vizModel.setBackgroundColor(((JColorButton) backgroundColorButton).getColor());
@@ -77,6 +83,7 @@ public class GlobalSettingsPanel extends javax.swing.JPanel {
         });
         autoSelectNeigborCheckbox.addItemListener(new ItemListener() {
 
+            @Override
             public void itemStateChanged(ItemEvent e) {
                 VizModel vizModel = Lookup.getDefault().lookup(VizModel.class);
                 vizModel.setAutoSelectNeighbor(autoSelectNeigborCheckbox.isSelected());
@@ -84,13 +91,12 @@ public class GlobalSettingsPanel extends javax.swing.JPanel {
         });
         zoomSlider.addChangeListener(new ChangeListener() {
 
+            @Override
             public void stateChanged(ChangeEvent e) {
-                // TODO keep or remove?
-                //int cam = (int) VizController.getInstance().getVizModel().getCameraDistance();
-                /*if (zoomSlider.getValue() != cam && cam < zoomSlider.getMaximum()) {
-                    GraphIO io = VizController.getInstance().getGraphIO();
-                    io.setCameraDistance(zoomSlider.getValue());
-                }*/
+                VizModel vizModel = Lookup.getDefault().lookup(VizModel.class);
+                float zoom = zoomSlider.getValue() / (float) zoomSlider.getMaximum();
+                vizModel.setCameraDistance(zoom);
+                Lookup.getDefault().lookup(VisualizationController.class).getCamera().setZoom(zoom);
             }
         });
     }
@@ -108,6 +114,7 @@ public class GlobalSettingsPanel extends javax.swing.JPanel {
         if (hightlightCheckBox.isSelected() != vizModel.isLightenNonSelectedAuto()) {
             hightlightCheckBox.setSelected(vizModel.isLightenNonSelectedAuto());
         }
+        refreshZoom();
     }
 
     private void setEnable(boolean enable) {
@@ -120,11 +127,10 @@ public class GlobalSettingsPanel extends javax.swing.JPanel {
     }
 
     private void refreshZoom() {
-        // TODO keep or remove?
-        //int zoomValue = (int) VizController.getInstance().getVizModel().getCameraDistance();
-        /*if (zoomSlider.getValue() != zoomValue) {
-            zoomSlider.setValue(zoomValue);
-        }*/
+        float zoomValue = Lookup.getDefault().lookup(VizModel.class).getCameraDistance();
+        if ((int) (zoomValue * zoomSlider.getMaximum()) != zoomSlider.getValue()) {
+            zoomSlider.setValue((int) (zoomValue * zoomSlider.getMaximum()));
+        }
     }
 
     /** This method is called from within the constructor to

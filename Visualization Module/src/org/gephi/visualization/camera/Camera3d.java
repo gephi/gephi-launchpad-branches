@@ -35,7 +35,7 @@ import org.gephi.visualization.api.camera.Camera;
  * @author Antonio Patriarca <antoniopatriarca@gmail.com>
  * @author Vojtech Bardiovsky <vojtech.bardiovsky@gmail.com>
  */
-public class Camera3d implements Camera {
+public class Camera3d extends AbstractCamera {
     
     private Vec3f front, up;
     private Vec3f position;
@@ -43,13 +43,11 @@ public class Camera3d implements Camera {
 
     private Mat4f projectiveMatrix;
     private Mat4f modelviewMatrix;
-    private boolean recomputeMatrix = true;
 
-    private float imageWidth, imageHeight, fovy, near, far;
+    private float imageWidth, imageHeight, near, far;
 
     private static final float MIN_ORBIT = 200.0f;
     private static final float MAX_ORBIT = 2000.0f;
-    private static final float MAX_FOVY = 3.0f;
 
     public Camera3d(int width, int height, float near, float far) {
         this.imageWidth = width;
@@ -117,12 +115,6 @@ public class Camera3d implements Camera {
     public void lookAt(Vec3f position, Vec3f center, Vec3f up) {
         this.position = position.copy();
         lookAt(center, up);
-    }
-
-    @Override
-    public void setFov(float fov) {
-        this.fovy = fov;
-        requireRecomputeMatrix();
     }
 
     @Override
@@ -359,12 +351,4 @@ public class Camera3d implements Camera {
         lookAt(v, orbitCenter, ur);
     }
 
-    @Override
-    public void zoom(float by) {
-        setFov((float) Math.min(fovy * Math.exp(by), MAX_FOVY));
-    }
-
-    private void requireRecomputeMatrix() {
-        recomputeMatrix = true;
-    }
 }

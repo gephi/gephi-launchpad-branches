@@ -56,6 +56,11 @@ public interface VisualizationController {
     public Camera getCameraCopy();
 
     /**
+     * Returns the current camera.
+     */
+    public Camera getCamera();
+
+    /**
      * Centers camera on the graph. Whole graph will be visible.
      */
     public void centerOnGraph();

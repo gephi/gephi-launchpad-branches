@@ -50,6 +50,7 @@ public class VizModelImpl implements VizModel {
     //Variable
     protected float[] cameraPosition;
     protected float[] cameraTarget;
+    protected float cameraDistance;
     protected TextModel textModel;
     protected boolean use3d;
     protected boolean lighting;
@@ -197,9 +198,9 @@ public class VizModelImpl implements VizModel {
         return rotatingEnable;
     }
 
-    /*public TextModel getTextModel() {
+    public TextModel getTextModel() {
         return textModel;
-    }*/
+    }
 
     public boolean isUniColorSelected() {
         return uniColorSelected;
@@ -243,10 +244,6 @@ public class VizModelImpl implements VizModel {
 
     public float getMetaEdgeScale() {
         return metaEdgeScale;
-    }
-
-    public TextModel getTextModel() {
-        return textModel;
     }
 
     //SETTERS
@@ -345,12 +342,18 @@ public class VizModelImpl implements VizModel {
         fireProperyChange("metaEdgeScale", null, metaEdgeScale);
     }
 
-    /*public float getCameraDistance() {
-        GraphDrawable drawable = VizController.getInstance().getDrawable();
-        return drawable.getCameraVector().length();
-    }*/
+    @Override
+    public float getCameraDistance() {
+        return cameraDistance;
+    }
 
+    /**
+     * Sets relative distance of camera from the world.
+     * @param distance float from interval [0.0, 1.0].
+     */
     public void setCameraDistance(float distance) {
+        cameraDistance = distance;
+        fireProperyChange("cameraDistance", null, distance);
     }
 
     //EVENTS

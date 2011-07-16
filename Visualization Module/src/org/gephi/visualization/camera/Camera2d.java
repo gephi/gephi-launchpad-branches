@@ -36,7 +36,7 @@ import org.gephi.visualization.api.camera.Camera;
  * @author Antonio Patriarca <antoniopatriarca@gmail.com>
  * @author Vojtech Bardiovsky <vojtech.bardiovsky@gmail.com>
  */
-public class Camera2d implements Camera {
+public class Camera2d extends AbstractCamera {
 
     private Vec2f up;
     private Vec2f position;
@@ -44,11 +44,8 @@ public class Camera2d implements Camera {
 
     private Mat4f projectiveMatrix;
     private Mat4f modelviewMatrix;
-    private boolean recomputeMatrix = true;
 
-    private float imageWidth, imageHeight, fovy, near, far;
-
-    private static final float MAX_FOVY = 3.0f;
+    private float imageWidth, imageHeight, near, far;
 
     public Camera2d(int width, int height, float near, float far) {
         this.imageWidth = width;
@@ -124,12 +121,6 @@ public class Camera2d implements Camera {
     @Override
     public void lookAt(Vec3f position, Vec3f center, Vec3f up) {
         lookAt(center, up);
-    }
-
-    @Override
-    public void setFov(float fov) {
-        this.fovy = fov;
-        requireRecomputeMatrix();
     }
 
     @Override
@@ -319,15 +310,6 @@ public class Camera2d implements Camera {
         rotationMatrix.xformVec(u, ur);
         this.up = convertTo2d(ur);
         requireRecomputeMatrix();
-    }
-
-    @Override
-    public void zoom(float by) {
-        setFov((float) Math.min(fovy * Math.exp(by), MAX_FOVY));
-    }
-
-    private void requireRecomputeMatrix() {
-        recomputeMatrix = true;
     }
 
     private Vec2f convertTo2d(Vec3f v) {
