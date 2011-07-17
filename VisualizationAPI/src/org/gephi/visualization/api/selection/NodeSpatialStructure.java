@@ -31,7 +31,7 @@ import org.gephi.graph.api.Node;
  *
  * @author Vojtech Bardiovsky
  */
-public interface NodeContainer {
+public interface NodeSpatialStructure {
 
     /**
      * Select first node found among all nodes within radius.
@@ -75,8 +75,11 @@ public interface NodeContainer {
      * @param point the position of the mouse to determine the closest node in
      * case of the CLOSEST policy.
      * @param select true to select, false to deselect.
+     * @return nodes added to selection that were not selected before (there may
+     * be cases when more than one node is selected, such as with auto-select
+     * neighbors function on).
      */
-    public Node selectSingle(Shape shape, Point point, final boolean select, final int policy);
+    public Collection<Node> selectSingle(Shape shape, Point point, final boolean select, final int policy);
 
     /**
      * Adds or removes single node from a temporary selection.
@@ -87,11 +90,6 @@ public interface NodeContainer {
      * @return true if node has been selected.
      */
     public boolean selectContinuousSingle(Shape shape, Point point, final boolean select, final int policy);
-
-    /**
-     * Clears single node from a temporary selection.
-     */
-    public void deselectSingle();
 
     public void clearSelection();
 

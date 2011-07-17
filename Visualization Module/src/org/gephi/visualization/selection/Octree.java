@@ -34,14 +34,15 @@ import org.gephi.graph.api.NodeIterator;
 import org.gephi.graph.spi.SpatialData;
 import org.gephi.visualization.api.camera.Camera;
 import org.gephi.visualization.api.controller.VisualizationController;
-import org.gephi.visualization.api.selection.NodeContainer;
+import org.gephi.visualization.api.selection.NodeSpatialStructure;
 import org.gephi.visualization.api.selection.Shape.Intersection;
+import org.gephi.visualization.api.vizmodel.VizModel;
 import org.openide.util.Lookup;
 
 /**
  * @author Vojtech Bardiovsky
  */
-public final class Octree implements NodeContainer {
+public final class Octree implements NodeSpatialStructure {
 
     private Octant root;
 
@@ -155,6 +156,7 @@ public final class Octree implements NodeContainer {
     public List<Node> applySelection(final Shape shape) {
         final Camera camera = Lookup.getDefault().lookup(VisualizationController.class).getCameraCopy();
         final List<Node> nodes = new ArrayList<Node>();
+        final boolean autoSelectNeighbor = Lookup.getDefault().lookup(VizModel.class).isAutoSelectNeighbor();
 
         final boolean select = shape.getSelectionModifier().isPositive();
 
@@ -166,6 +168,16 @@ public final class Octree implements NodeContainer {
                         node.getNodeData().setSelected(select);
                         nodes.add(node);
                         changeMarker = true;
+                    }
+                    // If auto-selection is on and the selection is positive (adding nodes)
+                    if (select && autoSelectNeighbor) {
+                        for (Node neighbor : graph.getNeighbors(node)) {
+                            if (!neighbor.getNodeData().isSelected()) {
+                                neighbor.getNodeData().setSelected(true);
+                                nodes.add(neighbor);
+                                changeMarker = true;
+                            }
+                        }
                     }
                 }
             }
@@ -226,10 +238,12 @@ public final class Octree implements NodeContainer {
     }
 
     @Override
-    public Node selectSingle(final Shape shape, final Point point, final boolean select, final int policy) {
+    public Collection<Node> selectSingle(final Shape shape, final Point point, final boolean select, final int policy) {
         Octant octant = root;
         final Camera camera = Lookup.getDefault().lookup(VisualizationController.class).getCameraCopy();
         final Node[] nodes = new Node[1];
+        boolean autoSelectNeighbor = Lookup.getDefault().lookup(VizModel.class).isAutoSelectNeighbor();
+
         singleFound = false;
 
         NodeFunction nodeFunction = null;
@@ -277,28 +291,37 @@ public final class Octree implements NodeContainer {
                 break;
         }
         recursiveAddNodes(octant, shape, true, nodeFunction);
-        if (nodes[0] == null || policy != NodeContainer.SINGLE_NODE_FIRST) {
+        if (nodes[0] == null || policy != NodeSpatialStructure.SINGLE_NODE_FIRST) {
             recursiveAddUnassignedNodes(nodeFunction);
         }
+
+        List<Node> selNodes = new ArrayList<Node>();
         if (nodes[0] != null) {
-            nodes[0].getNodeData().setSelected(select);
-            changeMarker = true;
+            if (select != nodes[0].getNodeData().isSelected()) {
+                nodes[0].getNodeData().setSelected(select);
+                selNodes.add(nodes[0]);
+                changeMarker = true;
+            }
         }
-        return nodes[0];
+        // If auto-selection is on and the selection is positive (adding nodes)
+        if (nodes[0] != null && select && autoSelectNeighbor) {
+            for (Node neighbor : graph.getNeighbors(nodes[0])) {
+                if (!neighbor.getNodeData().isSelected()) {
+                    neighbor.getNodeData().setSelected(true);
+                    selNodes.add(neighbor);
+                    changeMarker = true;
+                }
+            }
+        }
+
+        return selNodes;
     }
 
     @Override
     public boolean selectContinuousSingle(final Shape shape, Point point, final boolean select, final int policy) {
-        temporarySingleMod = select;
-        temporarySelectedNode = selectSingle(shape, point, select, policy);
-        return temporarySelectedNode != null;
-    }
-
-    @Override
-    public void deselectSingle() {
-        if (temporarySelectedNode != null) {
-            temporarySelectedNode.getNodeData().setSelected(!temporarySingleMod);
-        }
+        temporarySelectionMod = select;
+        temporarySelectedNodes = selectSingle(shape, point, select, policy);
+        return !temporarySelectedNodes.isEmpty();
     }
 
     @Override

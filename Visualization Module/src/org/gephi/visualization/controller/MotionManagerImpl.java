@@ -259,8 +259,7 @@ public class MotionManagerImpl implements MotionManager {
         }
 
         if (vizConfig.isDirectMouseSelection()) {
-            // TODO temporary
-            selectionManager.deselectSingle();
+            selectionManager.cancelContinuousSelection();
             boolean selected = selectionManager.selectContinuousSingle(e.getPoint(), modifier.isPositive());
             if (selected) {
                 controller.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));

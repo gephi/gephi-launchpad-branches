@@ -37,7 +37,7 @@ import org.gephi.project.api.Workspace;
 import org.gephi.project.api.WorkspaceListener;
 import org.gephi.visualization.api.MotionManager;
 import org.gephi.visualization.api.config.VizConfig;
-import org.gephi.visualization.api.selection.NodeContainer;
+import org.gephi.visualization.api.selection.NodeSpatialStructure;
 import org.gephi.visualization.api.selection.SelectionManager;
 import org.gephi.visualization.api.selection.SelectionType;
 import org.gephi.visualization.api.selection.Shape;
@@ -48,7 +48,7 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = SelectionManager.class)
 public class SelectionManagerImpl implements SelectionManager, WorkspaceListener, GraphListener {
 
-    private NodeContainer nodeContainer;
+    private NodeSpatialStructure nodeContainer;
 
     private boolean blocked;
 
@@ -96,18 +96,13 @@ public class SelectionManagerImpl implements SelectionManager, WorkspaceListener
     @Override
     public void selectSingle(Point point, boolean select) {
         singleNodeSelectionShape = ShapeUtils.createEllipseShape(point.x - mouseSelectionDiameter, point.y - mouseSelectionDiameter, mouseSelectionDiameter, mouseSelectionDiameter);
-        nodeContainer.selectSingle(singleNodeSelectionShape, point, select, NodeContainer.SINGLE_NODE_CLOSEST);
+        nodeContainer.selectSingle(singleNodeSelectionShape, point, select, NodeSpatialStructure.SINGLE_NODE_CLOSEST);
     }
 
     @Override
     public boolean selectContinuousSingle(Point point, boolean select) {
         singleNodeSelectionShape = ShapeUtils.createEllipseShape(point.x - mouseSelectionDiameter, point.y - mouseSelectionDiameter, mouseSelectionDiameter, mouseSelectionDiameter);
-        return nodeContainer.selectContinuousSingle(singleNodeSelectionShape, point, select, NodeContainer.SINGLE_NODE_CLOSEST);
-    }
-
-    @Override
-    public void deselectSingle() {
-        nodeContainer.deselectSingle();
+        return nodeContainer.selectContinuousSingle(singleNodeSelectionShape, point, select, NodeSpatialStructure.SINGLE_NODE_CLOSEST);
     }
 
     @Override
@@ -317,7 +312,7 @@ public class SelectionManagerImpl implements SelectionManager, WorkspaceListener
     @Override
     public void select(Workspace workspace) {
         GraphController graphController = Lookup.getDefault().lookup(GraphController.class);
-        nodeContainer = workspace.getLookup().lookup(NodeContainer.class);
+        nodeContainer = workspace.getLookup().lookup(NodeSpatialStructure.class);
         if (nodeContainer == null) {
             nodeContainer = new Octree(graphController.getModel().getGraph());
         }
