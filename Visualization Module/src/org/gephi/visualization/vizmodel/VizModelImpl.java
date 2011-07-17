@@ -30,6 +30,7 @@ import javax.swing.SwingUtilities;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
+import org.gephi.graph.api.NodeShape;
 import org.gephi.project.api.Workspace;
 import org.gephi.ui.utils.ColorUtils;
 import org.gephi.visualization.api.camera.Camera;
@@ -41,6 +42,8 @@ import org.openide.util.Lookup;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
+ * Model class for visualization. Contains most visualization related settings.
+ *
  * @author Mathieu Bastian
  */
 @ServiceProvider(service = VizModel.class)
@@ -70,10 +73,10 @@ public class VizModelImpl implements VizModel {
     protected float[] edgeOutSelectionColor;
     protected float[] edgeBothSelectionColor;
     protected boolean adjustByText;
-    protected String nodeModeler;
     protected boolean showHulls;
     protected float edgeScale;
     protected float metaEdgeScale;
+    protected NodeShape globalNodeShape;
     //Listener
     protected List<PropertyChangeListener> listeners = new ArrayList<PropertyChangeListener>();
     private boolean defaultModel = false;
@@ -87,10 +90,11 @@ public class VizModelImpl implements VizModel {
         defaultValues();
     }
 
+    @Override
     public void init() {
         final PropertyChangeEvent evt = new PropertyChangeEvent(this, "init", null, null);
         SwingUtilities.invokeLater(new Runnable() {
-
+            @Override
             public void run() {
                 for (PropertyChangeListener l : listeners) {
                     l.propertyChange(evt);
@@ -99,14 +103,17 @@ public class VizModelImpl implements VizModel {
         });
     }
 
+    @Override
     public boolean isDefaultModel() {
         return defaultModel;
     }
 
+    @Override
     public List<PropertyChangeListener> getListeners() {
         return listeners;
     }
 
+    @Override
     public void setListeners(List<PropertyChangeListener> listeners) {
         this.listeners = listeners;
     }
@@ -131,7 +138,6 @@ public class VizModelImpl implements VizModel {
         edgeHasUniColor = config.isDefaultEdgeHasUniColor();
         edgeUniColor = config.getDefaultEdgeUniColor().getRGBComponents(null);
         adjustByText = config.isDefaultAdjustByText();
-        nodeModeler = use3d ? "CompatibilityNodeSphereModeler" : "CompatibilityNodeDiskModeler";
         edgeSelectionColor = config.isDefaultEdgeSelectionColor();
         edgeInSelectionColor = config.getDefaultEdgeInSelectedColor().getRGBComponents(null);
         edgeOutSelectionColor = config.getDefaultEdgeOutSelectedColor().getRGBComponents(null);
@@ -139,159 +145,201 @@ public class VizModelImpl implements VizModel {
         showHulls = config.isDefaultShowHulls();
         edgeScale = config.getDefaultEdgeScale();
         metaEdgeScale = config.getDefaultMetaEdgeScale();
+        globalNodeShape = config.getDefaultNodeShape();
     }
 
     //GETTERS
+    @Override
     public boolean isAdjustByText() {
         return adjustByText;
     }
 
+    @Override
     public boolean isAutoSelectNeighbor() {
         return autoSelectNeighbor;
     }
 
+    @Override
     public Color getBackgroundColor() {
         return backgroundColor;
     }
 
+    @Override
     public float[] getCameraPosition() {
         return cameraPosition;
     }
 
+    @Override
     public float[] getCameraTarget() {
         return cameraTarget;
     }
 
+    @Override
     public boolean isCulling() {
         return culling;
     }
 
+    @Override
     public boolean isShowEdges() {
         return showEdges;
     }
 
+    @Override
     public boolean isEdgeHasUniColor() {
         return edgeHasUniColor;
     }
 
+    @Override
     public float[] getEdgeUniColor() {
         return edgeUniColor;
     }
 
+    @Override
     public boolean isHideNonSelectedEdges() {
         return hideNonSelectedEdges;
     }
 
+    @Override
     public boolean isLightenNonSelectedAuto() {
         return lightenNonSelectedAuto;
     }
 
+    @Override
     public boolean isLighting() {
         return lighting;
     }
 
+    @Override
     public boolean isMaterial() {
         return material;
     }
 
+    @Override
     public boolean isRotatingEnable() {
         return rotatingEnable;
     }
 
+    @Override
     public TextModel getTextModel() {
         return textModel;
     }
 
+    @Override
     public boolean isUniColorSelected() {
         return uniColorSelected;
     }
 
+    @Override
     public boolean isUse3d() {
         return use3d;
     }
 
+    @Override
     public VizConfig getConfig() {
         return config;
     }
 
-    public String getNodeModeler() {
-        return nodeModeler;
-    }
-
+    @Override
     public boolean isEdgeSelectionColor() {
         return edgeSelectionColor;
     }
 
+    @Override
     public float[] getEdgeInSelectionColor() {
         return edgeInSelectionColor;
     }
 
+    @Override
     public float[] getEdgeOutSelectionColor() {
         return edgeOutSelectionColor;
     }
 
+    @Override
     public float[] getEdgeBothSelectionColor() {
         return edgeBothSelectionColor;
     }
 
+    @Override
     public boolean isShowHulls() {
         return showHulls;
     }
 
+    @Override
     public float getEdgeScale() {
         return edgeScale;
     }
 
+    @Override
     public float getMetaEdgeScale() {
         return metaEdgeScale;
     }
 
+    @Override
+    public NodeShape getGlobalNodeShape() {
+        return globalNodeShape;
+    }
+
+    @Override
+    public float getCameraDistance() {
+        return cameraDistance;
+    }
+
     //SETTERS
+    @Override
     public void setAdjustByText(boolean adjustByText) {
         this.adjustByText = adjustByText;
         fireProperyChange("adjustByText", null, adjustByText);
     }
 
+    @Override
     public void setAutoSelectNeighbor(boolean autoSelectNeighbor) {
         this.autoSelectNeighbor = autoSelectNeighbor;
         fireProperyChange("autoSelectNeighbor", null, autoSelectNeighbor);
     }
 
+    @Override
     public void setBackgroundColor(Color backgroundColor) {
         this.backgroundColor = backgroundColor;
         fireProperyChange("backgroundColor", null, backgroundColor);
     }
 
+    @Override
     public void setShowEdges(boolean showEdges) {
         this.showEdges = showEdges;
         fireProperyChange("showEdges", null, showEdges);
     }
 
+    @Override
     public void setEdgeHasUniColor(boolean edgeHasUniColor) {
         this.edgeHasUniColor = edgeHasUniColor;
         fireProperyChange("edgeHasUniColor", null, edgeHasUniColor);
     }
 
+    @Override
     public void setEdgeUniColor(float[] edgeUniColor) {
         this.edgeUniColor = edgeUniColor;
         fireProperyChange("edgeUniColor", null, edgeUniColor);
     }
 
+    @Override
     public void setHideNonSelectedEdges(boolean hideNonSelectedEdges) {
         this.hideNonSelectedEdges = hideNonSelectedEdges;
         fireProperyChange("hideNonSelectedEdges", null, hideNonSelectedEdges);
     }
 
+    @Override
     public void setLightenNonSelectedAuto(boolean lightenNonSelectedAuto) {
         this.lightenNonSelectedAuto = lightenNonSelectedAuto;
         fireProperyChange("lightenNonSelectedAuto", null, lightenNonSelectedAuto);
     }
 
+    @Override
     public void setUniColorSelected(boolean uniColorSelected) {
         this.uniColorSelected = uniColorSelected;
         fireProperyChange("uniColorSelected", null, uniColorSelected);
     }
 
+    @Override
     public void setUse3d(boolean use3d) {
         this.use3d = use3d;
         //Additional
@@ -302,69 +350,76 @@ public class VizModelImpl implements VizModel {
         fireProperyChange("use3d", null, use3d);
     }
 
-    public void setNodeModeler(String nodeModeler) {
-        this.nodeModeler = nodeModeler;
-        fireProperyChange("nodeModeler", null, nodeModeler);
-    }
-
+    @Override
     public void setEdgeSelectionColor(boolean edgeSelectionColor) {
         this.edgeSelectionColor = edgeSelectionColor;
         fireProperyChange("edgeSelectionColor", null, edgeSelectionColor);
     }
 
+    @Override
     public void setEdgeInSelectionColor(float[] edgeInSelectionColor) {
         this.edgeInSelectionColor = edgeInSelectionColor;
         fireProperyChange("edgeInSelectionColor", null, edgeInSelectionColor);
     }
 
+    @Override
     public void setEdgeOutSelectionColor(float[] edgeOutSelectionColor) {
         this.edgeOutSelectionColor = edgeOutSelectionColor;
         fireProperyChange("edgeOutSelectionColor", null, edgeOutSelectionColor);
     }
 
+    @Override
     public void setEdgeBothSelectionColor(float[] edgeBothSelectionColor) {
         this.edgeBothSelectionColor = edgeBothSelectionColor;
         fireProperyChange("edgeBothSelectionColor", null, edgeBothSelectionColor);
     }
 
+    @Override
     public void setShowHulls(boolean showHulls) {
         this.showHulls = showHulls;
         fireProperyChange("showHulls", null, showHulls);
     }
 
+    @Override
     public void setEdgeScale(float edgeScale) {
         this.edgeScale = edgeScale;
         fireProperyChange("edgeScale", null, edgeScale);
     }
 
+    @Override
     public void setMetaEdgeScale(float metaEdgeScale) {
         this.metaEdgeScale = metaEdgeScale;
         fireProperyChange("metaEdgeScale", null, metaEdgeScale);
-    }
-
-    @Override
-    public float getCameraDistance() {
-        return cameraDistance;
     }
 
     /**
      * Sets relative distance of camera from the world.
      * @param distance float from interval [0.0, 1.0].
      */
+    @Override
     public void setCameraDistance(float distance) {
         cameraDistance = distance;
         fireProperyChange("cameraDistance", null, distance);
     }
 
+    @Override
+    public void setGlobalNodeShape(NodeShape nodeShape) {
+        this.globalNodeShape = nodeShape;
+        fireProperyChange("globalNodeShape", null, nodeShape);
+    }
+
     //EVENTS
+    @Override
     public void addPropertyChangeListener(PropertyChangeListener listener) {
         listeners.add(listener);
     }
 
+    @Override
     public void removePropertyChangeListener(PropertyChangeListener listener) {
         listeners.remove(listener);
     }
 
+    @Override
     public void fireProperyChange(String propertyName, Object oldvalue, Object newValue) {
         PropertyChangeEvent evt = new PropertyChangeEvent(this, propertyName, oldvalue, newValue);
         for (PropertyChangeListener l : listeners) {
@@ -373,6 +428,7 @@ public class VizModelImpl implements VizModel {
     }
 
     //XML
+    @Override
     public void readXML(XMLStreamReader reader, Workspace workspace) throws XMLStreamException {
 
         boolean end = false;
@@ -430,8 +486,8 @@ public class VizModelImpl implements VizModel {
                         edgeOutSelectionColor = ColorUtils.decode(reader.getAttributeValue(null, "value")).getRGBComponents(null);
                     } else if ("edgeBothSelectionColor".equalsIgnoreCase(name)) {
                         edgeBothSelectionColor = ColorUtils.decode(reader.getAttributeValue(null, "value")).getRGBComponents(null);
-                    } else if ("nodemodeler".equalsIgnoreCase(name)) {
-                        nodeModeler = reader.getAttributeValue(null, "value");
+                    } else if ("nodeshape".equalsIgnoreCase(name)) {
+                        globalNodeShape = NodeShape.valueOf(reader.getAttributeValue(null, "value"));
                     } else if ("edgeScale".equalsIgnoreCase(name)) {
                         edgeScale = Float.parseFloat(reader.getAttributeValue(null, "value"));
                     } else if ("metaEdgeScale".equalsIgnoreCase(name)) {
@@ -447,6 +503,7 @@ public class VizModelImpl implements VizModel {
         }
     }
 
+    @Override
     public void writeXML(XMLStreamWriter writer) throws XMLStreamException {
 
         writer.writeStartElement("vizmodel");
@@ -550,8 +607,8 @@ public class VizModelImpl implements VizModel {
         writer.writeEndElement();
 
         //Misc
-        writer.writeStartElement("nodemodeler");
-        writer.writeAttribute("value", nodeModeler);
+        writer.writeStartElement("nodeshape");
+        writer.writeAttribute("value", globalNodeShape.toString());
         writer.writeEndElement();
 
         //Float
@@ -565,4 +622,5 @@ public class VizModelImpl implements VizModel {
 
         writer.writeEndElement();
     }
+
 }

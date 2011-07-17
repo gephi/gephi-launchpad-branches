@@ -20,11 +20,14 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 */
 package org.gephi.desktop.visualization.components;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import javax.swing.DefaultComboBoxModel;
+import org.gephi.graph.api.NodeShape;
 import org.gephi.visualization.api.vizmodel.VizModel;
 import org.openide.util.Lookup;
 
@@ -43,53 +46,29 @@ public class NodeSettingsPanel extends javax.swing.JPanel {
         VizModel vizModel = Lookup.getDefault().lookup(VizModel.class);
         adjustTextCheckbox.setSelected(vizModel.isAdjustByText());
         adjustTextCheckbox.addItemListener(new ItemListener() {
-
+            @Override
             public void itemStateChanged(ItemEvent e) {
                 VizModel vizModel = Lookup.getDefault().lookup(VizModel.class);
                 vizModel.setAdjustByText(adjustTextCheckbox.isSelected());
             }
         });
 
-        final DefaultComboBoxModel comboModel = new DefaultComboBoxModel();
-        // TODO add model class
-        /*final ModelClass nodeClass = VizController.getInstance().getModelClassLibrary().getNodeClass();
-        for (Modeler modeler : nodeClass.getModelers()) {
-            comboModel.addElement(modeler);
-        }
-        comboModel.setSelectedItem(nodeClass.getCurrentModeler());
+        final DefaultComboBoxModel comboModel = new DefaultComboBoxModel(NodeShape.specificValues());
+        comboModel.setSelectedItem(vizModel.getGlobalNodeShape());
         shapeCombo.setModel(comboModel);
         shapeCombo.addActionListener(new ActionListener() {
-
+            @Override
             public void actionPerformed(ActionEvent e) {
-                if (nodeClass.getCurrentModeler() == comboModel.getSelectedItem()) {
-                    return;
-                }
                 VizModel vizModel = Lookup.getDefault().lookup(VizModel.class);
-                NodeModeler modeler = (NodeModeler) comboModel.getSelectedItem();
-                if (modeler.is3d() && !vizModel.isUse3d()) {
-//                    String msg = NbBundle.getMessage(NodeSettingsPanel.class, "NodeSettingsPanel.defaultShape.message3d");
-//                    if (JOptionPane.showConfirmDialog(WindowManager.getDefault().getMainWindow(), msg, NbBundle.getMessage(NodeSettingsPanel.class, "NodeSettingsPanel.defaultShape.message.title"), JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-                        //enable 3d
-                        vizModel.setUse3d(true);
-                        nodeClass.setCurrentModeler(modeler);
-//                    }
-
-                } else if (!modeler.is3d() && vizModel.isUse3d()) {
-//                    String msg = NbBundle.getMessage(NodeSettingsPanel.class, "NodeSettingsPanel.defaultShape.message2d");
-//                    if (JOptionPane.showConfirmDialog(WindowManager.getDefault().getMainWindow(), msg, NbBundle.getMessage(NodeSettingsPanel.class, "NodeSettingsPanel.defaultShape.message.title"), JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-                        //disable 3d
-                        vizModel.setUse3d(false);
-                        nodeClass.setCurrentModeler(modeler);
-//                    }
-                } else {
-                    nodeClass.setCurrentModeler(modeler);
+                if (vizModel.getGlobalNodeShape() != comboModel.getSelectedItem()) {
+                    vizModel.setGlobalNodeShape((NodeShape) comboModel.getSelectedItem());
                 }
             }
-        });*/
+        });
 
         showHullsCheckbox.setSelected(vizModel.isShowHulls());
         showHullsCheckbox.addItemListener(new ItemListener() {
-
+            @Override
             public void itemStateChanged(ItemEvent e) {
                 VizModel vizModel = Lookup.getDefault().lookup(VizModel.class);
                 vizModel.setShowHulls(showHullsCheckbox.isSelected());
@@ -97,9 +76,9 @@ public class NodeSettingsPanel extends javax.swing.JPanel {
         });
 
         vizModel.addPropertyChangeListener(new PropertyChangeListener() {
-
+            @Override
             public void propertyChange(PropertyChangeEvent evt) {
-                if (evt.getPropertyName().equals("nodeModeler")) {
+                if (evt.getPropertyName().equals("globalNodeShape")) {
                     refreshSharedConfig();
                 } else if (evt.getPropertyName().equals("init")) {
                     refreshSharedConfig();
@@ -119,12 +98,9 @@ public class NodeSettingsPanel extends javax.swing.JPanel {
         if (vizModel.isDefaultModel()) {
             return;
         }
-        // TODO add model class
-        /*
-        final ModelClass nodeClass = VizController.getInstance().getModelClassLibrary().getNodeClass();
-        if (shapeCombo.getSelectedItem() != nodeClass.getCurrentModeler()) {
-            shapeCombo.setSelectedItem(nodeClass.getCurrentModeler());
-        }*/
+        if (shapeCombo.getSelectedItem() != vizModel.getGlobalNodeShape()) {
+            shapeCombo.setSelectedItem(vizModel.getGlobalNodeShape());
+        }
         if (adjustTextCheckbox.isSelected() != vizModel.isAdjustByText()) {
             adjustTextCheckbox.setSelected(vizModel.isAdjustByText());
         }

@@ -26,10 +26,13 @@ import java.util.List;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
+import org.gephi.graph.api.NodeShape;
 import org.gephi.project.api.Workspace;
 import org.gephi.visualization.api.config.VizConfig;
 
 /**
+ * Model class for visualization. Contains most visualization related settings.
+ *
  * @author Mathieu Bastian
  */
 public interface VizModel {
@@ -77,8 +80,6 @@ public interface VizModel {
 
     public VizConfig getConfig();
 
-    public String getNodeModeler();
-
     public boolean isEdgeSelectionColor();
 
     public float[] getEdgeInSelectionColor();
@@ -94,6 +95,10 @@ public interface VizModel {
     public float getMetaEdgeScale();
 
     public TextModel getTextModel();
+
+    public float getCameraDistance();
+
+    public NodeShape getGlobalNodeShape();
 
     //SETTERS
     public void setAdjustByText(boolean adjustByText);
@@ -116,8 +121,6 @@ public interface VizModel {
 
     public void setUse3d(boolean use3d);
 
-    public void setNodeModeler(String nodeModeler);
-
     public void setEdgeSelectionColor(boolean edgeSelectionColor);
 
     public void setEdgeInSelectionColor(float[] edgeInSelectionColor);
@@ -132,9 +135,9 @@ public interface VizModel {
 
     public void setMetaEdgeScale(float metaEdgeScale);
 
-    public float getCameraDistance();
-
     public void setCameraDistance(float distance);
+
+    public void setGlobalNodeShape(NodeShape nodeShape);
 
     //EVENTS
     public void addPropertyChangeListener(PropertyChangeListener listener);

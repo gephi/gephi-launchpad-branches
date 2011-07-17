@@ -22,6 +22,7 @@ package org.gephi.visualization.apiimpl.config;
 
 import java.awt.Color;
 import java.awt.Font;
+import org.gephi.graph.api.NodeShape;
 import org.gephi.ui.utils.ColorUtils;
 import org.gephi.ui.utils.FontUtils;
 import org.gephi.visualization.api.config.VizConfig;
@@ -60,7 +61,6 @@ public class VizConfigImpl implements VizConfig {
     protected Font defaultEdgeLabelFont = Font.decode(NbPreferences.forModule(VizConfig.class).get(EDGE_LABEL_FONT, FontUtils.encode(DEFAULT_EDGE_LABEL_FONT)));
     protected boolean defaultAdjustByText = false;    //Overriden in Engine
     protected boolean defaultShowLabelOnSelectedOnly = NbPreferences.forModule(VizConfig.class).getBoolean(LABEL_SELECTION_ONLY, DEFAULT_LABEL_SELECTION_ONLY);
-    protected String defaultNodeModeler = "CompatibilityNodeDiskModeler";       //Overriden by use3d
     protected boolean defaultEdgeSelectionColor = NbPreferences.forModule(VizConfig.class).getBoolean(SELECTEDEDGE_HAS_COLOR, DEFAULT_SELECTEDEDGE_HAS_COLOR);
     protected Color defaultEdgeInSelectedColor = ColorUtils.decode(NbPreferences.forModule(VizConfig.class).get(SELECTEDEDGE_IN_COLOR, ColorUtils.encode(DEFAULT_SELECTEDEDGE_IN_COLOR)));
     protected Color defaultEdgeOutSelectedColor = ColorUtils.decode(NbPreferences.forModule(VizConfig.class).get(SELECTEDEDGE_OUT_COLOR, ColorUtils.encode(DEFAULT_SELECTEDEDGE_OUT_COLOR)));
@@ -68,6 +68,8 @@ public class VizConfigImpl implements VizConfig {
     protected boolean defaultShowHulls = NbPreferences.forModule(VizConfig.class).getBoolean(SHOW_HULLS, DEFAULT_SHOW_HULLS);
     protected float defaultEdgeScale = NbPreferences.forModule(VizConfig.class).getFloat(EDGE_SCALE, DEFAULT_EDGE_SCALE);
     protected float defaultMetaEdgeScale = NbPreferences.forModule(VizConfig.class).getFloat(META_EDGE_SCALE, DEFAULT_META_EDGE_SCALE);
+    // FIXME after vizconfig rewritten
+    protected NodeShape defaultNodeShape = NodeShape.CIRCLE;
     //Preferences
     protected int antialiasing = NbPreferences.forModule(VizConfig.class).getInt(ANTIALIASING, DEFAULT_ANTIALIASING);
     protected boolean lineSmooth = false;       //Not useful, GL_LINES
@@ -181,6 +183,10 @@ public class VizConfigImpl implements VizConfig {
 
     public Color getDefaultEdgeUniColor() {
         return defaultEdgeUniColor;
+    }
+
+    public NodeShape getDefaultNodeShape() {
+        return defaultNodeShape;
     }
 
     public boolean isDefaultHideNonSelectedEdges() {
@@ -345,10 +351,6 @@ public class VizConfigImpl implements VizConfig {
 
     public boolean isWireFrame() {
         return wireFrame;
-    }
-
-    public String getDefaultNodeModeler() {
-        return defaultNodeModeler;
     }
 
     public boolean isToolbar() {

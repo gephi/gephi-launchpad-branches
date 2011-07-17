@@ -18,7 +18,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 */
-
 package org.gephi.visualization.camera;
 
 import org.gephi.visualization.api.camera.Camera;
@@ -37,8 +36,8 @@ abstract class AbstractCamera implements Camera {
     protected float fovy;
     protected float relativeZoom;
 
-    protected static final float MAX_ZOOM = 2.0f;
-    protected static final float MIN_ZOOM = -10.0f;
+    protected static final float MAX_ZOOM = 1.5f;
+    protected static final float MIN_ZOOM = -4.0f;
 
     @Override
     public void setFov(float fov) {

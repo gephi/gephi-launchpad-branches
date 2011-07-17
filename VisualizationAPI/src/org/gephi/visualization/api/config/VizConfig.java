@@ -2,8 +2,7 @@ package org.gephi.visualization.api.config;
 
 import java.awt.Color;
 import java.awt.Font;
-import java.util.HashSet;
-import java.util.Set;
+import org.gephi.graph.api.NodeShape;
 import org.gephi.visualization.api.selection.SelectionType;
 
 /**
@@ -61,6 +60,7 @@ public interface VizConfig {
     boolean DEFAULT_SELECTEDEDGE_HAS_COLOR = false;
     Color DEFAULT_SELECTEDEDGE_IN_COLOR = new Color(32, 95, 154, 255);
     Color DEFAULT_SELECTEDEDGE_OUT_COLOR = new Color(196, 66, 79, 255);
+    NodeShape DEFAULT_NODE_SHAPE = NodeShape.CIRCLE;
     boolean DEFAULT_SELECTEDNODE_UNIQUE_COLOR = false;
     boolean DEFAULT_SELECTION = true;
     boolean DEFAULT_SHOW_EDGES = true;
@@ -146,7 +146,7 @@ public interface VizConfig {
 
     Font getDefaultNodeLabelFont();
 
-    String getDefaultNodeModeler();
+    NodeShape getDefaultNodeShape();
 
     float[] getLightenNonSelectedColor();
 

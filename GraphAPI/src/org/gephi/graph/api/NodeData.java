@@ -163,6 +163,17 @@ public interface NodeData extends Renderable {
     public void setFixed(boolean fixed);
 
     /**
+     * Returns the visual shape of this node.
+     */
+    public NodeShape getNodeShape();
+
+    /**
+     * Sets the visual shape of this node.
+     * @param nodeShape     the visual shape to be set.
+     */
+    public void setNodeShape(NodeShape nodeShape);
+
+    /**
      * Returns node's attributes.
      * @return              node's attributes
      */
