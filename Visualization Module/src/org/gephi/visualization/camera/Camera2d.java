@@ -59,6 +59,18 @@ public class Camera2d extends AbstractCamera {
         this.front = Vec3f.NEG_Z_AXIS;
     }
 
+    public Camera2d(Camera3d camera) {
+        this.imageWidth = camera.imageWidth();
+        this.imageHeight = camera.imageHeight();
+        this.fovy = camera.fov();
+        this.near = camera.near();
+        this.far = camera.far();
+
+        this.position = convertTo2d(camera.position());
+        this.up = convertTo2d(camera.upVector());
+        this.front = Vec3f.NEG_Z_AXIS;
+    }
+
     @Override
     public Camera copy() {
         Camera2d camera = new Camera2d((int) imageWidth, (int) imageHeight, near, far);
@@ -312,11 +324,4 @@ public class Camera2d extends AbstractCamera {
         requireRecomputeMatrix();
     }
 
-    private Vec2f convertTo2d(Vec3f v) {
-        return new Vec2f(v.x(), v.y());
-    }
-
-    private Vec3f convertTo3d(Vec2f v) {
-        return new Vec3f(v.x(), v.y(), 0);
-    }
 }

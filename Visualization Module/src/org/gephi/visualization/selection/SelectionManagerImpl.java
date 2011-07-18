@@ -35,12 +35,13 @@ import org.gephi.graph.api.Node;
 import org.gephi.project.api.ProjectController;
 import org.gephi.project.api.Workspace;
 import org.gephi.project.api.WorkspaceListener;
-import org.gephi.visualization.api.MotionManager;
+import org.gephi.visualization.api.controller.MotionManager;
 import org.gephi.visualization.api.config.VizConfig;
 import org.gephi.visualization.api.selection.NodeSpatialStructure;
 import org.gephi.visualization.api.selection.SelectionManager;
 import org.gephi.visualization.api.selection.SelectionType;
 import org.gephi.visualization.api.selection.Shape;
+import org.gephi.visualization.api.vizmodel.VizModel;
 import org.gephi.visualization.apiimpl.shape.ShapeUtils;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.ServiceProvider;
@@ -106,8 +107,14 @@ public class SelectionManagerImpl implements SelectionManager, WorkspaceListener
     }
 
     @Override
-    public void addChangeListener(ChangeListener changeListener) {
-        listeners.add(changeListener);
+    public void refreshDataStructure() {
+        boolean use3d = Lookup.getDefault().lookup(VizModel.class).isUse3d();
+        GraphController graphController = Lookup.getDefault().lookup(GraphController.class);
+        if (use3d) {
+            nodeContainer = new Octree(graphController.getModel().getGraph());
+        } else {
+            nodeContainer = new Quadtree(graphController.getModel().getGraph());
+        }
     }
 
     @Override
@@ -278,6 +285,11 @@ public class SelectionManagerImpl implements SelectionManager, WorkspaceListener
         vizConfig.setMouseSelectionUpdateWhileDragging(selectionUpdateWhileDragging);
     }
 
+    @Override
+    public void addChangeListener(ChangeListener changeListener) {
+        listeners.add(changeListener);
+    }
+
     private void fireChangeEvent() {
         ChangeEvent evt = new ChangeEvent(this);
         for (ChangeListener l : listeners) {
@@ -288,9 +300,8 @@ public class SelectionManagerImpl implements SelectionManager, WorkspaceListener
     // Graph event
     @Override
     public void graphChanged(GraphEvent event) {
-        GraphController graphController = Lookup.getDefault().lookup(GraphController.class);
         if (nodeContainer == null) {
-            nodeContainer = new Octree(graphController.getModel().getGraph());
+            refreshDataStructure();
         }
         switch (event.getEventType()) {
             case ADD_NODES:
@@ -299,7 +310,7 @@ public class SelectionManagerImpl implements SelectionManager, WorkspaceListener
                 }
                 break;
             default:
-                nodeContainer = new Octree(graphController.getModel().getGraph());
+                refreshDataStructure();
                 break;
         }
     }

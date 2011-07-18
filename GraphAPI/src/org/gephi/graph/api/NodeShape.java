@@ -48,4 +48,27 @@ public enum NodeShape {
     public static NodeShape[] specificValues() {
         return new NodeShape[] {CIRCLE, TRIANGLE, SQUARE, DIAMOND, PENTAGON, HEXAGON, IMAGE1, IMAGE2, IMAGE3, IMAGE4, IMAGE5, IMAGE6, IMAGE7, IMAGE8};
     }
+
+    @Override
+    public String toString() {
+        switch (this) {
+            case CIRCLE: return "Circle";
+            case DEFAULT: return "Default";
+            case DIAMOND: return "Diamond";
+            case HEXAGON: return "Hexagon";
+            case IMAGE1: return "Image 1";
+            case IMAGE2: return "Image 2";
+            case IMAGE3: return "Image 3";
+            case IMAGE4: return "Image 4";
+            case IMAGE5: return "Image 5";
+            case IMAGE6: return "Image 6";
+            case IMAGE7: return "Image 7";
+            case IMAGE8: return "Image 8";
+            case PENTAGON: return "Pentagon";
+            case SQUARE: return "Square";
+            case TRIANGLE: return "Triangle";
+        }
+        return null;
+    }
+
 }

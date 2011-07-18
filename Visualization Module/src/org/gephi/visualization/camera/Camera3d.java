@@ -61,6 +61,18 @@ public class Camera3d extends AbstractCamera {
         this.up = new Vec3f(0.0f, 1.0f, 0.0f);
     }
 
+    public Camera3d(Camera2d camera) {
+        this.imageWidth = camera.imageWidth();
+        this.imageHeight = camera.imageHeight();
+        this.fovy = camera.fov();
+        this.near = camera.near();
+        this.far = camera.far();
+
+        this.position = camera.position();
+        this.up = camera.upVector();
+        this.front = camera.upVector();
+    }
+    
     @Override
     public Camera copy() {
         Camera3d camera = new Camera3d((int) imageWidth, (int) imageHeight, near, far);

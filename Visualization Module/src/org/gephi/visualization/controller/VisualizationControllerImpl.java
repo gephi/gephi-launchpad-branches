@@ -38,11 +38,13 @@ import org.gephi.lib.gleem.linalg.Vec3f;
 import org.gephi.project.api.ProjectController;
 import org.gephi.project.api.Workspace;
 import org.gephi.project.api.WorkspaceListener;
-import org.gephi.visualization.api.MotionManager;
+import org.gephi.visualization.api.controller.MotionManager;
 import org.gephi.visualization.api.camera.Camera;
 import org.gephi.visualization.api.controller.VisualizationController;
 import org.gephi.visualization.api.selection.SelectionManager;
+import org.gephi.visualization.api.vizmodel.VizModel;
 import org.gephi.visualization.camera.Camera2d;
+import org.gephi.visualization.camera.Camera3d;
 import org.gephi.visualization.data.FrameDataBridge;
 import org.gephi.visualization.geometry.AABB;
 import org.gephi.visualization.model.Model;
@@ -71,6 +73,8 @@ public class VisualizationControllerImpl implements VisualizationController, Key
     private boolean centerGraph = true;
     private boolean centerZero;
     private float[] centerNode;
+
+    private boolean use3d;
 
     // TODO remove when architecture bugs fixed
     private static final Camera DEFAULT_CAMERA = new Camera2d(300, 300, 100f, 10000.0f);
@@ -151,6 +155,36 @@ public class VisualizationControllerImpl implements VisualizationController, Key
     @Override
     public boolean isCentering() {
         return centerGraph || centerZero || centerNode != null;
+    }
+
+    @Override
+    public void modeChanged() {
+        boolean modelUse3d = Lookup.getDefault().lookup(VizModel.class).isUse3d();
+        if (modelUse3d == this.use3d) {
+            return;
+        }
+        Workspace workspace = Lookup.getDefault().lookup(ProjectController.class).getCurrentWorkspace();
+        Camera cam = workspace.getLookup().lookup(Camera.class);
+        workspace.remove(cam);
+        if (modelUse3d) {
+        // Set 2D mode
+            if (cam instanceof Camera2d) {
+                camera = new Camera3d((Camera2d) cam);
+                
+                // TODO add other engine code
+                //
+            }
+        } else {
+        // Set 3D mode
+            if (cam instanceof Camera3d) {
+                camera = new Camera2d((Camera3d) cam);
+
+                // TODO add other engine code
+                //
+            }
+        }
+        workspace.add(camera);
+        Lookup.getDefault().lookup(SelectionManager.class).refreshDataStructure();
     }
 
     public void beginUpdateFrame() {

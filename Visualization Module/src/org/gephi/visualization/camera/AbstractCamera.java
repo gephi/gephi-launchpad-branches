@@ -20,6 +20,8 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 */
 package org.gephi.visualization.camera;
 
+import org.gephi.lib.gleem.linalg.Vec2f;
+import org.gephi.lib.gleem.linalg.Vec3f;
 import org.gephi.visualization.api.camera.Camera;
 import org.gephi.visualization.api.vizmodel.VizModel;
 import org.openide.util.Lookup;
@@ -64,5 +66,13 @@ abstract class AbstractCamera implements Camera {
 
     protected void requireRecomputeMatrix() {
         recomputeMatrix = true;
+    }
+
+    protected static Vec2f convertTo2d(Vec3f v) {
+        return new Vec2f(v.x(), v.y());
+    }
+
+    protected static Vec3f convertTo3d(Vec2f v) {
+        return new Vec3f(v.x(), v.y(), 0);
     }
 }

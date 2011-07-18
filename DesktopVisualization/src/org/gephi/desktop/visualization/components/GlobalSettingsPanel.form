@@ -29,7 +29,10 @@
               <EmptySpace min="-2" pref="27" max="-2" attributes="0"/>
               <Component id="zoomPanel" min="-2" pref="147" max="-2" attributes="0"/>
               <EmptySpace min="-2" pref="28" max="-2" attributes="0"/>
-              <Component id="hightlightCheckBox" min="-2" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Component id="hightlightCheckBox" min="-2" max="-2" attributes="0"/>
+                  <Component id="use3dCheckbox" min="-2" max="-2" attributes="0"/>
+              </Group>
               <EmptySpace min="-2" pref="32" max="-2" attributes="0"/>
           </Group>
       </Group>
@@ -38,18 +41,20 @@
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="hightlightCheckBox" alignment="0" min="-2" pref="25" max="-2" attributes="0"/>
-                  <Group type="103" alignment="0" groupAlignment="1" max="-2" attributes="0">
-                      <Component id="zoomPanel" alignment="0" max="32767" attributes="1"/>
-                      <Group type="102" alignment="0" attributes="0">
-                          <Group type="103" groupAlignment="1" attributes="0">
-                              <Component id="labelBackgroundColor" alignment="0" min="-2" pref="24" max="-2" attributes="1"/>
-                              <Component id="backgroundColorButton" alignment="0" min="-2" pref="24" max="-2" attributes="1"/>
-                          </Group>
-                          <EmptySpace max="-2" attributes="0"/>
-                          <Component id="autoSelectNeigborCheckbox" min="-2" pref="26" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                  <Group type="102" alignment="0" attributes="1">
+                      <Component id="hightlightCheckBox" min="-2" pref="25" max="-2" attributes="0"/>
+                      <EmptySpace max="32767" attributes="0"/>
+                      <Component id="use3dCheckbox" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <Component id="zoomPanel" alignment="0" max="32767" attributes="1"/>
+                  <Group type="102" alignment="0" attributes="0">
+                      <Group type="103" groupAlignment="1" attributes="0">
+                          <Component id="labelBackgroundColor" alignment="0" min="-2" pref="24" max="-2" attributes="1"/>
+                          <Component id="backgroundColorButton" alignment="0" min="-2" pref="24" max="-2" attributes="1"/>
                       </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="autoSelectNeigborCheckbox" min="-2" pref="26" max="-2" attributes="0"/>
                   </Group>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
@@ -135,5 +140,13 @@
         </Component>
       </SubComponents>
     </Container>
+    <Component class="javax.swing.JCheckBox" name="use3dCheckbox">
+      <Properties>
+        <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+          <ResourceString bundle="org/gephi/desktop/visualization/components/Bundle.properties" key="GlobalSettingsPanel.use3dCheckbox.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+        </Property>
+        <Property name="horizontalTextPosition" type="int" value="2"/>
+      </Properties>
+    </Component>
   </SubComponents>
 </Form>

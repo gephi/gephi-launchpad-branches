@@ -30,7 +30,7 @@ import org.gephi.lib.gleem.linalg.Vec3f;
 import org.gephi.project.api.ProjectController;
 import org.gephi.project.api.Workspace;
 import org.gephi.project.api.WorkspaceListener;
-import org.gephi.visualization.api.MotionManager;
+import org.gephi.visualization.api.controller.MotionManager;
 import org.gephi.visualization.api.selection.SelectionManager;
 import org.gephi.visualization.api.selection.Shape;
 import org.gephi.visualization.controller.VisualizationControllerImpl;

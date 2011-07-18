@@ -130,4 +130,10 @@ public interface SelectionManager {
     void setSelectionUpdateWhileDragging(boolean selectionUpdateWhileDragging);
 
     void setSelectionType(SelectionType selectionType);
+
+    /**
+     * Called when the spatial information or graph have changed to rebuild used
+     * data structure.
+     */
+    void refreshDataStructure();
 }

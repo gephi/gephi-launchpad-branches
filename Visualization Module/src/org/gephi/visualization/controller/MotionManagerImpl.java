@@ -28,7 +28,7 @@ import java.awt.event.MouseWheelEvent;
 import javax.swing.SwingUtilities;
 import org.gephi.graph.api.Node;
 import org.gephi.lib.gleem.linalg.Vec3f;
-import org.gephi.visualization.api.MotionManager;
+import org.gephi.visualization.api.controller.MotionManager;
 import org.gephi.visualization.api.config.VizConfig;
 import org.gephi.visualization.api.event.VizEventManager;
 import org.gephi.visualization.api.selection.SelectionManager;

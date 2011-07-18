@@ -99,6 +99,15 @@ public class GlobalSettingsPanel extends javax.swing.JPanel {
                 Lookup.getDefault().lookup(VisualizationController.class).getCamera().setZoom(zoom);
             }
         });
+        use3dCheckbox.addItemListener(new ItemListener() {
+
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                VizModel vizModel = Lookup.getDefault().lookup(VizModel.class);
+                vizModel.setUse3d(use3dCheckbox.isSelected());
+                Lookup.getDefault().lookup(VisualizationController.class).modeChanged();
+            }
+        });
     }
 
     private void refreshSharedConfig() {
@@ -113,6 +122,9 @@ public class GlobalSettingsPanel extends javax.swing.JPanel {
         ((JColorButton) backgroundColorButton).setColor(vizModel.getBackgroundColor());
         if (hightlightCheckBox.isSelected() != vizModel.isLightenNonSelectedAuto()) {
             hightlightCheckBox.setSelected(vizModel.isLightenNonSelectedAuto());
+        }
+        if (use3dCheckbox.isSelected() != vizModel.isUse3d()) {
+            use3dCheckbox.setSelected(vizModel.isUse3d());
         }
         refreshZoom();
     }
@@ -150,6 +162,7 @@ public class GlobalSettingsPanel extends javax.swing.JPanel {
         zoomPanel = new javax.swing.JPanel();
         labelZoom = new javax.swing.JLabel();
         zoomSlider = new javax.swing.JSlider();
+        use3dCheckbox = new javax.swing.JCheckBox();
 
         labelBackgroundColor.setText(org.openide.util.NbBundle.getMessage(GlobalSettingsPanel.class, "GlobalSettingsPanel.labelBackgroundColor.text")); // NOI18N
 
@@ -184,6 +197,9 @@ public class GlobalSettingsPanel extends javax.swing.JPanel {
         gridBagConstraints.weighty = 1.0;
         zoomPanel.add(zoomSlider, gridBagConstraints);
 
+        use3dCheckbox.setText(org.openide.util.NbBundle.getMessage(GlobalSettingsPanel.class, "GlobalSettingsPanel.use3dCheckbox.text")); // NOI18N
+        use3dCheckbox.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -199,23 +215,27 @@ public class GlobalSettingsPanel extends javax.swing.JPanel {
                 .addGap(27, 27, 27)
                 .addComponent(zoomPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(28, 28, 28)
-                .addComponent(hightlightCheckBox)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(hightlightCheckBox)
+                    .addComponent(use3dCheckbox))
                 .addGap(32, 32, 32))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(hightlightCheckBox, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                        .addComponent(zoomPanel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                .addComponent(labelBackgroundColor, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(backgroundColorButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(autoSelectNeigborCheckbox, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(hightlightCheckBox, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(use3dCheckbox))
+                    .addComponent(zoomPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(labelBackgroundColor, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(backgroundColorButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(autoSelectNeigborCheckbox, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
@@ -225,6 +245,7 @@ public class GlobalSettingsPanel extends javax.swing.JPanel {
     private javax.swing.JCheckBox hightlightCheckBox;
     private javax.swing.JLabel labelBackgroundColor;
     private javax.swing.JLabel labelZoom;
+    private javax.swing.JCheckBox use3dCheckbox;
     private javax.swing.JPanel zoomPanel;
     private javax.swing.JSlider zoomSlider;
     // End of variables declaration//GEN-END:variables

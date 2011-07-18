@@ -368,6 +368,10 @@ public final class Octree implements NodeSpatialStructure {
         return maxNodeSize;
     }
 
+    public void clearCache() {
+        changeMarker = true;
+    }
+
     /**
      * Interface representing a conditioned function on a node.
      */

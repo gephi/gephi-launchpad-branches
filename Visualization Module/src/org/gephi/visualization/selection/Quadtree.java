@@ -356,6 +356,11 @@ public final class Quadtree implements NodeSpatialStructure {
         return maxNodeSize;
     }
 
+    @Override
+    public void clearCache() {
+        changeMarker = true;
+    }
+
     /**
      * Interface representing a conditioned function on a node.
      */

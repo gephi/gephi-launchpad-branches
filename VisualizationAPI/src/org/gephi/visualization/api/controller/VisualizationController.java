@@ -81,6 +81,12 @@ public interface VisualizationController {
     public boolean isCentering();
 
     /**
+     * Called when the mode of scene display and navigation has been changed to
+     * 3D or 2D.
+     */
+    public void modeChanged();
+    
+    /**
      * Starts the main loop.
      */
     public void start();

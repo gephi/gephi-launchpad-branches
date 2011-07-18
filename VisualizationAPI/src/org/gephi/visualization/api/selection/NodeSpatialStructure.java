@@ -98,6 +98,12 @@ public interface NodeSpatialStructure {
     public void removeNode(Node node);
 
     /**
+     * Called when selection has changed outside the spatial structure to clear
+     * cached results.
+     */
+    public void clearCache();
+
+    /**
      * Returns the size of a node with maximum size.
      */
     public float getMaxNodeSize();

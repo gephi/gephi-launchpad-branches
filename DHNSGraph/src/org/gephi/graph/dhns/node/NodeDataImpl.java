@@ -23,6 +23,7 @@ package org.gephi.graph.dhns.node;
 import org.gephi.data.properties.PropertiesColumn;
 import org.gephi.graph.api.Attributes;
 import org.gephi.graph.api.Node;
+import org.gephi.graph.api.NodeShape;
 import org.gephi.graph.spi.LayoutData;
 import org.gephi.graph.api.NodeData;
 import org.gephi.graph.api.GroupData;
@@ -56,6 +57,7 @@ public class NodeDataImpl implements NodeData, GroupData {
     protected String label;
     protected Attributes attributes;
     protected TextData textData;
+    protected NodeShape nodeShape;
 
     public NodeDataImpl(int ID, AbstractNode rootNode) {
         this.nodes = new ViewNodeTree();
@@ -97,6 +99,14 @@ public class NodeDataImpl implements NodeData, GroupData {
 
     public void setSpatialData(SpatialData spatialData) {
         this.spatialData = spatialData;
+    }
+
+    public NodeShape getNodeShape() {
+        return nodeShape;
+    }
+
+    public void setNodeShape(NodeShape nodeShape) {
+        this.nodeShape = nodeShape;
     }
 
     public Attributes getAttributes() {
