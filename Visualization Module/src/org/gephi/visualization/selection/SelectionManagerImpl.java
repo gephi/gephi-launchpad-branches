@@ -66,7 +66,7 @@ public class SelectionManagerImpl implements SelectionManager, WorkspaceListener
         Lookup.getDefault().lookup(ProjectController.class).addWorkspaceListener(this);
         VizConfig vizConfig = Lookup.getDefault().lookup(VizConfig.class);
         mouseSelectionDiameter = vizConfig.getMouseSelectionDiameter();
-        mouseSelectionZoomProportional = vizConfig.isMouseSelectionUpdateWhileDragging();
+        mouseSelectionZoomProportional = vizConfig.isMouseSelectionZoomProportionnal();
     }
 
     @Override
@@ -86,7 +86,7 @@ public class SelectionManagerImpl implements SelectionManager, WorkspaceListener
 
     @Override
     public void cancelContinuousSelection() {
-        nodeContainer.cancelContinuousSelection();
+        nodeContainer.clearContinuousSelection();
     }
 
     @Override
@@ -97,6 +97,7 @@ public class SelectionManagerImpl implements SelectionManager, WorkspaceListener
     @Override
     public void selectSingle(Point point, boolean select) {
         singleNodeSelectionShape = ShapeUtils.createEllipseShape(point.x - mouseSelectionDiameter, point.y - mouseSelectionDiameter, mouseSelectionDiameter, mouseSelectionDiameter);
+        nodeContainer.clearContinuousSelection();
         nodeContainer.selectSingle(singleNodeSelectionShape, point, select, NodeSpatialStructure.SINGLE_NODE_CLOSEST);
     }
 
@@ -119,7 +120,7 @@ public class SelectionManagerImpl implements SelectionManager, WorkspaceListener
 
     @Override
     public void blockSelection(boolean block) {
-        // TODO find a better name for blocking selection and leaving direct selection
+        // TODO implement reasonable block for tools
         VizConfig vizConfig = Lookup.getDefault().lookup(VizConfig.class);
         if (vizConfig.getSelectionType() != SelectionType.NONE) {
             this.blocked = block;
@@ -132,6 +133,11 @@ public class SelectionManagerImpl implements SelectionManager, WorkspaceListener
 
     @Override
     public void disableSelection() {
+        // move to NodeSpatialStructure and clear marker
+        for (Node node : nodeContainer.getSelectedNodes()) {
+            node.getNodeData().setSelected(false);
+        }
+        nodeContainer.clearCache();
         Lookup.getDefault().lookup(VizConfig.class).setSelectionEnable(false);
     }
 
@@ -143,7 +149,10 @@ public class SelectionManagerImpl implements SelectionManager, WorkspaceListener
     @Override
     public Shape getNodePointerShape() {
         MotionManager motionManager = Lookup.getDefault().lookup(MotionManager.class);
-        return isDirectMouseSelection() && !motionManager.isPressing() && mouseSelectionDiameter > 1 ? singleNodeSelectionShape : null;
+        singleNodeSelectionShape = ShapeUtils.createEllipseShape(motionManager.getMousePosition()[0] - mouseSelectionDiameter, 
+                                                                 motionManager.getMousePosition()[1] - mouseSelectionDiameter,
+                                                                 mouseSelectionDiameter, mouseSelectionDiameter);
+        return (isDirectMouseSelection() || isDraggingEnabled()) && motionManager.isInside() && !motionManager.isPressing() && mouseSelectionDiameter > 1 ? singleNodeSelectionShape : null;
     }
 
     @Override
@@ -178,12 +187,6 @@ public class SelectionManagerImpl implements SelectionManager, WorkspaceListener
     }
 
     @Override
-    public boolean isSelectionUpdateWhileDragging() {
-        VizConfig vizConfig = Lookup.getDefault().lookup(VizConfig.class);
-        return vizConfig.isMouseSelectionUpdateWhileDragging();
-    }
-
-    @Override
     public boolean isMovementEnabled() {
         return Lookup.getDefault().lookup(VizConfig.class).isMovementEnabled();
     }
@@ -205,11 +208,13 @@ public class SelectionManagerImpl implements SelectionManager, WorkspaceListener
 
     @Override
     public void selectNode(Node node) {
+        // move to NodeSpatialStructure and clear marker
         node.getNodeData().setSelected(true);
     }
 
     @Override
     public void selectNodes(Node[] nodes) {
+        // move to NodeSpatialStructure and clear marker
         for (Node node : nodes) {
             node.getNodeData().setSelected(true);
         }
@@ -227,7 +232,6 @@ public class SelectionManagerImpl implements SelectionManager, WorkspaceListener
     public void setSelectionType(SelectionType selectionType) {
         clearState();
         VizConfig vizConfig = Lookup.getDefault().lookup(VizConfig.class);
-        vizConfig.setSelectionEnable(true);
         vizConfig.setSelectionType(selectionType);
         fireChangeEvent();
     }
@@ -236,16 +240,6 @@ public class SelectionManagerImpl implements SelectionManager, WorkspaceListener
     public void setDirectMouseSelection() {
         clearState();
         VizConfig vizConfig = Lookup.getDefault().lookup(VizConfig.class);
-        vizConfig.setSelectionEnable(true);
-        vizConfig.setDirectMouseSelection(true);
-        fireChangeEvent();
-    }
-
-    @Override
-    public void setDraggingMouseSelection() {
-        clearState();
-        VizConfig vizConfig = Lookup.getDefault().lookup(VizConfig.class);
-        vizConfig.setDraggingEnable(true);
         vizConfig.setDirectMouseSelection(true);
         fireChangeEvent();
     }
@@ -261,8 +255,6 @@ public class SelectionManagerImpl implements SelectionManager, WorkspaceListener
     private void clearState() {
         VizConfig vizConfig = Lookup.getDefault().lookup(VizConfig.class);
         vizConfig.setDraggingEnable(false);
-        vizConfig.setMouseSelectionUpdateWhileDragging(false);
-        vizConfig.setSelectionEnable(false);
         vizConfig.setSelectionType(SelectionType.NONE);
         vizConfig.setMovementEnabled(false);
         vizConfig.setDirectMouseSelection(false);
@@ -277,12 +269,6 @@ public class SelectionManagerImpl implements SelectionManager, WorkspaceListener
     @Override
     public void setMouseSelectionZoomProportionnal(boolean mouseSelectionZoomProportionnal) {
         this.mouseSelectionZoomProportional = mouseSelectionZoomProportionnal;
-    }
-
-    @Override
-    public void setSelectionUpdateWhileDragging(boolean selectionUpdateWhileDragging) {
-        VizConfig vizConfig = Lookup.getDefault().lookup(VizConfig.class);
-        vizConfig.setMouseSelectionUpdateWhileDragging(selectionUpdateWhileDragging);
     }
 
     @Override

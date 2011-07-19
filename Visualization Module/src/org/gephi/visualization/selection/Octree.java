@@ -142,7 +142,7 @@ public final class Octree implements NodeSpatialStructure {
     }
 
     @Override
-    public void cancelContinuousSelection() {
+    public void clearContinuousSelection() {
         if (temporarySelectedNodes == null) {
             return;
         }

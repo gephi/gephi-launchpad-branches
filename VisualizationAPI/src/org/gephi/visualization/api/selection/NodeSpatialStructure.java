@@ -65,7 +65,7 @@ public interface NodeSpatialStructure {
     /**
      * Cancels temporary selection.
      */
-    public void cancelContinuousSelection();
+    public void clearContinuousSelection();
     
     public Collection<Node> getSelectedNodes();
 

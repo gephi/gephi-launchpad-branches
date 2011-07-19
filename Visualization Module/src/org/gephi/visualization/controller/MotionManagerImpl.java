@@ -62,8 +62,7 @@ public class MotionManagerImpl implements MotionManager {
 
     protected boolean dragging;
     protected boolean pressing;
-
-    protected boolean enable3D;
+    protected boolean inside;
 
     public MotionManagerImpl() {
         this.controller = VisualizationControllerImpl.getDefault();
@@ -134,6 +133,10 @@ public class MotionManagerImpl implements MotionManager {
                         }
                     }
                 }
+            }
+        } else if (vizConfig.isDraggingEnabled()) {
+            if (SwingUtilities.isLeftMouseButton(e)) {
+                selectionManager.clearSelection();
             }
         }
         
@@ -247,6 +250,10 @@ public class MotionManagerImpl implements MotionManager {
         mousePosition[0] = e.getXOnScreen() - (int) controller.getViewLocationOnScreen().getX();
         mousePosition[1] = e.getYOnScreen() - (int) controller.getViewLocationOnScreen().getY();
 
+        if (pressing) {
+            return;
+        }
+
         VizConfig vizConfig = Lookup.getDefault().lookup(VizConfig.class);
         SelectionManager selectionManager = Lookup.getDefault().lookup(SelectionManager.class);
         SelectionModifier modifier = extractSelectionModifier(e);
@@ -258,7 +265,8 @@ public class MotionManagerImpl implements MotionManager {
             selectionManager.applyContinuousSelection(selectionShape);
         }
 
-        if (vizConfig.isDirectMouseSelection()) {
+        if (vizConfig.isDirectMouseSelection() ||
+           (vizConfig.isDraggingEnabled())) {
             selectionManager.cancelContinuousSelection();
             boolean selected = selectionManager.selectContinuousSingle(e.getPoint(), modifier.isPositive());
             if (selected) {
@@ -267,6 +275,16 @@ public class MotionManagerImpl implements MotionManager {
                 controller.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
             }
         }
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+        inside = true;
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+        inside = false;
     }
 
     @Override
@@ -287,17 +305,14 @@ public class MotionManagerImpl implements MotionManager {
         }
     }
 
-    public boolean isEnable3D() {
-        return enable3D;
-    }
-
-    public void setEnable3D(boolean enable3D) {
-        this.enable3D = enable3D;
-    }
-
     @Override
     public boolean isPressing() {
         return pressing;
+    }
+
+    @Override
+    public boolean isInside() {
+        return inside;
     }
 
 }

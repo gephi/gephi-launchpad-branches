@@ -101,8 +101,6 @@ public interface SelectionManager {
 
     boolean isSelectionEnabled();
 
-    boolean isSelectionUpdateWhileDragging();
-
     SelectionType getSelectionType();
 
     void removeChangeListener(ChangeListener changeListener);
@@ -119,15 +117,11 @@ public interface SelectionManager {
 
     void setDraggingEnable(boolean dragging);
 
-    void setDraggingMouseSelection();
-
     void setMouseSelectionDiameter(int mouseSelectionDiameter);
 
     void setMouseSelectionZoomProportionnal(boolean mouseSelectionZoomProportionnal);
 
     void setMovementEnabled(boolean enabled);
-
-    void setSelectionUpdateWhileDragging(boolean selectionUpdateWhileDragging);
 
     void setSelectionType(SelectionType selectionType);
 
@@ -136,4 +130,5 @@ public interface SelectionManager {
      * data structure.
      */
     void refreshDataStructure();
+
 }

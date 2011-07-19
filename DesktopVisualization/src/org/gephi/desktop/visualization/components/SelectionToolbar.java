@@ -114,7 +114,7 @@ public class SelectionToolbar extends JToolBar {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (dragButton.isSelected()) {
-                    Lookup.getDefault().lookup(SelectionManager.class).setDraggingMouseSelection();
+                    Lookup.getDefault().lookup(SelectionManager.class).setDraggingEnable(true);
                 }
             }
         });

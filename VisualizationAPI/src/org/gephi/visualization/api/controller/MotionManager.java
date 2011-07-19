@@ -45,6 +45,8 @@ public interface MotionManager {
 
     public boolean isPressing();
 
+    public boolean isInside();
+
     public void mousePressed(MouseEvent e);
 
     public void mouseClicked(MouseEvent e);
@@ -54,6 +56,10 @@ public interface MotionManager {
     public void mouseReleased(MouseEvent e);
 
     public void mouseMoved(MouseEvent e);
+
+    public void mouseEntered(MouseEvent e);
+
+    public void mouseExited(MouseEvent e);
 
     public void mouseWheelMoved(MouseWheelEvent e);
 

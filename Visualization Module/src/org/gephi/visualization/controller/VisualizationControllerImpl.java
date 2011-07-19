@@ -76,6 +76,8 @@ public class VisualizationControllerImpl implements VisualizationController, Key
 
     private boolean use3d;
 
+    private boolean hasWorkspace;
+
     // TODO remove when architecture bugs fixed
     private static final Camera DEFAULT_CAMERA = new Camera2d(300, 300, 100f, 10000.0f);
 
@@ -251,40 +253,58 @@ public class VisualizationControllerImpl implements VisualizationController, Key
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        Lookup.getDefault().lookup(MotionManager.class).mouseClicked(e);
+        if (hasWorkspace) {
+            Lookup.getDefault().lookup(MotionManager.class).mouseClicked(e);
+        }
     }
 
     @Override
     public void mousePressed(MouseEvent e) {
-        Lookup.getDefault().lookup(MotionManager.class).mousePressed(e);
+        if (hasWorkspace) {
+            Lookup.getDefault().lookup(MotionManager.class).mousePressed(e);
+        }
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        Lookup.getDefault().lookup(MotionManager.class).mouseReleased(e);
+        if (hasWorkspace) {
+            Lookup.getDefault().lookup(MotionManager.class).mouseReleased(e);
+        }
     }
 
     @Override
     public void mouseEntered(MouseEvent e) {
+        if (hasWorkspace) {
+            Lookup.getDefault().lookup(MotionManager.class).mouseReleased(e);
+        }
     }
 
     @Override
     public void mouseExited(MouseEvent e) {
+        if (hasWorkspace) {
+            Lookup.getDefault().lookup(MotionManager.class).mouseEntered(e);
+        }
     }
 
     @Override
     public void mouseDragged(MouseEvent e) {
-        Lookup.getDefault().lookup(MotionManager.class).mouseDragged(e);
+        if (hasWorkspace) {
+            Lookup.getDefault().lookup(MotionManager.class).mouseExited(e);
+        }
     }
 
     @Override
     public void mouseMoved(MouseEvent e) {
-        Lookup.getDefault().lookup(MotionManager.class).mouseMoved(e);
+        if (hasWorkspace) {
+            Lookup.getDefault().lookup(MotionManager.class).mouseMoved(e);
+        }
     }
 
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
-        Lookup.getDefault().lookup(MotionManager.class).mouseWheelMoved(e);
+        if (hasWorkspace) {
+             Lookup.getDefault().lookup(MotionManager.class).mouseWheelMoved(e);
+        }
     }
 
     // Workspace events
@@ -300,6 +320,7 @@ public class VisualizationControllerImpl implements VisualizationController, Key
             workspace.add(camera);
         }
         Lookup.getDefault().lookup(SelectionManager.class).initialize();
+        hasWorkspace = true;
     }
 
     @Override

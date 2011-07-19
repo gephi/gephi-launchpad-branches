@@ -131,7 +131,7 @@ public final class Quadtree implements NodeSpatialStructure {
     }
 
     @Override
-    public void cancelContinuousSelection() {
+    public void clearContinuousSelection() {
         if (temporarySelectedNodes == null) {
             return;
         }
@@ -139,6 +139,7 @@ public final class Quadtree implements NodeSpatialStructure {
             node.getNodeData().setSelected(!temporarySelectionMod);
         }
         temporarySelectedNodes = null;
+        changeMarker = true;
     }
 
     @Override
@@ -310,7 +311,7 @@ public final class Quadtree implements NodeSpatialStructure {
     public boolean selectContinuousSingle(final Shape shape, final Point point, final boolean select, final int policy) {
         temporarySelectionMod = select;
         temporarySelectedNodes = selectSingle(shape, point, select, policy);
-        return temporarySelectedNodes != null;
+        return !temporarySelectedNodes.isEmpty();
     }
 
     @Override
@@ -321,6 +322,7 @@ public final class Quadtree implements NodeSpatialStructure {
                 node.getNodeData().setSelected(false);
             }
         });
+        changeMarker = true;
     }
 
     @Override

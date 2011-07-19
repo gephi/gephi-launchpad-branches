@@ -40,7 +40,7 @@ public interface VizConfig {
     boolean DEFAULT_LABEL_MIPMAP = true;
     boolean DEFAULT_LABEL_SELECTION_ONLY = false;
     float DEFAULT_META_EDGE_SCALE = 1.0F;
-    int DEFAULT_MOUSE_SELECTION_DIAMETER = 1;
+    int DEFAULT_MOUSE_SELECTION_DIAMETER = 5;
     boolean DEFAULT_MOUSE_SELECTION_WHILE_DRAGGING = false;
     boolean DEFAULT_MOUSE_SELECTION_ZOOM_PROPORTIONAL = false;
     boolean DEFAULT_NEIGHBOUR_SELECT = false;
@@ -232,8 +232,6 @@ public interface VizConfig {
 
     boolean isLineSmoothNicest();
 
-    boolean isMouseSelectionUpdateWhileDragging();
-
     boolean isMouseSelectionZoomProportionnal();
 
     boolean isPauseLoopWhenMouseOut();
@@ -275,8 +273,6 @@ public interface VizConfig {
     void setLightenNonSelected(boolean lightenNonSelected);
 
     void setLightenNonSelectedFactor(float lightenNonSelectedFactor);
-
-    void setMouseSelectionUpdateWhileDragging(boolean mouseSelectionUpdateWhileDragging);
 
     void setPauseLoopWhenMouseOut(boolean pauseLoopWhenMouseOut);
 
