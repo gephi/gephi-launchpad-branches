@@ -188,6 +188,12 @@ public class MinimalDrawer extends JPanel
     }
     
     public void timelineAnimatorChanged(TimelineAnimatorEvent event) {
+        if(event.getStopped()) {
+            currentState = TimelineState.IDLE;
+        } else {
+            currentState = TimelineState.MOVING;
+        }
+        
         // get new position
         newfrom = event.getRelFrom();
         newto   = event.getRelTo();
@@ -202,6 +208,7 @@ public class MinimalDrawer extends JPanel
         // move the drawer
         sf = newfrom * (double) getWidth();
         st = newto * (double) getWidth();
+        
         repaint();
     }
     

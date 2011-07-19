@@ -55,11 +55,11 @@ public class TimelineAnimatorImpl
     public TimelineAnimatorImpl() {
         listeners = new ArrayList<TimelineAnimatorListener>();
         playMode = playMode.BOTH;
-        stepByTick = 0.01;
+        stepByTick = 0.002;
         paused = new AtomicBoolean(true);
 
-        timer = new Timer(250, this); // 0.1 sec
-        timer.setInitialDelay(2000); // 2.0 sec        
+        timer = new Timer(50, this);
+        timer.setInitialDelay(2000);        
         
         relativeSelectionStart = 0.0;
         relativeSelectionEnd = 1.0;
@@ -70,27 +70,27 @@ public class TimelineAnimatorImpl
         setTo(to);
     }
 
-    public synchronized void setTo(double to) {
-
-        if (to > 1.0) {
-            relativeSelectionStart = 1.0;
-        }
-        else if (to <= 0.0) {
-            relativeSelectionStart = 0.0;
-        } else {
-        relativeSelectionStart = to;
-        }
-    }
-
     public synchronized void setFrom(double from) {
 
         if (from > 1.0) {
-            relativeSelectionEnd = 1.0;
+            relativeSelectionStart = 1.0;
         }
         else if (from <= 0.0) {
+            relativeSelectionStart = 0.0;
+        } else {
+        relativeSelectionStart = from;
+        }
+    }
+
+    public synchronized void setTo(double to) {
+
+        if (to > 1.0) {
+            relativeSelectionEnd = 1.0;
+        }
+        else if (to <= 0.0) {
             relativeSelectionEnd = 0.0;
         } else {
-        relativeSelectionEnd = from;
+        relativeSelectionEnd = to;
         }
     }
     public synchronized double getFrom() {
@@ -170,13 +170,9 @@ public class TimelineAnimatorImpl
         if (paused.get()) return;
 
         double s = getStepByTick();
-
         double f = getFrom();
         double t = getTo();
-        
-        System.out.println("tic. f: "+f+" to: "+t);
 
-        
         switch(getTimelinePlayMode()) {
             case YOUNGEST:
                 f += s;
@@ -204,8 +200,6 @@ public class TimelineAnimatorImpl
         }
         setInterval(f, t);
         fireChangeEvent();
-        System.out.println("toc");
-
     }
 
 }

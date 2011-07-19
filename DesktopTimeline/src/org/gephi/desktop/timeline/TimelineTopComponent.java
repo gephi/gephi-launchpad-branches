@@ -105,10 +105,6 @@ public final class TimelineTopComponent extends TopComponent implements Timeline
         setIcon(ImageUtilities.loadImage(ICON_PATH, true));
         putClientProperty(TopComponent.PROP_MAXIMIZATION_DISABLED, Boolean.TRUE); 
 
-        // Animator
-        animator = new TimelineAnimatorImpl();
-        animator.addListener(this);
-
         // Setup drawer
         TimelineDrawer drawer = Lookup.getDefault().lookup(TimelineDrawer.class);
         drawerPanel = (JPanel) drawer;
@@ -116,7 +112,11 @@ public final class TimelineTopComponent extends TopComponent implements Timeline
         drawerPanel.setEnabled(false);
         timelinePanel.add(drawerPanel);
         MinimalDrawer mdrawer = (MinimalDrawer) drawer;
+
+        // Animator
+        animator = new TimelineAnimatorImpl();
         mdrawer.setAnimator(animator);
+        animator.addListener(this);        
         
         // Setup sparkline
         
@@ -266,8 +266,7 @@ public final class TimelineTopComponent extends TopComponent implements Timeline
 
     public void timelineAnimatorChanged(TimelineAnimatorEvent event) {
         // check animator value, to update the buttons etc..
-        System.out.println(event.getStopped());
-        playButton.setSelected(event.getStopped());
+        playButton.setSelected(!event.getStopped());
     }
 
     /** This method is called from within the constructor to
@@ -368,7 +367,6 @@ public final class TimelineTopComponent extends TopComponent implements Timeline
 
     private void playButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_playButtonActionPerformed
         if(playButton.isSelected()) {
-            System.out.println("model bounds: "+model.getFromFloat() + ", " + model.getToFloat());
             animator.play(model.getFromFloat(), model.getToFloat());
         } else {
             animator.stop();
