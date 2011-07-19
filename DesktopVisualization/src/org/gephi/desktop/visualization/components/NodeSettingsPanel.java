@@ -27,7 +27,6 @@ import java.awt.event.ItemListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.DefaultListCellRenderer;
 import org.gephi.graph.api.NodeShape;
 import org.gephi.visualization.api.vizmodel.VizModel;
 import org.openide.util.Lookup;

@@ -22,9 +22,7 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 package org.gephi.visualization.camera;
 
 import java.awt.Dimension;
-import org.gephi.lib.gleem.linalg.Mat3f;
 import org.gephi.lib.gleem.linalg.Mat4f;
-import org.gephi.lib.gleem.linalg.Rotf;
 import org.gephi.lib.gleem.linalg.Vec2f;
 import org.gephi.lib.gleem.linalg.Vec3f;
 import org.gephi.lib.gleem.linalg.Vec4f;
@@ -93,27 +91,16 @@ public class Camera2d extends AbstractCamera {
     }
 
     /**
-     * There is only one rotation axis in 2D and it will be used instead.
+     * No rotation for 2D is implemented at the moment.
      */
     @Override
-    public void rotate(Vec3f axis, float angle) {
-        Rotf rot = new Rotf(front, angle);
-        this.up = convertTo2d(rot.rotateVector(upVector()));
-        requireRecomputeMatrix();
-    }
+    public void rotate(Vec3f axis, float angle) {}
 
     /**
-     * There is only one rotation axis in 2D and it will be used instead.
+     * No rotation for 2D is implemented at the moment.
      */
     @Override
-    public void rotate(Vec3f origin, Vec3f axis, float angle) {
-        Rotf rot = new Rotf(front, angle);
-        this.up = convertTo2d(rot.rotateVector(upVector()));
-
-        Vec3f diff = new Vec3f(position.x(), position.y(), 0).minus(new Vec3f(origin.x(), origin.y(), origin.z()));
-        this.position.add(convertTo2d(origin), convertTo2d(rot.rotateVector(diff)));
-        requireRecomputeMatrix();
-    }
+    public void rotate(Vec3f origin, Vec3f axis, float angle) {}
 
     /**
      * Moves the camera above the center.
@@ -194,9 +181,7 @@ public class Camera2d extends AbstractCamera {
 
     @Override
     public float projectedDistanceFrom(Vec3f point) {
-        Vec3f pnt = point.copy();
-        pnt.sub(this.position());
-        return pnt.dot(this.frontVector());
+        return (float) Math.sqrt((position.x() - point.x()) * (position.x() - point.x()) + (position.y() - point.y()) * (position.y() - point.y()));
     }
 
     /**
@@ -278,11 +263,7 @@ public class Camera2d extends AbstractCamera {
     @Override
     public Vec3f projectVectorInverse(float x, float y) {
         float ratio = (float) Math.sqrt((1 - Math.cos(fovy)) / (1 - Math.cos(1.0)));
-        Vec3f horizontalTranslation = this.rightVector().times(x * ratio);
-        Vec3f verticalTranslation = this.upVector().times(y * ratio);
-        Vec3f translation = new Vec3f();
-        translation.add(horizontalTranslation, verticalTranslation);
-        return translation;
+        return new Vec3f(x * ratio, y * ratio, 0);
     }
 
     @Override
@@ -297,31 +278,16 @@ public class Camera2d extends AbstractCamera {
     @Override
     public void updateTranslation(float horizontal, float vertical) {
         float ratio = (float) Math.sqrt((1 - Math.cos(fovy)) / (1 - Math.cos(1.0)));
-        Vec3f horizontalTranslation = this.rightVector().times(horizontal * ratio);
-        Vec3f verticalTranslation = this.upVector().times(vertical * ratio);
-        Vec3f translation = new Vec3f();
-        translation.add(horizontalTranslation, verticalTranslation);
-        translate(translation);
+        translate(new Vec3f(horizontal * ratio, vertical * ratio, 0));
     }
 
     @Override
     public void startOrbit(float orbitModifier) {}
 
+    /**
+     * No rotation for 2D is implemented at the moment.
+     */
     @Override
-    public void updateOrbit(float x, float y) {
-        // FIXME may have better implementation
-        Mat3f rotationMatrix = new Mat3f();
-        float sx = (float) Math.sin(x);
-        float cx = (float) Math.cos(x);
-        rotationMatrix.setCol(0, new Vec3f(cx, sx, 0));
-        rotationMatrix.setCol(1, new Vec3f(-sx, cx, 0));
-        rotationMatrix.setCol(2, new Vec3f(0, 0, 1));
-        Vec3f u = new Vec3f(upVector());
-        Vec3f ur = new Vec3f();
-
-        rotationMatrix.xformVec(u, ur);
-        this.up = convertTo2d(ur);
-        requireRecomputeMatrix();
-    }
+    public void updateOrbit(float x, float y) {}
 
 }
