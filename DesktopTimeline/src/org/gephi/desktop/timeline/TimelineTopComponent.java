@@ -84,6 +84,7 @@ public final class TimelineTopComponent extends TopComponent implements Timeline
     
     // drawer
     private JPanel drawerPanel;
+    private MinimalDrawer mdrawer;
         
     // sparkline
     private XYDataset dataset;
@@ -111,7 +112,7 @@ public final class TimelineTopComponent extends TopComponent implements Timeline
         drawerPanel.setOpaque(false);
         drawerPanel.setEnabled(false);
         timelinePanel.add(drawerPanel);
-        MinimalDrawer mdrawer = (MinimalDrawer) drawer;
+        mdrawer = (MinimalDrawer) drawer;
 
         // Animator
         animator = new TimelineAnimatorImpl();
@@ -379,12 +380,14 @@ public final class TimelineTopComponent extends TopComponent implements Timeline
     }//GEN-LAST:event_tlcontainerResize
 
     private void resetButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetButtonActionPerformed
-        TimelineTopComponent.this.setEnabled(true);
         if (model != null) {
             model.setEnabled(true);
+            TimelineTopComponent.this.setEnabled(true);
             setupSparkline();
         }
-        playButton.setEnabled(true);
+        animator.stop();
+        model.setRangeFromFloat(0.0, 1.0);
+        mdrawer.refreshBounds();
     }//GEN-LAST:event_resetButtonActionPerformed
 
     private void closeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_closeButtonActionPerformed
@@ -475,6 +478,7 @@ public final class TimelineTopComponent extends TopComponent implements Timeline
         chartpanel.setVisible(enable);
         drawerPanel.setEnabled(enable);
         timelinePanel.setEnabled(enable);
+        playButton.setEnabled(enable);
     }
     
 }

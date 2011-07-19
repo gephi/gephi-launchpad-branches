@@ -82,28 +82,13 @@ public class MinimalDrawer extends JPanel
     public Action updateModelAction = new AbstractAction() {
 
         public void actionPerformed(ActionEvent e) {
-            if (model != null) {
-                if (newfrom != oldfrom || newto != oldto) {
-                    model.setRangeFromFloat(newfrom, newto);
-                    oldfrom = newfrom;
-                    oldto = newto;
-                }
-            }
+            updateModel();
         }
     };
     public Action updateViewAction = new AbstractAction() {
 
         public void actionPerformed(ActionEvent e) {
-            if (model != null) {
-                double tsf = model.getFromFloat() * (double) getWidth();
-                double tst = model.getToFloat() * (double) getWidth();
-                if (tsf != sf) {
-                    sf = tsf;
-                }
-                if (tst != st) {
-                    st = tst;
-                }
-            }
+            refreshBounds();
         }
     };
     private boolean mouseInside = false;
@@ -197,19 +182,36 @@ public class MinimalDrawer extends JPanel
         // get new position
         newfrom = event.getRelFrom();
         newto   = event.getRelTo();
-        // update model
+        updateModel();
+
+        // move the drawer
+        sf = newfrom * (double) getWidth();
+        st = newto * (double) getWidth();
+        
+        repaint();
+    }
+    
+    public void refreshBounds() {
+        if (model != null) {
+            double tsf = model.getFromFloat() * (double) getWidth();
+            double tst = model.getToFloat() * (double) getWidth();
+            if (tsf != sf) {
+                sf = tsf;
+            }
+            if (tst != st) {
+                st = tst;
+            }
+        }
+    }
+    
+    private void updateModel() {
         if (model != null) {
             if (newfrom != oldfrom || newto != oldto) {
                 model.setRangeFromFloat(newfrom, newto);
                 oldfrom = newfrom;
                 oldto = newto;
             }
-        }
-        // move the drawer
-        sf = newfrom * (double) getWidth();
-        st = newto * (double) getWidth();
-        
-        repaint();
+        }        
     }
     
     /** This method is called from within the constructor to
