@@ -275,21 +275,21 @@ public class VisualizationControllerImpl implements VisualizationController, Key
     @Override
     public void mouseEntered(MouseEvent e) {
         if (hasWorkspace) {
-            Lookup.getDefault().lookup(MotionManager.class).mouseReleased(e);
+            Lookup.getDefault().lookup(MotionManager.class).mouseEntered(e);
         }
     }
 
     @Override
     public void mouseExited(MouseEvent e) {
         if (hasWorkspace) {
-            Lookup.getDefault().lookup(MotionManager.class).mouseEntered(e);
+            Lookup.getDefault().lookup(MotionManager.class).mouseExited(e);
         }
     }
 
     @Override
     public void mouseDragged(MouseEvent e) {
         if (hasWorkspace) {
-            Lookup.getDefault().lookup(MotionManager.class).mouseExited(e);
+            Lookup.getDefault().lookup(MotionManager.class).mouseDragged(e);
         }
     }
 

@@ -76,6 +76,15 @@ public final class Octree implements NodeSpatialStructure {
         rebuild();
     }
 
+    /**
+     * Creates an empty octree structure with no underlying graph.
+     */
+    public Octree() {
+        this.graph = null;
+        this.unassignedNodes = new ArrayList<Node>();
+        this.selectedNodes = new ArrayList<Node>();
+        this.root = new Octant(null, 0, 0, 0, 1f, 0);
+    }
 
     @Override
     public void rebuild() {
@@ -170,7 +179,7 @@ public final class Octree implements NodeSpatialStructure {
                         changeMarker = true;
                     }
                     // If auto-selection is on and the selection is positive (adding nodes)
-                    if (select && autoSelectNeighbor) {
+                    if (select && autoSelectNeighbor && graph != null) {
                         for (Node neighbor : graph.getNeighbors(node)) {
                             if (!neighbor.getNodeData().isSelected()) {
                                 neighbor.getNodeData().setSelected(true);
@@ -304,7 +313,7 @@ public final class Octree implements NodeSpatialStructure {
             }
         }
         // If auto-selection is on and the selection is positive (adding nodes)
-        if (nodes[0] != null && select && autoSelectNeighbor) {
+        if (nodes[0] != null && select && autoSelectNeighbor && graph != null) {
             for (Node neighbor : graph.getNeighbors(nodes[0])) {
                 if (!neighbor.getNodeData().isSelected()) {
                     neighbor.getNodeData().setSelected(true);
@@ -325,13 +334,13 @@ public final class Octree implements NodeSpatialStructure {
     }
 
     @Override
+    // TODO optimize
     public void clearSelection() {
-        root.applyFunction(new NodeFunction() {
-            @Override
-            public void apply(Node node) {
-                node.getNodeData().setSelected(false);
-            }
-        });
+        NodeIterator iterator = graph.getNodes().iterator();
+        while (iterator.hasNext()) {
+            iterator.next().getNodeData().setSelected(false);
+        }
+        changeMarker = true;
     }
 
     @Override
@@ -368,6 +377,7 @@ public final class Octree implements NodeSpatialStructure {
         return maxNodeSize;
     }
 
+    @Override
     public void clearCache() {
         changeMarker = true;
     }

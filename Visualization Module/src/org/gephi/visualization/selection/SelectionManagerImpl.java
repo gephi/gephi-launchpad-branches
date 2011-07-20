@@ -67,6 +67,7 @@ public class SelectionManagerImpl implements SelectionManager, WorkspaceListener
         VizConfig vizConfig = Lookup.getDefault().lookup(VizConfig.class);
         mouseSelectionDiameter = vizConfig.getMouseSelectionDiameter();
         mouseSelectionZoomProportional = vizConfig.isMouseSelectionZoomProportionnal();
+        nodeContainer = new Octree();
     }
 
     @Override

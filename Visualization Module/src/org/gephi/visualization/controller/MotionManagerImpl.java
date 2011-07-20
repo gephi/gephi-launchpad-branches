@@ -101,7 +101,7 @@ public class MotionManagerImpl implements MotionManager {
         mousePosition[1] = e.getYOnScreen() - (int) controller.getViewLocationOnScreen().getY();
         startDrag[0] = mousePosition[0];
         startDrag[1] = mousePosition[1];
-        dragging = true;
+        pressing = true;
 
         SelectionModifier modifier = extractSelectionModifier(e);
         VizConfig vizConfig = Lookup.getDefault().lookup(VizConfig.class);
@@ -134,9 +134,16 @@ public class MotionManagerImpl implements MotionManager {
                     }
                 }
             }
-        } else if (vizConfig.isDraggingEnabled()) {
-            if (SwingUtilities.isLeftMouseButton(e)) {
-                selectionManager.clearSelection();
+        } else {
+            VizEventManager vizEventManager = Lookup.getDefault().lookup(VizEventManager.class);
+            if (SwingUtilities.isRightMouseButton(e)) {
+                vizEventManager.mouseRightPress();
+            } else if (SwingUtilities.isMiddleMouseButton(e)) {
+                vizEventManager.mouseMiddlePress();
+            } else if (SwingUtilities.isLeftMouseButton(e)) {
+                vizEventManager.mouseLeftPress();
+                vizEventManager.startDrag();
+                pressing = true;
             }
         }
         
@@ -153,22 +160,17 @@ public class MotionManagerImpl implements MotionManager {
             controller.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
         }
 
-        // TODO do not send events during selection
-        VizEventManager vizEventManager = Lookup.getDefault().lookup(VizEventManager.class);
-        if (SwingUtilities.isRightMouseButton(e)) {
-            vizEventManager.mouseRightPress();
-        } else if (SwingUtilities.isMiddleMouseButton(e)) {
-            vizEventManager.mouseMiddlePress();
-        } else if (SwingUtilities.isLeftMouseButton(e)) {
-            vizEventManager.mouseLeftPress();
-            vizEventManager.startDrag();
-            pressing = true;
-        }
-
     }
 
     @Override
     public void mouseClicked(MouseEvent e) {
+        VizConfig vizConfig = Lookup.getDefault().lookup(VizConfig.class);
+        SelectionManager selectionManager = Lookup.getDefault().lookup(SelectionManager.class);
+        if (vizConfig.isDraggingEnabled()) {
+            if (SwingUtilities.isLeftMouseButton(e)) {
+                selectionManager.clearSelection();
+            }
+        }
         VizEventManager eventManager = Lookup.getDefault().lookup(VizEventManager.class);
         if (SwingUtilities.isLeftMouseButton(e)) {
             eventManager.mouseLeftClick();
@@ -189,6 +191,7 @@ public class MotionManagerImpl implements MotionManager {
         mousePosition[1] = newY;
         mouseDrag[0] = mousePosition[0] - startDrag[0];
         mouseDrag[1] = startDrag[1] - mousePosition[1];
+        dragging = true;
 
         VizConfig vizConfig = Lookup.getDefault().lookup(VizConfig.class);
         SelectionManager selectionManager = Lookup.getDefault().lookup(SelectionManager.class);

@@ -315,13 +315,12 @@ public final class Quadtree implements NodeSpatialStructure {
     }
 
     @Override
+    // TODO optimize
     public void clearSelection() {
-        root.applyFunction(new NodeFunction() {
-            @Override
-            public void apply(Node node) {
-                node.getNodeData().setSelected(false);
-            }
-        });
+        NodeIterator iterator = graph.getNodes().iterator();
+        while (iterator.hasNext()) {
+            iterator.next().getNodeData().setSelected(false);
+        }
         changeMarker = true;
     }
 
