@@ -260,7 +260,7 @@ public interface VizConfig {
 
     boolean isDirectMouseSelection();
 
-    boolean isMovementEnabled();
+    boolean isNodeDraggingEnabled();
 
     SelectionType getSelectionType();
 
@@ -282,7 +282,7 @@ public interface VizConfig {
 
     void setDirectMouseSelection(boolean directMouseSelection);
 
-    void setMovementEnabled(boolean enabled);
+    void setNodeDraggingEnabled(boolean enabled);
 
 
 }

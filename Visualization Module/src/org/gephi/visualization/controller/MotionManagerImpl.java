@@ -134,7 +134,8 @@ public class MotionManagerImpl implements MotionManager {
                     }
                 }
             }
-        } else {
+        }
+        if (vizConfig.getSelectionType() == SelectionType.NONE && !vizConfig.isNodeDraggingEnabled()) {
             VizEventManager vizEventManager = Lookup.getDefault().lookup(VizEventManager.class);
             if (SwingUtilities.isRightMouseButton(e)) {
                 vizEventManager.mouseRightPress();
@@ -143,7 +144,6 @@ public class MotionManagerImpl implements MotionManager {
             } else if (SwingUtilities.isLeftMouseButton(e)) {
                 vizEventManager.mouseLeftPress();
                 vizEventManager.startDrag();
-                pressing = true;
             }
         }
         
@@ -166,7 +166,7 @@ public class MotionManagerImpl implements MotionManager {
     public void mouseClicked(MouseEvent e) {
         VizConfig vizConfig = Lookup.getDefault().lookup(VizConfig.class);
         SelectionManager selectionManager = Lookup.getDefault().lookup(SelectionManager.class);
-        if (vizConfig.isDraggingEnabled()) {
+        if (vizConfig.isNodeDraggingEnabled()) {
             if (SwingUtilities.isLeftMouseButton(e)) {
                 selectionManager.clearSelection();
             }
@@ -202,7 +202,7 @@ public class MotionManagerImpl implements MotionManager {
                 selectionManager.cancelContinuousSelection();
                 selectionManager.applyContinuousSelection(selectionShape);
             }
-        } else if (vizConfig.isDraggingEnabled()) {
+        } else if (vizConfig.isNodeDraggingEnabled()) {
             controller.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
             if (SwingUtilities.isLeftMouseButton(e)) {
                 Vec3f translation = controller.getCamera().projectVectorInverse(-MOVE_FACTOR * x, MOVE_FACTOR * y);
@@ -225,8 +225,6 @@ public class MotionManagerImpl implements MotionManager {
     public void mouseReleased(MouseEvent e) {
         VizConfig vizConfig = Lookup.getDefault().lookup(VizConfig.class);
         SelectionManager selectionManager = Lookup.getDefault().lookup(SelectionManager.class);
-        dragging = false;
-        pressing = false;
 
         if (vizConfig.getSelectionType() != SelectionType.NONE && selectionShape != null) {
             selectionShape = ShapeUtils.continuousUpdate(selectionShape, e.getX(), e.getY());
@@ -243,9 +241,17 @@ public class MotionManagerImpl implements MotionManager {
             selectionShape.isDiscretelyUpdated() && SwingUtilities.isRightMouseButton(e))) {
             selectionShape = null;
         }
+
         Lookup.getDefault().lookup(VizEventManager.class).stopDrag();
         Lookup.getDefault().lookup(VizEventManager.class).mouseReleased();
+
+        // Cancel selection for tools
+        if (selectionManager.isDirectMouseSelection() && dragging) {
+            selectionManager.clearSelection();
+        }
         controller.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+        dragging = false;
+        pressing = false;
     }
 
     @Override
@@ -269,7 +275,7 @@ public class MotionManagerImpl implements MotionManager {
         }
 
         if (vizConfig.isDirectMouseSelection() ||
-           (vizConfig.isDraggingEnabled())) {
+           (vizConfig.isNodeDraggingEnabled())) {
             selectionManager.cancelContinuousSelection();
             boolean selected = selectionManager.selectContinuousSingle(e.getPoint(), modifier.isPositive());
             if (selected) {

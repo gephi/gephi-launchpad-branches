@@ -108,14 +108,13 @@ public class VizConfigImpl implements VizConfig {
     // Selection
     protected boolean selectionEnable = NbPreferences.forModule(VizConfig.class).getBoolean(SELECTION, DEFAULT_SELECTION);
     protected Color rectangleSelectionColor = ColorUtils.decode(NbPreferences.forModule(VizConfig.class).get(RECTANGLE_SELECTION_COLOR, ColorUtils.encode(DEFAULT_RECTANGLE_SELECTION_COLOR)));
-    protected boolean customSelection = false;      //Overriden in Engine
     protected int mouseSelectionDiameter = NbPreferences.forModule(VizConfig.class).getInt(MOUSE_SELECTION_DIAMETER, DEFAULT_MOUSE_SELECTION_DIAMETER);
     protected boolean mouseSelectionZoomProportionnal = NbPreferences.forModule(VizConfig.class).getBoolean(MOUSE_SELECTION_ZOOM_PROPORTIONAL, DEFAULT_MOUSE_SELECTION_ZOOM_PROPORTIONAL);
     protected boolean mouseSelectionUpdateWhileDragging = NbPreferences.forModule(VizConfig.class).getBoolean(MOUSE_SELECTION_WHILE_DRAGGING, DEFAULT_MOUSE_SELECTION_WHILE_DRAGGING);
     // TODO add proper defaults
     protected SelectionType selectionType = SelectionType.NONE;
     protected boolean directMouseSelection = false;
-    protected boolean movementEnabled = false;
+    protected boolean nodeDraggingEnabled = false;
 
     // Mouse input
     protected boolean draggingEnable = NbPreferences.forModule(VizConfig.class).getBoolean(DRAGGING, DEFAULT_DRAGGING);
@@ -373,16 +372,16 @@ public class VizConfigImpl implements VizConfig {
         return mouseSelectionUpdateWhileDragging;
     }
 
-    public boolean isCustomSelection() {
-        return customSelection;
-    }
-
     public boolean isReduceFpsWhenMouseOut() {
         return reduceFpsWhenMouseOut;
     }
 
     public int getReduceFpsWhenMouseOutValue() {
         return reduceFpsWhenMouseOutValue;
+    }
+
+    public boolean isNodeDraggingEnabled() {
+        return nodeDraggingEnabled;
     }
 
     //Setters
@@ -400,10 +399,6 @@ public class VizConfigImpl implements VizConfig {
 
     public void setSelectionEnable(boolean selectionEnable) {
         this.selectionEnable = selectionEnable;
-    }
-
-    public void setCustomSelection(boolean customSelection) {
-        this.customSelection = customSelection;
     }
 
     public void setMouseSelectionUpdateWhileDragging(boolean mouseSelectionUpdateWhileDragging) {
@@ -462,12 +457,8 @@ public class VizConfigImpl implements VizConfig {
         this.directMouseSelection = directMouseSelection;
     }
 
-    public boolean isMovementEnabled() {
-        return movementEnabled;
-    }
-
-    public void setMovementEnabled(boolean enabled) {
-        this.movementEnabled = enabled;
+    public void setNodeDraggingEnabled(boolean enabled) {
+        this.nodeDraggingEnabled = enabled;
     }
 
 }

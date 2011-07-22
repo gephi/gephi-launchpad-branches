@@ -95,11 +95,11 @@ public interface SelectionManager {
 
     boolean isDraggingEnabled();
 
-    boolean isMovementEnabled();
-
     boolean isMouseSelectionZoomProportional();
 
     boolean isSelectionEnabled();
+
+    boolean isNodeDraggingEnabled();
 
     SelectionType getSelectionType();
 
@@ -115,13 +115,13 @@ public interface SelectionManager {
 
     void setDirectMouseSelection();
 
-    void setDraggingEnable(boolean dragging);
+    void setDraggingEnabled(boolean enabled);
+
+    void setNodeDraggingEnabled();
 
     void setMouseSelectionDiameter(int mouseSelectionDiameter);
 
     void setMouseSelectionZoomProportionnal(boolean mouseSelectionZoomProportionnal);
-
-    void setMovementEnabled(boolean enabled);
 
     void setSelectionType(SelectionType selectionType);
 

@@ -193,10 +193,7 @@ public class VisualizationControllerImpl implements VisualizationController, Key
     }
 
     public void endUpdateFrame(AABB box) {
-        if (box == null) {
-            return;
-        }
-        if (centerGraph) {
+        if (centerGraph && box != null) {
             final Vec3f center = box.center();
             final Vec3f scale = box.scale();
             final Vec3f minVec = box.minVec();

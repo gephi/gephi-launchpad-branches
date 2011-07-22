@@ -114,7 +114,7 @@ public class SelectionToolbar extends JToolBar {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (dragButton.isSelected()) {
-                    Lookup.getDefault().lookup(SelectionManager.class).setDraggingEnable(true);
+                    Lookup.getDefault().lookup(SelectionManager.class).setNodeDraggingEnabled();
                 }
             }
         });
@@ -125,7 +125,7 @@ public class SelectionToolbar extends JToolBar {
         buttonGroup.setSelected(polygonButton.getModel(), Lookup.getDefault().lookup(SelectionManager.class).getSelectionType() == SelectionType.POLYGON);
         buttonGroup.setSelected(ellipseButton.getModel(), Lookup.getDefault().lookup(SelectionManager.class).getSelectionType() == SelectionType.ELLIPSE);
         buttonGroup.setSelected(mouseButton.getModel(), Lookup.getDefault().lookup(SelectionManager.class).isDirectMouseSelection());
-        buttonGroup.setSelected(dragButton.getModel(), Lookup.getDefault().lookup(SelectionManager.class).isDraggingEnabled());
+        buttonGroup.setSelected(dragButton.getModel(), Lookup.getDefault().lookup(SelectionManager.class).isNodeDraggingEnabled());
 
         //Init events
         Lookup.getDefault().lookup(SelectionManager.class).addChangeListener(new ChangeListener() {
@@ -146,7 +146,7 @@ public class SelectionToolbar extends JToolBar {
                 */
                 if (selectionManager.isDirectMouseSelection()) {
                     buttonGroup.setSelected(mouseButton.getModel(), true);
-                } else if (selectionManager.isDraggingEnabled()) {
+                } else if (selectionManager.isNodeDraggingEnabled()) {
                     buttonGroup.setSelected(dragButton.getModel(), true);
                 } else {
                     switch (selectionManager.getSelectionType()) {

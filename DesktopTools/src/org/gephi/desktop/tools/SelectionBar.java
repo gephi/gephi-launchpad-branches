@@ -93,13 +93,10 @@ public class SelectionBar extends javax.swing.JPanel {
         if (manager.isDirectMouseSelection()) {
             statusLabel.setText(NbBundle.getMessage(SelectionBar.class, "SelectionBar.statusLabel.mouseSelection"));
             mouseSelection = true;
-        } else if (manager.isDraggingEnabled()) {
+        } else if (manager.isNodeDraggingEnabled()) {
             statusLabel.setText(NbBundle.getMessage(SelectionBar.class, "SelectionBar.statusLabel.dragging"));
             mouseSelection = true;
-        } else if (manager.isMovementEnabled()) {
-            statusLabel.setText(NbBundle.getMessage(SelectionBar.class, "SelectionBar.statusLabel.movement"));
-            mouseSelection = false;
-        } else {
+        } else if (manager.getSelectionType() != SelectionType.NONE) {
             switch (manager.getSelectionType()) {
                 case ELLIPSE:
                     statusLabel.setText(NbBundle.getMessage(SelectionBar.class, "SelectionBar.statusLabel.ellipseSelection"));
@@ -112,6 +109,9 @@ public class SelectionBar extends javax.swing.JPanel {
                     break;
             }
             mouseSelection = manager.getSelectionType() != SelectionType.NONE;
+        } else {
+            statusLabel.setText(NbBundle.getMessage(SelectionBar.class, "SelectionBar.statusLabel.noSelection"));
+            mouseSelection = false;
         }
     }
 

@@ -109,14 +109,15 @@ public class DesktopToolController implements ToolController {
                 break;
             case SELECTION:
                 selectionManager.blockSelection(true);
-                selectionManager.setDraggingEnable(false);
+                selectionManager.setDraggingEnabled(false);
+                selectionManager.setDirectMouseSelection();
                 break;
             case SELECTION_AND_DRAGGING:
                 selectionManager.blockSelection(true);
-                selectionManager.setDraggingEnable(true);
+                selectionManager.setDraggingEnabled(true);
+                selectionManager.setDirectMouseSelection();
                 break;
         }
-        selectionManager.setDirectMouseSelection();
         currentTool = tool;
         currentTool.select();
     }
@@ -200,7 +201,7 @@ public class DesktopToolController implements ToolController {
                 if (selectionManager.getSelectionType() != SelectionType.NONE && currentTool != null) {
                     toolbar.clearSelection();
                     unselect();
-                } else if (selectionManager.isSelectionEnabled() && currentTool != null && currentTool.getSelectionType() == ToolSelectionType.NONE) {
+                } else if (selectionManager.isDirectMouseSelection() && currentTool != null && currentTool.getSelectionType() == ToolSelectionType.NONE) {
                     toolbar.clearSelection();
                     unselect();
                 } else if (selectionManager.isDraggingEnabled() && currentTool != null) {
