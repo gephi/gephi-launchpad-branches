@@ -199,7 +199,7 @@ public final class Quadtree implements NodeSpatialStructure {
         }
 
         final Camera camera = Lookup.getDefault().lookup(VisualizationController.class).getCameraCopy();
-        Intersection intersection = shape.intersectsCube(quadrant.getX(), quadrant.getY(), 0, quadrant.getSize(), maxNodeSize, camera);
+        Intersection intersection = shape.intersectsSquare(quadrant.getX(), quadrant.getY(), quadrant.getSize(), maxNodeSize, camera);
 
         switch (intersection) {
             case OUTSIDE:

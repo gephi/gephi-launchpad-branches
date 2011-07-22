@@ -46,7 +46,7 @@ public abstract class AbstractShape implements Shape {
         int[][] projectedPoints = new int[4][3];
         int[] center = camera.projectPoint(x + size / 2, y + size / 2, 0, 0);
         for (int i = 0; i < 4; i++) {
-            projectedPoints[i] = camera.projectPoint(x + SQUARE_CORNERS[i][0] * size, y + SQUARE_CORNERS[i][1] * size, 0, 0);
+            projectedPoints[i] = camera.projectPoint(x + SQUARE_CORNERS[i][0] * size, y + SQUARE_CORNERS[i][1] * size, 0, maxNodeSize);
         }
         int H = projectedPoints[0][0] - center[0];
         int V = projectedPoints[0][1] - center[1];
@@ -78,7 +78,7 @@ public abstract class AbstractShape implements Shape {
         int maxH = 0, maxV = 0;
         int[] center = camera.projectPoint(x + size / 2, y + size / 2, z + size / 2, 0);
         for (int i = 0; i < 8; i++) {
-            projectedPoints[i] = camera.projectPoint(x + CUBE_CORNERS[i][0] * size, y + CUBE_CORNERS[i][1] * size, z + CUBE_CORNERS[i][2] * size, 0);
+            projectedPoints[i] = camera.projectPoint(x + CUBE_CORNERS[i][0] * size, y + CUBE_CORNERS[i][1] * size, z + CUBE_CORNERS[i][2] * size, maxNodeSize);
             if (Math.abs(projectedPoints[i][0] - center[0]) > maxH) {
                 maxH = Math.abs(projectedPoints[i][0] - center[0]);
             }

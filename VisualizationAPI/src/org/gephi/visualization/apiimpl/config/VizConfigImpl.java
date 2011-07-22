@@ -113,7 +113,7 @@ public class VizConfigImpl implements VizConfig {
     protected boolean mouseSelectionUpdateWhileDragging = NbPreferences.forModule(VizConfig.class).getBoolean(MOUSE_SELECTION_WHILE_DRAGGING, DEFAULT_MOUSE_SELECTION_WHILE_DRAGGING);
     // TODO add proper defaults
     protected SelectionType selectionType = SelectionType.NONE;
-    protected boolean directMouseSelection = false;
+    protected boolean directMouseSelection = true;
     protected boolean nodeDraggingEnabled = false;
 
     // Mouse input

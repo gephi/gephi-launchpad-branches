@@ -237,7 +237,7 @@ public class Camera3d extends AbstractCamera {
      * size on screen after transformation have been applied.
      * @return array of integers, where
      * [0,1] -> point coordinates on screen
-     * [2]   -> size of the node
+     * [2]   -> size of the node on screen
      */
     @Override
     public int[] projectPoint(float x, float y, float z, float size) {

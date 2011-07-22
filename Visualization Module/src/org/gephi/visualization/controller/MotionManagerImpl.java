@@ -205,7 +205,7 @@ public class MotionManagerImpl implements MotionManager {
         } else if (vizConfig.isNodeDraggingEnabled()) {
             controller.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
             if (SwingUtilities.isLeftMouseButton(e)) {
-                Vec3f translation = controller.getCamera().projectVectorInverse(-MOVE_FACTOR * x, MOVE_FACTOR * y);
+                Vec3f translation = controller.getCamera().projectVectorInverse(-x, y);
                 for (Node node : selectionManager.getSelectedNodes()) {
                     node.getNodeData().setPosition(node.getNodeData().x() - translation.x(), node.getNodeData().y() - translation.y(), node.getNodeData().z() - translation.z());
                 }

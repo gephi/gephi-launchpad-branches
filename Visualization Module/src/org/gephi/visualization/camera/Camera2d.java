@@ -227,23 +227,28 @@ public class Camera2d extends AbstractCamera {
      * size on screen after transformation have been applied.
      * @return array of integers, where
      * [0,1] -> point coordinates on screen
-     * [2]   -> size of the node
+     * [2]   -> size of the node on screen
      */
     @Override
     public int[] projectPoint(float x, float y, float z, float size) {
         // FIXME may have better implementation
         int[] res = new int[3];
-        Vec4f point = new Vec4f(x, y, z, 1.0f);
+        Vec4f point = new Vec4f(x, y, 0, 1.0f);
+        Vec4f perimPoint = new Vec4f(x + size, y, 0, 1.0f);
         Vec4f screenPoint = new Vec4f();
+        Vec4f screenPerimPoint = new Vec4f();
         Mat4f viewProjMatrix = projectiveMatrix().mul(viewMatrix());
         // multiply by modelview and projection matrices
         viewProjMatrix.xformVec(point, screenPoint);
-        screenPoint.scale(1.0f/screenPoint.w());
+        viewProjMatrix.xformVec(perimPoint, screenPerimPoint);
+        screenPoint.scale(1.0f / screenPoint.w());
+        screenPerimPoint.scale(1.0f / screenPerimPoint.w());
         // to NDC
         // point.scale(1 / point.w());
         res[0] = (int) ((screenPoint.x() + 1.0f) * imageWidth / 2.0f);
+        int perim = (int) ((screenPerimPoint.x() + 1.0f) * imageWidth / 2.0f);
         res[1] = (int) ((1.0f - screenPoint.y()) * imageHeight / 2.0f);
-        res[2] = 5;
+        res[2] = (int) (perim - res[0]);
         return res;
     }
 
@@ -262,7 +267,7 @@ public class Camera2d extends AbstractCamera {
      */
     @Override
     public Vec3f projectVectorInverse(float x, float y) {
-        float ratio = (float) Math.sqrt((1 - Math.cos(fovy)) / (1 - Math.cos(1.0)));
+        float ratio = 10.0f * (float) Math.sqrt((1 - Math.cos(fovy)) / (1 - Math.cos(1.0)));
         return new Vec3f(x * ratio, y * ratio, 0);
     }
 
