@@ -101,6 +101,14 @@ public class EdgeDataImpl implements EdgeData {
         return (getSource().z() + 2 * getTarget().z()) / 3f;
     }
 
+    public float getSize() {
+        return edge.getWeight();
+    }
+
+    public void setSize(float size) {
+        edge.setWeight(size);
+    }
+
     public float r() {
         return r;
     }

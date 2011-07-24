@@ -35,7 +35,7 @@ import org.gephi.graph.spi.SpatialData;
  * @author Mathieu Bastian
  * @see Node
  */
-public interface NodeData extends Renderable {
+public interface NodeData extends Renderable, Attributable {
 
     /**
      * Sets this node position along the x-axis.
@@ -172,10 +172,4 @@ public interface NodeData extends Renderable {
      * @param nodeShape     the visual shape to be set.
      */
     public void setNodeShape(NodeShape nodeShape);
-
-    /**
-     * Returns node's attributes.
-     * @return              node's attributes
-     */
-    public Attributes getAttributes();
 }
