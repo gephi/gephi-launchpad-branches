@@ -37,9 +37,6 @@ import javax.management.NotificationEmitter;
 import javax.management.NotificationListener;
 import javax.management.openmbean.CompositeData;
 import org.gephi.desktop.project.api.ProjectControllerUI;
-import org.gephi.graph.api.GraphController;
-import org.gephi.graph.api.Node;
-import org.gephi.visualization.VizController;
 import org.openide.DialogDisplayer;
 import org.openide.LifecycleManager;
 import org.openide.NotifyDescriptor;
@@ -294,7 +291,7 @@ public class MemoryStarvationManager implements NotificationListener {
 
     private void freeSomeMemory() {
         //Stop Graphics engine and free all elements models. Should be enough
-        VizController.getInstance().destroy();
+        //VizController.getInstance().destroy();
     }
 
     private boolean canRestart() {

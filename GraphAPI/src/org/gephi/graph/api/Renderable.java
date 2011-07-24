@@ -51,4 +51,8 @@ public interface Renderable extends Spatial {
     public boolean isSelected();
 
     public TextData getTextData();
+    
+    public float getSize();
+
+    public void setSize(float size);
 }

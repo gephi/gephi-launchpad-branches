@@ -64,18 +64,6 @@ public interface NodeData extends Renderable, Attributable {
     public void setPosition(float x, float y, float z);
 
     /**
-     * Returns the radius of the node.
-     * @return              the node radius
-     */
-    public float getSize();
-
-    /**
-     * Sets this node radius.
-     * @param radius         the new radius of the node
-     */
-    public void setSize(float radius);
-
-    /**
      * Returns the node this node data belongs in the <b>main</b> view. To get
      * the node in a particular view, see {@link #getNode(int) }.
      * @return              the node this node data belongs in the <b>main</b> view
