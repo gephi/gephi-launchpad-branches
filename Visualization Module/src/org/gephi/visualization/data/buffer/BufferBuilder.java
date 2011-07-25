@@ -29,7 +29,7 @@ import org.gephi.visualization.data.layout.Layout;
 /**
  * Class used to create a new Buffer object.
  *
- * Antonio Patriarca <antoniopatriarca@gmail.com>
+ * @author Antonio Patriarca <antoniopatriarca@gmail.com>
  */
 public class BufferBuilder<I, O> {
 

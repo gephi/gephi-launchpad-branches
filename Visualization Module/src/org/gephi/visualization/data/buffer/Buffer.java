@@ -31,7 +31,7 @@ import org.gephi.visualization.data.layout.Layout;
 /**
  * Class used to store the current frame data.
  *
- * Antonio Patriarca <antoniopatriarca@gmail.com>
+ * @author Antonio Patriarca <antoniopatriarca@gmail.com>
  */
 public class Buffer<I, O> implements Iterable<O> {
     final Layout<I, O> layout;
