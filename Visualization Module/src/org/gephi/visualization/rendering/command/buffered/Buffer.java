@@ -18,19 +18,30 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 */
-package org.gephi.visualization.rendering.command.instanced;
+package org.gephi.visualization.rendering.command.buffered;
 
-import javax.media.opengl.GL;
-import org.gephi.visualization.api.camera.Camera;
+import java.nio.ByteBuffer;
 
 /**
  *
  * @author Antonio Patriarca <antoniopatriarca@gmail.com>
  */
-public interface InstancedTechnique<E> {
-    public void begin(GL gl, Camera camera);
+public class Buffer {
     
-    public void draw(GL gl, E e);
+    public final ByteBuffer buffer;
+    private boolean loaded;
+
+    public Buffer(ByteBuffer buffer) {
+        this.buffer = buffer;
+        this.loaded = false;
+    }
     
-    public void end(GL gl);
+    public boolean isLoaded() {
+        return this.loaded;
+    }
+    
+    public void setAsLoaded() {
+        this.loaded = true;
+    }
+    
 }

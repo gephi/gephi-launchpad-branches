@@ -20,15 +20,16 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 */
 package org.gephi.visualization.rendering.command;
 
+import java.util.List;
 import javax.media.opengl.GL;
 import org.gephi.visualization.api.camera.Camera;
 
 /**
  * A Rendering Command contains a list of objects to draw using the same 
- * rendering technique, and the code/resources to draw it.
+ * rendering technique and the technique to draw it.
  *
  * @author Antonio Patriarca <antoniopatriarca@gmail.com>
  */
-public interface Command {
+public interface Command {    
     public void draw(GL gl, Camera camera);
 }

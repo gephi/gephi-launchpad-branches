@@ -18,37 +18,21 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 */
-package org.gephi.visualization.rendering.command.instanced;
+package org.gephi.visualization.rendering.command.buffered;
 
-import org.gephi.visualization.rendering.command.Technique;
-import java.util.List;
 import javax.media.opengl.GL;
 import org.gephi.visualization.api.camera.Camera;
-import org.gephi.visualization.rendering.command.Command;
 
 /**
  *
  * @author Antonio Patriarca <antoniopatriarca@gmail.com>
  */
-public class InstancedCommand<E> implements Command {
+public interface BufferedTechnique {
     
-    private final List<E> instances;
-    private final Technique<E> technique;
-
-    public InstancedCommand(List<E> instances, Technique<E> technique) {
-        this.instances = instances;
-        this.technique = technique;
-    }
+    public void begin(GL gl, Camera camera);
     
-    @Override
-    public void draw(GL gl, Camera camera) {
-        this.technique.begin(gl, camera);
-        
-        for (E e : this.instances) {
-            this.technique.draw(gl, e);
-        }
-        
-        this.technique.end(gl);
-    }
+    public void draw(GL gl, Buffer buffer);
+    
+    public void end(GL gl);
     
 }

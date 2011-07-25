@@ -20,6 +20,7 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 */
 package org.gephi.visualization.rendering.command.instanced;
 
+import org.gephi.visualization.rendering.command.Technique;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -35,9 +36,9 @@ import org.gephi.visualization.rendering.command.CommandListBuilder;
 public class InstancedCommandListBuilder<E> implements CommandListBuilder<E> {
     private boolean isRunning;
     private List<E> instances;
-    private final InstancedTechnique<E> technique;
+    private final Technique<E> technique;
 
-    public InstancedCommandListBuilder(InstancedTechnique<E> technique) {
+    public InstancedCommandListBuilder(Technique<E> technique) {
         this.technique = technique;
         this.isRunning = false;
         this.instances = null;
