@@ -22,7 +22,7 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 package org.gephi.visualization.controller;
 
 
-import java.awt.Canvas;
+import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Point;
@@ -117,7 +117,7 @@ public class VisualizationControllerImpl implements VisualizationController, Key
     }
 
     @Override
-    public Canvas getViewCanvas() {
+    public Component getViewComponent() {
         return view.getCanvas();
     }
 

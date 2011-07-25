@@ -54,7 +54,7 @@ public final class GraphTopComponent extends TopComponent {
         initCollapsePanel();
         initToolPanels();
 
-        final Component canvas = controller.getViewCanvas();
+        final Component canvas = controller.getViewComponent();
 
         WindowManager.getDefault().invokeWhenUIReady(new Runnable() {
 

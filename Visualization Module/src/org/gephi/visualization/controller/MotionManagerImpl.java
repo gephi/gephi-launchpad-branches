@@ -35,6 +35,7 @@ import org.gephi.visualization.api.selection.SelectionManager;
 import org.gephi.visualization.api.selection.SelectionType;
 import org.gephi.visualization.api.selection.Shape;
 import org.gephi.visualization.api.selection.Shape.SelectionModifier;
+import org.gephi.visualization.apiimpl.contextmenu.GraphContextMenu;
 import org.gephi.visualization.apiimpl.shape.ShapeUtils;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.ServiceProvider;
@@ -177,6 +178,10 @@ public class MotionManagerImpl implements MotionManager {
         } else if (SwingUtilities.isMiddleMouseButton(e)) {
             eventManager.mouseMiddleClick();
         } else if (SwingUtilities.isRightMouseButton(e)) {
+            if (vizConfig.isContextMenu()) {
+                GraphContextMenu popupMenu = new GraphContextMenu();
+                popupMenu.getMenu().show(controller.getViewComponent(), mousePosition[0], mousePosition[1]);
+            }
             eventManager.mouseRightClick();
         }
     }

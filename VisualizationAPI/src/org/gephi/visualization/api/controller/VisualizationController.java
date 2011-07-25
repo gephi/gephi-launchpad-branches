@@ -22,7 +22,7 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 package org.gephi.visualization.api.controller;
 
 
-import java.awt.Canvas;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Point;
 import org.gephi.graph.api.Node;
@@ -36,19 +36,19 @@ import org.gephi.visualization.api.camera.Camera;
 public interface VisualizationController {
 
     /**
-     * Returns the dimensions of visualization viewing component.
+     * Returns the dimensions of visualization displaying component.
      */
     public Dimension getViewDimensions();
 
     /**
-     * Returns the location of visualization viewing component.
+     * Returns the location of visualization displaying component.
      */
     public Point getViewLocationOnScreen();
 
     /**
-     * Returns the canvas of visualization viewing component.
+     * Returns the visualization displaying component.
      */
-    public Canvas getViewCanvas();
+    public Component getViewComponent();
 
     /**
      * Returns the copy of current camera.
