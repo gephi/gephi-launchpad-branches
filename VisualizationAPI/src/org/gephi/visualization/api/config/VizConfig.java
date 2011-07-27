@@ -1,288 +1,153 @@
+/*
+Copyright 2008-2010 Gephi
+Authors : Vojtech Bardiovsky <vojtech.bardiovsky@gmail.com>
+Website : http://www.gephi.org
+
+This file is part of Gephi.
+
+Gephi is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+Gephi is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
+*/
 package org.gephi.visualization.api.config;
 
 import java.awt.Color;
 import java.awt.Font;
-import org.gephi.graph.api.NodeShape;
-import org.gephi.visualization.api.selection.SelectionType;
 
 /**
- *
- * @author Vojtech Bardiovsky
+ * Visualization configuration interface that holds every visualization property
+ * name.
+ * <p>
+ * Use by calling the desired <code>getProperty()</code> method providing a 
+ * String constant as a parameter, 
+ * e.g.: <code>getBooleanProperty(VizConfig.CONTEXT_MENU)</code>
+ * </p>
+ * 
+ * @author Vojtech Bardiovsky <vojtech.bardiovsky@gmail.com>
  */
 public interface VizConfig {
+    
+    // State and variable names
+    // Model variables
+    String ADJUST_BY_TEXT = "VizConfig.adjustByText";
     String ANTIALIASING = "VizConfig.antialiasing";
-    String BACKGROUND_COLOR = "VizConfig.defaultBackgroundColor";
+    String AUTO_SELECT_NEIGHBOUR = "VizConfig.autoSelectNeighbor";
+    String BACKGROUND_COLOR = "VizConfig.backgroundColor";
     String BLENDING = "VizConfig.blending";
-    String CAMERA_CONTROL = "VizConfig.cameraControlEnable";
     String CLEAN_DELETED_MODELS = "VizConfig.cleanDeletedModels";
     String CONTEXT_MENU = "VizConfig.contextMenu";
-    int DEFAULT_ANTIALIASING = 4;
-    Color DEFAULT_BACKGROUND_COLOR = Color.WHITE;
-    boolean DEFAULT_BLENDING = true;
-    boolean DEFAULT_CAMERA_CONTROL = true;
-    boolean DEFAULT_CLEAN_DELETED_MODELS = true;
-    boolean DEFAULT_CONTEXT_MENU = true;
-    boolean DEFAULT_DISABLE_LOD = false;
-    boolean DEFAULT_DRAGGING = true;
-    boolean DEFAULT_EDGE_HAS_UNIQUE_COLOR = false;
-    boolean DEFAULT_EDGE_LABELS = false;
-    Color DEFAULT_EDGE_LABEL_COLOR = new Color(0.5F, 0.5F, 0.5F, 1.0F);
-    Font DEFAULT_EDGE_LABEL_FONT = new Font("Arial", Font.BOLD, 20);
-    float DEFAULT_EDGE_SCALE = 1.0F;
-    Color DEFAULT_EDGE_UNIQUE_COLOR = new Color(0.5F, 0.5F, 0.5F, 0.5F);
-    boolean DEFAULT_GLJPANEL = false;
-    boolean DEFAULT_HIDE_NONSELECTED_EDGES = false;
-    boolean DEFAULT_HIGHLIGHT = true;
-    boolean DEFAULT_HIGHTLIGHT_ANIMATION = true;
-    Color DEFAULT_HIGHTLIGHT_COLOR = new Color(0.95F, 0.95F, 0.95F, 1.0F);
-    boolean DEFAULT_LABEL_ANTIALIASED = true;
-    boolean DEFAULT_LABEL_FRACTIONAL_METRICS = true;
-    boolean DEFAULT_LABEL_MIPMAP = true;
-    boolean DEFAULT_LABEL_SELECTION_ONLY = false;
-    float DEFAULT_META_EDGE_SCALE = 1.0F;
-    int DEFAULT_MOUSE_SELECTION_DIAMETER = 1;
-    boolean DEFAULT_MOUSE_SELECTION_WHILE_DRAGGING = false;
-    boolean DEFAULT_MOUSE_SELECTION_ZOOM_PROPORTIONAL = false;
-    boolean DEFAULT_NEIGHBOUR_SELECT = false;
-    boolean DEFAULT_NODE_LABELS = false;
-    Color DEFAULT_NODE_LABEL_COLOR = new Color(0.0F, 0.0F, 0.0F, 1.0F);
-    Font DEFAULT_NODE_LABEL_FONT = new Font("Arial", Font.BOLD, 20);
-    Color DEFAULT_NODE_NEIGHBOR_SELECTED_UNIQUE_COLOR = new Color(0.2F, 1.0F, 0.3F);
-    Color DEFAULT_NODE_SELECTED_UNIQUE_COLOR = new Color(0.8F, 0.2F, 0.2F);
-    int DEFAULT_OCTREE_DEPTH = 5;
-    int DEFAULT_OCTREE_WIDTH = 50000;
-    boolean DEFAULT_PAUSE_LOOP_MOUSE_OUT = false;
-    boolean DEFAULT_RECTANGLE_SELECTION = false;
-    Color DEFAULT_RECTANGLE_SELECTION_COLOR = new Color(0.16F, 0.48F, 0.81F, 0.2F);
-    boolean DEFAULT_REDUCE_FPS_MOUSE_OUT = true;
-    int DEFAULT_REDUCE_FPS_MOUSE_OUT_VALUE = 20;
-    Color DEFAULT_SELECTEDEDGE_BOTH_COLOR = new Color(248, 215, 83, 255);
-    boolean DEFAULT_SELECTEDEDGE_HAS_COLOR = false;
-    Color DEFAULT_SELECTEDEDGE_IN_COLOR = new Color(32, 95, 154, 255);
-    Color DEFAULT_SELECTEDEDGE_OUT_COLOR = new Color(196, 66, 79, 255);
-    NodeShape DEFAULT_NODE_SHAPE = NodeShape.CIRCLE;
-    boolean DEFAULT_SELECTEDNODE_UNIQUE_COLOR = false;
-    boolean DEFAULT_SELECTION = true;
-    boolean DEFAULT_SHOW_EDGES = true;
-    boolean DEFAULT_SHOW_FPS = true;
-    boolean DEFAULT_SHOW_HULLS = true;
-    boolean DEFAULT_TOOLBAR = true;
-    boolean DEFAULT_USE_3D = false;
-    boolean DEFAULT_VIZBAR = true;
-    boolean DEFAULT_WIREFRAME = false;
+    String CULLING = "VizConfig.culling";
     String DISABLE_LOD = "VizConfig.disableLOD";
-    String DRAGGING = "VizConfig.draggingEnable";
-    String EDGE_HAS_UNIQUE_COLOR = "VizConfig.defaultEdgeHasUniColor";
-    String EDGE_LABELS = "VizConfig.defaultShowEdgeLabels";
-    String EDGE_LABEL_COLOR = "VizConfig.defaultEdgeLabelColor";
-    String EDGE_LABEL_FONT = "VizConfig.defaultEdgeLabelFont";
-    String EDGE_SCALE = "VizConfig.defaultEdgeScale";
-    String EDGE_UNIQUE_COLOR = "VizConfig.defaultEdgeUniColor";
+    String EDGE_HAS_UNIQUE_COLOR = "VizConfig.edgeHasUniColor";
+    String EDGE_LABELS = "VizConfig.showEdgeLabels";
+    String EDGE_LABEL_COLOR = "VizConfig.edgeLabelColor";
+    String EDGE_LABEL_FONT = "VizConfig.edgeLabelFont";
+    String EDGE_LABEL_SIZE_FACTOR = "VizConfig.edgeLabelSizeFactor";
+    String EDGE_SCALE = "VizConfig.edgeScale";
+    String EDGE_UNIQUE_COLOR = "VizConfig.edgeUniColor";
     String GLJPANEL = "VizConfig.useGLJPanel";
-    String HIDE_NONSELECTED_EDGES = "VizConfig.defaultHideNonSelectedEdges";
-    String HIGHLIGHT = "VizConfig.defaultLightenNonSelectedAuto";
-    String HIGHTLIGHT_ANIMATION = "VizConfig.lightenNonSelectedAnimation";
-    String HIGHTLIGHT_COLOR = "VizConfig.lightenNonSelectedColor";
+    String HIDE_NONSELECTED_EDGES = "VizConfig.hideNonSelectedEdges";
+    String HIGHLIGHT_ANIMATION = "VizConfig.highlightNonSelectedAnimation";
+    String HIGHLIGHT_COLOR = "VizConfig.highlightNonSelectedColor";
+    String HIGHLIGHT_NON_SELECTED = "VizConfig.highlightNonSelected";
     String LABEL_ANTIALIASED = "VizConfig.labelAntialiased";
     String LABEL_FRACTIONAL_METRICS = "VizConfig.labelFractionalMetrics";
     String LABEL_MIPMAP = "VizConfig.labelMipMap";
-    String LABEL_SELECTION_ONLY = "VizConfig.defaultShowLabelOnSelectedOnly";
-    String META_EDGE_SCALE = "VizConfig.defaultMetaEdgeScale";
-    String MOUSE_SELECTION_DIAMETER = "VizConfig.mouseSelectionDiameter";
-    String MOUSE_SELECTION_WHILE_DRAGGING = "VizConfig.mouseSelectionUpdateWhileDragging";
-    String MOUSE_SELECTION_ZOOM_PROPORTIONAL = "VizConfig.mouseSelectionZoomProportionnal";
-    String NEIGHBOUR_SELECT = "VizConfig.defaultAutoSelectNeighbor";
-    String NODE_LABELS = "VizConfig.defaultShowNodeLabels";
-    String NODE_LABEL_COLOR = "VizConfig.defaultNodeLabelColor";
-    String NODE_LABEL_FONT = "VizConfig.defaultNodeLabelFont";
+    String LABEL_SELECTION_ONLY = "VizConfig.showLabelOnSelectedOnly";
+    String LIGHTING = "VizConfig.lighting";
+    String MATERIAL = "VizConfig.material";
+    String META_EDGE_SCALE = "VizConfig.metaEdgeScale";
+    String NODE_LABELS = "VizConfig.showNodeLabels";
+    String NODE_LABEL_COLOR = "VizConfig.nodeLabelColor";
+    String NODE_LABEL_FONT = "VizConfig.nodeLabelFont";
+    String NODE_LABEL_SIZE_FACTOR = "VizConfig.nodeLabelSizeFactor";
     String NODE_NEIGHBOR_SELECTED_UNIQUE_COLOR = "VizConfig.uniColorSelectedNeigborColor";
     String NODE_SELECTED_UNIQUE_COLOR = "VizConfig.uniColorSelectedColor";
+    String NODE_GLOBAL_SHAPE = "VizConfig.nodeGlobalShape";
     String OCTREE_DEPTH = "VizConfig.octreeDepth";
     String OCTREE_WIDTH = "VizConfig.octreeWidth";
     String PAUSE_LOOP_MOUSE_OUT = "VizConfig.pauseLoopWhenMouseOut";
+    String PROPERTIES_BAR = "VizConfig.propertiesBar";
     String RECTANGLE_SELECTION = "VizConfig.rectangleSelection";
     String RECTANGLE_SELECTION_COLOR = "VizConfig.rectangleSelectionColor";
     String REDUCE_FPS_MOUSE_OUT = "VizConfig.reduceFpsWhenMouseOut";
     String REDUCE_FPS_MOUSE_OUT_VALUE = "VizConfig.reduceFpsWhenMouseOutValue";
-    String SELECTEDEDGE_BOTH_COLOR = "VizConfig.defaultEdgeBothSelectedColor";
-    String SELECTEDEDGE_HAS_COLOR = "VizConfig.defaultEdgeSelectionColor";
-    String SELECTEDEDGE_IN_COLOR = "VizConfig.defaultEdgeInSelectedColor";
-    String SELECTEDEDGE_OUT_COLOR = "VizConfig.defaultEdgeOutSelectedColor";
-    String SELECTEDNODE_UNIQUE_COLOR = "VizConfig.defaultHideNonSelectedEdges";
-    String SELECTION = "VizConfig.selectionEnable";
-    String SHOW_EDGES = "VizConfig.defaultShowEdges";
+    String SELECTEDEDGE_BOTH_COLOR = "VizConfig.edgeBothSelectedColor";
+    String SELECTEDEDGE_HAS_COLOR = "VizConfig.edgeSelectionColor";
+    String SELECTEDEDGE_IN_COLOR = "VizConfig.edgeInSelectedColor";
+    String SELECTEDEDGE_OUT_COLOR = "VizConfig.edgeOutSelectedColor";
+    String SELECTEDNODE_UNIQUE_COLOR = "VizConfig.hideNonSelectedEdges";
+    String SHOW_EDGES = "VizConfig.showEdges";
     String SHOW_FPS = "VizConfig.showFPS";
-    String SHOW_HULLS = "VizConfig.defaultShowHulls";
+    String SHOW_HULLS = "VizConfig.showHulls";
     String TOOLBAR = "VizConfig.toolbar";
-    String USE_3D = "VizConfig.defaultUse3d";
+    String USE_3D = "VizConfig.use3d";
     String VIZBAR = "VizConfig.showVizVar";
     String WIREFRAME = "VizConfig.wireFrame";
 
-    int getAntialiasing();
-
-    Color getDefaultBackgroundColor();
-
-    float[] getDefaultCameraPosition();
-
-    float[] getDefaultCameraTarget();
-
-    Color getDefaultEdgeBothSelectedColor();
-
-    Color getDefaultEdgeInSelectedColor();
-
-    Color getDefaultEdgeLabelColor();
-
-    Font getDefaultEdgeLabelFont();
-
-    Color getDefaultEdgeOutSelectedColor();
-
-    float getDefaultEdgeScale();
-
-    Color getDefaultEdgeUniColor();
-
-    float getDefaultMetaEdgeScale();
-
-    Color getDefaultNodeLabelColor();
-
-    Font getDefaultNodeLabelFont();
-
-    NodeShape getDefaultNodeShape();
-
-    float[] getLightenNonSelectedColor();
-
-    float getLightenNonSelectedFactor();
-
-    int getMouseSelectionDiameter();
-
-    float[] getNodeSelectedColor();
-
-    int getOctreeDepth();
-
-    int getOctreeWidth();
-
-    Color getRectangleSelectionColor();
-
-    int getReduceFpsWhenMouseOutValue();
-
-    float[] getUniColorSelectedColor();
-
-    float[] getUniColorSelectedNeigborColor();
-
-    boolean isBlendCinema();
-
-    boolean isBlending();
-
-    boolean isCameraControlEnabled();
-
-    boolean isCleanDeletedModels();
-
-    boolean isContextMenu();
-
-    boolean isDefaultAdjustByText();
-
-    boolean isDefaultAutoSelectNeighbor();
-
-    boolean isDefaultCulling();
-
-    boolean isDefaultEdgeHasUniColor();
-
-    boolean isDefaultEdgeSelectionColor();
-
-    boolean isDefaultHideNonSelectedEdges();
-
-    boolean isDefaultLightenNonSelectedAuto();
-
-    boolean isDefaultLighting();
-
-    boolean isDefaultMaterial();
-
-    boolean isDefaultRotatingEnable();
-
-    boolean isDefaultShowEdgeLabels();
-
-    boolean isDefaultShowEdges();
-
-    boolean isDefaultShowHulls();
-
-    boolean isDefaultShowLabelOnSelectedOnly();
-
-    boolean isDefaultShowNodeLabels();
-
-    boolean isDefaultUniColorSelected();
-
-    boolean isDefaultUse3d();
-
-    boolean isDisableLOD();
-
-    boolean isDraggingEnabled();
-
-    boolean isEnableAutoSelect();
-
-    boolean isLabelAntialiased();
-
-    boolean isLabelFractionalMetrics();
-
-    boolean isLabelMipMap();
-
-    boolean isLightenNonSelected();
-
-    boolean isLightenNonSelectedAnimation();
-
-    boolean isLineSmooth();
-
-    boolean isLineSmoothNicest();
-
-    boolean isMouseSelectionZoomProportionnal();
-
-    boolean isPauseLoopWhenMouseOut();
-
-    boolean isPointSmooth();
-
-    boolean isPropertiesbar();
-
-    boolean isReduceFpsWhenMouseOut();
-
-    boolean isSelectionEnabled();
-
-    boolean isShowArrows();
-
-    boolean isShowFPS();
-
-    boolean isShowVizVar();
-
-    boolean isToolbar();
-
-    boolean isUseGLJPanel();
-
-    boolean isUseLabelRenderer3d();
-
-    boolean isWireFrame();
-
-    boolean isDirectMouseSelection();
-
-    boolean isNodeDraggingEnabled();
-
-    SelectionType getSelectionType();
-
-    void setDisableLOD(boolean disableLOD);
-
-    void setDraggingEnable(boolean draggingEnable);
-
-    void setEnableAutoSelect(boolean enableAutoSelect);
-
-    void setLightenNonSelected(boolean lightenNonSelected);
-
-    void setLightenNonSelectedFactor(float lightenNonSelectedFactor);
-
-    void setPauseLoopWhenMouseOut(boolean pauseLoopWhenMouseOut);
-
-    void setSelectionEnable(boolean selectionEnable);
-
-    void setSelectionType(SelectionType selectionType);
-
-    void setDirectMouseSelection(boolean directMouseSelection);
-
-    void setNodeDraggingEnabled(boolean enabled);
-
+    // Other configuration
+    String CAMERA_CONTROL = "VizConfig.cameraControlEnable";
+    String CAMERA_POSITION = "VizConfig.cameraPosition";
+    String CAMERA_TARGET = "VizConfig.cameraTarget";
+    String DIRECT_MOUSE_SELECTION = "VizConfig.directMouseSelection";
+    String DRAGGING = "VizConfig.draggingEnable";
+    String MOUSE_SELECTION_DIAMETER = "VizConfig.mouseSelectionDiameter";
+    String MOUSE_SELECTION_WHILE_DRAGGING = "VizConfig.mouseSelectionUpdateWhileDragging";
+    String MOUSE_SELECTION_ZOOM_PROPORTIONAL = "VizConfig.mouseSelectionZoomProportionnal";
+    String NODE_DRAGGING = "VizConfig.nodeDraggingEnabled";
+    String ROTATING = "VizConfig.rotatingEnabled";
+    String SELECTION = "VizConfig.selectionEnable";
+    String SELECTION_TYPE = "VizConfig.selectionType";
+    String ZOOM_FACTOR = "VizConfig.zoomFactor";
+    
+    public void setProperty(String key, String value);
+
+    public void setProperty(String key, Integer value);
+
+    public void setProperty(String key, Float value);
+
+    public void setProperty(String key, Boolean value);
+
+    public void setProperty(String key, float[] array);
+
+    public void setProperty(String key, Font font);
+
+    public void setProperty(String key, Color color);
+
+    public void setProperty(String key, Enum value);
+    
+    public String getStringProperty(String key);
+
+    public Integer getIntProperty(String key);
+
+    public Float getFloatProperty(String key);
+
+    public Boolean getBooleanProperty(String key);
+
+    public float[] getFloatArrayProperty(String key);
+
+    public Font getFontProperty(String key);
+
+    public Color getColorProperty(String key);
+    
+    public <T> T getEnumProperty(Class<T> type, String key);
+    
+    
+    public static class PropertyNotAvailableException extends RuntimeException {
+        
+        public PropertyNotAvailableException(String message) {
+            super(message);
+        }
+        
+    }
 
 }

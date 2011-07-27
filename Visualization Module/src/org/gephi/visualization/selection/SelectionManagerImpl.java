@@ -64,9 +64,8 @@ public class SelectionManagerImpl implements SelectionManager, WorkspaceListener
     public void initialize() {
         Lookup.getDefault().lookup(GraphController.class).getModel().addGraphListener(this);
         Lookup.getDefault().lookup(ProjectController.class).addWorkspaceListener(this);
-        VizConfig vizConfig = Lookup.getDefault().lookup(VizConfig.class);
-        mouseSelectionDiameter = vizConfig.getMouseSelectionDiameter();
-        mouseSelectionZoomProportional = vizConfig.isMouseSelectionZoomProportionnal();
+        mouseSelectionDiameter = Lookup.getDefault().lookup(VizModel.class).getConfig().getIntProperty(VizConfig.MOUSE_SELECTION_DIAMETER);
+        mouseSelectionZoomProportional = Lookup.getDefault().lookup(VizModel.class).getConfig().getBooleanProperty(VizConfig.MOUSE_SELECTION_ZOOM_PROPORTIONAL);
         nodeContainer = new Octree();
     }
 
@@ -122,10 +121,10 @@ public class SelectionManagerImpl implements SelectionManager, WorkspaceListener
     @Override
     public void blockSelection(boolean block) {
         // TODO implement reasonable block for tools
-        VizConfig vizConfig = Lookup.getDefault().lookup(VizConfig.class);
-        if (vizConfig.getSelectionType() != SelectionType.NONE) {
+        VizConfig vizConfig = Lookup.getDefault().lookup(VizModel.class).getConfig();
+        if (vizConfig.getEnumProperty(SelectionType.class, VizConfig.SELECTION_TYPE) != SelectionType.NONE) {
             this.blocked = block;
-            vizConfig.setSelectionEnable(!block);
+            vizConfig.setProperty(VizConfig.SELECTION, !block);
             fireChangeEvent();
         } else {
             setDirectMouseSelection();
@@ -164,12 +163,12 @@ public class SelectionManagerImpl implements SelectionManager, WorkspaceListener
 
     @Override
     public boolean isDirectMouseSelection() {
-        return Lookup.getDefault().lookup(VizConfig.class).isDirectMouseSelection();
+        return Lookup.getDefault().lookup(VizModel.class).getConfig().getBooleanProperty(VizConfig.DIRECT_MOUSE_SELECTION);
     }
 
     @Override
     public boolean isDraggingEnabled() {
-        return Lookup.getDefault().lookup(VizConfig.class).isDraggingEnabled();
+        return Lookup.getDefault().lookup(VizModel.class).getConfig().getBooleanProperty(VizConfig.DRAGGING);
     }
 
     @Override
@@ -179,18 +178,17 @@ public class SelectionManagerImpl implements SelectionManager, WorkspaceListener
 
     @Override
     public boolean isSelectionEnabled() {
-        return Lookup.getDefault().lookup(VizConfig.class).isSelectionEnabled();
+        return Lookup.getDefault().lookup(VizModel.class).getConfig().getBooleanProperty(VizConfig.SELECTION);
     }
 
     @Override
     public boolean isNodeDraggingEnabled() {
-        return Lookup.getDefault().lookup(VizConfig.class).isNodeDraggingEnabled();
+        return Lookup.getDefault().lookup(VizModel.class).getConfig().getBooleanProperty(VizConfig.NODE_DRAGGING);
     }
 
     @Override
     public SelectionType getSelectionType() {
-        VizConfig vizConfig = Lookup.getDefault().lookup(VizConfig.class);
-        return vizConfig.getSelectionType();
+        return Lookup.getDefault().lookup(VizModel.class).getConfig().getEnumProperty(SelectionType.class, VizConfig.SELECTION_TYPE);
     }
 
     @Override
@@ -225,45 +223,44 @@ public class SelectionManagerImpl implements SelectionManager, WorkspaceListener
     @Override
     public void setDraggingEnabled(boolean dragging) {
         clearState();
-        VizConfig vizConfig = Lookup.getDefault().lookup(VizConfig.class);
-        vizConfig.setDraggingEnable(true);
+        Lookup.getDefault().lookup(VizModel.class).getConfig().setProperty(VizConfig.DRAGGING, true);
         fireChangeEvent();
     }
 
     @Override
     public void setSelectionType(SelectionType selectionType) {
         clearState();
-        VizConfig vizConfig = Lookup.getDefault().lookup(VizConfig.class);
-        vizConfig.setSelectionType(selectionType);
-        vizConfig.setSelectionEnable(true);
+        VizConfig vizConfig = Lookup.getDefault().lookup(VizModel.class).getConfig();
+        vizConfig.setProperty(VizConfig.SELECTION, true);
+        vizConfig.setProperty(VizConfig.SELECTION_TYPE, selectionType);
         fireChangeEvent();
     }
 
     @Override
     public void setDirectMouseSelection() {
         clearState();
-        VizConfig vizConfig = Lookup.getDefault().lookup(VizConfig.class);
-        vizConfig.setDirectMouseSelection(true);
-        vizConfig.setSelectionEnable(true);
+        VizConfig vizConfig = Lookup.getDefault().lookup(VizModel.class).getConfig();
+        vizConfig.setProperty(VizConfig.SELECTION, true);
+        vizConfig.setProperty(VizConfig.DIRECT_MOUSE_SELECTION, true);
         fireChangeEvent();
     }
 
     @Override
     public void setNodeDraggingEnabled() {
         clearState();
-        VizConfig vizConfig = Lookup.getDefault().lookup(VizConfig.class);
-        vizConfig.setNodeDraggingEnabled(true);
-        vizConfig.setSelectionEnable(true);
+        VizConfig vizConfig = Lookup.getDefault().lookup(VizModel.class).getConfig();
+        vizConfig.setProperty(VizConfig.SELECTION, true);
+        vizConfig.setProperty(VizConfig.NODE_DRAGGING, true);
         fireChangeEvent();
     }
 
     private void clearState() {
-        VizConfig vizConfig = Lookup.getDefault().lookup(VizConfig.class);
-        vizConfig.setDraggingEnable(false);
-        vizConfig.setNodeDraggingEnabled(false);
-        vizConfig.setSelectionType(SelectionType.NONE);
-        vizConfig.setDirectMouseSelection(false);
-        vizConfig.setSelectionEnable(false);
+        VizConfig vizConfig = Lookup.getDefault().lookup(VizModel.class).getConfig();
+        vizConfig.setProperty(VizConfig.SELECTION, false);
+        vizConfig.setProperty(VizConfig.DRAGGING, false);
+        vizConfig.setProperty(VizConfig.NODE_DRAGGING, false);
+        vizConfig.setProperty(VizConfig.DIRECT_MOUSE_SELECTION, false);
+        vizConfig.setProperty(VizConfig.SELECTION_TYPE, SelectionType.NONE);
         this.blocked = false;
     }
 

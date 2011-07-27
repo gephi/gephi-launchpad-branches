@@ -1,6 +1,7 @@
 /*
 Copyright 2008-2010 Gephi
 Authors : Mathieu Bastian <mathieu.bastian@gephi.org>
+          Vojtech Bardiovsky <vojtech.bardiovsky@gmail.com>
 Website : http://www.gephi.org
 
 This file is part of Gephi.
@@ -32,8 +33,12 @@ import org.gephi.visualization.api.config.VizConfig;
 
 /**
  * Model class for visualization. Contains most visualization related settings.
- *
+ * <p>
+ * Contains an instance of the {@link VizConfig} class. Retrieve it using the
+ * {@link #getConfig()} method.
+ * <p>
  * @author Mathieu Bastian
+ * @author Vojtech Bardiovsky
  */
 public interface VizModel {
 
@@ -62,7 +67,7 @@ public interface VizModel {
 
     public boolean isEdgeHasUniColor();
 
-    public float[] getEdgeUniColor();
+    public Color getEdgeUniColor();
 
     public boolean isHideNonSelectedEdges();
 
@@ -82,11 +87,11 @@ public interface VizModel {
 
     public boolean isEdgeSelectionColor();
 
-    public float[] getEdgeInSelectionColor();
+    public Color getEdgeInSelectionColor();
 
-    public float[] getEdgeOutSelectionColor();
+    public Color getEdgeOutSelectionColor();
 
-    public float[] getEdgeBothSelectionColor();
+    public Color getEdgeBothSelectionColor();
 
     public boolean isShowHulls();
 
@@ -96,7 +101,7 @@ public interface VizModel {
 
     public TextModel getTextModel();
 
-    public float getCameraDistance();
+    public float getZoomFactor();
 
     public NodeShape getGlobalNodeShape();
 
@@ -111,7 +116,7 @@ public interface VizModel {
 
     public void setEdgeHasUniColor(boolean edgeHasUniColor);
 
-    public void setEdgeUniColor(float[] edgeUniColor);
+    public void setEdgeUniColor(Color edgeUniColor);
 
     public void setHideNonSelectedEdges(boolean hideNonSelectedEdges);
 
@@ -123,19 +128,23 @@ public interface VizModel {
 
     public void setEdgeSelectionColor(boolean edgeSelectionColor);
 
-    public void setEdgeInSelectionColor(float[] edgeInSelectionColor);
+    public void setEdgeInSelectionColor(Color edgeInSelectionColor);
 
-    public void setEdgeOutSelectionColor(float[] edgeOutSelectionColor);
+    public void setEdgeOutSelectionColor(Color edgeOutSelectionColor);
 
-    public void setEdgeBothSelectionColor(float[] edgeBothSelectionColor);
+    public void setEdgeBothSelectionColor(Color edgeBothSelectionColor);
 
     public void setShowHulls(boolean showHulls);
 
     public void setEdgeScale(float edgeScale);
 
     public void setMetaEdgeScale(float metaEdgeScale);
-
-    public void setCameraDistance(float distance);
+    
+    /**
+     * Sets relative distance of camera from the world.
+     * @param factor float from interval [0.0, 1.0].
+     */
+    public void setZoomFactor(float factor);
 
     public void setGlobalNodeShape(NodeShape nodeShape);
 

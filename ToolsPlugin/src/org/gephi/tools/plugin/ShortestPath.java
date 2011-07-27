@@ -69,7 +69,7 @@ public class ShortestPath implements Tool {
     public void select() {
         settingEdgeSourceColor = !Lookup.getDefault().lookup(VizModel.class).isEdgeHasUniColor();
         Lookup.getDefault().lookup(VizModel.class).setEdgeHasUniColor(true);
-        Lookup.getDefault().lookup(VizConfig.class).setEnableAutoSelect(false);
+        Lookup.getDefault().lookup(VizConfig.class).setProperty(VizConfig.AUTO_SELECT_NEIGHBOUR, true);
     }
 
     public void unselect() {
@@ -77,7 +77,7 @@ public class ShortestPath implements Tool {
         sourceNode = null;
         shortestPathPanel = null;
         Lookup.getDefault().lookup(VizModel.class).setEdgeHasUniColor(settingEdgeSourceColor);
-        Lookup.getDefault().lookup(VizConfig.class).setEnableAutoSelect(true);
+        Lookup.getDefault().lookup(VizConfig.class).setProperty(VizConfig.AUTO_SELECT_NEIGHBOUR, true);
     }
 
     public ToolEventListener[] getListeners() {

@@ -43,159 +43,117 @@ import org.openide.util.Lookup;
  */
 public class TextModelImpl implements TextModel {
 
-    //protected ColorMode colorMode;
-    //protected SizeMode sizeMode;
-    protected boolean selectedOnly;
-    protected boolean showNodeLabels;
-    protected boolean showEdgeLabels;
-    protected Font nodeFont;
-    protected Font edgeFont;
-    protected float[] nodeColor = {0f, 0f, 0f, 1f};
-    protected float[] edgeColor = {0f, 0f, 0f, 1f};
-    protected float nodeSizeFactor = 0.5f;//Between 0 and 1
-    protected float edgeSizeFactor = 0.5f;
+    protected final VizModelImpl vizModel;
+    protected final VizConfigImpl config;
     protected List<ChangeListener> listeners = new ArrayList<ChangeListener>();
     protected AttributeColumn[] nodeTextColumns = new AttributeColumn[0];
     protected AttributeColumn[] edgeTextColumns = new AttributeColumn[0];
 
-    public TextModelImpl() {
-        defaultValues();
+    public TextModelImpl(VizModelImpl vizModel) {
+        this.vizModel = vizModel;
+        this.config = vizModel.config;
     }
 
-    private void defaultValues() {
-        VizConfig vizConfig = Lookup.getDefault().lookup(VizConfig.class);
-        showNodeLabels = vizConfig.isDefaultShowNodeLabels();
-        showEdgeLabels = vizConfig.isDefaultShowEdgeLabels();
-        nodeFont = vizConfig.getDefaultNodeLabelFont();
-        edgeFont = vizConfig.getDefaultEdgeLabelFont();
-        nodeColor = vizConfig.getDefaultNodeLabelColor().getRGBComponents(null);
-        edgeColor = vizConfig.getDefaultEdgeLabelColor().getRGBComponents(null);
-        selectedOnly = vizConfig.isDefaultShowLabelOnSelectedOnly();
-        //colorMode = VizController.getInstance().getTextManager().getColorModes()[0];
-        //sizeMode = VizController.getInstance().getTextManager().getSizeModes()[1];
-    }
-
-    //Event
-    public void addChangeListener(ChangeListener changeListener) {
-        listeners.add(changeListener);
-    }
-
-    public void removeChangeListener(ChangeListener changeListener) {
-        listeners.remove(changeListener);
-    }
-
-    private void fireChangeEvent() {
-        ChangeEvent evt = new ChangeEvent(this);
-        for (ChangeListener l : listeners) {
-            l.stateChanged(evt);
-        }
-    }
-
-    public void setListeners(List<ChangeListener> listeners) {
-        this.listeners = listeners;
-    }
-
-    public List<ChangeListener> getListeners() {
-        return listeners;
-    }
-
-    //Getter & Setters
+    // Getters
     public boolean isShowEdgeLabels() {
-        return showEdgeLabels;
+        return config.getBooleanProperty(VizConfig.EDGE_LABELS);
     }
 
     public boolean isShowNodeLabels() {
-        return showNodeLabels;
-    }
-
-    public void setShowEdgeLabels(boolean showEdgeLabels) {
-        this.showEdgeLabels = showEdgeLabels;
-        fireChangeEvent();
-    }
-
-    public void setShowNodeLabels(boolean showNodeLabels) {
-        this.showNodeLabels = showNodeLabels;
-        fireChangeEvent();
-    }
-
-    public void setEdgeFont(Font edgeFont) {
-        this.edgeFont = edgeFont;
-        fireChangeEvent();
-    }
-
-    public void setEdgeSizeFactor(float edgeSizeFactor) {
-        this.edgeSizeFactor = edgeSizeFactor;
-        fireChangeEvent();
-    }
-
-    public void setNodeFont(Font nodeFont) {
-        this.nodeFont = nodeFont;
-        fireChangeEvent();
-    }
-
-    public void setNodeSizeFactor(float nodeSizeFactor) {
-        this.nodeSizeFactor = nodeSizeFactor;
-        fireChangeEvent();
+        return config.getBooleanProperty(VizConfig.NODE_LABELS);
     }
 
     public Font getEdgeFont() {
-        return edgeFont;
+        return config.getFontProperty(VizConfig.EDGE_LABEL_FONT);
     }
 
     public float getEdgeSizeFactor() {
-        return edgeSizeFactor;
+        return config.getFloatProperty(VizConfig.EDGE_LABEL_SIZE_FACTOR);
     }
 
     public Font getNodeFont() {
-        return nodeFont;
+        return config.getFontProperty(VizConfig.NODE_LABEL_FONT);
     }
 
     public float getNodeSizeFactor() {
-        return nodeSizeFactor;
+        return config.getFloatProperty(VizConfig.NODE_LABEL_SIZE_FACTOR);
     }
-/*
+    
+    public boolean isSelectedOnly() {
+        return config.getBooleanProperty(VizConfig.LABEL_SELECTION_ONLY);
+    }
+    
+    public Color getNodeColor() {
+        return config.getColorProperty(VizConfig.NODE_LABEL_COLOR);
+    }
+    
+    public Color getEdgeColor() {
+        return config.getColorProperty(VizConfig.EDGE_LABEL_COLOR);
+    }
+
+    /*
     public ColorMode getColorMode() {
         return colorMode;
     }
 
+    public SizeMode getSizeMode() {
+        return sizeMode;
+    }
+     
+    // Setters
     public void setColorMode(ColorMode colorMode) {
         this.colorMode = colorMode;
         fireChangeEvent();
-    }*/
-
-    public boolean isSelectedOnly() {
-        return selectedOnly;
-    }
-
-    public void setSelectedOnly(boolean value) {
-        this.selectedOnly = value;
-        fireChangeEvent();
-    }
-
-    /*public SizeMode getSizeMode() {
-        return sizeMode;
     }
 
     public void setSizeMode(SizeMode sizeMode) {
         this.sizeMode = sizeMode;
         fireChangeEvent();
-    }*/
-
-    public Color getNodeColor() {
-        return new Color(nodeColor[0], nodeColor[1], nodeColor[2], nodeColor[3]);
     }
+    */
 
-    public void setNodeColor(Color color) {
-        this.nodeColor = color.getRGBComponents(null);
+    public void setShowEdgeLabels(boolean showEdgeLabels) {
+        config.setProperty(VizConfig.EDGE_LABELS, showEdgeLabels);
         fireChangeEvent();
     }
 
-    public Color getEdgeColor() {
-        return new Color(edgeColor[0], edgeColor[1], edgeColor[2], edgeColor[3]);
+    public void setShowNodeLabels(boolean showNodeLabels) {
+        config.setProperty(VizConfig.NODE_LABELS, showNodeLabels);
+        fireChangeEvent();
+    }
+
+    public void setEdgeFont(Font edgeFont) {
+        config.setProperty(VizConfig.EDGE_LABEL_FONT, edgeFont);
+        fireChangeEvent();
+    }
+
+    public void setEdgeSizeFactor(float edgeSizeFactor) {
+        config.setProperty(VizConfig.EDGE_LABEL_SIZE_FACTOR, edgeSizeFactor);
+        fireChangeEvent();
+    }
+
+    public void setNodeFont(Font nodeFont) {
+        config.setProperty(VizConfig.NODE_LABEL_FONT, nodeFont);
+        fireChangeEvent();
+    }
+
+    public void setNodeSizeFactor(float nodeSizeFactor) {
+        config.setProperty(VizConfig.NODE_LABEL_SIZE_FACTOR, nodeSizeFactor);
+        fireChangeEvent();
+    }
+    
+    public void setSelectedOnly(boolean value) {
+        config.setProperty(VizConfig.LABEL_SELECTION_ONLY, value);
+        fireChangeEvent();
+    }
+    
+    public void setNodeColor(Color color) {
+        config.setProperty(VizConfig.NODE_LABEL_COLOR, color);
+        fireChangeEvent();
     }
 
     public void setEdgeColor(Color color) {
-        this.edgeColor = color.getRGBComponents(null);
+        config.setProperty(VizConfig.EDGE_LABEL_COLOR, color);
         fireChangeEvent();
     }
 
@@ -212,9 +170,28 @@ public class TextModelImpl implements TextModel {
     public AttributeColumn[] getNodeTextColumns() {
         return nodeTextColumns;
     }
+    
+    // Events
+    @Override
+    public void addChangeListener(ChangeListener changeListener) {
+        listeners.add(changeListener);
+    }
+
+    @Override
+    public void removeChangeListener(ChangeListener changeListener) {
+        listeners.remove(changeListener);
+    }
+
+    private void fireChangeEvent() {
+        ChangeEvent evt = new ChangeEvent(this);
+        for (ChangeListener l : listeners) {
+            l.stateChanged(evt);
+        }
+    }
 
     // FIXME uncomment color and size modes
     public void readXML(XMLStreamReader reader, Workspace workspace) throws XMLStreamException {
+        /*
         AttributeController attributeController = Lookup.getDefault().lookup(AttributeController.class);
         AttributeModel attributeModel = attributeController != null ? attributeController.getModel(workspace) : null;
         List<AttributeColumn> nodeCols = new ArrayList<AttributeColumn>();
@@ -315,12 +292,12 @@ public class TextModelImpl implements TextModel {
 
         nodeTextColumns = nodeCols.toArray(new AttributeColumn[0]);
         edgeTextColumns = edgeCols.toArray(new AttributeColumn[0]);
-
+*/
     }
     
     // FIXME uncomment color and size modes
     public void writeXML(XMLStreamWriter writer) throws XMLStreamException {
-
+/*
         writer.writeStartElement("textmodel");
 
         //Show
@@ -373,18 +350,18 @@ public class TextModelImpl implements TextModel {
             writer.writeAttribute("class", "UniqueColorMode");
         } else if (colorMode instanceof ObjectColorMode) {
             writer.writeAttribute("class", "ObjectColorMode");
-        }*/
-        writer.writeEndElement();
+        }
+        writer.writeEndElement();*/
 
         //SizeMode
-        writer.writeStartElement("sizemode");
-        /*if (sizeMode instanceof FixedSizeMode) {
+        /*writer.writeStartElement("sizemode");
+        if (sizeMode instanceof FixedSizeMode) {
             writer.writeAttribute("class", "FixedSizeMode");
         } else if (sizeMode instanceof ProportionalSizeMode) {
             writer.writeAttribute("class", "ProportionalSizeMode");
         } else if (sizeMode instanceof ScaledSizeMode) {
             writer.writeAttribute("class", "ScaledSizeMode");
-        }*/
+        }*//*
         writer.writeEndElement();
 
         //NodeColumns
@@ -405,6 +382,6 @@ public class TextModelImpl implements TextModel {
         }
         writer.writeEndElement();
 
-        writer.writeEndElement();
+        writer.writeEndElement();*/
     }
 }

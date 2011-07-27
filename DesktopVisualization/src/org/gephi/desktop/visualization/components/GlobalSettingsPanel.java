@@ -28,6 +28,7 @@ import java.beans.PropertyChangeListener;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import org.gephi.ui.components.JColorButton;
+import org.gephi.visualization.api.config.VizConfig;
 import org.gephi.visualization.api.controller.VisualizationController;
 import org.gephi.visualization.api.vizmodel.VizModel;
 import org.openide.util.Lookup;
@@ -51,15 +52,15 @@ public class GlobalSettingsPanel extends javax.swing.JPanel {
             public void propertyChange(PropertyChangeEvent evt) {
                 if (evt.getPropertyName().equals("init")) {
                     refreshSharedConfig();
-                } else if (evt.getPropertyName().equals("backgroundColor")) {
+                } else if (evt.getPropertyName().equals(VizConfig.BACKGROUND_COLOR)) {
                     refreshSharedConfig();
-                } else if (evt.getPropertyName().equals("autoSelectNeighbor")) {
+                } else if (evt.getPropertyName().equals(VizConfig.AUTO_SELECT_NEIGHBOUR)) {
                     refreshSharedConfig();
-                } else if (evt.getPropertyName().equals("lightenNonSelectedAuto")) {
+                } else if (evt.getPropertyName().equals(VizConfig.HIGHLIGHT_NON_SELECTED)) {
                     refreshSharedConfig();
-                } else if (evt.getPropertyName().equals("use3d")) {
+                } else if (evt.getPropertyName().equals(VizConfig.USE_3D)) {
                     refreshSharedConfig();
-                } else if (evt.getPropertyName().equals("cameraDistance")) {
+                } else if (evt.getPropertyName().equals(VizConfig.ZOOM_FACTOR)) {
                     refreshSharedConfig();
                 }
             }
@@ -95,7 +96,7 @@ public class GlobalSettingsPanel extends javax.swing.JPanel {
             public void stateChanged(ChangeEvent e) {
                 VizModel vizModel = Lookup.getDefault().lookup(VizModel.class);
                 float zoom = zoomSlider.getValue() / (float) zoomSlider.getMaximum();
-                vizModel.setCameraDistance(zoom);
+                vizModel.setZoomFactor(zoom);
                 Lookup.getDefault().lookup(VisualizationController.class).getCamera().setZoom(zoom);
             }
         });
@@ -139,7 +140,7 @@ public class GlobalSettingsPanel extends javax.swing.JPanel {
     }
 
     private void refreshZoom() {
-        float zoomValue = Lookup.getDefault().lookup(VizModel.class).getCameraDistance();
+        float zoomValue = Lookup.getDefault().lookup(VizModel.class).getZoomFactor();
         if ((int) (zoomValue * zoomSlider.getMaximum()) != zoomSlider.getValue()) {
             zoomSlider.setValue((int) (zoomValue * zoomSlider.getMaximum()));
         }

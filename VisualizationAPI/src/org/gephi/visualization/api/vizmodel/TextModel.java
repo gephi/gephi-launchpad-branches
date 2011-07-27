@@ -40,10 +40,6 @@ public interface TextModel {
 
     public void removeChangeListener(ChangeListener changeListener);
 
-    public void setListeners(List<ChangeListener> listeners);
-
-    public List<ChangeListener> getListeners();
-
     //Getter & Setters
     public boolean isShowEdgeLabels();
 

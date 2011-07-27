@@ -21,7 +21,6 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 package org.gephi.desktop.visualization.components;
 
 import java.awt.Color;
-import java.awt.color.ColorSpace;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -31,6 +30,7 @@ import java.beans.PropertyChangeListener;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import org.gephi.ui.components.JColorButton;
+import org.gephi.visualization.api.config.VizConfig;
 import org.gephi.visualization.api.vizmodel.VizModel;
 import org.openide.util.Lookup;
 
@@ -52,23 +52,23 @@ public class EdgeSettingsPanel extends javax.swing.JPanel {
             public void propertyChange(PropertyChangeEvent evt) {
                 if (evt.getPropertyName().equals("init")) {
                     refreshSharedConfig();
-                } else if (evt.getPropertyName().equals("edgeHasUniColor")) {
+                } else if (evt.getPropertyName().equals(VizConfig.EDGE_HAS_UNIQUE_COLOR)) {
                     refreshSharedConfig();
-                } else if (evt.getPropertyName().equals("showEdges")) {
+                } else if (evt.getPropertyName().equals(VizConfig.SHOW_EDGES)) {
                     refreshSharedConfig();
-                } else if (evt.getPropertyName().equals("edgeUniColor")) {
+                } else if (evt.getPropertyName().equals(VizConfig.SELECTEDEDGE_HAS_COLOR)) {
                     refreshSharedConfig();
-                } else if (evt.getPropertyName().equals("edgeSelectionColor")) {
+                } else if (evt.getPropertyName().equals(VizConfig.SELECTEDNODE_UNIQUE_COLOR)) {
                     refreshSharedConfig();
-                } else if (evt.getPropertyName().equals("edgeInSelectionColor")) {
+                } else if (evt.getPropertyName().equals(VizConfig.SELECTEDEDGE_IN_COLOR)) {
                     refreshSharedConfig();
-                } else if (evt.getPropertyName().equals("edgeOutSelectionColor")) {
+                } else if (evt.getPropertyName().equals(VizConfig.SELECTEDEDGE_OUT_COLOR)) {
                     refreshSharedConfig();
-                } else if (evt.getPropertyName().equals("edgeBothSelectionColor")) {
+                } else if (evt.getPropertyName().equals(VizConfig.SELECTEDEDGE_BOTH_COLOR)) {
                     refreshSharedConfig();
-                } else if (evt.getPropertyName().equals("edgeScale")) {
+                } else if (evt.getPropertyName().equals(VizConfig.EDGE_SCALE)) {
                     refreshSharedConfig();
-                } else if (evt.getPropertyName().equals("metaEdgeScale")) {
+                } else if (evt.getPropertyName().equals(VizConfig.META_EDGE_SCALE)) {
                     refreshSharedConfig();
                 }
             }
@@ -87,7 +87,7 @@ public class EdgeSettingsPanel extends javax.swing.JPanel {
 
             public void propertyChange(PropertyChangeEvent evt) {
                 VizModel vizModel = Lookup.getDefault().lookup(VizModel.class);
-                vizModel.setEdgeUniColor(((JColorButton) edgeColorButton).getColorArray());
+                vizModel.setEdgeUniColor(((JColorButton) edgeColorButton).getColor());
             }
         });
         sourceNodeColorCheckbox.addItemListener(new ItemListener() {
@@ -108,21 +108,21 @@ public class EdgeSettingsPanel extends javax.swing.JPanel {
 
             public void actionPerformed(ActionEvent ae) {
                 VizModel vizModel = Lookup.getDefault().lookup(VizModel.class);
-                vizModel.setEdgeInSelectionColor(edgeInSelectionColorChooser.getColor().getComponents(null));
+                vizModel.setEdgeInSelectionColor(edgeInSelectionColorChooser.getColor());
             }
         });
         edgeBothSelectionColorChooser.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent ae) {
                 VizModel vizModel = Lookup.getDefault().lookup(VizModel.class);
-                vizModel.setEdgeBothSelectionColor(edgeBothSelectionColorChooser.getColor().getComponents(null));
+                vizModel.setEdgeBothSelectionColor(edgeBothSelectionColorChooser.getColor());
             }
         });
         edgeOutSelectionColorChooser.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent ae) {
                 VizModel vizModel = Lookup.getDefault().lookup(VizModel.class);
-                vizModel.setEdgeOutSelectionColor(edgeOutSelectionColorChooser.getColor().getComponents(null));
+                vizModel.setEdgeOutSelectionColor(edgeOutSelectionColorChooser.getColor());
             }
         });
         scaleSlider.addChangeListener(new ChangeListener() {
@@ -155,8 +155,8 @@ public class EdgeSettingsPanel extends javax.swing.JPanel {
         if (showEdgesCheckbox.isSelected() != vizModel.isShowEdges()) {
             showEdgesCheckbox.setSelected(vizModel.isShowEdges());
         }
-        float[] edgeCol = vizModel.getEdgeUniColor();
-        ((JColorButton) edgeColorButton).setColor(new Color(edgeCol[0], edgeCol[1], edgeCol[2], edgeCol[3]));
+        Color edgeCol = vizModel.getEdgeUniColor();
+        ((JColorButton) edgeColorButton).setColor(edgeCol);
 
         if (sourceNodeColorCheckbox.isSelected() != !vizModel.isEdgeHasUniColor()) {
             sourceNodeColorCheckbox.setSelected(!vizModel.isEdgeHasUniColor());
@@ -164,9 +164,9 @@ public class EdgeSettingsPanel extends javax.swing.JPanel {
         if (selectionColorCheckbox.isSelected() != vizModel.isEdgeSelectionColor()) {
             selectionColorCheckbox.setSelected(vizModel.isEdgeSelectionColor());
         }
-        Color in = new Color(ColorSpace.getInstance(ColorSpace.CS_sRGB), vizModel.getEdgeInSelectionColor(), 1f);
-        Color out = new Color(ColorSpace.getInstance(ColorSpace.CS_sRGB), vizModel.getEdgeOutSelectionColor(), 1f);
-        Color both = new Color(ColorSpace.getInstance(ColorSpace.CS_sRGB), vizModel.getEdgeBothSelectionColor(), 1f);
+        Color in = vizModel.getEdgeInSelectionColor();
+        Color out = vizModel.getEdgeOutSelectionColor();
+        Color both = vizModel.getEdgeBothSelectionColor();
         if (!edgeInSelectionColorChooser.getColor().equals(in)) {
             edgeInSelectionColorChooser.setColor(in);
         }

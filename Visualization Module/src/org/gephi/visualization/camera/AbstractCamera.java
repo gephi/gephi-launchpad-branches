@@ -50,13 +50,13 @@ abstract class AbstractCamera implements Camera {
     @Override
     public void zoom(float by) {
         setFov((float) Math.max(Math.min(fovy * Math.exp(by), Math.exp(MAX_ZOOM)), Math.exp(MIN_ZOOM)));
-        Lookup.getDefault().lookup(VizModel.class).setCameraDistance(getZoom());
+        Lookup.getDefault().lookup(VizModel.class).setZoomFactor(getZoom());
     }
 
     @Override
     public void setZoom(float relativeZoom) {
         setFov((float) Math.exp(MIN_ZOOM + relativeZoom * (MAX_ZOOM - MIN_ZOOM)));
-        Lookup.getDefault().lookup(VizModel.class).setCameraDistance(relativeZoom);
+        Lookup.getDefault().lookup(VizModel.class).setZoomFactor(relativeZoom);
     }
 
     @Override

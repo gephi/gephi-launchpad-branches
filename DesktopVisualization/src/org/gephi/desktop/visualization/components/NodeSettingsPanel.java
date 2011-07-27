@@ -28,6 +28,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import javax.swing.DefaultComboBoxModel;
 import org.gephi.graph.api.NodeShape;
+import org.gephi.visualization.api.config.VizConfig;
 import org.gephi.visualization.api.vizmodel.VizModel;
 import org.openide.util.Lookup;
 
@@ -78,13 +79,13 @@ public class NodeSettingsPanel extends javax.swing.JPanel {
         vizModel.addPropertyChangeListener(new PropertyChangeListener() {
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
-                if (evt.getPropertyName().equals("globalNodeShape")) {
+                if (evt.getPropertyName().equals("init")) {
                     refreshSharedConfig();
-                } else if (evt.getPropertyName().equals("init")) {
+                } else if (evt.getPropertyName().equals(VizConfig.NODE_GLOBAL_SHAPE)) {
                     refreshSharedConfig();
-                } else if (evt.getPropertyName().equals("adjustByText")) {
+                } else if (evt.getPropertyName().equals(VizConfig.ADJUST_BY_TEXT)) {
                     refreshSharedConfig();
-                } else if (evt.getPropertyName().equals("showHulls")) {
+                } else if (evt.getPropertyName().equals(VizConfig.SHOW_HULLS)) {
                     refreshSharedConfig();
                 }
             }

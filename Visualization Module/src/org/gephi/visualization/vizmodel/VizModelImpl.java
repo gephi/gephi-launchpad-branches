@@ -24,21 +24,18 @@ import java.awt.Color;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import javax.swing.SwingUtilities;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 import org.gephi.graph.api.NodeShape;
 import org.gephi.project.api.Workspace;
-import org.gephi.ui.utils.ColorUtils;
-import org.gephi.visualization.api.camera.Camera;
 import org.gephi.visualization.api.config.VizConfig;
-import org.gephi.visualization.api.controller.VisualizationController;
 import org.gephi.visualization.api.vizmodel.TextModel;
 import org.gephi.visualization.api.vizmodel.VizModel;
-import org.openide.util.Lookup;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -49,47 +46,26 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = VizModel.class)
 public class VizModelImpl implements VizModel {
 
-    protected VizConfig config;
-    //Variable
-    protected float[] cameraPosition;
-    protected float[] cameraTarget;
-    protected float cameraDistance;
-    protected TextModel textModel;
-    protected boolean use3d;
-    protected boolean lighting;
-    protected boolean culling;
-    protected boolean material;
-    protected Color backgroundColor;
-    protected boolean rotatingEnable;
-    protected boolean showEdges;
-    protected boolean lightenNonSelectedAuto;
-    protected boolean autoSelectNeighbor;
-    protected boolean hideNonSelectedEdges;
-    protected boolean uniColorSelected;
-    protected boolean edgeHasUniColor;
-    protected float[] edgeUniColor;
-    protected boolean edgeSelectionColor;
-    protected float[] edgeInSelectionColor;
-    protected float[] edgeOutSelectionColor;
-    protected float[] edgeBothSelectionColor;
-    protected boolean adjustByText;
-    protected boolean showHulls;
-    protected float edgeScale;
-    protected float metaEdgeScale;
-    protected NodeShape globalNodeShape;
+    protected final VizConfigImpl config;
+    protected final TextModel textModel;
+    
+    Map<String, Object> modelData;
+    
     //Listener
     protected List<PropertyChangeListener> listeners = new ArrayList<PropertyChangeListener>();
     private boolean defaultModel = false;
 
-    public VizModelImpl() {
-        defaultValues();
-    }
-
     public VizModelImpl(boolean defaultModel) {
         this.defaultModel = defaultModel;
-        defaultValues();
+        this.modelData = new ConcurrentHashMap<String, Object>();
+        this.config = new VizConfigImpl(this);
+        this.textModel = new TextModelImpl(this);
     }
 
+    public VizModelImpl() {
+        this(true);
+    }
+    
     @Override
     public void init() {
         final PropertyChangeEvent evt = new PropertyChangeEvent(this, "init", null, null);
@@ -103,11 +79,25 @@ public class VizModelImpl implements VizModel {
         });
     }
 
+    public Map<String, Object> getModelData() {
+        return modelData;
+    }
+
     @Override
     public boolean isDefaultModel() {
         return defaultModel;
     }
 
+    @Override
+    public TextModel getTextModel() {
+        return textModel;
+    }
+        
+    @Override
+    public VizConfig getConfig() {
+        return config;
+    }
+    
     @Override
     public List<PropertyChangeListener> getListeners() {
         return listeners;
@@ -118,294 +108,245 @@ public class VizModelImpl implements VizModel {
         this.listeners = listeners;
     }
 
-    private void defaultValues() {
-        config = Lookup.getDefault().lookup(VizConfig.class);
-        cameraPosition = Arrays.copyOf(config.getDefaultCameraPosition(), 3);
-        cameraTarget = Arrays.copyOf(config.getDefaultCameraTarget(), 3);
-        textModel = new TextModelImpl();
-        use3d = config.isDefaultUse3d();
-        lighting = use3d;
-        culling = use3d;
-        material = use3d;
-        rotatingEnable = use3d;
-        backgroundColor = config.getDefaultBackgroundColor();
-
-        showEdges = config.isDefaultShowEdges();
-        lightenNonSelectedAuto = config.isDefaultLightenNonSelectedAuto();
-        autoSelectNeighbor = config.isDefaultAutoSelectNeighbor();
-        hideNonSelectedEdges = config.isDefaultHideNonSelectedEdges();
-        uniColorSelected = config.isDefaultUniColorSelected();
-        edgeHasUniColor = config.isDefaultEdgeHasUniColor();
-        edgeUniColor = config.getDefaultEdgeUniColor().getRGBComponents(null);
-        adjustByText = config.isDefaultAdjustByText();
-        edgeSelectionColor = config.isDefaultEdgeSelectionColor();
-        edgeInSelectionColor = config.getDefaultEdgeInSelectedColor().getRGBComponents(null);
-        edgeOutSelectionColor = config.getDefaultEdgeOutSelectedColor().getRGBComponents(null);
-        edgeBothSelectionColor = config.getDefaultEdgeBothSelectedColor().getRGBComponents(null);
-        showHulls = config.isDefaultShowHulls();
-        edgeScale = config.getDefaultEdgeScale();
-        metaEdgeScale = config.getDefaultMetaEdgeScale();
-        globalNodeShape = config.getDefaultNodeShape();
-    }
-
     //GETTERS
     @Override
     public boolean isAdjustByText() {
-        return adjustByText;
+        return config.getBooleanProperty(VizConfig.ADJUST_BY_TEXT);
     }
 
     @Override
     public boolean isAutoSelectNeighbor() {
-        return autoSelectNeighbor;
+        return config.getBooleanProperty(VizConfig.AUTO_SELECT_NEIGHBOUR);
     }
 
     @Override
     public Color getBackgroundColor() {
-        return backgroundColor;
+        return config.getColorProperty(VizConfig.BACKGROUND_COLOR);
     }
 
     @Override
     public float[] getCameraPosition() {
-        return cameraPosition;
+        return config.getFloatArrayProperty(VizConfig.CAMERA_POSITION);
     }
 
     @Override
     public float[] getCameraTarget() {
-        return cameraTarget;
+        return config.getFloatArrayProperty(VizConfig.CAMERA_TARGET);
     }
 
     @Override
     public boolean isCulling() {
-        return culling;
+        return config.getBooleanProperty(VizConfig.CULLING);
     }
 
     @Override
     public boolean isShowEdges() {
-        return showEdges;
+        return config.getBooleanProperty(VizConfig.SHOW_EDGES);
     }
 
     @Override
     public boolean isEdgeHasUniColor() {
-        return edgeHasUniColor;
+        return config.getBooleanProperty(VizConfig.EDGE_HAS_UNIQUE_COLOR);
     }
 
     @Override
-    public float[] getEdgeUniColor() {
-        return edgeUniColor;
+    public Color getEdgeUniColor() {
+        return config.getColorProperty(VizConfig.EDGE_UNIQUE_COLOR);
     }
 
     @Override
     public boolean isHideNonSelectedEdges() {
-        return hideNonSelectedEdges;
+        return config.getBooleanProperty(VizConfig.HIDE_NONSELECTED_EDGES);
     }
 
     @Override
     public boolean isLightenNonSelectedAuto() {
-        return lightenNonSelectedAuto;
+        return config.getBooleanProperty(VizConfig.HIGHLIGHT_NON_SELECTED);
     }
 
     @Override
     public boolean isLighting() {
-        return lighting;
+        return config.getBooleanProperty(VizConfig.LIGHTING);
     }
 
     @Override
     public boolean isMaterial() {
-        return material;
+        return config.getBooleanProperty(VizConfig.MATERIAL);
     }
 
     @Override
     public boolean isRotatingEnable() {
-        return rotatingEnable;
-    }
-
-    @Override
-    public TextModel getTextModel() {
-        return textModel;
+        return config.getBooleanProperty(VizConfig.ROTATING);
     }
 
     @Override
     public boolean isUniColorSelected() {
-        return uniColorSelected;
+        return config.getBooleanProperty(VizConfig.SELECTEDNODE_UNIQUE_COLOR);
     }
 
     @Override
     public boolean isUse3d() {
-        return use3d;
-    }
-
-    @Override
-    public VizConfig getConfig() {
-        return config;
+        return config.getBooleanProperty(VizConfig.USE_3D);
     }
 
     @Override
     public boolean isEdgeSelectionColor() {
-        return edgeSelectionColor;
+        return config.getBooleanProperty(VizConfig.SELECTEDNODE_UNIQUE_COLOR);
     }
 
     @Override
-    public float[] getEdgeInSelectionColor() {
-        return edgeInSelectionColor;
+    public Color getEdgeInSelectionColor() {
+        return config.getColorProperty(VizConfig.SELECTEDEDGE_IN_COLOR);
     }
 
     @Override
-    public float[] getEdgeOutSelectionColor() {
-        return edgeOutSelectionColor;
+    public Color getEdgeOutSelectionColor() {
+        return config.getColorProperty(VizConfig.SELECTEDEDGE_OUT_COLOR);
     }
 
     @Override
-    public float[] getEdgeBothSelectionColor() {
-        return edgeBothSelectionColor;
+    public Color getEdgeBothSelectionColor() {
+        return config.getColorProperty(VizConfig.SELECTEDEDGE_BOTH_COLOR);
     }
 
     @Override
     public boolean isShowHulls() {
-        return showHulls;
+        return config.getBooleanProperty(VizConfig.SHOW_HULLS);
     }
 
     @Override
     public float getEdgeScale() {
-        return edgeScale;
+        return config.getFloatProperty(VizConfig.EDGE_SCALE);
     }
 
     @Override
     public float getMetaEdgeScale() {
-        return metaEdgeScale;
+        return config.getFloatProperty(VizConfig.META_EDGE_SCALE);
     }
 
     @Override
     public NodeShape getGlobalNodeShape() {
-        return globalNodeShape;
+        return config.getEnumProperty(NodeShape.class, VizConfig.NODE_GLOBAL_SHAPE);
     }
 
     @Override
-    public float getCameraDistance() {
-        return cameraDistance;
+    public float getZoomFactor() {
+        return config.getFloatProperty(VizConfig.ZOOM_FACTOR);
     }
 
     //SETTERS
     @Override
     public void setAdjustByText(boolean adjustByText) {
-        this.adjustByText = adjustByText;
-        fireProperyChange("adjustByText", null, adjustByText);
+        config.setProperty(VizConfig.ADJUST_BY_TEXT, adjustByText);
+        fireProperyChange(VizConfig.ADJUST_BY_TEXT, null, adjustByText);
     }
 
     @Override
     public void setAutoSelectNeighbor(boolean autoSelectNeighbor) {
-        this.autoSelectNeighbor = autoSelectNeighbor;
-        fireProperyChange("autoSelectNeighbor", null, autoSelectNeighbor);
+        config.setProperty(VizConfig.AUTO_SELECT_NEIGHBOUR, autoSelectNeighbor);
+        fireProperyChange(VizConfig.AUTO_SELECT_NEIGHBOUR, null, autoSelectNeighbor);
     }
 
     @Override
     public void setBackgroundColor(Color backgroundColor) {
-        this.backgroundColor = backgroundColor;
-        fireProperyChange("backgroundColor", null, backgroundColor);
+        config.setProperty(VizConfig.BACKGROUND_COLOR, backgroundColor);
+        fireProperyChange(VizConfig.BACKGROUND_COLOR, null, backgroundColor);
     }
 
     @Override
     public void setShowEdges(boolean showEdges) {
-        this.showEdges = showEdges;
-        fireProperyChange("showEdges", null, showEdges);
+        config.setProperty(VizConfig.SHOW_EDGES, showEdges);
+        fireProperyChange(VizConfig.SHOW_EDGES, null, showEdges);
     }
 
     @Override
     public void setEdgeHasUniColor(boolean edgeHasUniColor) {
-        this.edgeHasUniColor = edgeHasUniColor;
-        fireProperyChange("edgeHasUniColor", null, edgeHasUniColor);
+        config.setProperty(VizConfig.EDGE_HAS_UNIQUE_COLOR, edgeHasUniColor);
+        fireProperyChange(VizConfig.EDGE_HAS_UNIQUE_COLOR, null, edgeHasUniColor);
     }
 
     @Override
-    public void setEdgeUniColor(float[] edgeUniColor) {
-        this.edgeUniColor = edgeUniColor;
-        fireProperyChange("edgeUniColor", null, edgeUniColor);
+    public void setEdgeUniColor(Color edgeUniColor) {
+        config.setProperty(VizConfig.EDGE_UNIQUE_COLOR, edgeUniColor);
+        fireProperyChange(VizConfig.EDGE_UNIQUE_COLOR, null, edgeUniColor);
     }
 
     @Override
     public void setHideNonSelectedEdges(boolean hideNonSelectedEdges) {
-        this.hideNonSelectedEdges = hideNonSelectedEdges;
-        fireProperyChange("hideNonSelectedEdges", null, hideNonSelectedEdges);
+        config.setProperty(VizConfig.HIDE_NONSELECTED_EDGES, hideNonSelectedEdges);
+        fireProperyChange(VizConfig.HIDE_NONSELECTED_EDGES, null, hideNonSelectedEdges);
     }
 
     @Override
     public void setLightenNonSelectedAuto(boolean lightenNonSelectedAuto) {
-        this.lightenNonSelectedAuto = lightenNonSelectedAuto;
-        fireProperyChange("lightenNonSelectedAuto", null, lightenNonSelectedAuto);
+        config.setProperty(VizConfig.HIGHLIGHT_NON_SELECTED, lightenNonSelectedAuto);
+        fireProperyChange(VizConfig.HIGHLIGHT_NON_SELECTED, null, lightenNonSelectedAuto);
     }
 
     @Override
     public void setUniColorSelected(boolean uniColorSelected) {
-        this.uniColorSelected = uniColorSelected;
-        fireProperyChange("uniColorSelected", null, uniColorSelected);
+        config.setProperty(VizConfig.NODE_SELECTED_UNIQUE_COLOR, uniColorSelected);
+        fireProperyChange(VizConfig.NODE_SELECTED_UNIQUE_COLOR, null, uniColorSelected);
     }
 
     @Override
     public void setUse3d(boolean use3d) {
-        this.use3d = use3d;
-        //Additional
-        this.lighting = use3d;
-        this.culling = use3d;
-        this.rotatingEnable = use3d;
-        this.material = use3d;
-        fireProperyChange("use3d", null, use3d);
+        config.setProperty(VizConfig.USE_3D, use3d);
+        fireProperyChange(VizConfig.USE_3D, null, use3d);
     }
 
     @Override
     public void setEdgeSelectionColor(boolean edgeSelectionColor) {
-        this.edgeSelectionColor = edgeSelectionColor;
-        fireProperyChange("edgeSelectionColor", null, edgeSelectionColor);
+        config.setProperty(VizConfig.SELECTEDEDGE_HAS_COLOR, edgeSelectionColor);
+        fireProperyChange(VizConfig.SELECTEDEDGE_HAS_COLOR, null, edgeSelectionColor);
     }
 
     @Override
-    public void setEdgeInSelectionColor(float[] edgeInSelectionColor) {
-        this.edgeInSelectionColor = edgeInSelectionColor;
-        fireProperyChange("edgeInSelectionColor", null, edgeInSelectionColor);
+    public void setEdgeInSelectionColor(Color edgeInSelectionColor) {
+        config.setProperty(VizConfig.SELECTEDEDGE_IN_COLOR, edgeInSelectionColor);
+        fireProperyChange(VizConfig.SELECTEDEDGE_IN_COLOR, null, edgeInSelectionColor);
     }
 
     @Override
-    public void setEdgeOutSelectionColor(float[] edgeOutSelectionColor) {
-        this.edgeOutSelectionColor = edgeOutSelectionColor;
-        fireProperyChange("edgeOutSelectionColor", null, edgeOutSelectionColor);
+    public void setEdgeOutSelectionColor(Color edgeOutSelectionColor) {
+        config.setProperty(VizConfig.SELECTEDEDGE_OUT_COLOR, edgeOutSelectionColor);
+        fireProperyChange(VizConfig.SELECTEDEDGE_OUT_COLOR, null, edgeOutSelectionColor);
     }
 
     @Override
-    public void setEdgeBothSelectionColor(float[] edgeBothSelectionColor) {
-        this.edgeBothSelectionColor = edgeBothSelectionColor;
-        fireProperyChange("edgeBothSelectionColor", null, edgeBothSelectionColor);
+    public void setEdgeBothSelectionColor(Color edgeBothSelectionColor) {
+        config.setProperty(VizConfig.SELECTEDEDGE_BOTH_COLOR, edgeBothSelectionColor);
+        fireProperyChange(VizConfig.SELECTEDEDGE_BOTH_COLOR, null, edgeBothSelectionColor);
     }
 
     @Override
     public void setShowHulls(boolean showHulls) {
-        this.showHulls = showHulls;
-        fireProperyChange("showHulls", null, showHulls);
+        config.setProperty(VizConfig.SHOW_HULLS, showHulls);
+        fireProperyChange(VizConfig.SHOW_HULLS, null, showHulls);
     }
 
     @Override
     public void setEdgeScale(float edgeScale) {
-        this.edgeScale = edgeScale;
-        fireProperyChange("edgeScale", null, edgeScale);
+        config.setProperty(VizConfig.EDGE_SCALE, edgeScale);
+        fireProperyChange(VizConfig.EDGE_SCALE, null, edgeScale);
     }
 
     @Override
     public void setMetaEdgeScale(float metaEdgeScale) {
-        this.metaEdgeScale = metaEdgeScale;
-        fireProperyChange("metaEdgeScale", null, metaEdgeScale);
-    }
-
-    /**
-     * Sets relative distance of camera from the world.
-     * @param distance float from interval [0.0, 1.0].
-     */
-    @Override
-    public void setCameraDistance(float distance) {
-        cameraDistance = distance;
-        fireProperyChange("cameraDistance", null, distance);
+        config.setProperty(VizConfig.META_EDGE_SCALE, metaEdgeScale);
+        fireProperyChange(VizConfig.META_EDGE_SCALE, null, metaEdgeScale);
     }
 
     @Override
     public void setGlobalNodeShape(NodeShape nodeShape) {
-        this.globalNodeShape = nodeShape;
-        fireProperyChange("globalNodeShape", null, nodeShape);
+        config.setProperty(VizConfig.NODE_GLOBAL_SHAPE, nodeShape);
+        fireProperyChange(VizConfig.NODE_GLOBAL_SHAPE, null, nodeShape);
+    }
+    
+    @Override
+    public void setZoomFactor(float distance) {
+        config.setProperty(VizConfig.ZOOM_FACTOR, distance);
+        fireProperyChange(VizConfig.ZOOM_FACTOR, null, distance);
     }
 
     //EVENTS
@@ -430,7 +371,7 @@ public class VizModelImpl implements VizModel {
     //XML
     @Override
     public void readXML(XMLStreamReader reader, Workspace workspace) throws XMLStreamException {
-
+/*
         boolean end = false;
         while (reader.hasNext() && !end) {
             int type = reader.next();
@@ -439,7 +380,7 @@ public class VizModelImpl implements VizModel {
                 case XMLStreamReader.START_ELEMENT:
                     String name = reader.getLocalName();
                     if ("textmodel".equalsIgnoreCase(name)) {
-                        //textModel.readXML(reader, workspace);
+                        textModel.readXML(reader, workspace);
                     } else if ("cameraposition".equalsIgnoreCase(name)) {
                         cameraPosition[0] = Float.parseFloat(reader.getAttributeValue(null, "x"));
                         cameraPosition[1] = Float.parseFloat(reader.getAttributeValue(null, "y"));
@@ -500,21 +441,21 @@ public class VizModelImpl implements VizModel {
                     }
                     break;
             }
-        }
+        }*/
     }
 
     @Override
     public void writeXML(XMLStreamWriter writer) throws XMLStreamException {
-
+/*
         writer.writeStartElement("vizmodel");
 
         //Fast refreh
         Camera camera = Lookup.getDefault().lookup(VisualizationController.class).getCameraCopy();
-        cameraPosition = camera.position().toArray();
-        cameraTarget = camera.lookAtPoint().toArray();
+        float[] cameraPosition = camera.position().toArray();
+        float[] cameraTarget = camera.lookAtPoint().toArray();
 
         //TextModel
-        //textModel.writeXML(writer);
+        textModel.writeXML(writer);
 
         //Camera
         writer.writeStartElement("cameraposition");
@@ -620,7 +561,7 @@ public class VizModelImpl implements VizModel {
         writer.writeAttribute("value", String.valueOf(metaEdgeScale));
         writer.writeEndElement();
 
-        writer.writeEndElement();
+        writer.writeEndElement();*/
     }
 
 }

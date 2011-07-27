@@ -17,6 +17,7 @@ import org.gephi.tools.api.ToolController;
 import org.gephi.ui.utils.UIUtils;
 import org.gephi.visualization.api.config.VizConfig;
 import org.gephi.visualization.api.controller.VisualizationController;
+import org.gephi.visualization.api.vizmodel.VizModel;
 import org.gephi.visualization.apiimpl.PropertiesBarAddon;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
@@ -36,7 +37,6 @@ public final class GraphTopComponent extends TopComponent {
 //    static final String ICON_PATH = "SET/PATH/TO/ICON/HERE";
     private static final String PREFERRED_ID = "GraphTopComponent";
 
-    //private final View view;
     private final VisualizationController controller;
 
     public GraphTopComponent() {
@@ -115,7 +115,7 @@ public final class GraphTopComponent extends TopComponent {
 
     private void initCollapsePanel() {
         vizBarController = new VizBarController();
-        if (Lookup.getDefault().lookup(VizConfig.class).isShowVizVar()) {
+        if (Lookup.getDefault().lookup(VizModel.class).getConfig().getBooleanProperty(VizConfig.VIZBAR)) {
             collapsePanel.init(vizBarController.getToolbar(), vizBarController.getExtendedBar(), false);
         } else {
             collapsePanel.setVisible(false);
@@ -125,8 +125,8 @@ public final class GraphTopComponent extends TopComponent {
     private void initToolPanels() {
         ToolController tc = Lookup.getDefault().lookup(ToolController.class);
         if (tc != null) {
-            VizConfig vizConfig = Lookup.getDefault().lookup(VizConfig.class);
-            if (vizConfig.isToolbar()) {
+            VizConfig vizConfig = Lookup.getDefault().lookup(VizModel.class).getConfig();
+            if (vizConfig.getBooleanProperty(VizConfig.TOOLBAR)) {
                 JPanel westPanel = new JPanel(new BorderLayout(0, 0));
                 if (UIUtils.isAquaLookAndFeel()) {
                     westPanel.setBackground(UIManager.getColor("NbExplorerView.background"));
@@ -144,7 +144,7 @@ public final class GraphTopComponent extends TopComponent {
                 add(westPanel, BorderLayout.WEST);
             }
 
-            if (vizConfig.isPropertiesbar()) {
+            if (vizConfig.getBooleanProperty(VizConfig.PROPERTIES_BAR)) {
                 JPanel northBar = new JPanel(new BorderLayout());
                 if (UIUtils.isAquaLookAndFeel()) {
                     northBar.setBackground(UIManager.getColor("NbExplorerView.background"));
