@@ -34,6 +34,13 @@ public final class Vec3M extends Vec3Base {
     /*----------------------------- CONSTRUCTORS -----------------------------*/
 
     /**
+     * The default constructor of Vec3M creates a zero vector.
+     */
+    public Vec3M() {
+        super(0.0f, 0.0f, 0.0f);
+    }
+    
+    /**
      * Creates a new 3D vector from its components.
      *
      * @param x the first component of the vector
@@ -51,30 +58,6 @@ public final class Vec3M extends Vec3Base {
      */
     public Vec3M(Vec3Base v) {
         super(v);
-    }
-
-    /**
-     * Creates a new 3D vector from its components stored in an array.
-     *
-     * @param arr the array containing the components of the vector. The
-     *            components are the first three elements of the array.
-     * @throws IndexOutOfBoundsException if the array contains less than three
-     *                                   elements
-     */
-    public Vec3M(float[] arr) throws IndexOutOfBoundsException {
-        super(arr);
-    }
-
-    /**
-     * Creates a new 3D vector from its components stored in an array.
-     *
-     * @param arr the array containing the components of the vector
-     * @param i index of the first component of the 3D vector
-     * @throws IndexOutOfBoundsException if the array contains less than
-     *                                   <code>i+3</code> elements
-     */
-    public Vec3M(float[] arr, int i) throws IndexOutOfBoundsException {
-        super(arr, i);
     }
 
     /*-------------------------------- SETTERS -------------------------------*/
@@ -104,7 +87,7 @@ public final class Vec3M extends Vec3Base {
     /**
      * Sets the third component of the vector.
      *
-     * @param y the new third component of the vector
+     * @param z the new third component of the vector
      * @return this
      */
     public Vec3M z(float z) {
@@ -135,31 +118,6 @@ public final class Vec3M extends Vec3Base {
      */
     public Vec3M set(Vec3Base v) {
         return set(v.x, v.y, v.z);
-    }
-
-    /**
-     * Sets the components of the vector taking them from an array.
-     *
-     * @param arr the array. The components are the first three components of
-     *            the array
-     * @return this
-     * @throws IndexOutOfBoundsException if the array has less than 3 elements
-     */
-    public Vec3M set(float[] arr) throws IndexOutOfBoundsException {
-        return set(arr[0], arr[1], arr[2]);
-    }
-
-    /**
-     * Sets the components of the vector taking them from an array.
-     *
-     * @param arr the array
-     * @param i the index of the first component
-     * @return this
-     * @throws IndexOutOfBoundsException if the array has less than
-     *                                   <code>i+3</code> elements
-     */
-    public Vec3M set(float[] arr, int i) throws IndexOutOfBoundsException {
-        return set(arr[i], arr[i+1], arr[i+3]);
     }
 
     /*------------------------ STATIC FACTORY METHODS ------------------------*/
@@ -432,7 +390,7 @@ public final class Vec3M extends Vec3Base {
      * @param w the second vector
      * @return <code>this = cross(v, w)</code>
      */
-    public final Vec3M cross(Vec3Base v, Vec3Base w) {
+    public final Vec3M toCross(Vec3Base v, Vec3Base w) {
         final float a = v.y * w.z - v.z * w.y;
         final float b = v.z * w.x - v.x * w.z;
         final float c = v.x * w.y - v.y * w.x;

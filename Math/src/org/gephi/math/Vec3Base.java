@@ -64,30 +64,6 @@ public class Vec3Base {
         this(v.x, v.y, v.z);
     }
 
-    /**
-     * Creates a new 3D vector from its components stored in an array.
-     *
-     * @param arr the array containing the components of the vector. The
-     *            components are the first three elements of the array.
-     * @throws IndexOutOfBoundsException if the array contains less than three
-     *                                   elements
-     */
-    protected Vec3Base(float[] arr) throws IndexOutOfBoundsException {
-        this(arr[0], arr[1], arr[2]);
-    }
-
-    /**
-     * Creates a new 3D vector from its components stored in an array.
-     *
-     * @param arr the array containing the components of the vector
-     * @param i index of the first component of the 3D vector
-     * @throws IndexOutOfBoundsException if the array contains less than
-     *                                   <code>i+3</code> elements
-     */
-    protected Vec3Base(float[] arr, int i) throws IndexOutOfBoundsException {
-        this(arr[i], arr[i+1], arr[i+2]);
-    }
-
     /*------------------------------ ACCESSORS -------------------------------*/
 
     /**
@@ -145,9 +121,9 @@ public class Vec3Base {
      */
     @Override
     public final int hashCode() {
-        int ix = Float.floatToRawIntBits(this.x);
-        int iy = Float.floatToRawIntBits(this.y);
-        int iz = Float.floatToRawIntBits(this.z);
+        final int ix = Float.floatToRawIntBits(this.x);
+        final int iy = Float.floatToRawIntBits(this.y);
+        final int iz = Float.floatToRawIntBits(this.z);
 
         return (ix & 0xFFe00000) | ((iy  & 0xFFe00000) >> 11) | (iz >> 22);
     }
@@ -159,7 +135,7 @@ public class Vec3Base {
      */
     @Override
     public final String toString() {
-        return "(" + this.x + ", " + this.y + "," + this.z + ")";
+        return "(" + this.x + ", " + this.y + ", " + this.z + ")";
     }
 
     /*------------------------- VECTOR TO SCALAR MAPS ------------------------*/
@@ -366,7 +342,7 @@ public class Vec3Base {
      * @return <code>this * s</code>
      */
     public final Vec3M timesM(float s) {
-        return new Vec3M(s * this.x, s * this.y, s* this.z);
+        return new Vec3M(s * this.x, s * this.y, s * this.z);
     }
 
     /**
@@ -471,7 +447,7 @@ public class Vec3Base {
     public final Vec3M scaledM(Vec3Base s) {
         return this.scaledM(s.x, s.y, s.z);
     }
-
+    
     /*-------------------------- CAST AND COPY METHODS -----------------------*/
 
     /**
@@ -533,7 +509,7 @@ public class Vec3Base {
                       throws BufferOverflowException, ReadOnlyBufferException  {
         b.putFloat(i, this.x);
         b.putFloat(i+4, this.y);
-        b.putFloat(i+8, this.y);
+        b.putFloat(i+8, this.z);
         return i + 12;
     }
 }

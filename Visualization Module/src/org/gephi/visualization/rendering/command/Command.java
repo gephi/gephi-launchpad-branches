@@ -20,7 +20,6 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 */
 package org.gephi.visualization.rendering.command;
 
-import java.util.List;
 import javax.media.opengl.GL;
 import org.gephi.visualization.api.camera.Camera;
 

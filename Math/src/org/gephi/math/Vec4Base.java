@@ -26,40 +26,44 @@ import java.nio.ByteBuffer;
 import java.nio.ReadOnlyBufferException;
 
 /**
- * 2D vector class. All the constructors of this class are protected and its
+ * 4D vector class. All the constructors of this class are protected and its
  * subclasses should be used instead.
  *
  * @author Antonio Patriarca <antoniopatriarca@gmail.com>
  */
-public class Vec2Base {
+public class Vec4Base {
 
     /*----------------------- PROTECTED DATA FIELDS --------------------------*/
 
     /**
      * Components of the vector in the standard basis.
      */
-    protected float x, y;
+    protected float x, y, z, w;
 
     /*----------------------------- CONSTRUCTORS -----------------------------*/
 
     /**
-     * Creates a new 2D vector from its components.
+     * Creates a new 4D vector from its components.
      *
      * @param x the first component of the vector
      * @param y the second component of the vector
+     * @param z the third component of the vector
+     * @param w the fourth component of the vector
      */
-    protected Vec2Base(float x, float y) {
+    protected Vec4Base(float x, float y, float z, float w) {
         this.x = x;
         this.y = y;
+        this.z = z;
+        this.w = w;
     }
 
     /**
-     * Creates a copy of another 2D vector.
+     * Creates a copy of another 4D vector.
      *
-     * @param v the 2D vector to copy
+     * @param v the 4D vector to copy
      */
-    protected Vec2Base(Vec2Base v) {
-        this(v.x, v.y);
+    protected Vec4Base(Vec4Base v) {
+        this(v.x, v.y, v.z, v.w);
     }
 
     /*------------------------------ ACCESSORS -------------------------------*/
@@ -72,38 +76,56 @@ public class Vec2Base {
     public final float x() {
         return this.x;
     }
-    
+
     /**
      * Returns the second component of the vector in the standard basis.
-     * 
+     *
      * @return the second component of the vector
      */
     public final float y() {
         return this.y;
     }
 
+    /**
+     * Returns the third component of the vector in the standard basis.
+     *
+     * @return the third component of the vector
+     */
+    public final float z() {
+        return this.z;
+    }
+    
+    /**
+     * Returns the fourth component of the vector in the standard basis.
+     *
+     * @return the fourth component of the vector
+     */
+    public final float w() {
+        return this.w;
+    }
+
     /*---------------------- OVERRIDDEN OBJECT'S METHODS ---------------------*/
 
     /**
-     * Compares two 2D vectors for equality. Two vectors are equal if their
+     * Compares two 4D vectors for equality. Two vectors are equal if their
      * components are equal.
      *
      * @param obj the object to compare with
-     * @return <code>true</code> if <code>obj</code> is a 2D vector and if 
+     * @return <code>true</code> if <code>obj</code> is a 4D vector and if
      *         their components are equal, <code>false</code> otherwise
      */
     @Override
     public final boolean equals(Object obj) {
         if (obj == this) return true;
-        if (!(obj instanceof Vec2Base)) return false;
-        
-        final Vec2Base v = (Vec2Base) obj;
+        if (!(obj instanceof Vec4Base)) return false;
 
-        return (this.x == v.x) && (this.y == v.y);
+        final Vec4Base v = (Vec4Base) obj;
+
+        return (this.x == v.x) && (this.y == v.y) && (this.z == v.z) && (this.w == v.w);
     }
 
     /**
-     * Returns an integer hash for this 2D vector based on the raw bit
+     * Returns an integer hash for this 4D vector based on the raw bit
      * representation of its components.
      *
      * @return the hash code
@@ -112,18 +134,20 @@ public class Vec2Base {
     public final int hashCode() {
         final int ix = Float.floatToRawIntBits(this.x);
         final int iy = Float.floatToRawIntBits(this.y);
+        final int iz = Float.floatToRawIntBits(this.z);
+        final int iw = Float.floatToRawIntBits(this.w);
 
-        return (ix & 0xFFFF0000) | (iy >> 16);
+        return (ix & 0xFF000000) | ((iy  & 0xFF000000) >> 8) | ((iz  & 0xFF000000) >> 16) | (iw >> 24);
     }
 
     /**
-     * Returns a string representing this 2D vector.
+     * Returns a string representing this 4D vector.
      *
      * @return the string
      */
     @Override
     public final String toString() {
-        return "(" + this.x + ", " + this.y + ")";
+        return "(" + this.x + ", " + this.y + ", " + this.z + ", " + this.w + ")";
     }
 
     /*------------------------- VECTOR TO SCALAR MAPS ------------------------*/
@@ -134,18 +158,8 @@ public class Vec2Base {
      * @param v the other vector
      * @return the dot product of this vector and <code>v</code>
      */
-    public final float dot(Vec2Base v) {
-        return this.x * v.x + this.y * v.y;
-    }
-
-    /**
-     * Computes the perpendicular dot product of this vector with another one.
-     *
-     * @param v the other vector
-     * @return the perpendicular dot product of this vector and <code>v</code>
-     */
-    public final float perpDot(Vec2Base v) {
-        return this.x * v.y - this.y * v.x;
+    public final float dot(Vec4Base v) {
+        return this.x * v.x + this.y * v.y + this.z * v.z + this.w * v.w;
     }
 
     /**
@@ -166,25 +180,6 @@ public class Vec2Base {
         return (float) Math.sqrt(this.lengthSquared());
     }
 
-    /**
-     * Returns the angle in radians from the x-axis to this vector.
-     *
-     * @return the angle from the x-axis to this vector
-     */
-    public final float angle() {
-        return (float) Math.atan2(this.y, this.x);
-    }
-
-    /**
-     * Returns the angle in radians from this vector to another one.
-     *
-     * @param v the other vector
-     * @return the angle from this vector to <code>v</code>
-     */
-    public final float angle(Vec2Base v) {
-        return (float) Math.atan2(this.perpDot(v), this.dot(v));
-    }
-
     /*------------------- BINARY OPERATIONS TO NEW IMMUTABLE -----------------*/
 
     /**
@@ -193,8 +188,8 @@ public class Vec2Base {
      * @param v the other vector
      * @return <code>this + v</code>
      */
-    public final Vec2 plus(Vec2Base v) {
-        return new Vec2(this.x + v.x, this.y + v.y);
+    public final Vec4 plus(Vec4Base v) {
+        return new Vec4(this.x + v.x, this.y + v.y, this.z + v.z, this.w + v.w);
     }
 
     /**
@@ -204,8 +199,8 @@ public class Vec2Base {
      * @param v the other vector
      * @return <code>this + s*v</code>
      */
-    public final Vec2 plus(float s, Vec2Base v) {
-        return new Vec2(this.x + s * v.x, this.y + s * v.y);
+    public final Vec4 plus(float s, Vec4Base v) {
+        return new Vec4(this.x + s * v.x, this.y + s * v.y, this.z + s * v.z, this.w + s * v.w);
     }
 
     /**
@@ -214,8 +209,8 @@ public class Vec2Base {
      * @param v the other vector
      * @return <code>this - v</code>
      */
-    public final Vec2 minus(Vec2Base v) {
-        return new Vec2(this.x - v.x, this.y - v.y);
+    public final Vec4 minus(Vec4Base v) {
+        return new Vec4(this.x - v.x, this.y - v.y, this.z - v.z, this.w - v.w);
     }
 
     /**
@@ -226,8 +221,8 @@ public class Vec2Base {
      * @param v the other vector
      * @return <code>this - s*v</code>
      */
-    public final Vec2 minus(float s, Vec2Base v) {
-        return new Vec2(this.x - s * v.x, this.y - s * v.y);
+    public final Vec4 minus(float s, Vec4Base v) {
+        return new Vec4(this.x - s * v.x, this.y - s * v.y, this.z - s * v.z, this.w - s * v.w);
     }
 
     /**
@@ -236,8 +231,8 @@ public class Vec2Base {
      * @param s the scalar
      * @return <code>this * s</code>
      */
-    public final Vec2 times(float s) {
-        return new Vec2(s * this.x, s * this.y);
+    public final Vec4 times(float s) {
+        return new Vec4(s * this.x, s * this.y, s * this.z, s * this.w);
     }
 
     /*------------------- BINARY OPERATIONS TO NEW MUTABLE -------------------*/
@@ -248,8 +243,8 @@ public class Vec2Base {
      * @param v the other vector
      * @return <code>this + v</code>
      */
-    public final Vec2M plusM(Vec2Base v) {
-        return new Vec2M(this.x + v.x, this.y + v.y);
+    public final Vec4M plusM(Vec4Base v) {
+        return new Vec4M(this.x + v.x, this.y + v.y, this.z + v.z, this.w + v.w);
     }
 
     /**
@@ -259,8 +254,8 @@ public class Vec2Base {
      * @param v the other vector
      * @return <code>this + s*v</code>
      */
-    public final Vec2M plusM(float s, Vec2Base v) {
-        return new Vec2M(this.x + s * v.x, this.y + s * v.y);
+    public final Vec4M plusM(float s, Vec4Base v) {
+        return new Vec4M(this.x + s * v.x, this.y + s * v.y, this.z + s * v.z, this.w + s * v.w);
     }
 
     /**
@@ -269,8 +264,8 @@ public class Vec2Base {
      * @param v the other vector
      * @return <code>this - v</code>
      */
-    public final Vec2M minusM(Vec2Base v) {
-        return new Vec2M(this.x - v.x, this.y - v.y);
+    public final Vec4M minusM(Vec4Base v) {
+        return new Vec4M(this.x - v.x, this.y - v.y, this.z - v.z, this.w - v.w);
     }
 
     /**
@@ -281,8 +276,8 @@ public class Vec2Base {
      * @param v the other vector
      * @return <code>this - s*v</code>
      */
-    public final Vec2M minusM(float s, Vec2Base v) {
-        return new Vec2M(this.x - s * v.x, this.y - s * v.y);
+    public final Vec4M minusM(float s, Vec4Base v) {
+        return new Vec4M(this.x - s * v.x, this.y - s * v.y, this.z - s * v.z, this.w - s * v.w);
     }
 
     /**
@@ -291,8 +286,8 @@ public class Vec2Base {
      * @param s the scalar
      * @return <code>this * s</code>
      */
-    public final Vec2M timesM(float s) {
-        return new Vec2M(s * this.x, s * this.y);
+    public final Vec4M timesM(float s) {
+        return new Vec4M(s * this.x, s * this.y, s * this.z, s * this.w);
     }
 
     /*------------------- UNARY OPERATIONS TO NEW IMMUTABLE ------------------*/
@@ -302,7 +297,7 @@ public class Vec2Base {
      *
      * @return <code>-this</code>
      */
-    public final Vec2 negated() {
+    public final Vec4 negated() {
         return this.times(-1.0f);
     }
 
@@ -311,19 +306,9 @@ public class Vec2Base {
      *
      * @return <code>this / this.length()</code>
      */
-    public final Vec2 normalized() {
+    public final Vec4 normalized() {
         final float oneOnLength = 1.0f / this.length();
         return this.times(oneOnLength);
-    }
-
-    /**
-     * Returns the vector perpendicular to this vector obtained by a 90 degree
-     * clockwise rotation.
-     *
-     * @return the perpendicular vector
-     */
-    public final Vec2 perp() {
-        return new Vec2(- this.y, this.x);
     }
 
     /*------------------- UNARY OPERATIONS TO NEW MUTABLE --------------------*/
@@ -333,7 +318,7 @@ public class Vec2Base {
      *
      * @return <code>-this</code>
      */
-    public final Vec2M negatedM() {
+    public final Vec4M negatedM() {
         return this.timesM(-1.0f);
     }
 
@@ -342,44 +327,24 @@ public class Vec2Base {
      *
      * @return <code>this / this.length()</code>
      */
-    public final Vec2M normalizedM() {
+    public final Vec4M normalizedM() {
         final float oneOnLength = 1.0f / this.length();
         return this.timesM(oneOnLength);
     }
 
-    /**
-     * Returns the vector perpendicular to this vector obtained by a 90 degree
-     * counter-clockwise rotation.
-     *
-     * @return the perpendicular vector
-     */
-    public final Vec2M perpM() {
-        return new Vec2M(- this.y, this.x);
-    }
-
-    /*------------------ 2D TRANSFORMATIONS TO NEW IMMUTABLE -----------------*/
-
-    /**
-     * Returns this vector rotated by some angle.
-     *
-     * @param angle the angle of rotation expressed in radians
-     * @return the rotated vector
-     */
-    public final Vec2 rotated(float angle) {
-        final float c = (float)Math.cos(angle);
-        final float s = (float)Math.sin(angle);
-        return new Vec2(this.x * c - this.y * s, this.x * s + this.y * c);
-    }
+    /*------------------ 4D TRANSFORMATIONS TO NEW IMMUTABLE -----------------*/
 
     /**
      * Returns this vector non-uniformly scaled.
      *
      * @param sx scalar factor along the x-axis
      * @param sy scalar factor along the y-axis
+     * @param sz scalar factor along the z-axis
+     * @param sw scalar factor along the w-axis
      * @return the scaled vector
      */
-    public final Vec2 scaled(float sx, float sy) {
-        return new Vec2(sx * this.x, sy * this.y);
+    public final Vec4 scaled(float sx, float sy, float sz, float sw) {
+        return new Vec4(sx * this.x, sy * this.y, sz * this.z, sw * this.w);
     }
 
     /**
@@ -388,33 +353,23 @@ public class Vec2Base {
      * @param s scalar factors stored in a vector
      * @return the scaled vector
      */
-    public final Vec2 scaled(Vec2Base s) {
-        return this.scaled(s.x, s.y);
+    public final Vec4 scaled(Vec4Base s) {
+        return this.scaled(s.x, s.y, s.z, s.w);
     }
 
-    /*------------------ 2D TRANSFORMATIONS TO NEW MUTABLE -------------------*/
-
-    /**
-     * Returns this vector rotated by some angle.
-     *
-     * @param angle the angle of rotation expressed in radians
-     * @return the rotated vector
-     */
-    public final Vec2M rotatedM(float angle) {
-        final float c = (float)Math.cos(angle);
-        final float s = (float)Math.sin(angle);
-        return new Vec2M(this.x * c - this.y * s, this.x * s + this.y * c);
-    }
+    /*------------------ 4D TRANSFORMATIONS TO NEW MUTABLE -------------------*/
 
     /**
      * Returns this vector non-uniformly scaled.
      *
      * @param sx scalar factor along the x-axis
      * @param sy scalar factor along the y-axis
+     * @param sz scalar factor along the z-axis
+     * @param sw scalar factor along the w-axis
      * @return the scaled vector
      */
-    public final Vec2M scaledM(float sx, float sy) {
-        return new Vec2M(sx * this.x, sy * this.y);
+    public final Vec4M scaledM(float sx, float sy, float sz, float sw) {
+        return new Vec4M(sx * this.x, sy * this.y, sz * this.z, sw * this.w);
     }
 
     /**
@@ -423,8 +378,8 @@ public class Vec2Base {
      * @param s scalar factors stored in a vector
      * @return the scaled vector
      */
-    public final Vec2M scaledM(Vec2Base s) {
-        return this.scaledM(s.x, s.y);
+    public final Vec4M scaledM(Vec4Base s) {
+        return this.scaledM(s.x, s.y, s.z, s.w);
     }
 
     /*-------------------------- CAST AND COPY METHODS -----------------------*/
@@ -435,7 +390,7 @@ public class Vec2Base {
      * @return the new array
      */
     public final float[] toArray() {
-        return new float[]{this.x, this.y};
+        return new float[]{this.x, this.y, this.z, this.w};
     }
 
     /**
@@ -443,8 +398,8 @@ public class Vec2Base {
      *
      * @return the immutable copy of this vector
      */
-    public final Vec2 copy() {
-        return new Vec2(this);
+    public final Vec4 copy() {
+        return new Vec4(this.x, this.y, this.z, this.w);
     }
 
     /**
@@ -452,8 +407,8 @@ public class Vec2Base {
      *
      * @return the mutable copy of this vector
      */
-    public final Vec2M copyM() {
-        return new Vec2M(this);
+    public final Vec4M copyM() {
+        return new Vec4M(this.x, this.y, this.z, this.w);
     }
 
 
@@ -463,7 +418,7 @@ public class Vec2Base {
      * Writes this vector to the end of a <code>ByteBuffer</code>.
      *
      * @param b the <code>ByteBuffer</code> instance
-     * @throws BufferOverflowException if there are fewer than eight bytes
+     * @throws BufferOverflowException if there are fewer than sixteen bytes
      *                                 remaining in the buffer
      * @throws ReadOnlyBufferException if the buffer is read-only
      */
@@ -471,6 +426,8 @@ public class Vec2Base {
             ReadOnlyBufferException {
         b.putFloat(this.x);
         b.putFloat(this.y);
+        b.putFloat(this.z);
+        b.putFloat(this.w);
     }
 
     /**
@@ -479,7 +436,7 @@ public class Vec2Base {
      * @param b the <code>ByteBuffer</code> instance
      * @param i the starting position from where to write the vector
      * @return the position of the first byte after the vector
-     * @throws BufferOverflowException if there are fewer than eight bytes
+     * @throws BufferOverflowException if there are fewer than sixteen bytes
      *                                 remaining in the buffer
      * @throws ReadOnlyBufferException if the buffer is read-only
      */
@@ -487,6 +444,8 @@ public class Vec2Base {
                       throws BufferOverflowException, ReadOnlyBufferException  {
         b.putFloat(i, this.x);
         b.putFloat(i+4, this.y);
-        return i + 8;
+        b.putFloat(i+8, this.z);
+        b.putFloat(i+12, this.w);
+        return i + 16;
     }
 }

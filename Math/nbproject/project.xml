@@ -8,6 +8,7 @@
             <module-dependencies/>
             <public-packages>
                 <package>org.gephi.math</package>
+                <package>org.gephi.math.geometry</package>
             </public-packages>
         </data>
     </configuration>

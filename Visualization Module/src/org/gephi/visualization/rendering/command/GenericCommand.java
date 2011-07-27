@@ -17,26 +17,26 @@ GNU Affero General Public License for more details.
 
 You should have received a copy of the GNU Affero General Public License
 along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
-*/
-package org.gephi.visualization.rendering.command.instanced;
+ */
+package org.gephi.visualization.rendering.command;
 
-import org.gephi.visualization.rendering.command.Technique;
 import java.util.List;
 import javax.media.opengl.GL;
 import org.gephi.visualization.api.camera.Camera;
-import org.gephi.visualization.rendering.command.Command;
 
 /**
- *
+ * Generic implementation of command. This implementation works equally well
+ * for instanced and buffered techniques. It's behaviour is defined by the
+ * technique and it is therefore final.
+ * 
  * @author Antonio Patriarca <antoniopatriarca@gmail.com>
  */
-public class InstancedCommand<E> implements Command {
-    
-    private final List<E> instances;
+public final class GenericCommand<E> implements Command {
+    private final List<E> objects;
     private final Technique<E> technique;
 
-    public InstancedCommand(List<E> instances, Technique<E> technique) {
-        this.instances = instances;
+    public GenericCommand(List<E> objects, Technique<E> technique) {
+        this.objects = objects;
         this.technique = technique;
     }
     
@@ -44,8 +44,13 @@ public class InstancedCommand<E> implements Command {
     public void draw(GL gl, Camera camera) {
         this.technique.begin(gl, camera);
         
-        for (E e : this.instances) {
-            this.technique.draw(gl, e);
+        final int n = this.technique.numberOfPasses();
+        for (int i = 0; i < n; ++i) {
+            this.technique.setCurrentPass(gl, i);
+            
+            for (E e : objects) {
+                this.technique.draw(gl, e);
+            }
         }
         
         this.technique.end(gl);

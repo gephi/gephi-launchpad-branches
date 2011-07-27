@@ -23,11 +23,7 @@ package org.gephi.visualization.view;
 
 import com.jogamp.common.nio.Buffers;
 import com.jogamp.opengl.util.FPSAnimator;
-import com.jogamp.opengl.util.awt.TextRenderer;
 import java.awt.Canvas;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
 import java.nio.IntBuffer;
 import javax.media.opengl.GL;
 import javax.media.opengl.GLAutoDrawable;
@@ -43,7 +39,6 @@ import org.gephi.visualization.view.pipeline.gl11.GL11EdgesLayout3D;
 import org.gephi.visualization.view.pipeline.gl11.GL11NodesLayout3D;
 import org.gephi.visualization.view.pipeline.gl11.GL11Pipeline3D;
 import org.gephi.visualization.view.pipeline.gl11.GL11UILayout;
-import org.gephi.visualization.view.profile.VizProfileSelector;
 
 /**
  * Class which controls the rendering loop.
@@ -58,14 +53,9 @@ public class View implements GLEventListener {
     final private VisualizationControllerImpl controller;
     final private FrameDataBridgeOut bridge;
 
-    private FrameData frameData = null;
-
     private Pipeline pipeline;
 
-    private boolean rebuildPipeline;
-
     static { GLProfile.initSingleton(true); }
-    private TextRenderer textRenderer;
 
 
     public View(VisualizationControllerImpl controller, FrameDataBridgeOut bridge) {
@@ -92,8 +82,6 @@ public class View implements GLEventListener {
         this.bridge.setNodeLayout(new GL11NodesLayout3D());
         this.bridge.setEdgeLayout(new GL11EdgesLayout3D());
         this.bridge.setUILayout(new GL11UILayout());
-
-        this.textRenderer = null;
     }
     
     public Canvas getCanvas() {
@@ -117,10 +105,6 @@ public class View implements GLEventListener {
         final GL gl = glad.getGL();
         gl.setSwapInterval(1);
 
-        VizProfileSelector.setView(this);
-        // make Pipeline
-        this.rebuildPipeline = false;
-
         // TODO: change initialization code based on config files
 
         gl.glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -134,15 +118,14 @@ public class View implements GLEventListener {
             gl.glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
         }
 
-        IntBuffer bufs = Buffers.newDirectIntBuffer(2);
+        IntBuffer bufs = Buffers.newDirectIntBuffer(1);
+        IntBuffer samples = Buffers.newDirectIntBuffer(1);
         gl.glGetIntegerv(GL.GL_SAMPLE_BUFFERS, bufs);
-        gl.glGetIntegerv(GL.GL_SAMPLES, bufs);
+        gl.glGetIntegerv(GL.GL_SAMPLES, samples);
         System.out.println("Num. sample buffers: " + bufs.get(0));
-        System.out.println("Num. samples: " + bufs.get(1));
+        System.out.println("Num. samples: " + samples.get(0));
 
         gl.glEnable(GL.GL_MULTISAMPLE);
-
-        this.textRenderer = new TextRenderer(new Font("SansSerif", Font.PLAIN, 14));
     }
 
     @Override
@@ -158,34 +141,15 @@ public class View implements GLEventListener {
 
         gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
 
-        this.frameData = this.bridge.updateCurrent();
+        FrameData frameData = this.bridge.updateCurrent();
 
-        if (this.frameData == null) {
+        if (frameData == null) {
             return;
         }
 
         this.controller.beginRenderFrame();
 
         this.pipeline.draw(gl, frameData);
-
-
-        this.textRenderer.setColor(Color.BLACK);
-        this.textRenderer.beginRendering(glad.getWidth(), glad.getHeight());
-
-        this.textRenderer.draw("Position: " + this.frameData.camera().position(), 10, 10);
-
-        this.textRenderer.draw("Front: " + this.frameData.camera().frontVector(), 10, 30);
-
-        this.textRenderer.draw("Up: " + this.frameData.camera().upVector(), 10, 50);
-
-        this.textRenderer.draw("Right: " + this.frameData.camera().rightVector(), 10, 70);
-
-        this.textRenderer.draw("View Matrix: " + this.frameData.camera().viewMatrix(), 10, glad.getHeight() - 10);
-
-        this.textRenderer.draw("Proj Matrix: " + this.frameData.camera().projectiveMatrix(), 10, glad.getHeight() - 30);
-
-        this.textRenderer.endRendering();
-
 
         this.controller.endRenderFrame();
 
@@ -201,13 +165,5 @@ public class View implements GLEventListener {
         gl.glViewport(0, 0, w, h2);
 
         this.controller.resize(w, h2);
-    }
-
-    public Dimension getDimension() {
-        return this.canvas.getSize();
-    }
-
-    public void rebuildPipeline() {
-        this.rebuildPipeline = true;
     }
 }

@@ -90,30 +90,6 @@ public final class Vec3 extends Vec3Base {
         super(v);
     }
 
-    /**
-     * Creates a new 3D vector from its components stored in an array.
-     *
-     * @param arr the array containing the components of the vector. The
-     *            components are the first three elements of the array.
-     * @throws IndexOutOfBoundsException if the array contains less than three
-     *                                   elements
-     */
-    public Vec3(float[] arr) throws IndexOutOfBoundsException {
-        super(arr);
-    }
-
-    /**
-     * Creates a new 3D vector from its components stored in an array.
-     *
-     * @param arr the array containing the components of the vector
-     * @param i index of the first component of the 3D vector
-     * @throws IndexOutOfBoundsException if the array contains less than
-     *                                   <code>i+3</code> elements
-     */
-    public Vec3(float[] arr, int i) throws IndexOutOfBoundsException {
-        super(arr, i);
-    }
-
     /*------------------------ STATIC FACTORY METHODS ------------------------*/
 
     /**
