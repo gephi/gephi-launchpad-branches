@@ -46,10 +46,6 @@ public interface VizModel {
 
     public boolean isDefaultModel();
 
-    public List<PropertyChangeListener> getListeners();
-
-    public void setListeners(List<PropertyChangeListener> listeners);
-
     //GETTERS
     public boolean isAdjustByText();
 

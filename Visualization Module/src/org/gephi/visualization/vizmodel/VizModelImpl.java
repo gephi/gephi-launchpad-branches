@@ -98,16 +98,6 @@ public class VizModelImpl implements VizModel {
         return config;
     }
     
-    @Override
-    public List<PropertyChangeListener> getListeners() {
-        return listeners;
-    }
-
-    @Override
-    public void setListeners(List<PropertyChangeListener> listeners) {
-        this.listeners = listeners;
-    }
-
     //GETTERS
     @Override
     public boolean isAdjustByText() {

@@ -31,7 +31,15 @@ import java.awt.Font;
  * String constant as a parameter, 
  * e.g.: <code>getBooleanProperty(VizConfig.CONTEXT_MENU)</code>
  * </p>
- * 
+ * <p>
+ * To add a visualization property, first create its name, and add it here. Then
+ * initialize this property in the implementation of this class (most possibly
+ * <code>VizConfigImpl</code>).
+ * </p>
+ * <p>
+ * If an important property controlled with "fast accessible" UI control is
+ * being added, add its getters and setters to the VizModel.
+ * </p>
  * @author Vojtech Bardiovsky <vojtech.bardiovsky@gmail.com>
  */
 public interface VizConfig {
