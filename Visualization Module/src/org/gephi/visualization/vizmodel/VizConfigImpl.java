@@ -25,6 +25,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.util.Arrays;
 import java.util.Map;
+import org.gephi.data.attributes.api.AttributeColumn;
 import org.gephi.graph.api.NodeShape;
 import org.gephi.ui.utils.ColorUtils;
 import org.gephi.ui.utils.FontUtils;
@@ -63,6 +64,7 @@ public class VizConfigImpl implements VizConfig {
         initDefault(EDGE_LABEL_FONT, new Font("Arial", Font.BOLD, 20));
         initDefault(EDGE_LABEL_SIZE_FACTOR, 0.5f);
         initDefault(EDGE_SCALE, 1.0F);
+        initDefault(EDGE_TEXT_COLUMNS, new AttributeColumn[0]);
         initDefault(EDGE_UNIQUE_COLOR, new Color(0.5F, 0.5F, 0.5F, 0.5F));
         initDefault(GLJPANEL, false);
         initDefault(HIDE_NONSELECTED_EDGES, false);
@@ -74,13 +76,14 @@ public class VizConfigImpl implements VizConfig {
         initDefault(LABEL_MIPMAP, true);
         initDefault(LABEL_SELECTION_ONLY, false);
         initDefault(META_EDGE_SCALE, 1.0F);
+        initDefault(NODE_GLOBAL_SHAPE, NodeShape.CIRCLE);
         initDefault(NODE_LABELS, false);
         initDefault(NODE_LABEL_COLOR, new Color(0.0F, 0.0F, 0.0F, 1.0F));
         initDefault(NODE_LABEL_FONT, new Font("Arial", Font.BOLD, 20));
         initDefault(NODE_LABEL_SIZE_FACTOR, 0.5f);
         initDefault(NODE_NEIGHBOR_SELECTED_UNIQUE_COLOR, new Color(0.2F, 1.0F, 0.3F));
         initDefault(NODE_SELECTED_UNIQUE_COLOR, new Color(0.8F, 0.2F, 0.2F));
-        initDefault(NODE_GLOBAL_SHAPE, NodeShape.CIRCLE);
+        initDefault(NODE_TEXT_COLUMNS, new AttributeColumn[0]);
         initDefault(OCTREE_DEPTH, 5);
         initDefault(OCTREE_WIDTH, 50000);
         initDefault(PAUSE_LOOP_MOUSE_OUT, false);
@@ -104,8 +107,8 @@ public class VizConfigImpl implements VizConfig {
 
         // Other configuration
         initDefault(CAMERA_CONTROL, true);
-        initDefault(CAMERA_POSITION, new Float[]{0f, 0f, 5000f});
-        initDefault(CAMERA_TARGET, new Float[]{0f, 0f, 0f});
+        initDefault(CAMERA_POSITION, new float[]{0f, 0f, 5000f});
+        initDefault(CAMERA_TARGET, new float[]{0f, 0f, 0f});
         initDefault(DIRECT_MOUSE_SELECTION, true);
         initDefault(DRAGGING, true);
         initDefault(MOUSE_SELECTION_DIAMETER, 1);
@@ -138,8 +141,9 @@ public class VizConfigImpl implements VizConfig {
             float[] value = toFloatArray(NbPreferences.forModule(VizConfig.class).get("default_" + property, Arrays.toString((float[]) defaultValue)));
             modelData.put(property, value);
         } else if (defaultValue instanceof Enum) {
-            // FIXME
-            //Enum value = toFloatArray(NbPreferences.forModule(VizConfig.class).get("default_" + property, Arrays.toString((float[]) defaultValue)));
+            Enum value = Enum.valueOf(((Enum<?>) defaultValue).getDeclaringClass(), NbPreferences.forModule(VizConfig.class).get("default_" + property, ((Enum<?>) defaultValue).name()));
+            modelData.put(property, value);
+        } else {
             modelData.put(property, defaultValue);
         }
     }
@@ -151,7 +155,7 @@ public class VizConfigImpl implements VizConfig {
         if (string.length() <= 2) {
             return new float[]{};
         }
-        String[] split = string.substring(1, string.length()).split(",");
+        String[] split = string.substring(1, string.length() - 1).split(",");
         float[] floats = new float[split.length];
         for (int i = 0; i < split.length; i++) {
             floats[i] = Float.parseFloat(split[i]);
@@ -197,6 +201,10 @@ public class VizConfigImpl implements VizConfig {
     @Override
     public void setProperty(String key, Enum value) {
         modelData.put(key, value);
+    }
+    
+    protected void setProperty(String key, AttributeColumn[] array) {
+        modelData.put(key, array);
     }
     
     @Override
@@ -271,4 +279,29 @@ public class VizConfigImpl implements VizConfig {
         return type.cast(val);
     }
 
+    @Override
+    public Class getPropertyType(String key) {
+        Object val = modelData.get(key);
+        if (val == null) {
+            throw new PropertyNotAvailableException(key);
+        }
+        return val.getClass();
+    }
+
+    protected AttributeColumn[] getAttributeColumnArrayProperty(String key) {
+        Object val = modelData.get(key);
+        if (val == null || !(val instanceof AttributeColumn[])) {
+            throw new PropertyNotAvailableException(key);
+        }
+        return (AttributeColumn[]) val;
+    }
+    
+    protected Object getProperty(String key) {
+        Object val = modelData.get(key);
+        if (val == null) {
+            throw new PropertyNotAvailableException(key);
+        }
+        return val;
+    }
+    
 }

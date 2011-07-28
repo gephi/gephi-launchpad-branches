@@ -21,6 +21,7 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 package org.gephi.visualization.vizmodel;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
@@ -31,8 +32,10 @@ import javax.swing.SwingUtilities;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
+import org.gephi.data.attributes.api.AttributeColumn;
 import org.gephi.graph.api.NodeShape;
 import org.gephi.project.api.Workspace;
+import org.gephi.ui.utils.ColorUtils;
 import org.gephi.visualization.api.config.VizConfig;
 import org.gephi.visualization.api.vizmodel.TextModel;
 import org.gephi.visualization.api.vizmodel.VizModel;
@@ -361,7 +364,6 @@ public class VizModelImpl implements VizModel {
     //XML
     @Override
     public void readXML(XMLStreamReader reader, Workspace workspace) throws XMLStreamException {
-/*
         boolean end = false;
         while (reader.hasNext() && !end) {
             int type = reader.next();
@@ -371,58 +373,8 @@ public class VizModelImpl implements VizModel {
                     String name = reader.getLocalName();
                     if ("textmodel".equalsIgnoreCase(name)) {
                         textModel.readXML(reader, workspace);
-                    } else if ("cameraposition".equalsIgnoreCase(name)) {
-                        cameraPosition[0] = Float.parseFloat(reader.getAttributeValue(null, "x"));
-                        cameraPosition[1] = Float.parseFloat(reader.getAttributeValue(null, "y"));
-                        cameraPosition[2] = Float.parseFloat(reader.getAttributeValue(null, "z"));
-                    } else if ("cameratarget".equalsIgnoreCase(name)) {
-                        cameraTarget[0] = Float.parseFloat(reader.getAttributeValue(null, "x"));
-                        cameraTarget[1] = Float.parseFloat(reader.getAttributeValue(null, "y"));
-                        cameraTarget[2] = Float.parseFloat(reader.getAttributeValue(null, "z"));
-                    } else if ("use3d".equalsIgnoreCase(name)) {
-                        use3d = Boolean.parseBoolean(reader.getAttributeValue(null, "value"));
-                    } else if ("lighting".equalsIgnoreCase(name)) {
-                        lighting = Boolean.parseBoolean(reader.getAttributeValue(null, "value"));
-                    } else if ("culling".equalsIgnoreCase(name)) {
-                        culling = Boolean.parseBoolean(reader.getAttributeValue(null, "value"));
-                    } else if ("material".equalsIgnoreCase(name)) {
-                        material = Boolean.parseBoolean(reader.getAttributeValue(null, "value"));
-                    } else if ("rotatingenable".equalsIgnoreCase(name)) {
-                        rotatingEnable = Boolean.parseBoolean(reader.getAttributeValue(null, "value"));
-                    } else if ("showedges".equalsIgnoreCase(name)) {
-                        showEdges = Boolean.parseBoolean(reader.getAttributeValue(null, "value"));
-                    } else if ("lightennonselectedauto".equalsIgnoreCase(name)) {
-                        lightenNonSelectedAuto = Boolean.parseBoolean(reader.getAttributeValue(null, "value"));
-                    } else if ("autoselectneighbor".equalsIgnoreCase(name)) {
-                        autoSelectNeighbor = Boolean.parseBoolean(reader.getAttributeValue(null, "value"));
-                    } else if ("hidenonselectededges".equalsIgnoreCase(name)) {
-                        hideNonSelectedEdges = Boolean.parseBoolean(reader.getAttributeValue(null, "value"));
-                    } else if ("unicolorselected".equalsIgnoreCase(name)) {
-                        uniColorSelected = Boolean.parseBoolean(reader.getAttributeValue(null, "value"));
-                    } else if ("edgehasunicolor".equalsIgnoreCase(name)) {
-                        edgeHasUniColor = Boolean.parseBoolean(reader.getAttributeValue(null, "value"));
-                    } else if ("adjustbytext".equalsIgnoreCase(name)) {
-                        adjustByText = Boolean.parseBoolean(reader.getAttributeValue(null, "value"));
-                    } else if ("edgeSelectionColor".equalsIgnoreCase(name)) {
-                        edgeSelectionColor = Boolean.parseBoolean(reader.getAttributeValue(null, "value"));
-                    } else if ("showHulls".equalsIgnoreCase(name)) {
-                        showHulls = Boolean.parseBoolean(reader.getAttributeValue(null, "value"));
-                    } else if ("backgroundcolor".equalsIgnoreCase(name)) {
-                        backgroundColor = ColorUtils.decode(reader.getAttributeValue(null, "value"));
-                    } else if ("edgeunicolor".equalsIgnoreCase(name)) {
-                        edgeUniColor = ColorUtils.decode(reader.getAttributeValue(null, "value")).getRGBComponents(null);
-                    } else if ("edgeInSelectionColor".equalsIgnoreCase(name)) {
-                        edgeInSelectionColor = ColorUtils.decode(reader.getAttributeValue(null, "value")).getRGBComponents(null);
-                    } else if ("edgeOutSelectionColor".equalsIgnoreCase(name)) {
-                        edgeOutSelectionColor = ColorUtils.decode(reader.getAttributeValue(null, "value")).getRGBComponents(null);
-                    } else if ("edgeBothSelectionColor".equalsIgnoreCase(name)) {
-                        edgeBothSelectionColor = ColorUtils.decode(reader.getAttributeValue(null, "value")).getRGBComponents(null);
-                    } else if ("nodeshape".equalsIgnoreCase(name)) {
-                        globalNodeShape = NodeShape.valueOf(reader.getAttributeValue(null, "value"));
-                    } else if ("edgeScale".equalsIgnoreCase(name)) {
-                        edgeScale = Float.parseFloat(reader.getAttributeValue(null, "value"));
-                    } else if ("metaEdgeScale".equalsIgnoreCase(name)) {
-                        metaEdgeScale = Float.parseFloat(reader.getAttributeValue(null, "value"));
+                    } else {
+                        readXmlAttribute(config, reader, name);
                     }
                     break;
                 case XMLStreamReader.END_ELEMENT:
@@ -431,127 +383,130 @@ public class VizModelImpl implements VizModel {
                     }
                     break;
             }
-        }*/
+        }
     }
 
     @Override
     public void writeXML(XMLStreamWriter writer) throws XMLStreamException {
-/*
         writer.writeStartElement("vizmodel");
-
-        //Fast refreh
-        Camera camera = Lookup.getDefault().lookup(VisualizationController.class).getCameraCopy();
-        float[] cameraPosition = camera.position().toArray();
-        float[] cameraTarget = camera.lookAtPoint().toArray();
-
-        //TextModel
+        
+        // Text model properties
         textModel.writeXML(writer);
 
-        //Camera
+        // Model properties
+        writeXmlAttribute(config, writer, VizConfig.ADJUST_BY_TEXT);
+        writeXmlAttribute(config, writer, VizConfig.ANTIALIASING);
+        writeXmlAttribute(config, writer, VizConfig.AUTO_SELECT_NEIGHBOUR);
+        writeXmlAttribute(config, writer, VizConfig.BACKGROUND_COLOR);
+        writeXmlAttribute(config, writer, VizConfig.BLENDING);
+        writeXmlAttribute(config, writer, VizConfig.CLEAN_DELETED_MODELS);
+        writeXmlAttribute(config, writer, VizConfig.CONTEXT_MENU);
+        writeXmlAttribute(config, writer, VizConfig.CULLING);
+        writeXmlAttribute(config, writer, VizConfig.DISABLE_LOD);
+        writeXmlAttribute(config, writer, VizConfig.EDGE_HAS_UNIQUE_COLOR);
+        writeXmlAttribute(config, writer, VizConfig.EDGE_SCALE);
+        writeXmlAttribute(config, writer, VizConfig.EDGE_UNIQUE_COLOR);
+        writeXmlAttribute(config, writer, VizConfig.GLJPANEL);
+        writeXmlAttribute(config, writer, VizConfig.HIDE_NONSELECTED_EDGES);
+        writeXmlAttribute(config, writer, VizConfig.HIGHLIGHT_ANIMATION);
+        writeXmlAttribute(config, writer, VizConfig.HIGHLIGHT_COLOR);
+        writeXmlAttribute(config, writer, VizConfig.HIGHLIGHT_NON_SELECTED);
+        writeXmlAttribute(config, writer, VizConfig.LIGHTING);
+        writeXmlAttribute(config, writer, VizConfig.MATERIAL);
+        writeXmlAttribute(config, writer, VizConfig.META_EDGE_SCALE);
+        writeXmlAttribute(config, writer, VizConfig.NODE_NEIGHBOR_SELECTED_UNIQUE_COLOR);
+        writeXmlAttribute(config, writer, VizConfig.NODE_SELECTED_UNIQUE_COLOR);
+        writeXmlAttribute(config, writer, VizConfig.NODE_GLOBAL_SHAPE);
+        writeXmlAttribute(config, writer, VizConfig.OCTREE_DEPTH);
+        writeXmlAttribute(config, writer, VizConfig.OCTREE_WIDTH);
+        writeXmlAttribute(config, writer, VizConfig.PAUSE_LOOP_MOUSE_OUT);
+        writeXmlAttribute(config, writer, VizConfig.PROPERTIES_BAR);
+        writeXmlAttribute(config, writer, VizConfig.RECTANGLE_SELECTION);
+        writeXmlAttribute(config, writer, VizConfig.RECTANGLE_SELECTION_COLOR);
+        writeXmlAttribute(config, writer, VizConfig.REDUCE_FPS_MOUSE_OUT);
+        writeXmlAttribute(config, writer, VizConfig.REDUCE_FPS_MOUSE_OUT_VALUE);
+        writeXmlAttribute(config, writer, VizConfig.SELECTEDEDGE_BOTH_COLOR);
+        writeXmlAttribute(config, writer, VizConfig.SELECTEDEDGE_HAS_COLOR);
+        writeXmlAttribute(config, writer, VizConfig.SELECTEDEDGE_IN_COLOR);
+        writeXmlAttribute(config, writer, VizConfig.SELECTEDEDGE_OUT_COLOR);
+        writeXmlAttribute(config, writer, VizConfig.SELECTEDNODE_UNIQUE_COLOR);
+        writeXmlAttribute(config, writer, VizConfig.SHOW_EDGES);
+        writeXmlAttribute(config, writer, VizConfig.SHOW_FPS);
+        writeXmlAttribute(config, writer, VizConfig.SHOW_HULLS);
+        writeXmlAttribute(config, writer, VizConfig.TOOLBAR);
+        writeXmlAttribute(config, writer, VizConfig.USE_3D);
+        writeXmlAttribute(config, writer, VizConfig.VIZBAR);
+        writeXmlAttribute(config, writer, VizConfig.WIREFRAME);
+
+        writer.writeEndElement();
+    }
+    
+    protected static void readXmlAttribute(VizConfigImpl config, XMLStreamReader reader, String attribute) throws XMLStreamException {
+        Class<?> type = null;
+        try {
+            type = config.getPropertyType(attribute);
+        } catch (VizConfig.PropertyNotAvailableException e) {
+            return;
+        }
+        if (type.isAssignableFrom(float[].class)) {
+            float[] array = new float[3];
+            array[0] = Float.parseFloat(reader.getAttributeValue(null, "x"));
+            array[1] = Float.parseFloat(reader.getAttributeValue(null, "y"));
+            array[2] = Float.parseFloat(reader.getAttributeValue(null, "z"));
+            config.setProperty(attribute, array);
+        } else if (type.isAssignableFrom(Color.class)) {
+            Color color = ColorUtils.decode(reader.getAttributeValue(null, "value"));
+            config.setProperty(attribute, color);
+        } else if (type.isAssignableFrom(Font.class)) {
+            String edgeFontName = reader.getAttributeValue(null, "name");
+            int edgeFontSize = Integer.parseInt(reader.getAttributeValue(null, "size"));
+            int edgeFontStyle = Integer.parseInt(reader.getAttributeValue(null, "style"));
+            Font font = new Font(edgeFontName, edgeFontStyle, edgeFontSize);
+            config.setProperty(attribute, font);
+        } else if (type.isAssignableFrom(Integer.class)) {
+            config.setProperty(attribute, Integer.parseInt(reader.getAttributeValue(null, "value")));
+        } else if (type.isAssignableFrom(Float.class)) {
+            config.setProperty(attribute, Float.parseFloat(reader.getAttributeValue(null, "value")));
+        } else if (type.isAssignableFrom(Boolean.class)) {
+            config.setProperty(attribute, Boolean.parseBoolean(reader.getAttributeValue(null, "value")));
+        } else if (type.isAssignableFrom(String.class)) {
+            config.setProperty(attribute, reader.getAttributeValue(null, "value"));
+        } else if (type.isAssignableFrom(Enum.class)) {
+            Object value = config.getProperty(attribute);
+            config.setProperty(attribute, Enum.valueOf(((Enum<?>) value).getDeclaringClass(), reader.getAttributeValue(null, "value")));
+        } else if (type.isAssignableFrom(AttributeColumn[].class)) {
+            
+        }
+    }
+    
+    protected static void writeXmlAttribute(VizConfigImpl config, XMLStreamWriter writer, String attribute) throws XMLStreamException {
+        Class<?> type = config.getPropertyType(attribute);
         writer.writeStartElement("cameraposition");
-        writer.writeAttribute("x", Float.toString(cameraPosition[0]));
-        writer.writeAttribute("y", Float.toString(cameraPosition[1]));
-        writer.writeAttribute("z", Float.toString(cameraPosition[2]));
+        if (type.isAssignableFrom(float[].class)) {
+            float[] array = config.getFloatArrayProperty(attribute);
+            writer.writeAttribute("x", Float.toString(array[0]));
+            writer.writeAttribute("y", Float.toString(array[1]));
+            writer.writeAttribute("z", Float.toString(array[2]));
+        } else if (type.isAssignableFrom(Color.class)) {
+            Color color = config.getColorProperty(attribute);
+            writer.writeAttribute("value", ColorUtils.encode(color));
+        } else if (type.isAssignableFrom(Font.class)) {
+            Font font = config.getFontProperty(attribute);
+            writer.writeAttribute("name", font.getName());
+            writer.writeAttribute("size", Integer.toString(font.getSize()));
+            writer.writeAttribute("style", Integer.toString(font.getStyle()));
+        } else if (type.isAssignableFrom(AttributeColumn[].class)) {
+            AttributeColumn[] columns = (AttributeColumn[]) config.getProperty(attribute);
+            for (AttributeColumn c : columns) {
+                writer.writeStartElement("column");
+                writer.writeAttribute("id", c.getId());
+                writer.writeEndElement();
+            }
+        } else {
+            Object object = config.getProperty(attribute);
+            writer.writeAttribute("value", object.toString());
+        }
         writer.writeEndElement();
-        writer.writeStartElement("cameratarget");
-        writer.writeAttribute("x", Float.toString(cameraTarget[0]));
-        writer.writeAttribute("y", Float.toString(cameraTarget[1]));
-        writer.writeAttribute("z", Float.toString(cameraTarget[2]));
-        writer.writeEndElement();
-
-        //Boolean values
-        writer.writeStartElement("use3d");
-        writer.writeAttribute("value", String.valueOf(use3d));
-        writer.writeEndElement();
-
-        writer.writeStartElement("lighting");
-        writer.writeAttribute("value", String.valueOf(lighting));
-        writer.writeEndElement();
-
-        writer.writeStartElement("culling");
-        writer.writeAttribute("value", String.valueOf(culling));
-        writer.writeEndElement();
-
-        writer.writeStartElement("material");
-        writer.writeAttribute("value", String.valueOf(material));
-        writer.writeEndElement();
-
-        writer.writeStartElement("rotatingenable");
-        writer.writeAttribute("value", String.valueOf(rotatingEnable));
-        writer.writeEndElement();
-
-        writer.writeStartElement("showedges");
-        writer.writeAttribute("value", String.valueOf(showEdges));
-        writer.writeEndElement();
-
-        writer.writeStartElement("lightennonselectedauto");
-        writer.writeAttribute("value", String.valueOf(lightenNonSelectedAuto));
-        writer.writeEndElement();
-
-        writer.writeStartElement("autoselectneighbor");
-        writer.writeAttribute("value", String.valueOf(autoSelectNeighbor));
-        writer.writeEndElement();
-
-        writer.writeStartElement("hidenonselectededges");
-        writer.writeAttribute("value", String.valueOf(hideNonSelectedEdges));
-        writer.writeEndElement();
-
-        writer.writeStartElement("unicolorselected");
-        writer.writeAttribute("value", String.valueOf(uniColorSelected));
-        writer.writeEndElement();
-
-        writer.writeStartElement("edgehasunicolor");
-        writer.writeAttribute("value", String.valueOf(edgeHasUniColor));
-        writer.writeEndElement();
-
-        writer.writeStartElement("adjustbytext");
-        writer.writeAttribute("value", String.valueOf(adjustByText));
-        writer.writeEndElement();
-
-        writer.writeStartElement("edgeSelectionColor");
-        writer.writeAttribute("value", String.valueOf(edgeSelectionColor));
-        writer.writeEndElement();
-
-        writer.writeStartElement("showHulls");
-        writer.writeAttribute("value", String.valueOf(showHulls));
-        writer.writeEndElement();
-
-        //Colors
-        writer.writeStartElement("backgroundcolor");
-        writer.writeAttribute("value", ColorUtils.encode(backgroundColor));
-        writer.writeEndElement();
-
-        writer.writeStartElement("edgeunicolor");
-        writer.writeAttribute("value", ColorUtils.encode(ColorUtils.decode(edgeUniColor)));
-        writer.writeEndElement();
-
-        writer.writeStartElement("edgeInSelectionColor");
-        writer.writeAttribute("value", ColorUtils.encode(ColorUtils.decode(edgeInSelectionColor)));
-        writer.writeEndElement();
-
-        writer.writeStartElement("edgeOutSelectionColor");
-        writer.writeAttribute("value", ColorUtils.encode(ColorUtils.decode(edgeOutSelectionColor)));
-        writer.writeEndElement();
-
-        writer.writeStartElement("edgeBothSelectionColor");
-        writer.writeAttribute("value", ColorUtils.encode(ColorUtils.decode(edgeBothSelectionColor)));
-        writer.writeEndElement();
-
-        //Misc
-        writer.writeStartElement("nodeshape");
-        writer.writeAttribute("value", globalNodeShape.toString());
-        writer.writeEndElement();
-
-        //Float
-        writer.writeStartElement("edgeScale");
-        writer.writeAttribute("value", String.valueOf(edgeScale));
-        writer.writeEndElement();
-
-        writer.writeStartElement("metaEdgeScale");
-        writer.writeAttribute("value", String.valueOf(metaEdgeScale));
-        writer.writeEndElement();
-
-        writer.writeEndElement();*/
     }
 
 }

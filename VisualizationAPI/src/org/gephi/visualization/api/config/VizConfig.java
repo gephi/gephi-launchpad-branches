@@ -61,6 +61,7 @@ public interface VizConfig {
     String EDGE_LABEL_FONT = "VizConfig.edgeLabelFont";
     String EDGE_LABEL_SIZE_FACTOR = "VizConfig.edgeLabelSizeFactor";
     String EDGE_SCALE = "VizConfig.edgeScale";
+    String EDGE_TEXT_COLUMNS = "VizConfig.edgeTextColumns";
     String EDGE_UNIQUE_COLOR = "VizConfig.edgeUniColor";
     String GLJPANEL = "VizConfig.useGLJPanel";
     String HIDE_NONSELECTED_EDGES = "VizConfig.hideNonSelectedEdges";
@@ -74,13 +75,14 @@ public interface VizConfig {
     String LIGHTING = "VizConfig.lighting";
     String MATERIAL = "VizConfig.material";
     String META_EDGE_SCALE = "VizConfig.metaEdgeScale";
+    String NODE_GLOBAL_SHAPE = "VizConfig.nodeGlobalShape";
     String NODE_LABELS = "VizConfig.showNodeLabels";
     String NODE_LABEL_COLOR = "VizConfig.nodeLabelColor";
     String NODE_LABEL_FONT = "VizConfig.nodeLabelFont";
     String NODE_LABEL_SIZE_FACTOR = "VizConfig.nodeLabelSizeFactor";
     String NODE_NEIGHBOR_SELECTED_UNIQUE_COLOR = "VizConfig.uniColorSelectedNeigborColor";
     String NODE_SELECTED_UNIQUE_COLOR = "VizConfig.uniColorSelectedColor";
-    String NODE_GLOBAL_SHAPE = "VizConfig.nodeGlobalShape";
+    String NODE_TEXT_COLUMNS = "VizConfig.nodeTextColumns";
     String OCTREE_DEPTH = "VizConfig.octreeDepth";
     String OCTREE_WIDTH = "VizConfig.octreeWidth";
     String PAUSE_LOOP_MOUSE_OUT = "VizConfig.pauseLoopWhenMouseOut";
@@ -125,6 +127,9 @@ public interface VizConfig {
 
     public void setProperty(String key, Boolean value);
 
+    /**
+     * Set a float array property of size 3.
+     */
     public void setProperty(String key, float[] array);
 
     public void setProperty(String key, Font font);
@@ -141,6 +146,9 @@ public interface VizConfig {
 
     public Boolean getBooleanProperty(String key);
 
+    /**
+     * Returns a float array of size 3.
+     */
     public float[] getFloatArrayProperty(String key);
 
     public Font getFontProperty(String key);
@@ -149,6 +157,7 @@ public interface VizConfig {
     
     public <T> T getEnumProperty(Class<T> type, String key);
     
+    public Class getPropertyType(String key);
     
     public static class PropertyNotAvailableException extends RuntimeException {
         

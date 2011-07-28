@@ -46,8 +46,6 @@ public class TextModelImpl implements TextModel {
     protected final VizModelImpl vizModel;
     protected final VizConfigImpl config;
     protected List<ChangeListener> listeners = new ArrayList<ChangeListener>();
-    protected AttributeColumn[] nodeTextColumns = new AttributeColumn[0];
-    protected AttributeColumn[] edgeTextColumns = new AttributeColumn[0];
 
     public TextModelImpl(VizModelImpl vizModel) {
         this.vizModel = vizModel;
@@ -91,6 +89,14 @@ public class TextModelImpl implements TextModel {
         return config.getColorProperty(VizConfig.EDGE_LABEL_COLOR);
     }
 
+    public AttributeColumn[] getEdgeTextColumns() {
+        return config.getAttributeColumnArrayProperty(VizConfig.EDGE_TEXT_COLUMNS);
+    }
+    
+    public AttributeColumn[] getNodeTextColumns() {
+        return config.getAttributeColumnArrayProperty(VizConfig.NODE_TEXT_COLUMNS);
+    }
+    
     /*
     public ColorMode getColorMode() {
         return colorMode;
@@ -157,18 +163,10 @@ public class TextModelImpl implements TextModel {
         fireChangeEvent();
     }
 
-    public AttributeColumn[] getEdgeTextColumns() {
-        return edgeTextColumns;
-    }
-
     public void setTextColumns(AttributeColumn[] nodeTextColumns, AttributeColumn[] edgeTextColumns) {
-        this.nodeTextColumns = nodeTextColumns;
-        this.edgeTextColumns = edgeTextColumns;
+        config.setProperty(VizConfig.NODE_TEXT_COLUMNS, nodeTextColumns);
+        config.setProperty(VizConfig.EDGE_TEXT_COLUMNS, edgeTextColumns);
         fireChangeEvent();
-    }
-
-    public AttributeColumn[] getNodeTextColumns() {
-        return nodeTextColumns;
     }
     
     // Events
@@ -191,7 +189,6 @@ public class TextModelImpl implements TextModel {
 
     // FIXME uncomment color and size modes
     public void readXML(XMLStreamReader reader, Workspace workspace) throws XMLStreamException {
-        /*
         AttributeController attributeController = Lookup.getDefault().lookup(AttributeController.class);
         AttributeModel attributeModel = attributeController != null ? attributeController.getModel(workspace) : null;
         List<AttributeColumn> nodeCols = new ArrayList<AttributeColumn>();
@@ -199,8 +196,6 @@ public class TextModelImpl implements TextModel {
 
         boolean nodeColumn = false;
         boolean edgeColumn = false;
-        boolean nodeSizeFac = false;
-        boolean edgeSizeFac = false;
         boolean end = false;
         while (reader.hasNext() && !end) {
             int type = reader.next();
@@ -208,47 +203,7 @@ public class TextModelImpl implements TextModel {
             switch (type) {
                 case XMLStreamReader.START_ELEMENT:
                     String name = reader.getLocalName();
-                    if ("shownodelabels".equalsIgnoreCase(name)) {
-                        showNodeLabels = Boolean.parseBoolean(reader.getAttributeValue(null, "enable"));
-                    } else if ("showedgelabels".equalsIgnoreCase(name)) {
-                        showEdgeLabels = Boolean.parseBoolean(reader.getAttributeValue(null, "enable"));
-                    } else if ("selectedOnly".equalsIgnoreCase(name)) {
-                        selectedOnly = Boolean.parseBoolean(reader.getAttributeValue(null, "value"));
-                    } else if ("nodefont".equalsIgnoreCase(name)) {
-                        String nodeFontName = reader.getAttributeValue(null, "name");
-                        int nodeFontSize = Integer.parseInt(reader.getAttributeValue(null, "size"));
-                        int nodeFontStyle = Integer.parseInt(reader.getAttributeValue(null, "style"));
-                        nodeFont = new Font(nodeFontName, nodeFontStyle, nodeFontSize);
-                    } else if ("edgefont".equalsIgnoreCase(name)) {
-                        String edgeFontName = reader.getAttributeValue(null, "name");
-                        int edgeFontSize = Integer.parseInt(reader.getAttributeValue(null, "size"));
-                        int edgeFontStyle = Integer.parseInt(reader.getAttributeValue(null, "style"));
-                        edgeFont = new Font(edgeFontName, edgeFontStyle, edgeFontSize);
-                    } else if ("nodecolor".equalsIgnoreCase(name)) {
-                        nodeColor = ColorUtils.decode(reader.getAttributeValue(null, "value")).getRGBComponents(null);
-                    } else if ("edgecolor".equalsIgnoreCase(name)) {
-                        edgeColor = ColorUtils.decode(reader.getAttributeValue(null, "value")).getRGBComponents(null);
-                    } else if ("nodesizefactor".equalsIgnoreCase(name)) {
-                        nodeSizeFac = true;
-                    } else if ("edgesizefactor".equalsIgnoreCase(name)) {
-                        edgeSizeFac = true;
-                    } else if ("colormode".equalsIgnoreCase(name)) {
-                        String colorModeClass = reader.getAttributeValue(null, "class");
-                        if (colorModeClass.equals("UniqueColorMode")) {
-                            //colorMode = VizController.getInstance().getTextManager().getColorModes()[0];
-                        } else if (colorModeClass.equals("ObjectColorMode")) {
-                            //colorMode = VizController.getInstance().getTextManager().getColorModes()[1];
-                        }
-                    } else if ("sizemode".equalsIgnoreCase(name)) {
-                        String sizeModeClass = reader.getAttributeValue(null, "class");
-                        if (sizeModeClass.equals("FixedSizeMode")) {
-                            //sizeMode = VizController.getInstance().getTextManager().getSizeModes()[0];
-                        } else if (sizeModeClass.equals("ProportionalSizeMode")) {
-                            //sizeMode = VizController.getInstance().getTextManager().getSizeModes()[2];
-                        } else if (sizeModeClass.equals("ScaledSizeMode")) {
-                            //sizeMode = VizController.getInstance().getTextManager().getSizeModes()[1];
-                        }
-                    } else if ("nodecolumns".equalsIgnoreCase(name)) {
+                    if ("nodecolumns".equalsIgnoreCase(name)) {
                         nodeColumn = true;
                     } else if ("edgecolumns".equalsIgnoreCase(name)) {
                         edgeColumn = true;
@@ -265,19 +220,28 @@ public class TextModelImpl implements TextModel {
                                 edgeCols.add(col);
                             }
                         }
+                    } /*else if ("colormode".equalsIgnoreCase(name)) {
+                        String colorModeClass = reader.getAttributeValue(null, "class");
+                        if (colorModeClass.equals("UniqueColorMode")) {
+                            //colorMode = VizController.getInstance().getTextManager().getColorModes()[0];
+                        } else if (colorModeClass.equals("ObjectColorMode")) {
+                            //colorMode = VizController.getInstance().getTextManager().getColorModes()[1];
+                        }
+                    } else if ("sizemode".equalsIgnoreCase(name)) {
+                        String sizeModeClass = reader.getAttributeValue(null, "class");
+                        if (sizeModeClass.equals("FixedSizeMode")) {
+                            //sizeMode = VizController.getInstance().getTextManager().getSizeModes()[0];
+                        } else if (sizeModeClass.equals("ProportionalSizeMode")) {
+                            //sizeMode = VizController.getInstance().getTextManager().getSizeModes()[2];
+                        } else if (sizeModeClass.equals("ScaledSizeMode")) {
+                            //sizeMode = VizController.getInstance().getTextManager().getSizeModes()[1];
+                        }
+                    }*/ else {
+                        VizModelImpl.readXmlAttribute(config, reader, name);
                     }
 
                     break;
-                case XMLStreamReader.CHARACTERS:
-                    if (!reader.isWhiteSpace() && nodeSizeFac) {
-                        nodeSizeFactor = Float.parseFloat(reader.getText());
-                    } else if (!reader.isWhiteSpace() && edgeSizeFac) {
-                        edgeSizeFactor = Float.parseFloat(reader.getText());
-                    }
-                    break;
                 case XMLStreamReader.END_ELEMENT:
-                    nodeSizeFac = false;
-                    edgeSizeFac = false;
                     if ("nodecolumns".equalsIgnoreCase(reader.getLocalName())) {
                         nodeColumn = false;
                     } else if ("edgecolumns".equalsIgnoreCase(reader.getLocalName())) {
@@ -290,60 +254,26 @@ public class TextModelImpl implements TextModel {
             }
         }
 
-        nodeTextColumns = nodeCols.toArray(new AttributeColumn[0]);
-        edgeTextColumns = edgeCols.toArray(new AttributeColumn[0]);
-*/
+        setTextColumns(nodeCols.toArray(new AttributeColumn[0]), edgeCols.toArray(new AttributeColumn[0]));
     }
     
     // FIXME uncomment color and size modes
+    @Override
     public void writeXML(XMLStreamWriter writer) throws XMLStreamException {
-/*
         writer.writeStartElement("textmodel");
 
-        //Show
-        writer.writeStartElement("shownodelabels");
-        writer.writeAttribute("enable", String.valueOf(showNodeLabels));
-        writer.writeEndElement();
-        writer.writeStartElement("showedgelabels");
-        writer.writeAttribute("enable", String.valueOf(showEdgeLabels));
-        writer.writeEndElement();
-
-        //Selectedonly
-        writer.writeStartElement("selectedOnly");
-        writer.writeAttribute("value", String.valueOf(selectedOnly));
-        writer.writeEndElement();
-
-        //Font
-        writer.writeStartElement("nodefont");
-        writer.writeAttribute("name", nodeFont.getName());
-        writer.writeAttribute("size", Integer.toString(nodeFont.getSize()));
-        writer.writeAttribute("style", Integer.toString(nodeFont.getStyle()));
-        writer.writeEndElement();
-
-        writer.writeStartElement("edgefont");
-        writer.writeAttribute("name", edgeFont.getName());
-        writer.writeAttribute("size", Integer.toString(edgeFont.getSize()));
-        writer.writeAttribute("style", Integer.toString(edgeFont.getStyle()));
-        writer.writeEndElement();
-
-        //Size factor
-        writer.writeStartElement("nodesizefactor");
-        writer.writeCharacters(String.valueOf(nodeSizeFactor));
-        writer.writeEndElement();
-
-        writer.writeStartElement("edgesizefactor");
-        writer.writeCharacters(String.valueOf(edgeSizeFactor));
-        writer.writeEndElement();
-
-        //Colors
-        writer.writeStartElement("nodecolor");
-        writer.writeAttribute("value", ColorUtils.encode(ColorUtils.decode(nodeColor)));
-        writer.writeEndElement();
-
-        writer.writeStartElement("edgecolor");
-        writer.writeAttribute("value", ColorUtils.encode(ColorUtils.decode(edgeColor)));
-        writer.writeEndElement();
-
+        VizModelImpl.writeXmlAttribute(config, writer, VizConfig.NODE_LABELS);
+        VizModelImpl.writeXmlAttribute(config, writer, VizConfig.EDGE_LABELS);
+        VizModelImpl.writeXmlAttribute(config, writer, VizConfig.LABEL_SELECTION_ONLY);
+        VizModelImpl.writeXmlAttribute(config, writer, VizConfig.NODE_LABEL_FONT);
+        VizModelImpl.writeXmlAttribute(config, writer, VizConfig.EDGE_LABEL_FONT);
+        VizModelImpl.writeXmlAttribute(config, writer, VizConfig.NODE_LABEL_SIZE_FACTOR);
+        VizModelImpl.writeXmlAttribute(config, writer, VizConfig.EDGE_LABEL_SIZE_FACTOR);
+        VizModelImpl.writeXmlAttribute(config, writer, VizConfig.NODE_LABEL_COLOR);
+        VizModelImpl.writeXmlAttribute(config, writer, VizConfig.EDGE_LABEL_COLOR);
+        VizModelImpl.writeXmlAttribute(config, writer, VizConfig.NODE_TEXT_COLUMNS);
+        VizModelImpl.writeXmlAttribute(config, writer, VizConfig.EDGE_TEXT_COLUMNS);
+        
         //Colormode
         writer.writeStartElement("colormode");
         /*if (colorMode instanceof UniqueColorMode) {
@@ -361,27 +291,9 @@ public class TextModelImpl implements TextModel {
             writer.writeAttribute("class", "ProportionalSizeMode");
         } else if (sizeMode instanceof ScaledSizeMode) {
             writer.writeAttribute("class", "ScaledSizeMode");
-        }*//*
+        }*/
         writer.writeEndElement();
 
-        //NodeColumns
-        writer.writeStartElement("nodecolumns");
-        for (AttributeColumn c : nodeTextColumns) {
-            writer.writeStartElement("column");
-            writer.writeAttribute("id", c.getId());
-            writer.writeEndElement();
-        }
         writer.writeEndElement();
-
-        //EdgeColumns
-        writer.writeStartElement("edgecolumns");
-        for (AttributeColumn c : edgeTextColumns) {
-            writer.writeStartElement("column");
-            writer.writeAttribute("id", c.getId());
-            writer.writeEndElement();
-        }
-        writer.writeEndElement();
-
-        writer.writeEndElement();*/
     }
 }
