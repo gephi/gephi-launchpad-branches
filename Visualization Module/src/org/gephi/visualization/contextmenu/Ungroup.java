@@ -55,7 +55,7 @@ public class Ungroup extends BasicItem {
     }
 
     public int getType() {
-        return 0;
+        return 100;
     }
 
     public int getPosition() {
@@ -63,7 +63,7 @@ public class Ungroup extends BasicItem {
     }
 
     public Icon getIcon() {
-        return ImageUtilities.loadImageIcon("org/gephi/visualization/api/resources/ungroup.png", false);
+        return ImageUtilities.loadImageIcon("org/gephi/visualization/contextmenu/resources/ungroup.png", false);
     }
 
     @Override

@@ -41,7 +41,7 @@ class CopyToWorkspaceForDataLaboratoryManipulator extends CopyToWorkspace{
 
     @Override
     public int getType() {
-        return 100;
+        return 200;
     }
 
     @Override

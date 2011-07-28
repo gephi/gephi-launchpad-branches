@@ -56,7 +56,7 @@ public class Delete extends BasicItem {
     }
 
     public int getType() {
-        return 200;
+        return 300;
     }
 
     public int getPosition() {
@@ -64,7 +64,7 @@ public class Delete extends BasicItem {
     }
 
     public Icon getIcon() {
-        return ImageUtilities.loadImageIcon("org/gephi/visualization/api/resources/delete.png", false);
+        return ImageUtilities.loadImageIcon("org/gephi/visualization/contextmenu/resources/delete.png", false);
     }
 
     @Override

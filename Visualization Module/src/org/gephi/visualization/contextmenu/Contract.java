@@ -88,7 +88,7 @@ public class Contract extends BasicItem{
     }
 
     public int getType() {
-        return 100;
+        return 200;
     }
 
     public int getPosition() {
@@ -96,7 +96,7 @@ public class Contract extends BasicItem{
     }
 
     public Icon getIcon() {
-        return ImageUtilities.loadImageIcon("org/gephi/visualization/api/resources/contract.png", false);
+        return ImageUtilities.loadImageIcon("org/gephi/visualization/contextmenu/resources/contract.png", false);
     }
 
     @Override

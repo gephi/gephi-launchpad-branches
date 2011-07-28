@@ -23,7 +23,6 @@ package org.gephi.datalab.spi;
 
 import org.gephi.datalab.spi.nodes.NodesManipulator;
 
-
 /**
  * <p>This interface defines a common extension for the manipulators that appear as context menu items
  * such as NodesManipulator, EdgesManipulator and GraphContextMenuItem (from Visualization API)</p>
@@ -31,7 +30,7 @@ import org.gephi.datalab.spi.nodes.NodesManipulator;
  * @see NodesManipulator
  */
 public interface ContextMenuItemManipulator extends Manipulator {
-
+    
     /**
      * <p>This is optional. Return sub items for this menu item if desired.</p>
      * <p>If this item should contain more items, return a new instance of each sub item.

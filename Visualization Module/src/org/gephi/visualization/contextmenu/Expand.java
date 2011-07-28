@@ -85,7 +85,7 @@ public class Expand extends BasicItem {
     }
 
     public int getType() {
-        return 100;
+        return 200;
     }
 
     public int getPosition() {
@@ -93,7 +93,7 @@ public class Expand extends BasicItem {
     }
 
     public Icon getIcon() {
-        return ImageUtilities.loadImageIcon("org/gephi/visualization/api/resources/expand.png", false);
+        return ImageUtilities.loadImageIcon("org/gephi/visualization/contextmenu/resources/expand.png", false);
     }
 
     @Override

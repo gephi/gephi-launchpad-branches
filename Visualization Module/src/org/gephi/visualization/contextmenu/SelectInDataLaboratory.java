@@ -67,7 +67,7 @@ public class SelectInDataLaboratory extends BasicItem {
     }
 
     public int getType() {
-        return 400;
+        return 500;
     }
 
     public int getPosition() {
@@ -75,7 +75,7 @@ public class SelectInDataLaboratory extends BasicItem {
     }
 
     public Icon getIcon() {
-        return ImageUtilities.loadImageIcon("org/gephi/visualization/api/resources/table-select.png", false);
+        return ImageUtilities.loadImageIcon("org/gephi/visualization/contextmenu/resources/table-select.png", false);
     }
 
     @Override

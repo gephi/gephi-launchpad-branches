@@ -35,6 +35,7 @@ import org.gephi.visualization.api.selection.SelectionManager;
 import org.gephi.visualization.api.selection.SelectionType;
 import org.gephi.visualization.api.selection.Shape;
 import org.gephi.visualization.api.selection.Shape.SelectionModifier;
+import org.gephi.visualization.api.vizmodel.VizModel;
 import org.gephi.visualization.apiimpl.contextmenu.GraphContextMenu;
 import org.gephi.visualization.apiimpl.shape.ShapeUtils;
 import org.openide.util.Lookup;
@@ -164,7 +165,7 @@ public class MotionManagerImpl implements MotionManager {
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        VizConfig vizConfig = Lookup.getDefault().lookup(VizConfig.class);
+        VizConfig vizConfig = Lookup.getDefault().lookup(VizModel.class).getConfig();
         SelectionManager selectionManager = Lookup.getDefault().lookup(SelectionManager.class);
         
         if (selectionManager.isNodeDraggingEnabled()) {

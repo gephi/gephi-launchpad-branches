@@ -55,7 +55,7 @@ public class Settle extends BasicItem{
     }
 
     public int getType() {
-        return 300;
+        return 400;
     }
 
     public int getPosition() {
@@ -63,7 +63,7 @@ public class Settle extends BasicItem{
     }
 
     public Icon getIcon() {
-        return ImageUtilities.loadImageIcon("org/gephi/visualization/api/resources/settle.png", false);
+        return ImageUtilities.loadImageIcon("org/gephi/visualization/contextmenu/resources/settle.png", false);
     }
 
     @Override

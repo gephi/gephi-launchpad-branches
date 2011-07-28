@@ -49,7 +49,7 @@ public class Group extends BasicItem {
     }
 
     public int getType() {
-        return 0;
+        return 100;
     }
 
     public int getPosition() {
@@ -57,7 +57,7 @@ public class Group extends BasicItem {
     }
 
     public Icon getIcon() {
-        return ImageUtilities.loadImageIcon("org/gephi/visualization/api/resources/group.png", false);
+        return ImageUtilities.loadImageIcon("org/gephi/visualization/contextmenu/resources/group.png", false);
     }
 
     @Override
