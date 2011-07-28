@@ -1,5 +1,7 @@
 package org.gephi.data.attributes.store.serializers;
 
+import org.gephi.data.store.attributes.serializers.Serializer;
+import org.gephi.data.store.attributes.serializers.PrimitiveTypeSerializer;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;

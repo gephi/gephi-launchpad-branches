@@ -45,7 +45,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.gephi.data.attributes.api.AttributeOrigin;
 import org.gephi.data.attributes.api.AttributeValue;
 import org.gephi.data.attributes.spi.AttributeValueDelegateProvider;
-import org.gephi.data.attributes.store.Store;
+import org.gephi.data.store.api.Store;
 
 /**
  *

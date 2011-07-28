@@ -18,8 +18,9 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.gephi.data.attributes.store;
+package org.gephi.data.store.attributes;
 
+import org.gephi.data.store.api.Store;
 import com.sleepycat.bind.ByteArrayBinding;
 import com.sleepycat.bind.tuple.IntegerBinding;
 import com.sleepycat.collections.StoredMap;
@@ -34,7 +35,7 @@ import net.sf.ehcache.Element;
 import net.sf.ehcache.constructs.blocking.CacheEntryFactory;
 import net.sf.ehcache.constructs.blocking.SelfPopulatingCache;
 import net.sf.ehcache.event.CacheEventListener;
-import org.gephi.data.attributes.store.serializers.AttributeValueSerializer;
+import org.gephi.data.store.attributes.serializers.AttributeValueSerializer;
 
 /**
  *

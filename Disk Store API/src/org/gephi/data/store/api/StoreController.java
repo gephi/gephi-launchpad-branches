@@ -1,4 +1,4 @@
-package org.gephi.data.attributes.store;
+package org.gephi.data.store.api;
 
 import org.gephi.data.attributes.api.AttributeModel;
 

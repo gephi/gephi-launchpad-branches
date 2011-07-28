@@ -24,8 +24,8 @@ import org.gephi.data.attributes.AbstractAttributeModel;
 import org.gephi.data.attributes.AttributeFactoryImpl;
 import org.gephi.data.attributes.api.AttributeType;
 import org.gephi.data.attributes.event.AttributeEventManager;
-import org.gephi.data.attributes.store.Store;
-import org.gephi.data.attributes.store.StoreController;
+import org.gephi.data.store.api.Store;
+import org.gephi.data.store.api.StoreController;
 import org.openide.util.Lookup;
 
 /**
@@ -44,7 +44,7 @@ public class CachedAttributeModel extends AbstractAttributeModel {
         store = storeController.newStore(this);
         factory = new AttributeFactoryImpl(this);
         
-        eventManager.start();        
+        eventManager.start();    
     }
 
     @Override
@@ -54,6 +54,6 @@ public class CachedAttributeModel extends AbstractAttributeModel {
 
     @Override
     public void clear() {
-        // TODO
+        // TODO??
     }
 }

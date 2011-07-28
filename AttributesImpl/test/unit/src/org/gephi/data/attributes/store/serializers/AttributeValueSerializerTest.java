@@ -1,5 +1,6 @@
 package org.gephi.data.attributes.store.serializers;
 
+import org.gephi.data.store.attributes.serializers.AttributeValueSerializer;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import org.junit.Test;

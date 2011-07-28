@@ -1,4 +1,4 @@
-package org.gephi.data.attributes.store.serializers;
+package org.gephi.data.store.attributes.serializers;
 
 /**
  *

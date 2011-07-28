@@ -45,7 +45,7 @@ import org.gephi.data.attributes.AbstractAttributeModel;
 import org.gephi.data.attributes.AttributeFactoryImpl;
 import org.gephi.data.attributes.api.AttributeType;
 import org.gephi.data.attributes.event.AttributeEventManager;
-import org.gephi.data.attributes.store.StoreController;
+import org.gephi.data.store.api.StoreController;
 import org.openide.util.Lookup;
 
 /**

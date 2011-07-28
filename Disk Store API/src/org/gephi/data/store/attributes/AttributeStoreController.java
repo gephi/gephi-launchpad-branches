@@ -1,5 +1,7 @@
-package org.gephi.data.attributes.store;
+package org.gephi.data.store.attributes;
 
+import org.gephi.data.store.api.StoreController;
+import org.gephi.data.store.api.Store;
 import com.sleepycat.je.Database;
 import com.sleepycat.je.DatabaseConfig;
 import com.sleepycat.je.Environment;

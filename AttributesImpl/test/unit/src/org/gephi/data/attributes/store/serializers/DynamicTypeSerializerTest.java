@@ -1,5 +1,6 @@
 package org.gephi.data.attributes.store.serializers;
 
+import org.gephi.data.store.attributes.serializers.DynamicTypeSerializer;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
