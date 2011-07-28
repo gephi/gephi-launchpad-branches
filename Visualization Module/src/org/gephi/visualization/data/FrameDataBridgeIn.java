@@ -25,6 +25,8 @@ import org.gephi.graph.api.Edge;
 import org.gephi.graph.api.Node;
 import org.gephi.visualization.api.camera.Camera;
 import org.gephi.visualization.api.view.ui.UIShape;
+import org.gephi.visualization.data.graph.EdgeStyler;
+import org.gephi.visualization.data.graph.NodeStyler;
 
 /**
  * Interface used by Model to send frame data to View.
@@ -32,6 +34,8 @@ import org.gephi.visualization.api.view.ui.UIShape;
  * Antonio Patriarca <antoniopatriarca@gmail.com>
  */
 public interface FrameDataBridgeIn {
+    
+    public void setStylers(NodeStyler nodeStyler, EdgeStyler edgeStyler);
 
     public void beginFrame(Camera camera);
 

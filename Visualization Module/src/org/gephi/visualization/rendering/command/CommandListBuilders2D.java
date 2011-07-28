@@ -21,6 +21,7 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 
 package org.gephi.visualization.rendering.command;
 
+import org.gephi.visualization.api.view.ui.UIShape;
 import org.gephi.visualization.data.graph.VizEdge2D;
 import org.gephi.visualization.data.graph.VizNode2D;
 
@@ -33,10 +34,14 @@ public final class CommandListBuilders2D {
     public final CommandListBuilder<VizNode2D> nodeBuilder;
     public final CommandListBuilder<VizEdge2D> edgeBuilder;
     // TODO: add labels and group command lists builders..
-
-    public CommandListBuilders2D(CommandListBuilder<VizNode2D> nodeBuilder, CommandListBuilder<VizEdge2D> edgeBuilder) {
+    public final CommandListBuilder<UIShape> uiShapeBuilder;
+    
+    public CommandListBuilders2D(CommandListBuilder<VizNode2D> nodeBuilder, 
+            CommandListBuilder<VizEdge2D> edgeBuilder, 
+            CommandListBuilder<UIShape> uiShapeBuilder) {
         this.nodeBuilder = nodeBuilder;
         this.edgeBuilder = edgeBuilder;
+        this.uiShapeBuilder = uiShapeBuilder;
     }
     
 }

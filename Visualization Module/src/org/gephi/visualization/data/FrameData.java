@@ -44,6 +44,8 @@ public class FrameData {
     private final Buffer<Node, VizNode> nodeBuffer;
     private final Buffer<Edge, VizEdge> edgeBuffer;
     private final Buffer<UIShape, UIShape> uiBuffer;
+    
+    
 
     FrameData(Camera camera, boolean somethingIsSelected, Buffer<Node, VizNode> nodeBuffer, Buffer<Edge, VizEdge> edgeBuffer, Buffer<UIShape, UIShape> uiBuffer) {
         this.camera = camera;

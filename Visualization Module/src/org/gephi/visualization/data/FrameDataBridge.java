@@ -27,9 +27,13 @@ import org.gephi.graph.api.Edge;
 import org.gephi.graph.api.Node;
 import org.gephi.visualization.api.camera.Camera;
 import org.gephi.visualization.api.view.ui.UIShape;
+import org.gephi.visualization.data.graph.EdgeStyler;
+import org.gephi.visualization.data.graph.NodeStyler;
 import org.gephi.visualization.data.graph.VizEdge;
 import org.gephi.visualization.data.graph.VizNode;
 import org.gephi.visualization.data.layout.Layout;
+import org.gephi.visualization.rendering.command.CommandListBuilders2D;
+import org.gephi.visualization.rendering.command.CommandListBuilders3D;
 
 /**
  * Class used to exchange frame data information between Model and View.
@@ -41,6 +45,12 @@ public class FrameDataBridge implements FrameDataBridgeIn, FrameDataBridgeOut {
     private Layout<Node, VizNode> nodeLayout;
     private Layout<Edge, VizEdge> edgeLayout;
     private Layout<UIShape, UIShape> uiLayout;
+    
+    private CommandListBuilders2D commandListBuilders2D;
+    private CommandListBuilders3D commandListBuilders3D;
+    
+    private NodeStyler nodeStyler;
+    private EdgeStyler edgeStyler;
 
     private final Queue<FrameDataBuilder> waitingQueue;
     private FrameDataBuilder currentBuilder;
@@ -168,6 +178,22 @@ public class FrameDataBridge implements FrameDataBridgeIn, FrameDataBridgeOut {
                 return null;
             }
         }
+    }
+
+    @Override
+    public void setCommandListBuilders2D(CommandListBuilders2D builders) {
+        this.commandListBuilders2D = builders;
+    }
+
+    @Override
+    public void setCommandListBuilders3D(CommandListBuilders3D builders) {
+        this.commandListBuilders3D = builders;
+    }
+
+    @Override
+    public void setStylers(NodeStyler nodeStyler, EdgeStyler edgeStyler) {
+        this.nodeStyler = nodeStyler;
+        this.edgeStyler = edgeStyler;
     }
 
 }

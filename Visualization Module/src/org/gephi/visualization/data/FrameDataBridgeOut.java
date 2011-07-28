@@ -27,6 +27,8 @@ import org.gephi.visualization.api.view.ui.UIShape;
 import org.gephi.visualization.data.graph.VizEdge;
 import org.gephi.visualization.data.graph.VizNode;
 import org.gephi.visualization.data.layout.Layout;
+import org.gephi.visualization.rendering.command.CommandListBuilders2D;
+import org.gephi.visualization.rendering.command.CommandListBuilders3D;
 
 /**
  * Interface used by View to retrieve frame data from Model.
@@ -41,4 +43,6 @@ public interface FrameDataBridgeOut {
     public void setEdgeLayout(Layout<Edge, VizEdge> layout);
     public void setUILayout(Layout<UIShape, UIShape> layout);
     
+    public void setCommandListBuilders2D(CommandListBuilders2D builders);
+    public void setCommandListBuilders3D(CommandListBuilders3D builders);
 }

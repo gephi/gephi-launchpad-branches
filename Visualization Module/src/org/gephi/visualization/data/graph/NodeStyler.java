@@ -17,31 +17,20 @@ GNU Affero General Public License for more details.
 
 You should have received a copy of the GNU Affero General Public License
 along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
+package org.gephi.visualization.data.graph;
 
-package org.gephi.visualization.rendering.command;
-
-import org.gephi.visualization.api.view.ui.UIShape;
-import org.gephi.visualization.data.graph.VizEdge3D;
-import org.gephi.visualization.data.graph.VizNode3D;
+import org.gephi.graph.api.Node;
 
 /**
- *
+ * A NodeStyler defines how a Node look like when rendered.
+ * 
  * @author Antonio Patriarca <antoniopatriarca@gmail.com>
  */
-public final class CommandListBuilders3D {
+public interface NodeStyler {
     
-    public final CommandListBuilder<VizNode3D> nodeBuilder;
-    public final CommandListBuilder<VizEdge3D> edgeBuilder;
-    // TODO: add labels and group command lists builders..
-    public final CommandListBuilder<UIShape> uiShapeBuilder;
-
-    public CommandListBuilders3D(CommandListBuilder<VizNode3D> nodeBuilder, 
-            CommandListBuilder<VizEdge3D> edgeBuilder, 
-            CommandListBuilder<UIShape> uiShapeBuilder) {
-        this.nodeBuilder = nodeBuilder;
-        this.edgeBuilder = edgeBuilder;
-        this.uiShapeBuilder = uiShapeBuilder;
-    }
+    public VizNode2D toVisual2D(Node node);
+    
+    public VizNode3D toVisual3D(Node node);
     
 }
