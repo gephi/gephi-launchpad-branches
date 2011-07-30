@@ -24,6 +24,8 @@ package org.gephi.visualization.selection;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import org.gephi.graph.api.Graph;
 import org.gephi.graph.api.Node;
@@ -41,7 +43,7 @@ import org.openide.util.Lookup;
 /**
  * @author Vojtech Bardiovsky
  */
-public final class Quadtree implements NodeSpatialStructure {
+public final class Quadtree extends QuadrantTree {
 
     private Quadrant root;
 
@@ -55,8 +57,6 @@ public final class Quadtree implements NodeSpatialStructure {
 
     private boolean temporarySelectionMod;
 
-    private boolean changeMarker;
-
     private float maxNodeSize;
 
     private final Graph graph;
@@ -64,6 +64,7 @@ public final class Quadtree implements NodeSpatialStructure {
     float xmin, xmax, ymin, ymax;
 
     private final static int MAX_DEPTH = 15;
+    private final static int MAX_NODES = 10;
 
     public Quadtree(Graph graph) {
         this.graph = graph;
@@ -74,8 +75,6 @@ public final class Quadtree implements NodeSpatialStructure {
 
     @Override
     public void rebuild() {
-        // TODO make MAKE_NODES changeable and make it smaller when rebuilding,
-        // it will be faster
         xmin = ymin = Float.MAX_VALUE;
         xmax = ymax = Float.MIN_VALUE;
         NodeIterator iterator = graph.getNodes().iterator();
@@ -105,12 +104,23 @@ public final class Quadtree implements NodeSpatialStructure {
     }
 
     @Override
-    public Collection<Node> getSelectedNodes() {
+    public synchronized Collection<Node> getSelectedNodes() {
         // Return last selected nodes collection
         if (!changeMarker) {
             return selectedNodes;
         }
-
+        // Reassign unassigned nodes
+        if (reassignNodes) {
+            Iterator<Node> iterator = unassignedNodes.iterator();
+            while (iterator.hasNext()) {
+                Node node = iterator.next();
+                if (isInsideRoot(node)) {
+                    addNode(node);
+                    iterator.remove();
+                }
+            }
+        }
+        
         selectedNodes = new ArrayList<Node>();
         recursiveGetSelectedNodes(root, selectedNodes);
 
@@ -315,16 +325,6 @@ public final class Quadtree implements NodeSpatialStructure {
     }
 
     @Override
-    // TODO optimize
-    public void clearSelection() {
-        NodeIterator iterator = graph.getNodes().iterator();
-        while (iterator.hasNext()) {
-            iterator.next().getNodeData().setSelected(false);
-        }
-        changeMarker = true;
-    }
-
-    @Override
     public void addNode(Node node) {
         NodeData nodeData = node.getNodeData();
         if (nodeData.x() < xmin || nodeData.x() > xmax ||
@@ -333,6 +333,12 @@ public final class Quadtree implements NodeSpatialStructure {
         } else {
             root.addNode(node);
         }
+    }
+    
+    private boolean isInsideRoot(Node node) {
+        NodeData nodeData = node.getNodeData();
+        return !(nodeData.x() < xmin || nodeData.x() > xmax ||
+                 nodeData.y() < ymin || nodeData.y() > ymax);
     }
 
     @Override
@@ -357,11 +363,6 @@ public final class Quadtree implements NodeSpatialStructure {
         return maxNodeSize;
     }
 
-    @Override
-    public void clearCache() {
-        changeMarker = true;
-    }
-
     /**
      * Interface representing a conditioned function on a node.
      */
@@ -376,8 +377,6 @@ public final class Quadtree implements NodeSpatialStructure {
      * nodes or references to four children quadrants.
      */
     class Quadrant {
-
-        private final static int MAX_NODES = 10;
 
         private List<Node> nodes;
         private Quadrant[] children;
@@ -460,7 +459,7 @@ public final class Quadtree implements NodeSpatialStructure {
         }
 
         /**
-         * Adds node to octant's child. Children array must be initialized.
+         * Adds node to quadrant's child. Children array must be initialized.
          */
         private void addToChild(Node node, int childPosition) {
             if (children[childPosition] == null) {

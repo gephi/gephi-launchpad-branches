@@ -90,6 +90,9 @@ public class VisualizationControllerImpl implements VisualizationController, Key
         this.dataManager = new Model(this, this.frameDataBridge, 33);
 
         Lookup.getDefault().lookup(ProjectController.class).addWorkspaceListener(this);
+        
+        // Initialize SelectionManager
+        Lookup.getDefault().lookup(SelectionManager.class).initialize();
     }
 
     synchronized static VisualizationControllerImpl getDefault() {
@@ -316,7 +319,6 @@ public class VisualizationControllerImpl implements VisualizationController, Key
             camera = new Camera2d(viewSize.width, viewSize.height, 100f, 10000.0f);
             workspace.add(camera);
         }
-        Lookup.getDefault().lookup(SelectionManager.class).initialize();
         hasWorkspace = true;
     }
 

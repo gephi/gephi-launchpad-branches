@@ -40,8 +40,8 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = GraphContextMenuItem.class)
 public class Contract extends BasicItem{
 
-    public void execute() {/*
-        try {
+    public void execute() {
+       /* try {
             Set<Node> parents = new HashSet<Node>();
             for (Node node : nodes) {
                 Node nodeParent = graph.getParent(node);

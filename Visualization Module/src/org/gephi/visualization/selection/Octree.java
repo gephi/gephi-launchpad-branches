@@ -42,7 +42,7 @@ import org.openide.util.Lookup;
 /**
  * @author Vojtech Bardiovsky
  */
-public final class Octree implements NodeSpatialStructure {
+public final class Octree extends QuadrantTree {
 
     private Octant root;
 
@@ -53,12 +53,8 @@ public final class Octree implements NodeSpatialStructure {
     private Collection<Node> selectedNodes;
 
     private Collection<Node> temporarySelectedNodes;
-    private Node temporarySelectedNode;
 
     private boolean temporarySelectionMod;
-    private boolean temporarySingleMod;
-
-    private boolean changeMarker;
 
     private float maxNodeSize;
 
@@ -68,6 +64,7 @@ public final class Octree implements NodeSpatialStructure {
 
     // Required for the case when more nodes have same coordinates.
     private final static int MAX_DEPTH = 15;
+    private final static int MAX_NODES = 10;
 
     public Octree(Graph graph) {
         this.graph = graph;
@@ -88,8 +85,6 @@ public final class Octree implements NodeSpatialStructure {
 
     @Override
     public void rebuild() {
-        // TODO make MAKE_NODES changeable and make it smaller when rebuilding,
-        // it will be faster
         xmin = ymin = zmin = Float.MAX_VALUE;
         xmax = ymax = zmax = Float.MIN_VALUE;
         NodeIterator iterator = graph.getNodes().iterator();
@@ -125,12 +120,23 @@ public final class Octree implements NodeSpatialStructure {
     }
 
     @Override
-    public Collection<Node> getSelectedNodes() {
+    public synchronized Collection<Node> getSelectedNodes() {
         // Return last selected nodes collection
         if (!changeMarker) {
             return selectedNodes;
         }
-
+        // Reassign unassigned nodes
+        if (reassignNodes) {
+            Iterator<Node> iterator = unassignedNodes.iterator();
+            while (iterator.hasNext()) {
+                Node node = iterator.next();
+                if (isInsideRoot(node)) {
+                    addNode(node);
+                    iterator.remove();
+                }
+            }
+        }
+        
         selectedNodes = new ArrayList<Node>();
         recursiveGetSelectedNodes(root, selectedNodes);
 
@@ -334,16 +340,6 @@ public final class Octree implements NodeSpatialStructure {
     }
 
     @Override
-    // TODO optimize
-    public void clearSelection() {
-        NodeIterator iterator = graph.getNodes().iterator();
-        while (iterator.hasNext()) {
-            iterator.next().getNodeData().setSelected(false);
-        }
-        changeMarker = true;
-    }
-
-    @Override
     public void addNode(Node node) {
         NodeData nodeData = node.getNodeData();
         if (nodeData.x() < xmin || nodeData.x() > xmax ||
@@ -355,6 +351,13 @@ public final class Octree implements NodeSpatialStructure {
         }
     }
 
+    private boolean isInsideRoot(Node node) {
+        NodeData nodeData = node.getNodeData();
+        return !(nodeData.x() < xmin || nodeData.x() > xmax ||
+                 nodeData.y() < ymin || nodeData.y() > ymax ||
+                 nodeData.z() < zmin || nodeData.z() > zmax);
+    }
+    
     @Override
     public void removeNode(Node node) {
         if (node.getNodeData().getSpatialData() instanceof OctreeData) {
@@ -377,11 +380,6 @@ public final class Octree implements NodeSpatialStructure {
         return maxNodeSize;
     }
 
-    @Override
-    public void clearCache() {
-        changeMarker = true;
-    }
-
     /**
      * Interface representing a conditioned function on a node.
      */
@@ -396,8 +394,6 @@ public final class Octree implements NodeSpatialStructure {
      * nodes or references to eight children octants.
      */
     class Octant {
-
-        private final static int MAX_NODES = 10;
 
         private List<Node> nodes;
         private Octant[] children;

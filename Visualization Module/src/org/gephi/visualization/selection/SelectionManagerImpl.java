@@ -62,7 +62,6 @@ public class SelectionManagerImpl implements SelectionManager, WorkspaceListener
 
     @Override
     public void initialize() {
-        Lookup.getDefault().lookup(GraphController.class).getModel().addGraphListener(this);
         Lookup.getDefault().lookup(ProjectController.class).addWorkspaceListener(this);
         mouseSelectionDiameter = Lookup.getDefault().lookup(VizModel.class).getConfig().getIntProperty(VizConfig.MOUSE_SELECTION_DIAMETER);
         mouseSelectionZoomProportional = Lookup.getDefault().lookup(VizModel.class).getConfig().getBooleanProperty(VizConfig.MOUSE_SELECTION_ZOOM_PROPORTIONAL);
@@ -208,16 +207,16 @@ public class SelectionManagerImpl implements SelectionManager, WorkspaceListener
 
     @Override
     public void selectNode(Node node) {
-        // move to NodeSpatialStructure and clear marker
         node.getNodeData().setSelected(true);
+        nodeContainer.clearCache();
     }
 
     @Override
     public void selectNodes(Node[] nodes) {
-        // move to NodeSpatialStructure and clear marker
         for (Node node : nodes) {
             node.getNodeData().setSelected(true);
         }
+        nodeContainer.clearCache();
     }
 
     @Override
@@ -298,6 +297,8 @@ public class SelectionManagerImpl implements SelectionManager, WorkspaceListener
                     nodeContainer.addNode(node);
                 }
                 break;
+            case ADD_EDGES:
+                break;
             default:
                 refreshDataStructure();
                 break;
@@ -311,11 +312,8 @@ public class SelectionManagerImpl implements SelectionManager, WorkspaceListener
 
     @Override
     public void select(Workspace workspace) {
-        GraphController graphController = Lookup.getDefault().lookup(GraphController.class);
-        nodeContainer = workspace.getLookup().lookup(NodeSpatialStructure.class);
-        if (nodeContainer == null) {
-            nodeContainer = new Octree(graphController.getModel().getGraph());
-        }
+        Lookup.getDefault().lookup(GraphController.class).getModel().addGraphListener(this);
+        refreshDataStructure();
     }
 
     @Override
