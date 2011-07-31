@@ -118,6 +118,7 @@
     <module>timeline</module>
     <module>filters.api</module>
     <module>visualization.api</module>
+    <module>exporter.api</module>
   </modules>
     <reporting>
         <plugins>
