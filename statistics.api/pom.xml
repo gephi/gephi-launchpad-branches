@@ -7,12 +7,12 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <groupId>org.gephi.lib.</groupId>
-    <artifactId>Commons.Codec</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <groupId>org.gephi</groupId>
+    <artifactId>statistics.api</artifactId>
+    <version>0.8</version>
     <packaging>nbm</packaging>
 
-    <name>Commons Codec</name>
+    <name>Statistics API</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -32,7 +32,6 @@
                 <enabled>false</enabled>
             </snapshots>
         </repository>
-       
     </repositories>
 
     <dependencies>
@@ -41,7 +40,51 @@
             <artifactId>org-netbeans-api-annotations-common</artifactId>
             <version>RELEASE70</version>
         </dependency>
-        
+        <dependency>
+            <groupId>org.gephi.data</groupId>
+            <artifactId>attributes.api</artifactId>
+            <version>0.8</version>
+        </dependency>
+        <dependency>
+            <groupId>org.gephi.lib</groupId>
+            <artifactId>Commons.Codec</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>dynamic.api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>graph.api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.gephi.utils</groupId>
+            <artifactId>longtask</artifactId>
+            <version>0.8</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>project.api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>utils</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-openide-util-lookup</artifactId>
+            <version>RELEASE70</version>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-openide-util</artifactId>
+            <version>RELEASE70</version>
+        </dependency>
         <dependency>
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
@@ -58,7 +101,8 @@
                 <extensions>true</extensions>
                 <configuration>
                     <publicPackages>
-                        <publicPackage>org.apache.commons.codec.*</publicPackage>
+                        <publicPackage>org.gephi.statistics.api</publicPackage>
+                        <publicPackage>org.gephi.statistics.spi</publicPackage>
                     </publicPackages>
                 </configuration>
             </plugin>

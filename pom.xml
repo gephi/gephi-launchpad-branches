@@ -124,6 +124,8 @@
     <module>layout.api</module>
     <module>mrufiles.api</module>
     <module>partition.api</module>
+    <module>ranking.api</module>
+    <module>statistics.api</module>
   </modules>
     <reporting>
         <plugins>
