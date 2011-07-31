@@ -121,6 +121,9 @@
     <module>exporter.api</module>
     <module>importer.api</module>
     <module>generator.api</module>
+    <module>layout.api</module>
+    <module>mrufiles.api</module>
+    <module>partition.api</module>
   </modules>
     <reporting>
         <plugins>
