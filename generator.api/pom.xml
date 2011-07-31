@@ -2,17 +2,17 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <artifactId>gephi</artifactId>
-        <groupId>org.gephi</groupId>
-        <version>1.0-SNAPSHOT</version>
-    </parent>
+    <artifactId>gephi</artifactId>
+    <groupId>org.gephi</groupId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
 
     <groupId>org.gephi.io</groupId>
-    <artifactId>importer.api</artifactId>
+    <artifactId>generator.api</artifactId>
     <version>0.8</version>
     <packaging>nbm</packaging>
 
-    <name>Import API</name>
+    <name>Generator API</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -41,64 +41,14 @@
             <version>RELEASE70</version>
         </dependency>
         <dependency>
-            <groupId>org.gephi.data</groupId>
-            <artifactId>attributes.api</artifactId>
-            <version>0.8</version>
-        </dependency>
-        <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>database.drivers</artifactId>
+            <artifactId>importer.api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.gephi</groupId>
-            <artifactId>dynamic.api</artifactId>
+            <groupId>org.gephi.utils</groupId>
+            <artifactId>longtask</artifactId>
             <version>0.8</version>
-        </dependency>
-        <dependency>
-            <groupId>org.gephi</groupId>
-            <artifactId>graph.api</artifactId>
-            <version>0.8</version>
-        </dependency>
-        <dependency>
-            <groupId>org.gephi</groupId>
-            <artifactId>project.api</artifactId>
-            <version>0.8</version>
-        </dependency>
-        <dependency>
-            <groupId>org.gephi</groupId>
-            <artifactId>utils</artifactId>
-            <version>0.8</version>
-        </dependency>
-        <dependency>
-            <groupId>org.netbeans.api</groupId>
-            <artifactId>org-openide-dialogs</artifactId>
-            <version>RELEASE70</version>
-        </dependency>
-        <dependency>
-            <groupId>org.netbeans.api</groupId>
-            <artifactId>org-openide-util</artifactId>
-            <version>RELEASE70</version>
-        </dependency>
-        <dependency>
-            <groupId>org.netbeans.api</groupId>
-            <artifactId>org-openide-util-lookup</artifactId>
-            <version>RELEASE70</version>
-        </dependency>
-        <dependency>
-            <groupId>org.netbeans.api</groupId>
-            <artifactId>org-openide-filesystems</artifactId>
-            <version>RELEASE70</version>
-        </dependency>
-        <dependency>
-            <groupId>org.gephi.lib</groupId>
-            <artifactId>CommonsCompress</artifactId>
-            <version>1.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-compress</artifactId>
-            <version>1.1</version>
         </dependency>
     </dependencies>
 
@@ -111,9 +61,8 @@
                 <extensions>true</extensions>
                 <configuration>
                     <publicPackages>
-                        <publicPackage>org.gephi.io.importer.api</publicPackage>
-                        <publicPackage>org.gephi.io.importer.spi</publicPackage>
-                        <publicPackage>org.gephi.io.processor.spi</publicPackage>
+                        <publicPackage>org.gephi.io.generator.api</publicPackage>
+                        <publicPackage>org.gephi.io.generator.spi</publicPackage>
                     </publicPackages>
                 </configuration>
             </plugin>

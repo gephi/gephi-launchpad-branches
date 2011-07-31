@@ -120,6 +120,7 @@
     <module>visualization.api</module>
     <module>exporter.api</module>
     <module>importer.api</module>
+    <module>generator.api</module>
   </modules>
     <reporting>
         <plugins>
