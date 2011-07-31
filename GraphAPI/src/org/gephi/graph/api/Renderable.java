@@ -50,6 +50,10 @@ public interface Renderable extends Spatial {
 
     public boolean isSelected();
 
+    public void setAutoSelected(boolean autoSelected);
+    
+    public boolean isAutoSelected();
+    
     public TextData getTextData();
     
     public float getSize();

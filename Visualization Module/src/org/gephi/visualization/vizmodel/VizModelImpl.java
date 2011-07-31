@@ -173,7 +173,7 @@ public class VizModelImpl implements VizModel {
     }
 
     @Override
-    public boolean isUniColorSelected() {
+    public boolean isNodeSelectedUniqueColor() {
         return config.getBooleanProperty(VizConfig.SELECTEDNODE_UNIQUE_COLOR);
     }
 
@@ -277,7 +277,7 @@ public class VizModelImpl implements VizModel {
     }
 
     @Override
-    public void setUniColorSelected(boolean uniColorSelected) {
+    public void setNodeSelectedUniqueColor(boolean uniColorSelected) {
         config.setProperty(VizConfig.NODE_SELECTED_UNIQUE_COLOR, uniColorSelected);
         fireProperyChange(VizConfig.NODE_SELECTED_UNIQUE_COLOR, null, uniColorSelected);
     }
@@ -408,8 +408,8 @@ public class VizModelImpl implements VizModel {
         writeXmlAttribute(config, writer, VizConfig.EDGE_UNIQUE_COLOR);
         writeXmlAttribute(config, writer, VizConfig.GLJPANEL);
         writeXmlAttribute(config, writer, VizConfig.HIDE_NONSELECTED_EDGES);
-        writeXmlAttribute(config, writer, VizConfig.HIGHLIGHT_ANIMATION);
-        writeXmlAttribute(config, writer, VizConfig.HIGHLIGHT_COLOR);
+        writeXmlAttribute(config, writer, VizConfig.HIGHLIGHT_NON_SELECTED_ANIMATION);
+        writeXmlAttribute(config, writer, VizConfig.HIGHLIGHT_NON_SELECTED_COLOR);
         writeXmlAttribute(config, writer, VizConfig.HIGHLIGHT_NON_SELECTED);
         writeXmlAttribute(config, writer, VizConfig.LIGHTING);
         writeXmlAttribute(config, writer, VizConfig.MATERIAL);

@@ -129,7 +129,8 @@ public class GL11NodePipeline3D implements Pipeline {
             } else {
                 gl2.glColor3f(color.r, color.g, color.b);
             }
-
+                
+            gl2.glColor3f(color.r, color.g, color.b);
             gl2.glTranslatef(position.x(), position.y(), position.z());
             gl2.glScalef(size, size, size);
 

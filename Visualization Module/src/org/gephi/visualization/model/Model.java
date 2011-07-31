@@ -36,6 +36,8 @@ import org.gephi.visualization.api.selection.Shape;
 import org.gephi.visualization.controller.VisualizationControllerImpl;
 import org.gephi.visualization.data.FrameDataBridgeIn;
 import org.gephi.visualization.geometry.AABB;
+import org.gephi.visualization.model.styler.BasicEdgeStyler;
+import org.gephi.visualization.model.styler.BasicNodeStyler;
 import org.openide.util.Lookup;
 
 /**
@@ -94,6 +96,8 @@ public class Model implements Runnable, WorkspaceListener {
             
             this.bridge.beginFrame(this.controller.getCameraCopy());
 
+            this.bridge.setStylers(new BasicNodeStyler(), new BasicEdgeStyler());
+            
             final Graph graph;
             synchronized(this.graphModelLock) {
                 graph = this.graphModel.getGraph();

@@ -24,9 +24,11 @@ package org.gephi.visualization.selection;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import org.gephi.visualization.api.selection.Shape;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import org.gephi.graph.api.Graph;
 import org.gephi.graph.api.Node;
 import org.gephi.graph.api.NodeData;
@@ -171,6 +173,7 @@ public final class Octree extends QuadrantTree {
     public List<Node> applySelection(final Shape shape) {
         final Camera camera = Lookup.getDefault().lookup(VisualizationController.class).getCameraCopy();
         final List<Node> nodes = new ArrayList<Node>();
+        final Set<Node> neighbors = new HashSet<Node>();
         final boolean autoSelectNeighbor = Lookup.getDefault().lookup(VizModel.class).isAutoSelectNeighbor();
 
         final boolean select = shape.getSelectionModifier().isPositive();
@@ -187,11 +190,7 @@ public final class Octree extends QuadrantTree {
                     // If auto-selection is on and the selection is positive (adding nodes)
                     if (select && autoSelectNeighbor && graph != null) {
                         for (Node neighbor : graph.getNeighbors(node)) {
-                            if (!neighbor.getNodeData().isSelected()) {
-                                neighbor.getNodeData().setSelected(true);
-                                nodes.add(neighbor);
-                                changeMarker = true;
-                            }
+                            neighbors.add(neighbor);
                         }
                     }
                 }
@@ -199,6 +198,17 @@ public final class Octree extends QuadrantTree {
         };
         recursiveAddNodes(root, shape, false, nodeFunction);
         recursiveAddUnassignedNodes(nodeFunction);
+        // If auto-selection is on and the selection is positive (adding nodes)
+        if (select && autoSelectNeighbor) {
+            for (Node neighbor : neighbors) {
+                if (!neighbor.getNodeData().isSelected()) {
+                    neighbor.getNodeData().setSelected(true);
+                    neighbor.getNodeData().setAutoSelected(true);
+                    nodes.add(neighbor);
+                    changeMarker = true;
+                }
+            }
+        }        
         return nodes;
     }
 
@@ -323,6 +333,7 @@ public final class Octree extends QuadrantTree {
             for (Node neighbor : graph.getNeighbors(nodes[0])) {
                 if (!neighbor.getNodeData().isSelected()) {
                     neighbor.getNodeData().setSelected(true);
+                    neighbor.getNodeData().setAutoSelected(true);
                     selNodes.add(neighbor);
                     changeMarker = true;
                 }

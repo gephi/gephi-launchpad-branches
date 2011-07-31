@@ -53,6 +53,7 @@ public class NodeDataImpl implements NodeData, GroupData {
     protected float alpha = 1f;
     protected float radius = 1f;
     protected boolean selected = false;
+    protected boolean autoSelected = false;
     protected boolean fixed;
     protected String label;
     protected Attributes attributes;
@@ -260,9 +261,21 @@ public class NodeDataImpl implements NodeData, GroupData {
 
     public void setSelected(boolean selected) {
         this.selected = selected;
+        if (!selected) {
+            this.autoSelected = false;
+        }
     }
 
     public boolean isSelected() {
         return this.selected;
     }
+
+    public void setAutoSelected(boolean autoSelected) {
+        this.autoSelected = autoSelected;
+    }
+
+    public boolean isAutoSelected() {
+        return this.autoSelected;
+    }
+    
 }

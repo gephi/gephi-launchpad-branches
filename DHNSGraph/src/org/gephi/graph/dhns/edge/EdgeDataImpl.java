@@ -45,6 +45,7 @@ public class EdgeDataImpl implements EdgeData {
     protected float b = 0f;
     protected float alpha = 1f;
     protected boolean selected;
+    protected boolean autoSelected;
     private String label;
     protected Attributes attributes;
     protected TextData textData;
@@ -234,4 +235,13 @@ public class EdgeDataImpl implements EdgeData {
     public boolean isSelected() {
         return this.selected;
     }
+    
+    public void setAutoSelected(boolean autoSelected) {
+        this.autoSelected = autoSelected;
+    }
+
+    public boolean isAutoSelected() {
+        return this.autoSelected;
+    }
+    
 }

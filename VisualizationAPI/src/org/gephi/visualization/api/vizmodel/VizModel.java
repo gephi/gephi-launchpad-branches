@@ -74,7 +74,7 @@ public interface VizModel {
 
     public boolean isRotatingEnable();
 
-    public boolean isUniColorSelected();
+    public boolean isNodeSelectedUniqueColor();
 
     public boolean isUse3d();
 
@@ -117,7 +117,7 @@ public interface VizModel {
 
     public void setLightenNonSelectedAuto(boolean lightenNonSelectedAuto);
 
-    public void setUniColorSelected(boolean uniColorSelected);
+    public void setNodeSelectedUniqueColor(boolean uniColorSelected);
 
     public void setUse3d(boolean use3d);
 

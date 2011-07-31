@@ -65,8 +65,9 @@ public interface VizConfig {
     String EDGE_UNIQUE_COLOR = "VizConfig.edgeUniColor";
     String GLJPANEL = "VizConfig.useGLJPanel";
     String HIDE_NONSELECTED_EDGES = "VizConfig.hideNonSelectedEdges";
-    String HIGHLIGHT_ANIMATION = "VizConfig.highlightNonSelectedAnimation";
-    String HIGHLIGHT_COLOR = "VizConfig.highlightNonSelectedColor";
+    String HIGHLIGHT_NON_SELECTED_ANIMATION = "VizConfig.highlightNonSelectedAnimation";
+    String HIGHLIGHT_NON_SELECTED_COLOR = "VizConfig.highlightNonSelectedColor";
+    String HIGHLIGHT_NON_SELECTED_FACTOR = "VizConfig.highlightNonSelectedFactor";
     String HIGHLIGHT_NON_SELECTED = "VizConfig.highlightNonSelected";
     String LABEL_ANTIALIASED = "VizConfig.labelAntialiased";
     String LABEL_FRACTIONAL_METRICS = "VizConfig.labelFractionalMetrics";
