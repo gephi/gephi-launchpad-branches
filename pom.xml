@@ -119,6 +119,7 @@
     <module>filters.api</module>
     <module>visualization.api</module>
     <module>exporter.api</module>
+    <module>importer.api</module>
   </modules>
     <reporting>
         <plugins>
