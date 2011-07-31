@@ -33,8 +33,7 @@ import org.gephi.data.attributes.api.AttributeColumn;
 import org.gephi.data.attributes.api.AttributeController;
 import org.gephi.data.attributes.api.AttributeModel;
 import org.gephi.project.api.Workspace;
-import org.gephi.ui.utils.ColorUtils;
-import org.gephi.visualization.api.config.VizConfig;
+import org.gephi.visualization.api.vizmodel.VizConfig;
 import org.gephi.visualization.api.vizmodel.TextModel;
 import org.openide.util.Lookup;
 

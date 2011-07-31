@@ -34,9 +34,11 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 import org.gephi.data.attributes.api.AttributeColumn;
 import org.gephi.graph.api.NodeShape;
+import org.gephi.math.Vec2;
+import org.gephi.math.Vec3;
 import org.gephi.project.api.Workspace;
 import org.gephi.ui.utils.ColorUtils;
-import org.gephi.visualization.api.config.VizConfig;
+import org.gephi.visualization.api.vizmodel.VizConfig;
 import org.gephi.visualization.api.vizmodel.TextModel;
 import org.gephi.visualization.api.vizmodel.VizModel;
 import org.openide.util.lookup.ServiceProvider;
@@ -118,13 +120,13 @@ public class VizModelImpl implements VizModel {
     }
 
     @Override
-    public float[] getCameraPosition() {
-        return config.getFloatArrayProperty(VizConfig.CAMERA_POSITION);
+    public Vec3 getCameraPosition() {
+        return config.getVec3Property(VizConfig.CAMERA_POSITION);
     }
 
     @Override
-    public float[] getCameraTarget() {
-        return config.getFloatArrayProperty(VizConfig.CAMERA_TARGET);
+    public Vec3 getCameraTarget() {
+        return config.getVec3Property(VizConfig.CAMERA_TARGET);
     }
 
     @Override
@@ -448,12 +450,15 @@ public class VizModelImpl implements VizModel {
         } catch (VizConfig.PropertyNotAvailableException e) {
             return;
         }
-        if (type.isAssignableFrom(float[].class)) {
-            float[] array = new float[3];
-            array[0] = Float.parseFloat(reader.getAttributeValue(null, "x"));
-            array[1] = Float.parseFloat(reader.getAttributeValue(null, "y"));
-            array[2] = Float.parseFloat(reader.getAttributeValue(null, "z"));
-            config.setProperty(attribute, array);
+        if (type.isAssignableFrom(Vec3.class)) {
+            float x = Float.parseFloat(reader.getAttributeValue(null, "x"));
+            float y = Float.parseFloat(reader.getAttributeValue(null, "y"));
+            float z = Float.parseFloat(reader.getAttributeValue(null, "z"));
+            config.setProperty(attribute, new Vec3(x, y, z));
+        } else if (type.isAssignableFrom(Vec2.class)) {
+            float x = Float.parseFloat(reader.getAttributeValue(null, "x"));
+            float y = Float.parseFloat(reader.getAttributeValue(null, "y"));
+            config.setProperty(attribute, new Vec2(x, y));
         } else if (type.isAssignableFrom(Color.class)) {
             Color color = ColorUtils.decode(reader.getAttributeValue(null, "value"));
             config.setProperty(attribute, color);
@@ -482,11 +487,15 @@ public class VizModelImpl implements VizModel {
     protected static void writeXmlAttribute(VizConfigImpl config, XMLStreamWriter writer, String attribute) throws XMLStreamException {
         Class<?> type = config.getPropertyType(attribute);
         writer.writeStartElement("cameraposition");
-        if (type.isAssignableFrom(float[].class)) {
-            float[] array = config.getFloatArrayProperty(attribute);
-            writer.writeAttribute("x", Float.toString(array[0]));
-            writer.writeAttribute("y", Float.toString(array[1]));
-            writer.writeAttribute("z", Float.toString(array[2]));
+        if (type.isAssignableFrom(Vec3.class)) {
+            Vec3 v = config.getVec3Property(attribute);
+            writer.writeAttribute("x", Float.toString(v.x()));
+            writer.writeAttribute("y", Float.toString(v.y()));
+            writer.writeAttribute("z", Float.toString(v.z()));
+        } else if (type.isAssignableFrom(Vec2.class)) {
+            Vec2 v = config.getVec2Property(attribute);
+            writer.writeAttribute("x", Float.toString(v.x()));
+            writer.writeAttribute("y", Float.toString(v.y()));
         } else if (type.isAssignableFrom(Color.class)) {
             Color color = config.getColorProperty(attribute);
             writer.writeAttribute("value", ColorUtils.encode(color));

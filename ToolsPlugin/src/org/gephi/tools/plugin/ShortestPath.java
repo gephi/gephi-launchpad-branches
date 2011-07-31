@@ -38,7 +38,7 @@ import org.gephi.tools.spi.ToolEventListener;
 import org.gephi.tools.spi.ToolSelectionType;
 import org.gephi.ui.tools.plugin.ShortestPathPanel;
 import org.gephi.tools.spi.ToolUI;
-import org.gephi.visualization.api.config.VizConfig;
+import org.gephi.visualization.api.vizmodel.VizConfig;
 import org.gephi.visualization.api.selection.SelectionManager;
 import org.gephi.visualization.api.vizmodel.VizModel;
 import org.openide.util.Lookup;

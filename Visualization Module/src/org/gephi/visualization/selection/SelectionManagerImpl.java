@@ -36,7 +36,7 @@ import org.gephi.project.api.ProjectController;
 import org.gephi.project.api.Workspace;
 import org.gephi.project.api.WorkspaceListener;
 import org.gephi.visualization.api.controller.MotionManager;
-import org.gephi.visualization.api.config.VizConfig;
+import org.gephi.visualization.api.vizmodel.VizConfig;
 import org.gephi.visualization.api.selection.NodeSpatialStructure;
 import org.gephi.visualization.api.selection.SelectionManager;
 import org.gephi.visualization.api.selection.SelectionType;

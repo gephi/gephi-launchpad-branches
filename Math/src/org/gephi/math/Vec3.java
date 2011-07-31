@@ -159,4 +159,22 @@ public final class Vec3 extends Vec3Base {
         i[0] += 12;
         return result;
     }
+    
+    /**
+     * Expects a string representation of a vector in form: (x,y,z). This is an
+     * inverse function to the {@link Vec3Base#toString()} method.
+     * @throws NumberFormatException
+     */
+    public static Vec3 fromString(String string) {
+        try {
+            String[] split = string.substring(1, string.length() - 1).split(",");
+            float[] floats = new float[split.length];
+            for (int i = 0; i < split.length; i++) {
+                floats[i] = Float.parseFloat(split[i]);
+            }
+            return new Vec3(floats[0], floats[1], floats[2]);
+        } catch (Exception e) {
+            throw new NumberFormatException(string);
+        }
+    }
 }

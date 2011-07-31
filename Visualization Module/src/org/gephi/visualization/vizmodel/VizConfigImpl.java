@@ -23,13 +23,14 @@ package org.gephi.visualization.vizmodel;
 
 import java.awt.Color;
 import java.awt.Font;
-import java.util.Arrays;
 import java.util.Map;
 import org.gephi.data.attributes.api.AttributeColumn;
 import org.gephi.graph.api.NodeShape;
+import org.gephi.math.Vec2;
+import org.gephi.math.Vec3;
 import org.gephi.ui.utils.ColorUtils;
 import org.gephi.ui.utils.FontUtils;
-import org.gephi.visualization.api.config.VizConfig;
+import org.gephi.visualization.api.vizmodel.VizConfig;
 import org.gephi.visualization.api.selection.SelectionType;
 import org.openide.util.NbPreferences;
 
@@ -138,8 +139,11 @@ public class VizConfigImpl implements VizConfig {
         } else if (defaultValue instanceof Font) {
             Font value = Font.decode(NbPreferences.forModule(VizConfig.class).get("default_" + property, FontUtils.encode(((Font) defaultValue))));
             modelData.put(property, value);
-        } else if (defaultValue instanceof float[]) {
-            float[] value = toFloatArray(NbPreferences.forModule(VizConfig.class).get("default_" + property, Arrays.toString((float[]) defaultValue)));
+        } else if (defaultValue instanceof Vec3) {
+            Vec3 value = Vec3.fromString(NbPreferences.forModule(VizConfig.class).get("default_" + property, ((Vec3) defaultValue).toString()));
+            modelData.put(property, value);
+        } else if (defaultValue instanceof Vec2) {
+            Vec2 value = Vec2.fromString(NbPreferences.forModule(VizConfig.class).get("default_" + property, ((Vec2) defaultValue).toString()));
             modelData.put(property, value);
         } else if (defaultValue instanceof Enum) {
             Enum value = Enum.valueOf(((Enum<?>) defaultValue).getDeclaringClass(), NbPreferences.forModule(VizConfig.class).get("default_" + property, ((Enum<?>) defaultValue).name()));
@@ -147,21 +151,6 @@ public class VizConfigImpl implements VizConfig {
         } else {
             modelData.put(property, defaultValue);
         }
-    }
-    
-    /**
-     * Parses float array, example pattern: [5.0, 2.1, 0.0]
-     */
-    private static float[] toFloatArray(String string) {
-        if (string.length() <= 2) {
-            return new float[]{};
-        }
-        String[] split = string.substring(1, string.length() - 1).split(",");
-        float[] floats = new float[split.length];
-        for (int i = 0; i < split.length; i++) {
-            floats[i] = Float.parseFloat(split[i]);
-        }
-        return floats;
     }
 
     @Override
@@ -185,8 +174,13 @@ public class VizConfigImpl implements VizConfig {
     }
 
     @Override
-    public void setProperty(String key, float[] array) {
-        modelData.put(key, array);
+    public void setProperty(String key, Vec2 value) {
+        modelData.put(key, value);
+    }
+
+    @Override
+    public void setProperty(String key, Vec3 value) {
+        modelData.put(key, value);
     }
 
     @Override
@@ -245,14 +239,23 @@ public class VizConfigImpl implements VizConfig {
     }
 
     @Override
-    public float[] getFloatArrayProperty(String key) {
+    public Vec2 getVec2Property(String key) {
         Object val = modelData.get(key);
-        if (val == null || !(val instanceof float[])) {
+        if (val == null || !(val instanceof Vec2)) {
             throw new PropertyNotAvailableException(key);
         }
-        return (float[]) val;
+        return (Vec2) val;
     }
 
+    @Override
+    public Vec3 getVec3Property(String key) {
+        Object val = modelData.get(key);
+        if (val == null || !(val instanceof Vec3)) {
+            throw new PropertyNotAvailableException(key);
+        }
+        return (Vec3) val;
+    }
+    
     @Override
     public Font getFontProperty(String key) {
         Object val = modelData.get(key);

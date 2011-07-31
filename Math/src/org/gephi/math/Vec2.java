@@ -124,4 +124,22 @@ public final class Vec2 extends Vec2Base {
         i[0] += 8;
         return result;
     }
+    
+    /**
+     * Expects a string representation of a vector in form: (x,y). This is an
+     * inverse function to the {@link Vec2Base#toString()} method.
+     * @throws NumberFormatException
+     */
+    public static Vec2 fromString(String string) {
+        try {
+            String[] split = string.substring(1, string.length() - 1).split(",");
+            float[] floats = new float[split.length];
+            for (int i = 0; i < split.length; i++) {
+                floats[i] = Float.parseFloat(split[i]);
+            }
+            return new Vec2(floats[0], floats[1]);
+        } catch (Exception e) {
+            throw new NumberFormatException(string);
+        }
+    }
 }

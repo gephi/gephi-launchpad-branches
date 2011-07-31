@@ -15,7 +15,7 @@ import org.gephi.project.api.Workspace;
 import org.gephi.project.api.WorkspaceListener;
 import org.gephi.tools.api.ToolController;
 import org.gephi.ui.utils.UIUtils;
-import org.gephi.visualization.api.config.VizConfig;
+import org.gephi.visualization.api.vizmodel.VizConfig;
 import org.gephi.visualization.api.controller.VisualizationController;
 import org.gephi.visualization.api.vizmodel.VizModel;
 import org.gephi.visualization.apiimpl.PropertiesBarAddon;

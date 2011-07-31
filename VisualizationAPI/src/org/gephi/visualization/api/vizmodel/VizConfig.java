@@ -18,10 +18,12 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 */
-package org.gephi.visualization.api.config;
+package org.gephi.visualization.api.vizmodel;
 
 import java.awt.Color;
 import java.awt.Font;
+import org.gephi.math.Vec2;
+import org.gephi.math.Vec3;
 
 /**
  * Visualization configuration interface that holds every visualization property
@@ -128,11 +130,10 @@ public interface VizConfig {
 
     public void setProperty(String key, Boolean value);
 
-    /**
-     * Set a float array property of size 3.
-     */
-    public void setProperty(String key, float[] array);
-
+    public void setProperty(String key, Vec2 value);
+    
+    public void setProperty(String key, Vec3 value);
+    
     public void setProperty(String key, Font font);
 
     public void setProperty(String key, Color color);
@@ -147,11 +148,10 @@ public interface VizConfig {
 
     public Boolean getBooleanProperty(String key);
 
-    /**
-     * Returns a float array of size 3.
-     */
-    public float[] getFloatArrayProperty(String key);
-
+    public Vec2 getVec2Property(String key);
+    
+    public Vec3 getVec3Property(String key);
+    
     public Font getFontProperty(String key);
 
     public Color getColorProperty(String key);

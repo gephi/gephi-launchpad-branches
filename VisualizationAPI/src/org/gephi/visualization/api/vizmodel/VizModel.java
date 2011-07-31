@@ -27,8 +27,8 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 import org.gephi.graph.api.NodeShape;
+import org.gephi.math.Vec3;
 import org.gephi.project.api.Workspace;
-import org.gephi.visualization.api.config.VizConfig;
 
 /**
  * Model class for visualization. Contains most visualization related settings.
@@ -52,9 +52,9 @@ public interface VizModel {
 
     public Color getBackgroundColor();
 
-    public float[] getCameraPosition();
+    public Vec3 getCameraPosition();
 
-    public float[] getCameraTarget();
+    public Vec3 getCameraTarget();
 
     public boolean isCulling();
 
