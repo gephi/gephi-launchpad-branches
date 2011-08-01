@@ -127,6 +127,7 @@
     <module>ranking.api</module>
     <module>statistics.api</module>
     <module>dhns</module>
+    <module>dirchooser</module>
   </modules>
     <reporting>
         <plugins>
