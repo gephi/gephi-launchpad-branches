@@ -131,6 +131,9 @@
     <module>dynamic</module>
     <module>statistics.plugin</module>
     <module>filters.plugin</module>
+    <module>exporter.plugin</module>
+    <module>ExportPluginUI</module>
+    <module>filters</module>
   </modules>
     <reporting>
         <plugins>
