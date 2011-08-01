@@ -18,27 +18,16 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.gephi.visualization.data.graph;
-
-import org.gephi.math.linalg.Vec3;
-import org.gephi.visualization.api.color.Color;
+package org.gephi.visualization.rendering;
 
 /**
- * Immutable 3D label representation used by the rendering engine.
+ * Controls the rendering thread and can be used to execute asynchronous jobs
+ * for the rendering engine (like loading or writing images). 
  * 
  * @author Antonio Patriarca <antoniopatriarca@gmail.com>
  */
-public final class VizLabel3D {
+class RenderingScheduler {
+    private RenderingScheduler() {}
     
-    public final Vec3 position;
     
-    public final float size;
-    
-    public final Color color;
-
-    public VizLabel3D(Vec3 position, float size, Color color) {
-        this.position = position;
-        this.size = size;
-        this.color = color;
-    }
 }

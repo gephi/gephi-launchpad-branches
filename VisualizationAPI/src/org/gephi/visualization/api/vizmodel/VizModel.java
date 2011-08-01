@@ -27,7 +27,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 import org.gephi.graph.api.NodeShape;
-import org.gephi.math.Vec3;
+import org.gephi.math.linalg.Vec3;
 import org.gephi.project.api.Workspace;
 
 /**

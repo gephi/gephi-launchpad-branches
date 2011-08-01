@@ -19,56 +19,44 @@ You should have received a copy of the GNU Affero General Public License
 along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package org.gephi.math;
+package org.gephi.math.linalg;
 
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 
 /**
- * Mutable 4D vector class.
+ * Mutable 2D vector class.
  *
  * @author Antonio Patriarca <antoniopatriarca@gmail.com>
  */
-public final class Vec4M extends Vec4Base {
+public final class Vec2M extends Vec2Base {
 
     /*----------------------------- CONSTRUCTORS -----------------------------*/
 
     /**
-     * The default constructor of Vec4M creates a zero vector.
+     * Defaults constructor of Vec2M which creates a zero vector.
      */
-    public Vec4M() {
-        super(0.0f, 0.0f, 0.0f, 0.0f);
-    }
-    
-    /**
-     * Creates a new 4D vector from its components.
-     *
-     * @param x the first component of the vector
-     * @param y the second component of the vector
-     * @param z the third component of the vector
-     * @param w the third component of the vector
-     */
-    public Vec4M(float x, float y, float z, float w) {
-        super(x, y, z, w);
+    public Vec2M() {
+        super(0.0f, 0.0f);
     }
 
     /**
-     * Creates a copy of another 4D vector.
+     * Creates a new 2D vector from its components.
+     *
+     * @param x the first component of the vector
+     * @param y the second component of the vector
+     */
+    public Vec2M(float x, float y) {
+        super(x, y);
+    }
+
+    /**
+     * Creates a copy of another 2D vector.
      *
      * @param v the 2D vector to copy
      */
-    public Vec4M(Vec4Base v) {
+    public Vec2M(Vec2Base v) {
         super(v);
-    }
-    
-    /**
-     * Creates a 4D vector from a 3D vector and the last component.
-     * 
-     * @param v the 3D vector
-     * @param w the fourth component
-     */
-    public Vec4M(Vec3Base v, float w) {
-        super(v.x, v.y, v.z, w);
     }
 
     /*-------------------------------- SETTERS -------------------------------*/
@@ -79,7 +67,7 @@ public final class Vec4M extends Vec4Base {
      * @param x the new first component of the vector
      * @return this
      */
-    public Vec4M x(float x) {
+    public Vec2M x(float x) {
         this.x = x;
         return this;
     }
@@ -90,30 +78,8 @@ public final class Vec4M extends Vec4Base {
      * @param y the new second component of the vector
      * @return this
      */
-    public Vec4M y(float y) {
+    public Vec2M y(float y) {
         this.y = y;
-        return this;
-    }
-
-    /**
-     * Sets the third component of the vector.
-     *
-     * @param z the new third component of the vector
-     * @return this
-     */
-    public Vec4M z(float z) {
-        this.z = z;
-        return this;
-    }
-    
-    /**
-     * Sets the fourth component of the vector.
-     *
-     * @param w the new fourth component of the vector
-     * @return this
-     */
-    public Vec4M w(float w) {
-        this.w = w;
         return this;
     }
 
@@ -122,15 +88,11 @@ public final class Vec4M extends Vec4Base {
      *
      * @param x the first component of the vector
      * @param y the second component of the vector
-     * @param z the third component of the vector
-     * @param w the new fourth component of the vector
      * @return this
      */
-    public Vec4M set(float x, float y, float z, float w) {
+    public Vec2M set(float x, float y) {
         this.x = x;
         this.y = y;
-        this.z = z;
-        this.w = w;
         return this;
     }
 
@@ -140,35 +102,36 @@ public final class Vec4M extends Vec4Base {
      * @param v the other vector
      * @return this
      */
-    public Vec4M set(Vec4Base v) {
-        return set(v.x, v.y, v.z, v.w);
-    }
-    
-    /**
-     * Sets the components of the vector from a 3D vector and the fourth 
-     * component.
-     *
-     * @param v the 3D vector
-     * @param w the new fourth component of the vector
-     * @return this
-     */
-    public Vec4M set(Vec3Base v, float w) {
-        return set(v.x, v.y, v.z, w);
+    public Vec2M set(Vec2Base v) {
+        return set(v.x, v.y);
     }
 
     /*------------------------ STATIC FACTORY METHODS ------------------------*/
+
+    /**
+     * Creates a new mutable 2D vector from its polar coordinates.
+     *
+     * @param radius the length of the new vector
+     * @param angle the angle between the x-axis and the new vector
+     * @return the new vector
+     */
+    public static Vec2M fromPolarCoordinates(float radius, float angle) {
+        final float c = (float)Math.cos(angle);
+        final float s = (float)Math.sin(angle);
+        return new Vec2M(radius * c, radius * s);
+    }
 
     /**
      * Reads a new mutable vector from a <code>ByteBuffer</code> at the
      * current position.
      *
      * @param b the <code>ByteBuffer</code> instance
-     * @return the new mutable 4D vector or <code></code>
-     * @throws BufferUnderflowException if there are less than 16 bytes in the
+     * @return the new mutable 2D vector or <code>null</code>
+     * @throws BufferUnderflowException if there are less than 8 bytes in the
      *         buffer
      */
-    public static Vec4M readFrom(ByteBuffer b) throws BufferUnderflowException {
-        return new Vec4M(b.getFloat(), b.getFloat(), b.getFloat(), b.getFloat());
+    public static Vec2M readFrom(ByteBuffer b) throws BufferUnderflowException {
+        return new Vec2M(b.getFloat(), b.getFloat());
     }
 
     /**
@@ -178,15 +141,14 @@ public final class Vec4M extends Vec4Base {
      * @param b the <code>ByteBuffer</code> instance
      * @param i the starting position from where to read the vector. It is
      *          updated to point to the next byte after the vector
-     * @return the new mutable 4D vector or <code></code>
-     * @throws BufferUnderflowException if there are less than 16 bytes in the
+     * @return the new mutable 2D vector or <code>null</code>
+     * @throws BufferUnderflowException if there are less than 8 bytes in the
      *         buffer
      */
-    public static Vec4M readFrom(ByteBuffer b, int[] i)
+    public static Vec2M readFrom(ByteBuffer b, int[] i)
                             throws BufferUnderflowException {
-        final Vec4M result = new Vec4M(b.getFloat(i[0]), b.getFloat(i[0]+4),
-                                        b.getFloat(i[0]+8), b.getFloat(i[0]+12));
-        i[0] += 16;
+        final Vec2M result = new Vec2M(b.getFloat(i[0]), b.getFloat(i[0]+4));
+        i[0] += 8;
         return result;
     }
 
@@ -198,11 +160,9 @@ public final class Vec4M extends Vec4Base {
      * @param v the other vector
      * @return <code>this += v</code>
      */
-    public Vec4M plusEq(Vec4Base v) {
+    public Vec2M plusEq(Vec2Base v) {
         this.x += v.x;
         this.y += v.y;
-        this.z += v.z;
-        this.w += v.w;
         return this;
     }
 
@@ -214,11 +174,9 @@ public final class Vec4M extends Vec4Base {
      * @param v the other vector
      * @return <code>this += s*v</code>
      */
-    public Vec4M plusEq(float s, Vec4Base v) {
+    public Vec2M plusEq(float s, Vec2Base v) {
         this.x += s*v.x;
         this.y += s*v.y;
-        this.z += s*v.z;
-        this.w += s*v.w;
         return this;
     }
 
@@ -229,11 +187,9 @@ public final class Vec4M extends Vec4Base {
      * @param v the other vector
      * @return <code>this -= v</code>
      */
-    public Vec4M minusEq(Vec4Base v) {
+    public Vec2M minusEq(Vec2Base v) {
         this.x -= v.x;
         this.y -= v.y;
-        this.z -= v.z;
-        this.w -= v.w;
         return this;
     }
 
@@ -245,11 +201,9 @@ public final class Vec4M extends Vec4Base {
      * @param v the other vector
      * @return <code>this -= s*v</code>
      */
-    public Vec4M minusEq(float s, Vec4Base v) {
+    public Vec2M minusEq(float s, Vec2Base v) {
         this.x -= s*v.x;
         this.y -= s*v.y;
-        this.z -= s*v.z;
-        this.w -= s*v.w;
         return this;
     }
 
@@ -259,11 +213,9 @@ public final class Vec4M extends Vec4Base {
      * @param s the scalar
      * @return <code>this *= s</code>
      */
-    public Vec4M timesEq(float s) {
+    public Vec2M timesEq(float s) {
         this.x *= s;
         this.y *= s;
-        this.z *= s;
-        this.w *= s;
         return this;
     }
 
@@ -274,11 +226,9 @@ public final class Vec4M extends Vec4Base {
      * @param w the second vector
      * @return <code>this = v + w</code>
      */
-    public Vec4M add(Vec4Base v, Vec4Base w) {
+    public Vec2M add(Vec2Base v, Vec2Base w) {
         this.x = v.x + w.x;
         this.y = v.y + w.y;
-        this.z = v.z + w.z;
-        this.w = v.w + w.w;
         return this;
     }
 
@@ -291,11 +241,9 @@ public final class Vec4M extends Vec4Base {
      * @param w the second vector
      * @return <code>this = v + s*w</code>
      */
-    public Vec4M add(Vec4Base v, float s, Vec4Base w) {
+    public Vec2M add(Vec2Base v, float s, Vec2Base w) {
         this.x = v.x + s*w.x;
         this.y = v.y + s*w.y;
-        this.z = v.z + s*w.z;
-        this.w = v.w + s*w.w;
         return this;
     }
 
@@ -308,11 +256,9 @@ public final class Vec4M extends Vec4Base {
      * @param w the second vector
      * @return <code>this = t*v + s*w</code>
      */
-    public Vec4M add(float t, Vec4Base v, float s, Vec4Base w) {
+    public Vec2M add(float t, Vec2Base v, float s, Vec2Base w) {
         this.x = t*v.x + s*w.x;
         this.y = t*v.y + s*w.y;
-        this.z = t*v.z + s*w.z;
-        this.w = t*v.w + s*w.w;
         return this;
     }
 
@@ -323,11 +269,9 @@ public final class Vec4M extends Vec4Base {
      * @param w the second vector
      * @return <code>this = v - w</code>
      */
-    public Vec4M sub(Vec4Base v, Vec4Base w) {
+    public Vec2M sub(Vec2Base v, Vec2Base w) {
         this.x = v.x - w.x;
         this.y = v.y - w.y;
-        this.z = v.z - w.z;
-        this.w = v.w - w.w;
         return this;
     }
 
@@ -340,11 +284,9 @@ public final class Vec4M extends Vec4Base {
      * @param w the second vector
      * @return <code>this = v - s*w</code>
      */
-    public Vec4M sub(Vec4Base v, float s, Vec4Base w) {
+    public Vec2M sub(Vec2Base v, float s, Vec2Base w) {
         this.x = v.x - s*w.x;
         this.y = v.y - s*w.y;
-        this.z = v.z - s*w.z;
-        this.w = v.w - s*w.w;
         return this;
     }
 
@@ -357,11 +299,9 @@ public final class Vec4M extends Vec4Base {
      * @param w the second vector
      * @return <code>this = t*v - s*w</code>
      */
-    public Vec4M sub(float t, Vec4Base v, float s, Vec4Base w) {
+    public Vec2M sub(float t, Vec2Base v, float s, Vec2Base w) {
         this.x = t*v.x - s*w.x;
         this.y = t*v.y - s*w.y;
-        this.z = t*v.z - s*w.z;
-        this.w = t*v.w - s*w.w;
         return this;
     }
 
@@ -372,11 +312,9 @@ public final class Vec4M extends Vec4Base {
      * @param v the vector
      * @return <code>this = s*v</code>
      */
-    public Vec4M mul(float s, Vec4Base v) {
+    public Vec2M mul(float s, Vec2Base v) {
         this.x = s*v.x;
         this.y = s*v.y;
-        this.z = s*v.z;
-        this.w = s*v.w;
         return this;
     }
 
@@ -387,7 +325,7 @@ public final class Vec4M extends Vec4Base {
      *
      * @return <code>this *= -1</code>
      */
-    public Vec4M negate() {
+    public Vec2M negate() {
         return this.timesEq(-1.0f);
     }
 
@@ -396,24 +334,43 @@ public final class Vec4M extends Vec4Base {
      *
      * @return <code>this /= this.length()</code>
      */
-    public Vec4M normalize() {
+    public Vec2M normalize() {
         final float oneOnLength = 1.0f / this.length();
         return this.timesEq(oneOnLength);
     }
 
-    /*------------------------ 4D TRANSFORMATIONS ----------------------------*/
+    /**
+     * Rotates counter-clockwise this vector by 90 degree.
+     *
+     * @return this vector rotated
+     */
+    public Vec2M toPerp() {
+        return this.set(- this.y, this.x);
+    }
+
+    /*------------------------ 2D TRANSFORMATIONS ----------------------------*/
+
+    /**
+     * Rotates this vector counter-clockwise by some angle.
+     *
+     * @param angle the angle of rotation expressed in radians
+     * @return this vector rotated
+     */
+    public Vec2M rotate(float angle) {
+        final float c = (float)Math.cos(angle);
+        final float s = (float)Math.sin(angle);
+        return this.set(this.x * c - this.y * s, this.x * s + this.y * c);
+    }
 
     /**
      * Scales this vector non-uniformly.
      *
      * @param sx scalar factor along the x-axis
      * @param sy scalar factor along the y-axis
-     * @param sz scalar factor along the z-axis
-     * @param sw scalar factor along the w-axis
      * @return this vector scaled
      */
-    public Vec4M scale(float sx, float sy, float sz, float sw) {
-        return this.set(sx * this.x, sy * this.y, sz * this.z, sw * this.w);
+    public Vec2M scale(float sx, float sy) {
+        return this.set(sx * this.x, sy * this.y);
     }
 
     /**
@@ -422,7 +379,7 @@ public final class Vec4M extends Vec4Base {
      * @param s scalar factors stored in a vector
      * @return this vector scaled
      */
-    public Vec4M scale(Vec4Base s) {
-        return this.set(s.x, s.y, s.z, s.w);
+    public Vec2M scale(Vec2Base s) {
+        return this.set(s.x, s.y);
     }
 }

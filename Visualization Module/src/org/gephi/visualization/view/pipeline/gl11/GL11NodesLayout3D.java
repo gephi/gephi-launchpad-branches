@@ -23,7 +23,7 @@ package org.gephi.visualization.view.pipeline.gl11;
 
 import java.nio.ByteBuffer;
 import org.gephi.graph.api.Node;
-import org.gephi.math.Vec3;
+import org.gephi.math.linalg.Vec3;
 import org.gephi.visualization.api.color.Color;
 import org.gephi.visualization.data.graph.VizNode;
 import org.gephi.visualization.data.layout.Layout;

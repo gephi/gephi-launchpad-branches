@@ -21,7 +21,7 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 package org.gephi.visualization.data.graph;
 
 import org.gephi.graph.api.NodeShape;
-import org.gephi.math.Vec2;
+import org.gephi.math.linalg.Vec2;
 import org.gephi.visualization.api.color.Color;
 
 /**

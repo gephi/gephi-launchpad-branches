@@ -20,9 +20,7 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.gephi.desktop.visualization.components;
 
-import com.connectina.swing.fontchooser.JFontChooser;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
@@ -35,18 +33,12 @@ import javax.swing.JSlider;
 import javax.swing.JToggleButton;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import net.java.dev.colorchooser.ColorChooser;
 import org.gephi.ui.components.JColorButton;
 import org.gephi.ui.components.JDropDownButton;
-import org.gephi.ui.components.JPopupButton;
 import org.gephi.visualization.api.vizmodel.TextModel;
 import org.gephi.visualization.api.vizmodel.VizModel;
-import org.openide.DialogDescriptor;
-import org.openide.DialogDisplayer;
-import org.openide.NotifyDescriptor;
 import org.openide.util.Lookup;
 import org.openide.util.NbBundle;
-import org.openide.windows.WindowManager;
 
 /**
  *
@@ -137,7 +129,7 @@ public class VizBarController {
             configureScreenshotItem.addActionListener(new ActionListener() {
 
                 public void actionPerformed(ActionEvent e) {
-                    // TODO
+                    // TODO: Change the code to use the Rendering Controller
                     //VizController.getInstance().getScreenshotMaker().configure();
                 }
             });

@@ -18,27 +18,26 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.gephi.visualization.data.graph;
-
-import org.gephi.math.linalg.Vec3;
-import org.gephi.visualization.api.color.Color;
+package org.gephi.visualization.api.rendering.background;
 
 /**
- * Immutable 3D label representation used by the rendering engine.
+ * Defines if the background is defined in screen coordinate or world 
+ * coordinate. Inspired by the CSS background-attachment property with names
+ * adapted to Gephi application.
  * 
  * @author Antonio Patriarca <antoniopatriarca@gmail.com>
  */
-public final class VizLabel3D {
+public enum BackgroundAttachment {
+    /**
+     * The background image position is specified in world coordinates (the same
+     * as the graph) and it moves when the camera moves.
+     */
+    WORLD,
     
-    public final Vec3 position;
-    
-    public final float size;
-    
-    public final Color color;
-
-    public VizLabel3D(Vec3 position, float size, Color color) {
-        this.position = position;
-        this.size = size;
-        this.color = color;
-    }
+    /**
+     * The background image position is defined in screen coordinates and it is 
+     * fixed on the screen. When the camera position is changed, the background 
+     * remains at the same position of the screen.
+     */
+    SCREEN,
 }

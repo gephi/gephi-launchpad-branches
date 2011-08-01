@@ -22,7 +22,7 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 package org.gephi.visualization.api.view.ui;
 
 import java.nio.ByteBuffer;
-import org.gephi.math.Vec2;
+import org.gephi.math.linalg.Vec2;
 
 /**
  * 2D shape which can be drawn on screen for UI purposes.

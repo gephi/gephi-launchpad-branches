@@ -7,8 +7,8 @@
             <suite-component/>
             <module-dependencies/>
             <public-packages>
-                <package>org.gephi.math</package>
-                <package>org.gephi.math.geometry</package>
+                <package>org.gephi.math.linalg</package>
+                <package>org.gephi.math.qrand</package>
             </public-packages>
         </data>
     </configuration>

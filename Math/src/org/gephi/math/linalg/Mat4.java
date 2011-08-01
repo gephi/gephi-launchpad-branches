@@ -18,7 +18,7 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.gephi.math;
+package org.gephi.math.linalg;
 
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;

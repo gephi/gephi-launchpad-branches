@@ -18,27 +18,17 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.gephi.visualization.data.graph;
-
-import org.gephi.math.linalg.Vec3;
-import org.gephi.visualization.api.color.Color;
+package org.gephi.visualization.rendering.apiimpl.command.node.texture;
 
 /**
- * Immutable 3D label representation used by the rendering engine.
- * 
+ *
  * @author Antonio Patriarca <antoniopatriarca@gmail.com>
  */
-public final class VizLabel3D {
-    
-    public final Vec3 position;
-    
-    public final float size;
-    
-    public final Color color;
+public class SquareTextureGenerator extends ProceduralTextureGenerator {
 
-    public VizLabel3D(Vec3 position, float size, Color color) {
-        this.position = position;
-        this.size = size;
-        this.color = color;
+    @Override
+    protected float calculateDistance(float x, float y, float radius, float step) {
+        return (Math.max(x, y) - 1.0f) / step;
     }
+    
 }
