@@ -144,6 +144,8 @@
 <!--    <module>PartitionPluginUI</module>-->
     <module>PreviewExport</module>
     <module>PreviewExportUI</module>
+    <module>preview</module>
+    <module>processor.plugin</module>
   </modules>
     <reporting>
         <plugins>
