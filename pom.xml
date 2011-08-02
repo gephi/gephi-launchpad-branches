@@ -137,6 +137,8 @@
     <module>generator.plugin</module>
     <module>GeneratorPluginUI</module>
     <module>Gleem</module>
+    <module>importer.plugin</module>
+    <module>ImportPluginUI</module>
   </modules>
     <reporting>
         <plugins>
