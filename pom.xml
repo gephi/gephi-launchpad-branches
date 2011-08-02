@@ -136,6 +136,7 @@
     <module>filters</module>
     <module>generator.plugin</module>
     <module>GeneratorPluginUI</module>
+    <module>Gleem</module>
   </modules>
     <reporting>
         <plugins>
