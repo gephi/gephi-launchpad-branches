@@ -139,6 +139,11 @@
     <module>Gleem</module>
     <module>importer.plugin</module>
     <module>ImportPluginUI</module>
+    <module>layout.plugin</module>
+    <module>partition.plugin</module>
+<!--    <module>PartitionPluginUI</module>-->
+    <module>PreviewExport</module>
+    <module>PreviewExportUI</module>
   </modules>
     <reporting>
         <plugins>
