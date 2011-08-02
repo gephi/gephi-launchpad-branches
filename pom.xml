@@ -134,6 +134,7 @@
     <module>exporter.plugin</module>
     <module>ExportPluginUI</module>
     <module>filters</module>
+    <module>generator.plugin</module>
   </modules>
     <reporting>
         <plugins>
