@@ -30,6 +30,11 @@ import org.gephi.math.linalg.Vec2;
 import org.gephi.math.linalg.Vec3;
 import org.gephi.ui.utils.ColorUtils;
 import org.gephi.ui.utils.FontUtils;
+import org.gephi.visualization.api.rendering.background.Background;
+import org.gephi.visualization.api.rendering.background.BackgroundAttachment;
+import org.gephi.visualization.api.rendering.background.BackgroundPosition;
+import org.gephi.visualization.api.rendering.background.BackgroundRepeat;
+import org.gephi.visualization.api.rendering.background.BackgroundSize;
 import org.gephi.visualization.api.vizmodel.VizConfig;
 import org.gephi.visualization.api.selection.SelectionType;
 import org.openide.util.NbPreferences;
@@ -53,6 +58,7 @@ public class VizConfigImpl implements VizConfig {
         initDefault(ADJUST_BY_TEXT, false);
         initDefault(ANTIALIASING, 4);
         initDefault(AUTO_SELECT_NEIGHBOUR, false);
+        initDefault(BACKGROUND, new Background(Color.WHITE, null, new BackgroundPosition(BackgroundPosition.Mode.LEFT_TOP), new BackgroundSize(BackgroundSize.Mode.CONTAIN), BackgroundRepeat.NO_REPEAT, BackgroundAttachment.SCREEN));
         initDefault(BACKGROUND_COLOR, Color.WHITE);
         initDefault(BLENDING, true);
         initDefault(CLEAN_DELETED_MODELS, true);
@@ -86,8 +92,6 @@ public class VizConfigImpl implements VizConfig {
         initDefault(NODE_NEIGHBOR_SELECTED_UNIQUE_COLOR, new Color(0.2F, 1.0F, 0.3F));
         initDefault(NODE_SELECTED_UNIQUE_COLOR, new Color(0.8F, 0.2F, 0.2F));
         initDefault(NODE_TEXT_COLUMNS, new AttributeColumn[0]);
-        initDefault(OCTREE_DEPTH, 5);
-        initDefault(OCTREE_WIDTH, 50000);
         initDefault(PAUSE_LOOP_MOUSE_OUT, false);
         initDefault(PROPERTIES_BAR, true);
         initDefault(RECTANGLE_SELECTION, false);
@@ -117,6 +121,8 @@ public class VizConfigImpl implements VizConfig {
         initDefault(MOUSE_SELECTION_WHILE_DRAGGING, false);
         initDefault(MOUSE_SELECTION_ZOOM_PROPORTIONAL, false);
         initDefault(NODE_DRAGGING, false);
+        initDefault(OCTREE_DEPTH, 5);
+        initDefault(OCTREE_WIDTH, 50000);
         initDefault(ROTATING, true);
         initDefault(SELECTION, true);
         initDefault(SELECTION_TYPE, SelectionType.NONE);
@@ -202,6 +208,10 @@ public class VizConfigImpl implements VizConfig {
         modelData.put(key, array);
     }
     
+    protected void setProperty(String key, Background value) {
+        modelData.put(key, value);
+    }
+    
     @Override
     public String getStringProperty(String key) {
         Object val = modelData.get(key);
@@ -275,7 +285,7 @@ public class VizConfigImpl implements VizConfig {
     }
 
     @Override
-    public <T> T getEnumProperty(Class<T> type, String key) {
+    public <T> T getProperty(Class<T> type, String key) {
         Object val = modelData.get(key);
         if (val == null || !type.isAssignableFrom(val.getClass())) {
             throw new PropertyNotAvailableException(key);
@@ -298,14 +308,6 @@ public class VizConfigImpl implements VizConfig {
             throw new PropertyNotAvailableException(key);
         }
         return (AttributeColumn[]) val;
-    }
-    
-    protected Object getProperty(String key) {
-        Object val = modelData.get(key);
-        if (val == null) {
-            throw new PropertyNotAvailableException(key);
-        }
-        return val;
     }
     
 }

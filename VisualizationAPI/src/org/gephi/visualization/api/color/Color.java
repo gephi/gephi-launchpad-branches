@@ -93,7 +93,7 @@ public final class Color {
     }
 
     public Color(java.awt.Color c) {
-        this(c.getRed(), c.getGreen(), c.getBlue(), c.getTransparency());
+        this((byte) c.getRed(), (byte) c.getGreen(), (byte) c.getBlue(), (byte) c.getTransparency());
     }
 
     /*

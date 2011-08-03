@@ -39,9 +39,11 @@ public class VizToolbar extends JToolBar {
         initDesign();
 
         for (VizToolbarGroup g : groups) {
-            addSeparator();
-            for (JComponent c : g.getToolbarComponents()) {
-                add(c);
+            if (g.hasToolbar()) {
+                addSeparator();
+                for (JComponent c : g.getToolbarComponents()) {
+                    add(c);
+                }
             }
         }
     }

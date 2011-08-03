@@ -20,6 +20,7 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.gephi.visualization.api.rendering;
 
+import java.awt.Image;
 import org.gephi.visualization.api.rendering.background.Background;
 
 /**
@@ -57,17 +58,6 @@ public interface RenderingController {
      */
     public ScreenshotSettings setScreenshotSettings();
     
-    /**
-     * Sets the new background.
-     * 
-     * @param background the new background
-     */
-    public void setBackground(Background background);
+    public String[] getSupportedImageFileFormats();
     
-    /**
-     * Gets the current background.
-     * 
-     * @return the current background
-     */
-    public Background getBackground();
 }

@@ -20,25 +20,34 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.gephi.desktop.visualization.components;
 
+import com.connectina.swing.fontchooser.JFontChooser;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JSlider;
 import javax.swing.JToggleButton;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import net.java.dev.colorchooser.ColorChooser;
 import org.gephi.ui.components.JColorButton;
 import org.gephi.ui.components.JDropDownButton;
+import org.gephi.ui.components.JPopupButton;
 import org.gephi.visualization.api.vizmodel.TextModel;
 import org.gephi.visualization.api.vizmodel.VizModel;
+import org.openide.DialogDescriptor;
+import org.openide.DialogDisplayer;
+import org.openide.NotifyDescriptor;
 import org.openide.util.Lookup;
 import org.openide.util.NbBundle;
+import org.openide.windows.WindowManager;
 
 /**
  *
@@ -55,13 +64,13 @@ public class VizBarController {
     }
 
     private void createDefaultGroups() {
-        // FIXME add LabelGroupBar
-        groups = new VizToolbarGroup[3];
+        groups = new VizToolbarGroup[5];
 
         groups[0] = new GlobalGroupBar();
         groups[1] = new NodeGroupBar();
         groups[2] = new EdgeGroupBar();
-        //groups[3] = new LabelGroupBar();
+        groups[3] = new LabelGroupBar();
+        groups[4] = new BackgroundGroupBar();
 
         VizModel vizModel = Lookup.getDefault().lookup(VizModel.class);
         vizModel.addPropertyChangeListener(new PropertyChangeListener() {
@@ -72,7 +81,7 @@ public class VizBarController {
                     toolbar.setEnable(!vizModel.isDefaultModel());
                     ((NodeGroupBar)groups[1]).setModelValues(vizModel);
                     ((EdgeGroupBar)groups[2]).setModelValues(vizModel);
-                    //((LabelGroupBar)groups[3]).setModelValues(vizModel);
+                    ((LabelGroupBar)groups[3]).setModelValues(vizModel);
                 }
             }
         });
@@ -161,6 +170,38 @@ public class VizBarController {
         public boolean hasExtended() {
             return true;
         }
+    }
+    
+    private static class BackgroundGroupBar implements VizToolbarGroup {
+
+        @Override
+        public String getName() {
+            return "Background";
+        }
+
+        @Override
+        public JComponent[] getToolbarComponents() {
+            return null;
+        }
+
+        @Override
+        public JComponent getExtendedComponent() {
+            BackgroundSettingsPanel panel = new BackgroundSettingsPanel();
+            panel.setup();
+            return panel;
+        }
+
+        @Override
+        public boolean hasToolbar() {
+            return false;
+        }
+
+        @Override
+        public boolean hasExtended() {
+            return true;
+        }
+        
+        
     }
 
     private static class NodeGroupBar implements VizToolbarGroup {
@@ -378,7 +419,7 @@ public class VizBarController {
             return true;
         }
     }
-/*
+
     private static class LabelGroupBar implements VizToolbarGroup {
 
         JComponent[] components = new JComponent[6];
@@ -389,16 +430,21 @@ public class VizBarController {
 
         public void setModelValues(VizModel vizModel) {
             TextModel model = vizModel.getTextModel();
-            ((JPopupButton) components[0]).setSelectedItem(model.getSizeMode());
-            ((JPopupButton) components[1]).setSelectedItem(model.getColorMode());
+            //((JPopupButton) components[0]).setSelectedItem(model.getSizeMode());
+            //((JPopupButton) components[1]).setSelectedItem(model.getColorMode());
             ((JButton) components[2]).setText(model.getNodeFont().getFontName() + ", " + model.getNodeFont().getSize());
             ((JSlider) components[3]).setValue((int) (model.getNodeSizeFactor() * 100f));
         }
 
         public JComponent[] getToolbarComponents() {          
-            TextModel textModel = Lookup.getDefault().lookup(VizModel.class).getTextModel();
-
+            TextModel model = Lookup.getDefault().lookup(VizModel.class).getTextModel();
+            
+            // TODO remove when label modes included
+            components[0] = new JToggleButton();
+            components[1] = new JToggleButton();
+            
             //Mode
+            /*
             final JPopupButton labelSizeModeButton = new JPopupButton();
             TextManager textManager = VizController.getInstance().getTextManager();
             for (final SizeMode sm : textManager.getSizeModes()) {
@@ -413,7 +459,7 @@ public class VizBarController {
                     model.setSizeMode(sm);
                 }
             });
-            labelSizeModeButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/gephi/visualization/component/labelSizeMode.png")));
+            labelSizeModeButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/gephi/desktop/visualization/components/labelSizeMode.png")));
             labelSizeModeButton.setToolTipText(NbBundle.getMessage(VizBarController.class, "VizToolbar.Labels.sizeMode"));
             model.addChangeListener(new ChangeListener() {
 
@@ -440,7 +486,7 @@ public class VizBarController {
                     model.setColorMode(cm);
                 }
             });
-            labelColorModeButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/gephi/visualization/component/labelColorMode.png")));
+            labelColorModeButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/gephi/desktop/visualization/components/labelColorMode.png")));
             labelColorModeButton.setToolTipText(NbBundle.getMessage(VizBarController.class, "VizToolbar.Labels.colorMode"));
             model.addChangeListener(new ChangeListener() {
 
@@ -452,14 +498,14 @@ public class VizBarController {
                 }
             });
             components[1] = labelColorModeButton;
-
+*/
             //Font
             final JButton fontButton = new JButton(model.getNodeFont().getFontName() + ", " + model.getNodeFont().getSize());
             fontButton.setToolTipText(NbBundle.getMessage(VizBarController.class, "VizToolbar.Labels.font"));
             fontButton.addActionListener(new ActionListener() {
 
                 public void actionPerformed(ActionEvent e) {
-                    TextModel model = VizController.getInstance().getVizModel().getTextModel();
+                    TextModel model = Lookup.getDefault().lookup(VizModel.class).getTextModel();
                     Font font = JFontChooser.showDialog(WindowManager.getDefault().getMainWindow(), model.getNodeFont());
                     if (font != null && font != model.getNodeFont()) {
                         model.setNodeFont(font);
@@ -469,7 +515,7 @@ public class VizBarController {
             model.addChangeListener(new ChangeListener() {
 
                 public void stateChanged(ChangeEvent e) {
-                    TextModel model = VizController.getInstance().getVizModel().getTextModel();
+                    TextModel model = Lookup.getDefault().lookup(VizModel.class).getTextModel();
                     fontButton.setText(model.getNodeFont().getFontName() + ", " + model.getNodeFont().getSize());
                 }
             });
@@ -481,7 +527,7 @@ public class VizBarController {
             fontSizeSlider.addChangeListener(new ChangeListener() {
 
                 public void stateChanged(ChangeEvent e) {
-                    TextModel model = VizController.getInstance().getVizModel().getTextModel();
+                    TextModel model = Lookup.getDefault().lookup(VizModel.class).getTextModel();
                     model.setNodeSizeFactor(fontSizeSlider.getValue() / 100f);
                 }
             });
@@ -490,7 +536,7 @@ public class VizBarController {
             model.addChangeListener(new ChangeListener() {
 
                 public void stateChanged(ChangeEvent e) {
-                    TextModel model = VizController.getInstance().getVizModel().getTextModel();
+                    TextModel model = Lookup.getDefault().lookup(VizModel.class).getTextModel();
                     if (((int) (model.getNodeSizeFactor() * 100f)) != fontSizeSlider.getValue()) {
                         fontSizeSlider.setValue((int) (model.getNodeSizeFactor() * 100f));
                     }
@@ -508,7 +554,7 @@ public class VizBarController {
                 @Override
                 public void propertyChange(PropertyChangeEvent evt) {
                     if (evt.getPropertyName().equals(ColorChooser.PROP_COLOR)) {
-                        TextModel model = VizController.getInstance().getVizModel().getTextModel();
+                        TextModel model = Lookup.getDefault().lookup(VizModel.class).getTextModel();
                         model.setNodeColor(colorChooser.getColor());
                     }
                 }
@@ -516,7 +562,7 @@ public class VizBarController {
             model.addChangeListener(new ChangeListener() {
 
                 public void stateChanged(ChangeEvent e) {
-                    TextModel model = VizController.getInstance().getVizModel().getTextModel();
+                    TextModel model = Lookup.getDefault().lookup(VizModel.class).getTextModel();
                     if (!model.getNodeColor().equals(colorChooser.getColor())) {
                         colorChooser.setColor(model.getNodeColor());
                     }
@@ -526,12 +572,12 @@ public class VizBarController {
 
             //Attributes
             final JButton attributesButton = new JButton();
-            attributesButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/gephi/visualization/component/configureLabels.png")));
+            attributesButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/gephi/desktop/visualization/components/configureLabels.png")));
             attributesButton.setToolTipText(NbBundle.getMessage(VizBarController.class, "VizToolbar.Labels.attributes"));
             attributesButton.addActionListener(new ActionListener() {
 
                 public void actionPerformed(ActionEvent e) {
-                    TextModel model = VizController.getInstance().getVizModel().getTextModel();
+                    TextModel model = Lookup.getDefault().lookup(VizModel.class).getTextModel();
                     LabelAttributesPanel panel = new LabelAttributesPanel();
                     panel.setup(model);
                     DialogDescriptor dd = new DialogDescriptor(panel, NbBundle.getMessage(VizBarController.class, "LabelAttributesPanel.title"), true, NotifyDescriptor.OK_CANCEL_OPTION, null, null);
@@ -559,5 +605,5 @@ public class VizBarController {
         public boolean hasExtended() {
             return true;
         }
-    }*/
+    }
 }

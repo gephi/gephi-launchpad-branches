@@ -7,7 +7,7 @@ This file is part of Gephi.
 
 Gephi is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as
-published by the Free Software Foundation, either version 3 of the
+published by the Free Software Foundation, either vers  ion 3 of the
 License, or (at your option) any later version.
 
 Gephi is distributed in the hope that it will be useful,
@@ -70,12 +70,17 @@ public final class Background {
      * @param repeat the background repeat property
      * @param attachment the background attachment property
      */
-    public Background(Color color, String image, BackgroundPosition position, BackgroundSize size, BackgroundRepeat repeat, BackgroundAttachment attachment) {
-        this.color = color;
+    public Background(java.awt.Color color, String image, BackgroundPosition position, BackgroundSize size, BackgroundRepeat repeat, BackgroundAttachment attachment) {
+        this.color = new Color(color);
         this.image = image;
         this.position = position;
         this.size = size;
         this.repeat = repeat;
         this.attachment = attachment;
     }
+    
+    public java.awt.Color getColor() {
+        return this.color.toAWTColor();
+    }
+    
 }

@@ -121,7 +121,7 @@ public class SelectionManagerImpl implements SelectionManager, WorkspaceListener
     public void blockSelection(boolean block) {
         // TODO implement reasonable block for tools
         VizConfig vizConfig = Lookup.getDefault().lookup(VizModel.class).getConfig();
-        if (vizConfig.getEnumProperty(SelectionType.class, VizConfig.SELECTION_TYPE) != SelectionType.NONE) {
+        if (vizConfig.getProperty(SelectionType.class, VizConfig.SELECTION_TYPE) != SelectionType.NONE) {
             this.blocked = block;
             vizConfig.setProperty(VizConfig.SELECTION, !block);
             fireChangeEvent();
@@ -187,7 +187,7 @@ public class SelectionManagerImpl implements SelectionManager, WorkspaceListener
 
     @Override
     public SelectionType getSelectionType() {
-        return Lookup.getDefault().lookup(VizModel.class).getConfig().getEnumProperty(SelectionType.class, VizConfig.SELECTION_TYPE);
+        return Lookup.getDefault().lookup(VizModel.class).getConfig().getProperty(SelectionType.class, VizConfig.SELECTION_TYPE);
     }
 
     @Override

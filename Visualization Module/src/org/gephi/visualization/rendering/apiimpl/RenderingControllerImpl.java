@@ -54,13 +54,8 @@ public class RenderingControllerImpl implements RenderingController {
     }
 
     @Override
-    public void setBackground(Background background) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public Background getBackground() {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public String[] getSupportedImageFileFormats() {
+        return new String[]{"bmp", "png"};
     }
     
 }

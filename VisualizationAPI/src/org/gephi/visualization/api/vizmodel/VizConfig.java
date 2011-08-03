@@ -51,6 +51,7 @@ public interface VizConfig {
     String ADJUST_BY_TEXT = "VizConfig.adjustByText";
     String ANTIALIASING = "VizConfig.antialiasing";
     String AUTO_SELECT_NEIGHBOUR = "VizConfig.autoSelectNeighbor";
+    String BACKGROUND = "VizConfig.background";
     String BACKGROUND_COLOR = "VizConfig.backgroundColor";
     String BLENDING = "VizConfig.blending";
     String CLEAN_DELETED_MODELS = "VizConfig.cleanDeletedModels";
@@ -86,8 +87,6 @@ public interface VizConfig {
     String NODE_NEIGHBOR_SELECTED_UNIQUE_COLOR = "VizConfig.uniColorSelectedNeigborColor";
     String NODE_SELECTED_UNIQUE_COLOR = "VizConfig.uniColorSelectedColor";
     String NODE_TEXT_COLUMNS = "VizConfig.nodeTextColumns";
-    String OCTREE_DEPTH = "VizConfig.octreeDepth";
-    String OCTREE_WIDTH = "VizConfig.octreeWidth";
     String PAUSE_LOOP_MOUSE_OUT = "VizConfig.pauseLoopWhenMouseOut";
     String PROPERTIES_BAR = "VizConfig.propertiesBar";
     String RECTANGLE_SELECTION = "VizConfig.rectangleSelection";
@@ -117,6 +116,8 @@ public interface VizConfig {
     String MOUSE_SELECTION_WHILE_DRAGGING = "VizConfig.mouseSelectionUpdateWhileDragging";
     String MOUSE_SELECTION_ZOOM_PROPORTIONAL = "VizConfig.mouseSelectionZoomProportionnal";
     String NODE_DRAGGING = "VizConfig.nodeDraggingEnabled";
+    String OCTREE_DEPTH = "VizConfig.octreeDepth";
+    String OCTREE_WIDTH = "VizConfig.octreeWidth";
     String ROTATING = "VizConfig.rotatingEnabled";
     String SELECTION = "VizConfig.selectionEnable";
     String SELECTION_TYPE = "VizConfig.selectionType";
@@ -156,7 +157,7 @@ public interface VizConfig {
 
     public Color getColorProperty(String key);
     
-    public <T> T getEnumProperty(Class<T> type, String key);
+    public <T> T getProperty(Class<T> type, String key);
     
     public Class getPropertyType(String key);
     

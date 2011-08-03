@@ -38,6 +38,7 @@ import org.gephi.math.linalg.Vec2;
 import org.gephi.math.linalg.Vec3;
 import org.gephi.project.api.Workspace;
 import org.gephi.ui.utils.ColorUtils;
+import org.gephi.visualization.api.rendering.background.Background;
 import org.gephi.visualization.api.vizmodel.VizConfig;
 import org.gephi.visualization.api.vizmodel.TextModel;
 import org.gephi.visualization.api.vizmodel.VizModel;
@@ -112,6 +113,11 @@ public class VizModelImpl implements VizModel {
     @Override
     public boolean isAutoSelectNeighbor() {
         return config.getBooleanProperty(VizConfig.AUTO_SELECT_NEIGHBOUR);
+    }
+
+    @Override
+    public Background getBackground() {
+        return config.getProperty(Background.class, VizConfig.BACKGROUND);
     }
 
     @Override
@@ -221,7 +227,7 @@ public class VizModelImpl implements VizModel {
 
     @Override
     public NodeShape getGlobalNodeShape() {
-        return config.getEnumProperty(NodeShape.class, VizConfig.NODE_GLOBAL_SHAPE);
+        return config.getProperty(NodeShape.class, VizConfig.NODE_GLOBAL_SHAPE);
     }
 
     @Override
@@ -240,6 +246,12 @@ public class VizModelImpl implements VizModel {
     public void setAutoSelectNeighbor(boolean autoSelectNeighbor) {
         config.setProperty(VizConfig.AUTO_SELECT_NEIGHBOUR, autoSelectNeighbor);
         fireProperyChange(VizConfig.AUTO_SELECT_NEIGHBOUR, null, autoSelectNeighbor);
+    }
+
+    @Override
+    public void setBackground(Background background) {
+        config.setProperty(VizConfig.BACKGROUND, background);
+        fireProperyChange(VizConfig.BACKGROUND, null, background);
     }
 
     @Override
@@ -477,7 +489,7 @@ public class VizModelImpl implements VizModel {
         } else if (type.isAssignableFrom(String.class)) {
             config.setProperty(attribute, reader.getAttributeValue(null, "value"));
         } else if (type.isAssignableFrom(Enum.class)) {
-            Object value = config.getProperty(attribute);
+            Enum value = config.getProperty(Enum.class, attribute);
             config.setProperty(attribute, Enum.valueOf(((Enum<?>) value).getDeclaringClass(), reader.getAttributeValue(null, "value")));
         } else if (type.isAssignableFrom(AttributeColumn[].class)) {
             
@@ -486,7 +498,7 @@ public class VizModelImpl implements VizModel {
     
     protected static void writeXmlAttribute(VizConfigImpl config, XMLStreamWriter writer, String attribute) throws XMLStreamException {
         Class<?> type = config.getPropertyType(attribute);
-        writer.writeStartElement("cameraposition");
+        writer.writeStartElement(attribute);
         if (type.isAssignableFrom(Vec3.class)) {
             Vec3 v = config.getVec3Property(attribute);
             writer.writeAttribute("x", Float.toString(v.x()));
@@ -505,15 +517,12 @@ public class VizModelImpl implements VizModel {
             writer.writeAttribute("size", Integer.toString(font.getSize()));
             writer.writeAttribute("style", Integer.toString(font.getStyle()));
         } else if (type.isAssignableFrom(AttributeColumn[].class)) {
-            AttributeColumn[] columns = (AttributeColumn[]) config.getProperty(attribute);
+            AttributeColumn[] columns = config.getProperty(AttributeColumn[].class, attribute);
             for (AttributeColumn c : columns) {
                 writer.writeStartElement("column");
                 writer.writeAttribute("id", c.getId());
                 writer.writeEndElement();
             }
-        } else {
-            Object object = config.getProperty(attribute);
-            writer.writeAttribute("value", object.toString());
         }
         writer.writeEndElement();
     }

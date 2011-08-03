@@ -29,6 +29,7 @@ import javax.xml.stream.XMLStreamWriter;
 import org.gephi.graph.api.NodeShape;
 import org.gephi.math.linalg.Vec3;
 import org.gephi.project.api.Workspace;
+import org.gephi.visualization.api.rendering.background.Background;
 
 /**
  * Model class for visualization. Contains most visualization related settings.
@@ -50,6 +51,8 @@ public interface VizModel {
 
     public boolean isAutoSelectNeighbor();
 
+    public Background getBackground();
+    
     public Color getBackgroundColor();
 
     public Vec3 getCameraPosition();
@@ -105,8 +108,10 @@ public interface VizModel {
 
     public void setAutoSelectNeighbor(boolean autoSelectNeighbor);
 
-    public void setBackgroundColor(Color backgroundColor);
+    public void setBackground(Background background);
 
+    public void setBackgroundColor(Color backgroundColor);
+    
     public void setShowEdges(boolean showEdges);
 
     public void setEdgeHasUniColor(boolean edgeHasUniColor);
