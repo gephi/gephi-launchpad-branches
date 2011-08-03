@@ -146,6 +146,8 @@
     <module>PreviewExportUI</module>
     <module>preview</module>
     <module>processor.plugin</module>
+    <module>ProcessorPluginUI</module>
+    <module>project</module>
   </modules>
     <reporting>
         <plugins>
