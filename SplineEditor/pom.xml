@@ -2,17 +2,17 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <artifactId>gephi</artifactId>
-        <groupId>org.gephi</groupId>
-        <version>1.0-SNAPSHOT</version>
-    </parent>
+    <artifactId>gephi</artifactId>
+    <groupId>org.gephi</groupId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
 
-    <groupId>org.gephi.lib.</groupId>
-    <artifactId>javamail</artifactId>
-    <version>1.0</version>
+    <groupId>org.gephi.ui.components</groupId>
+    <artifactId>SplineEditor</artifactId>
+    <version>0.8</version>
     <packaging>nbm</packaging>
 
-    <name>JavaMail Wrapper</name>
+    <name>SplineEditor</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -32,12 +32,6 @@
                 <enabled>false</enabled>
             </snapshots>
         </repository>
-        <repository>
-            <id>maven2-repository.dev.java.net</id>
-            <name>Java.net Repository for Maven</name>
-            <url>http://download.java.net/maven/2/</url>
-            <layout>default</layout>
-        </repository>
     </repositories>
 
     <dependencies>
@@ -47,15 +41,25 @@
             <version>RELEASE70</version>
         </dependency>
         <dependency>
-            <groupId>com.sun.mail</groupId>
-            <artifactId>dsn</artifactId>
-            <version>1.4.3</version>
-        </dependency>       
-        <dependency>
-            <artifactId>mail</artifactId>
-            <groupId>javax.mail</groupId>            
-            <version>1.4.3</version>
+            <groupId>org.jdesktop</groupId>
+            <artifactId>SwingX</artifactId>
+            <version>1.6.1</version>
         </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-openide-windows</artifactId>
+            <version>RELEASE70</version>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-openide-util</artifactId>
+            <version>RELEASE70</version>
+        </dependency>
+        <dependency>
+    <groupId>net.java.dev.timingframework</groupId>
+    <artifactId>timingframework</artifactId>
+    <version>1.0</version>
+</dependency>
     </dependencies>
 
     <build>
@@ -67,7 +71,11 @@
                 <extensions>true</extensions>
                 <configuration>
                     <publicPackages>
-                        <publicPackage>javax.mail.*</publicPackage>
+                        <publicPackage>org.gephi.ui.components.SplineEditor</publicPackage>
+                        <publicPackage>org.gephi.ui.components.SplineEditor.equation</publicPackage>
+                        <publicPackage>org.jdesktop.animation.timing</publicPackage>
+                        <publicPackage>org.jdesktop.animation.timing.interpolation</publicPackage>
+                        <publicPackage>org.jdesktop.animation.timing.triggers</publicPackage>
                     </publicPackages>
                 </configuration>
             </plugin>

@@ -148,6 +148,8 @@
     <module>processor.plugin</module>
     <module>ProcessorPluginUI</module>
     <module>project</module>
+    <module>spigot.plugin</module>
+    <module>SplineEditor</module>
   </modules>
     <reporting>
         <plugins>
