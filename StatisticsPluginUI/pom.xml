@@ -2,17 +2,17 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <artifactId>gephi</artifactId>
-        <groupId>org.gephi</groupId>
-        <version>1.0-SNAPSHOT</version>
-    </parent>
+    <artifactId>gephi</artifactId>
+    <groupId>org.gephi</groupId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
 
-    <groupId>org.gephi.</groupId>
-    <artifactId>ui.components</artifactId>
-    <version>0.8</version>
+    <groupId>org.gephi.ui</groupId>
+    <artifactId>StatisticsPluginUI</artifactId>
+    <version>0.8.0.2</version>
     <packaging>nbm</packaging>
 
-    <name>UI Components</name>
+    <name>Statistics Plugin UI</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -41,60 +41,29 @@
             <version>RELEASE70</version>
         </dependency>
         <dependency>
-            <groupId>com.connectina</groupId>
-            <artifactId>fontchooser</artifactId>
-            <version>1</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/../lib/FontChooser.jar</systemPath>
+            <groupId>org.gephi.data</groupId>
+            <artifactId>attributes.api</artifactId>
+            <version>0.8</version>
         </dependency>
         <dependency>
-            <groupId>net.java.dev</groupId>
-            <artifactId>colorchooser</artifactId>
-            <version>1</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/../lib/colorchooser.jar</systemPath>
+            <groupId>org.gephi</groupId>
+            <artifactId>dynamic.api</artifactId>
+            <version>0.8</version>
         </dependency>
         <dependency>
-            <groupId>net.miginfocom</groupId>
-            <artifactId>layout</artifactId>
-            <version>3.7.1</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/../lib/MigLayout-3.7.1.jar</systemPath>
+            <groupId>org.gephi</groupId>
+            <artifactId>statistics.api</artifactId>
+            <version>0.8</version>
         </dependency>
         <dependency>
-            <groupId>org.gephi.lib</groupId>
-            <artifactId>Commons.Codec</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>org.gephi.lib</groupId>
-            <artifactId>flamingo</artifactId>
-            <version>5.0.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jfree</groupId>
-            <artifactId>JFreeChart</artifactId>
-            <version>1.0</version>
+            <groupId>org.gephi</groupId>
+            <artifactId>statistics.plugin</artifactId>
+            <version>0.8.0.2</version>
         </dependency>
         <dependency>
             <groupId>org.jdesktop</groupId>
             <artifactId>SwingX</artifactId>
             <version>1.6.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.gephi</groupId>
-            <artifactId>ui.utils</artifactId>
-            <version>0.8</version>
-        </dependency>
-        <dependency>
-            <groupId>org.netbeans.api</groupId>
-            <artifactId>org-openide-windows</artifactId>
-            <version>RELEASE691</version>
-        </dependency>
-        <dependency>
-            <groupId>org.netbeans.api</groupId>
-            <artifactId>org-openide-util</artifactId>
-            <version>RELEASE68</version>
         </dependency>
     </dependencies>
 
