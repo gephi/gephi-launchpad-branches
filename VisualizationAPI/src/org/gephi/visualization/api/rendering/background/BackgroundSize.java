@@ -100,6 +100,21 @@ public class BackgroundSize {
          * 
          * <code>PERCENTAGE (min(screenWidth/imageWidth, screenHeight/imageHeight), 0)</code>. 
          */
-        CONTAIN,
+        CONTAIN;
+        
+        @Override
+        public String toString() {
+            switch (this) {
+                case LENGTH: return "Length";
+                case PERCENTAGE: return "Percentage";
+                case COVER: return "Cover";
+                case CONTAIN: return "Contain";
+            }
+            return null;
+        }
+        
+        public boolean requiresParameter() {
+            return this == LENGTH || this == PERCENTAGE;
+        }
     }
 }

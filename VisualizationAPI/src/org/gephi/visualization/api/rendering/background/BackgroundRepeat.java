@@ -47,5 +47,16 @@ public enum BackgroundRepeat {
     /**
      * A single copy of the background image is shown on the screen.
      */
-    NO_REPEAT,
+    NO_REPEAT;
+    
+    @Override
+    public String toString() {
+        switch (this) {
+            case NO_REPEAT: return "No repeat";
+            case REPEAT: return "Repeat";
+            case REPEAT_X: return "Repeat horizontal";
+            case REPEAT_Y: return "Repeat vertical";
+        }
+        return null;
+    }
 }

@@ -27,6 +27,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JFileChooser;
 import javax.swing.JTextField;
 import org.gephi.math.linalg.Vec2;
 import org.gephi.ui.components.JColorButton;
@@ -42,6 +43,8 @@ import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.util.Lookup;
 import org.openide.util.NbBundle;
+import org.openide.util.NbPreferences;
+import org.openide.windows.WindowManager;
 
 /**
  * @author Vojtech Bardiovsky
@@ -75,12 +78,19 @@ public class BackgroundSettingsPanel extends javax.swing.JPanel {
         });
         
         fileBrowseButton.addActionListener(new ActionListener() {
+            private final String LAST_PATH = "BackgroundSettingsPanel.lastPath";
             @Override
             public void actionPerformed(ActionEvent e) {
-                // TODO show file chooser
-                VizModel vizModel = Lookup.getDefault().lookup(VizModel.class);
-                if (!fileTextField.getText().equals(vizModel.getBackground().image)) {
-                    vizModel.setBackground(extractBackground());
+                final String path = NbPreferences.forModule(BackgroundSettingsPanel.class).get(LAST_PATH, null);
+                JFileChooser fileChooser = new JFileChooser(path);
+                if (fileChooser.showOpenDialog(WindowManager.getDefault().getMainWindow()) == JFileChooser.APPROVE_OPTION) {
+                    String file = fileChooser.getSelectedFile().getAbsolutePath();
+                    NbPreferences.forModule(BackgroundSettingsPanel.class).put(LAST_PATH, file);
+                    VizModel vizModel = Lookup.getDefault().lookup(VizModel.class);
+                    fileTextField.setText(file);
+                    if (!file.equals(vizModel.getBackground().image)) {
+                        vizModel.setBackground(extractBackground());
+                    }
                 }
             }
         });
@@ -253,6 +263,7 @@ public class BackgroundSettingsPanel extends javax.swing.JPanel {
         sizeTextField = new VectorTextField();
         positionSetVectorButton = new javax.swing.JButton();
         sizeSetVectorButton = new javax.swing.JButton();
+        jLabel7 = new javax.swing.JLabel();
 
         jLabel1.setText(org.openide.util.NbBundle.getMessage(BackgroundSettingsPanel.class, "BackgroundSettingsPanel.color")); // NOI18N
 
@@ -291,6 +302,8 @@ public class BackgroundSettingsPanel extends javax.swing.JPanel {
 
         sizeSetVectorButton.setText(org.openide.util.NbBundle.getMessage(BackgroundSettingsPanel.class, "BackgroundSettingsPanel.sizeSetVectorButton.text")); // NOI18N
 
+        jLabel7.setText(org.openide.util.NbBundle.getMessage(BackgroundSettingsPanel.class, "BackgroundSettingsPanel.parameters")); // NOI18N
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -316,32 +329,37 @@ public class BackgroundSettingsPanel extends javax.swing.JPanel {
                     .addComponent(jLabel6))
                 .addGap(30, 30, 30)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(sizeComboBox, 0, 104, Short.MAX_VALUE)
-                    .addComponent(positionComboBox, 0, 104, Short.MAX_VALUE)
-                    .addComponent(attachmentComboBox, 0, 104, Short.MAX_VALUE))
+                    .addComponent(sizeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(positionComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(attachmentComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(sizeTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(positionTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(positionSetVectorButton, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(sizeSetVectorButton, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(sizeTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(positionTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(positionSetVectorButton, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(sizeSetVectorButton, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(jLabel7))
                 .addContainerGap(54, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(7, 7, 7)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
-                    .addComponent(attachmentComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(colorButton, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel4)
-                    .addComponent(jLabel1))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                        .addComponent(attachmentComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(colorButton, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel4)
+                        .addComponent(jLabel1))
+                    .addComponent(jLabel7))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                     .addComponent(positionTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(positionComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(positionComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(fileBrowseButton, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(fileTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(positionSetVectorButton, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -370,6 +388,7 @@ public class BackgroundSettingsPanel extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
     private javax.swing.JComboBox positionComboBox;
     private javax.swing.JButton positionSetVectorButton;
     private javax.swing.JTextField positionTextField;
@@ -401,7 +420,7 @@ class VectorTextField extends JTextField {
 
     private void refreshText() {
         setText("[" + x + ", " + y + "]");
-        firePropertyChange("text", null, "[" + x + ", " + y + "]");
+        //firePropertyChange("text", null, "[" + x + ", " + y + "]");
     }
     
 }

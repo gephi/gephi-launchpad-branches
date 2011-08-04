@@ -39,5 +39,14 @@ public enum BackgroundAttachment {
      * fixed on the screen. When the camera position is changed, the background 
      * remains at the same position of the screen.
      */
-    SCREEN,
+    SCREEN,;
+
+    @Override
+    public String toString() {
+        switch (this) {
+            case SCREEN: return "Screen";
+            case WORLD: return "World";
+        }
+        return null;
+    }
 }

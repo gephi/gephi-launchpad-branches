@@ -90,6 +90,28 @@ public final class BackgroundPosition {
         /**
          * Absolute position of the top left corner of the image.
          */
-        POINT,
+        POINT;
+        
+        @Override
+        public String toString() {
+            switch (this) {
+                case LEFT_TOP: return "Left top";
+                case LEFT_CENTER: return "Left center";
+                case LEFT_BOTTOM: return "Left bottom";
+                case CENTER_TOP: return "Center top";
+                case CENTER_CENTER: return "Center center";
+                case CENTER_BOTTOM: return "Center bottom";
+                case RIGHT_TOP: return "Roght top";
+                case RIGHT_CENTER: return "Right center";
+                case RIGHT_BOTTOM: return "Right bottom";
+                case PERCENTAGE: return "Percentage";
+                case POINT: return "Point";
+            }
+            return null;
+        }
+        
+        public boolean requiresParameter() {
+            return this == POINT || this == PERCENTAGE;
+        }
     }
 }

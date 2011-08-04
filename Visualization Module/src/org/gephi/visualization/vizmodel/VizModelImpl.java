@@ -69,7 +69,7 @@ public class VizModelImpl implements VizModel {
     }
 
     public VizModelImpl() {
-        this(true);
+        this(false);
     }
     
     @Override
@@ -491,8 +491,6 @@ public class VizModelImpl implements VizModel {
         } else if (type.isAssignableFrom(Enum.class)) {
             Enum value = config.getProperty(Enum.class, attribute);
             config.setProperty(attribute, Enum.valueOf(((Enum<?>) value).getDeclaringClass(), reader.getAttributeValue(null, "value")));
-        } else if (type.isAssignableFrom(AttributeColumn[].class)) {
-            
         }
     }
     

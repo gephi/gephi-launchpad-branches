@@ -73,11 +73,11 @@ public final class Color {
         this.r = r; this.g = g; this.b = b; this.a = a;
     }
 
-    public Color(byte r, byte g, byte b) {
+    public Color(int r, int g, int b) {
         this(r/255.0f, g/255.0f, b/255.0f);
     }
 
-    public Color(byte r, byte g, byte b, byte a) {
+    public Color(int r, int g, int b, int a) {
         this(r/255.0f, g/255.0f, b/255.0f, a/255.0f);
     }
 
@@ -93,7 +93,7 @@ public final class Color {
     }
 
     public Color(java.awt.Color c) {
-        this((byte) c.getRed(), (byte) c.getGreen(), (byte) c.getBlue(), (byte) c.getTransparency());
+        this(c.getRed(), c.getGreen(), c.getBlue(), c.getTransparency());
     }
 
     /*

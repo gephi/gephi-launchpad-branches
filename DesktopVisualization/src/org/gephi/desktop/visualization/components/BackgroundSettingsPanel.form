@@ -41,19 +41,24 @@
               </Group>
               <EmptySpace min="-2" pref="30" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="sizeComboBox" alignment="0" pref="104" max="32767" attributes="1"/>
-                  <Component id="positionComboBox" alignment="0" pref="104" max="32767" attributes="1"/>
-                  <Component id="attachmentComboBox" alignment="0" pref="104" max="32767" attributes="1"/>
+                  <Component id="sizeComboBox" alignment="0" min="-2" pref="104" max="-2" attributes="1"/>
+                  <Component id="positionComboBox" alignment="0" min="-2" pref="104" max="-2" attributes="1"/>
+                  <Component id="attachmentComboBox" alignment="0" min="-2" pref="104" max="-2" attributes="1"/>
               </Group>
               <EmptySpace type="separate" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="sizeTextField" alignment="0" min="-2" max="-2" attributes="0"/>
-                  <Component id="positionTextField" alignment="0" min="-2" max="-2" attributes="0"/>
-              </Group>
-              <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="positionSetVectorButton" alignment="0" min="-2" pref="26" max="-2" attributes="0"/>
-                  <Component id="sizeSetVectorButton" alignment="0" min="-2" pref="26" max="-2" attributes="0"/>
+                  <Group type="102" attributes="0">
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="sizeTextField" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="positionTextField" alignment="0" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="positionSetVectorButton" alignment="0" min="-2" pref="26" max="-2" attributes="0"/>
+                          <Component id="sizeSetVectorButton" alignment="0" min="-2" pref="26" max="-2" attributes="0"/>
+                      </Group>
+                  </Group>
+                  <Component id="jLabel7" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace pref="54" max="32767" attributes="0"/>
           </Group>
@@ -63,16 +68,19 @@
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" attributes="0">
               <EmptySpace min="-2" pref="7" max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="2" attributes="0">
-                  <Component id="attachmentComboBox" alignment="2" min="-2" max="-2" attributes="0"/>
-                  <Component id="colorButton" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
-                  <Component id="jLabel4" alignment="2" min="-2" max="-2" attributes="0"/>
-                  <Component id="jLabel1" alignment="2" min="-2" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="1" attributes="0">
+                  <Group type="103" groupAlignment="2" attributes="0">
+                      <Component id="attachmentComboBox" alignment="2" min="-2" max="-2" attributes="0"/>
+                      <Component id="colorButton" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
+                      <Component id="jLabel4" alignment="2" min="-2" max="-2" attributes="0"/>
+                      <Component id="jLabel1" alignment="2" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <Component id="jLabel7" alignment="1" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="2" attributes="0">
                   <Component id="positionTextField" alignment="2" min="-2" max="-2" attributes="0"/>
-                  <Component id="positionComboBox" alignment="2" min="-2" max="-2" attributes="0"/>
+                  <Component id="positionComboBox" alignment="2" min="-2" pref="26" max="-2" attributes="0"/>
                   <Component id="fileBrowseButton" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
                   <Component id="fileTextField" alignment="2" min="-2" max="-2" attributes="0"/>
                   <Component id="positionSetVectorButton" alignment="2" min="-2" pref="26" max="-2" attributes="0"/>
@@ -242,6 +250,13 @@
       <Properties>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
           <ResourceString bundle="org/gephi/desktop/visualization/components/Bundle.properties" key="BackgroundSettingsPanel.sizeSetVectorButton.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+        </Property>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="jLabel7">
+      <Properties>
+        <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+          <ResourceString bundle="org/gephi/desktop/visualization/components/Bundle.properties" key="BackgroundSettingsPanel.parameters" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
         </Property>
       </Properties>
     </Component>
