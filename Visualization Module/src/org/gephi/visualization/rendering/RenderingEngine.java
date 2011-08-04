@@ -21,9 +21,13 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 package org.gephi.visualization.rendering;
 
 import com.jogamp.opengl.util.FPSAnimator;
+import java.awt.Component;
+import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLCapabilities;
+import javax.media.opengl.GLEventListener;
 import javax.media.opengl.GLProfile;
 import javax.media.opengl.awt.GLCanvas;
+import org.gephi.visualization.api.rendering.RenderingController;
 import org.gephi.visualization.controller.VisualizationControllerImpl;
 import org.gephi.visualization.data.FrameDataBridge;
 import org.openide.util.Lookup;
@@ -34,9 +38,11 @@ import org.openide.util.Lookup;
  */
 public class RenderingEngine {
     
-    private final GLCanvas drawable;
+    static { GLProfile.initSingleton(true); }
     
-    private final FPSAnimator animator;
+    private final GLCanvas drawable;
+    private final GLEventListener eventListener;
+    private final RenderingScheduler scheduler;
     
     private final VisualizationControllerImpl controller;
     
@@ -48,13 +54,38 @@ public class RenderingEngine {
         final GLCapabilities caps = createGLCapabilities();
         this.drawable = new GLCanvas(caps);
         this.drawable.setAutoSwapBufferMode(true);
+        this.drawable.setVisible(false);
         
         this.drawable.addKeyListener(controller);
 	this.drawable.addMouseListener(controller);
         this.drawable.addMouseMotionListener(controller);
         this.drawable.addMouseWheelListener(controller);
         
-        this.animator = new FPSAnimator(this.drawable, 30);
+        this.eventListener = new GLEventListener() {
+
+            @Override
+            public void init(GLAutoDrawable glad) {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+
+            @Override
+            public void dispose(GLAutoDrawable glad) {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+
+            @Override
+            public void display(GLAutoDrawable glad) {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+
+            @Override
+            public void reshape(GLAutoDrawable glad, int i, int i1, int i2, int i3) {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+        };
+        
+        final RenderingController renderingController = Lookup.getDefault().lookup(RenderingController.class);
+        this.scheduler = new RenderingScheduler(this.drawable, renderingController.getFPS());
         
         this.bridge = new FrameDataBridge();
     }
@@ -64,16 +95,51 @@ public class RenderingEngine {
                 
         result.setDoubleBuffered(true);
         result.setHardwareAccelerated(true);
-        /*
-        final VizConfig config = Lookup.getDefault().lookup(VizConfig.class);
-        final int antiAA = config.getIntProperty(VizConfig.ANTIALIASING);
+        
+        
+        final RenderingController renderingController = Lookup.getDefault().lookup(RenderingController.class);
+        final int antiAA = renderingController.getAASamples();
         if (antiAA > 0) {
             result.setSampleBuffers(true);
             result.setNumSamples(antiAA);
         } else {
             result.setSampleBuffers(false);
         }
-        */
+        
         return result;
+    }
+    
+    public Component renderingCanvas() {
+        return this.drawable;
+    }
+
+    public void startRendering() {
+        this.drawable.setVisible(true);
+        this.drawable.addGLEventListener(this.eventListener);        
+        this.scheduler.startRendering();
+    }
+    
+    public void stopRendering() {
+        this.scheduler.stopRendering();
+        this.drawable.removeGLEventListener(this.eventListener);
+        this.drawable.setVisible(false);
+    }
+    
+    /**
+     * Changes the rate at which the screen is displayed.
+     * 
+     * @param fps the new frame rate
+     */
+    public void setFPS(int fps) {
+        this.scheduler.setFPS(fps);
+    }
+    
+    /**
+     * Gets the current rate at which the screen is displayed.
+     * 
+     * @return the frame rate
+     */
+    public int getFPS() {
+        return (int) this.scheduler.getFPS();
     }
 }

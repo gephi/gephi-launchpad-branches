@@ -20,11 +20,11 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.gephi.visualization.api.rendering;
 
-import java.awt.Image;
-import org.gephi.visualization.api.rendering.background.Background;
+import java.awt.Component;
+import java.util.List;
 
 /**
- * Controls the behaviours of the rendering engine.
+ * Controls the behaviour of the rendering engine.
  * 
  * @author Antonio Patriarca <antoniopatriarca@gmail.com>
  */
@@ -58,6 +58,61 @@ public interface RenderingController {
      */
     public ScreenshotSettings setScreenshotSettings();
     
-    public String[] getSupportedImageFileFormats();
+    /**
+     * Makes a screenshot of the screen using the current settings and saves it
+     * in filename.
+     * 
+     * @param filename the filename of the screeshot file
+     */
+    public void makeScreenshot(String filename);
     
+    /**
+     * Returns the current component used for drawing or it creates a new one
+     * if none exists.
+     * 
+     * @return the current component used for drawing or <code>null</code> if
+     *         it fails to create it
+     */
+    public Component renderingCanvas();
+    
+    /**
+     * Starts the rendering loop. It also creates a new rendering engine if none
+     * exists.
+     */
+    public void startRendering();
+    
+    /**
+     * Stops the rendering loop and releases the used resources.
+     */    
+    public void stopRendering();
+    
+    /**
+     * Sets the number of samples used with multisampling AA. It may requires a
+     * reboot to make the changes active.
+     * 
+     * @param samples the number of samples
+     */
+    public void setAASamples(int samples);
+    
+    /**
+     * Gets the number of samples used with multisampling AA.
+     * 
+     * @return samples the number of samples
+     */
+    public int getAASamples();
+    
+    /**
+     * Returns the available AA methods.
+     * 
+     * @return the AA methods supported on this machine.
+     */
+    public List<String> getAAMethods();
+    
+    /**
+     * Sets the desired AA method to use. It may requires a reboot to make the
+     * changes active.
+     * 
+     * @param method 
+     */
+    public void setAAMethod(String method);
 }

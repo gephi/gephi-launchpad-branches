@@ -20,9 +20,10 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.gephi.visualization.rendering.apiimpl;
 
+import java.awt.Component;
+import java.util.List;
 import org.gephi.visualization.api.rendering.RenderingController;
 import org.gephi.visualization.api.rendering.ScreenshotSettings;
-import org.gephi.visualization.api.rendering.background.Background;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -54,8 +55,43 @@ public class RenderingControllerImpl implements RenderingController {
     }
 
     @Override
-    public String[] getSupportedImageFileFormats() {
-        return new String[]{"bmp", "png"};
+    public Component renderingCanvas() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void startRendering() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void stopRendering() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void makeScreenshot(String filename) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void setAASamples(int samples) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public List<String> getAAMethods() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void setAAMethod(String method) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public int getAASamples() {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
     
 }
