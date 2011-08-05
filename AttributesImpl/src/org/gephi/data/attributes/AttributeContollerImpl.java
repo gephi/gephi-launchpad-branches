@@ -78,15 +78,19 @@ public class AttributeContollerImpl implements AttributeController {
             }
 
             public void unselect(Workspace workspace) {
+                System.out.println("Unselected workspace");
             }
 
             public void close(Workspace workspace) {
                 StoreController storeController = Lookup.getDefault().lookup(StoreController.class);
                 AttributeModel m = workspace.getLookup().lookup(AttributeModel.class);
                 storeController.removeStore(m);
+                
+                System.out.println("closed workspace");
             }
 
             public void disable() {
+                System.out.println("disabled workspace");
             }
         });
         

@@ -42,9 +42,10 @@ public class CachedAttributeModel extends AbstractAttributeModel {
 
         StoreController storeController = Lookup.getDefault().lookup(StoreController.class);
         store = storeController.newStore(this);
+        
         factory = new AttributeFactoryImpl(this);
         
-        eventManager.start();    
+        eventManager.start();
     }
 
     @Override
@@ -54,6 +55,5 @@ public class CachedAttributeModel extends AbstractAttributeModel {
 
     @Override
     public void clear() {
-        // TODO??
     }
 }

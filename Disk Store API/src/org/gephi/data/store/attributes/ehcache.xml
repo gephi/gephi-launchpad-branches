@@ -3,16 +3,18 @@
 <ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     updateCheck="false" 
     monitoring="autoDetect"
-    dynamicConfig="true" />
+    dynamicConfig="true" >
 
     <diskStore path="java.io.tmpdir" />
     
+<!-- maxBytesLocalHeap="40%"-->
+    
     <defaultCache
-        maxElementsInMemory="10000"
         eternal="true"
         statistics="false"
         memoryStoreEvictionPolicy="LFU"
         overflowToDisk="false"
+        overflowToOffHeap="false"
         diskPersistent="false">
     </defaultCache>
 </ehcache>
