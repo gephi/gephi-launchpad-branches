@@ -27,6 +27,8 @@ import java.awt.Dimension;
 import java.awt.Point;
 import org.gephi.graph.api.Node;
 import org.gephi.visualization.api.camera.Camera;
+import org.gephi.visualization.api.vizmodel.VizConfig;
+import org.gephi.visualization.api.vizmodel.VizModel;
 
 /**
  * Controller for visualization.
@@ -60,6 +62,16 @@ public interface VisualizationController {
      */
     public Camera getCamera();
 
+    /**
+     * Returns the current active VizModel.
+     */
+    public VizModel getVizModel();
+    
+    /**
+     * Returns the current active VizConfig.
+     */
+    public VizConfig getVizConfig();
+    
     /**
      * Centers camera on the graph. Whole graph will be visible.
      */

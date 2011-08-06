@@ -45,7 +45,7 @@ public class GlobalSettingsPanel extends javax.swing.JPanel {
     }
 
     public void setup() {
-        VizModel vizModel = Lookup.getDefault().lookup(VizModel.class);
+        VizModel vizModel = Lookup.getDefault().lookup(VisualizationController.class).getVizModel();
         vizModel.addPropertyChangeListener(new PropertyChangeListener() {
 
             @Override
@@ -70,7 +70,7 @@ public class GlobalSettingsPanel extends javax.swing.JPanel {
 
             @Override
             public void itemStateChanged(ItemEvent e) {
-                VizModel vizModel = Lookup.getDefault().lookup(VizModel.class);
+                VizModel vizModel = Lookup.getDefault().lookup(VisualizationController.class).getVizModel();
                 vizModel.setLightenNonSelectedAuto(hightlightCheckBox.isSelected());
             }
         });
@@ -78,7 +78,7 @@ public class GlobalSettingsPanel extends javax.swing.JPanel {
 
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
-                VizModel vizModel = Lookup.getDefault().lookup(VizModel.class);
+                VizModel vizModel = Lookup.getDefault().lookup(VisualizationController.class).getVizModel();
                 vizModel.setBackgroundColor(((JColorButton) backgroundColorButton).getColor());
             }
         });
@@ -86,7 +86,7 @@ public class GlobalSettingsPanel extends javax.swing.JPanel {
 
             @Override
             public void itemStateChanged(ItemEvent e) {
-                VizModel vizModel = Lookup.getDefault().lookup(VizModel.class);
+                VizModel vizModel = Lookup.getDefault().lookup(VisualizationController.class).getVizModel();
                 vizModel.setAutoSelectNeighbor(autoSelectNeigborCheckbox.isSelected());
             }
         });
@@ -94,7 +94,7 @@ public class GlobalSettingsPanel extends javax.swing.JPanel {
 
             @Override
             public void stateChanged(ChangeEvent e) {
-                VizModel vizModel = Lookup.getDefault().lookup(VizModel.class);
+                VizModel vizModel = Lookup.getDefault().lookup(VisualizationController.class).getVizModel();
                 float zoom = zoomSlider.getValue() / (float) zoomSlider.getMaximum();
                 vizModel.setZoomFactor(zoom);
                 Lookup.getDefault().lookup(VisualizationController.class).getCamera().setZoom(zoom);
@@ -104,7 +104,7 @@ public class GlobalSettingsPanel extends javax.swing.JPanel {
 
             @Override
             public void itemStateChanged(ItemEvent e) {
-                VizModel vizModel = Lookup.getDefault().lookup(VizModel.class);
+                VizModel vizModel = Lookup.getDefault().lookup(VisualizationController.class).getVizModel();
                 vizModel.setUse3d(use3dCheckbox.isSelected());
                 Lookup.getDefault().lookup(VisualizationController.class).modeChanged();
             }
@@ -112,7 +112,7 @@ public class GlobalSettingsPanel extends javax.swing.JPanel {
     }
 
     private void refreshSharedConfig() {
-        VizModel vizModel = Lookup.getDefault().lookup(VizModel.class);
+        VizModel vizModel = Lookup.getDefault().lookup(VisualizationController.class).getVizModel();
         setEnable(!vizModel.isDefaultModel());
         if (vizModel.isDefaultModel()) {
             return;
@@ -140,7 +140,7 @@ public class GlobalSettingsPanel extends javax.swing.JPanel {
     }
 
     private void refreshZoom() {
-        float zoomValue = Lookup.getDefault().lookup(VizModel.class).getZoomFactor();
+        float zoomValue = Lookup.getDefault().lookup(VisualizationController.class).getVizModel().getZoomFactor();
         if ((int) (zoomValue * zoomSlider.getMaximum()) != zoomSlider.getValue()) {
             zoomSlider.setValue((int) (zoomValue * zoomSlider.getMaximum()));
         }

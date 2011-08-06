@@ -23,6 +23,7 @@ package org.gephi.visualization.api.vizmodel;
 
 import java.awt.Color;
 import java.beans.PropertyChangeListener;
+import java.util.List;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
@@ -153,6 +154,10 @@ public interface VizModel {
 
     public void removePropertyChangeListener(PropertyChangeListener listener);
 
+    public List<PropertyChangeListener> getListeners();
+
+    public void setListeners(List<PropertyChangeListener> listeners);
+    
     public void fireProperyChange(String propertyName, Object oldvalue, Object newValue);
 
     //XML

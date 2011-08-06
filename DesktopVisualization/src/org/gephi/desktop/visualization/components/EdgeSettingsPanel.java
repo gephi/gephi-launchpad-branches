@@ -30,6 +30,7 @@ import java.beans.PropertyChangeListener;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import org.gephi.ui.components.JColorButton;
+import org.gephi.visualization.api.controller.VisualizationController;
 import org.gephi.visualization.api.vizmodel.VizConfig;
 import org.gephi.visualization.api.vizmodel.VizModel;
 import org.openide.util.Lookup;
@@ -46,7 +47,7 @@ public class EdgeSettingsPanel extends javax.swing.JPanel {
     }
 
     public void setup() {
-        VizModel vizModel = Lookup.getDefault().lookup(VizModel.class);
+        VizModel vizModel = Lookup.getDefault().lookup(VisualizationController.class).getVizModel();
         vizModel.addPropertyChangeListener(new PropertyChangeListener() {
 
             public void propertyChange(PropertyChangeEvent evt) {
@@ -78,7 +79,7 @@ public class EdgeSettingsPanel extends javax.swing.JPanel {
         showEdgesCheckbox.addItemListener(new ItemListener() {
 
             public void itemStateChanged(ItemEvent e) {
-                VizModel vizModel = Lookup.getDefault().lookup(VizModel.class);
+                VizModel vizModel = Lookup.getDefault().lookup(VisualizationController.class).getVizModel();
                 vizModel.setShowEdges(showEdgesCheckbox.isSelected());
                 setEnable(true);
             }
@@ -86,49 +87,49 @@ public class EdgeSettingsPanel extends javax.swing.JPanel {
         ((JColorButton) edgeColorButton).addPropertyChangeListener(JColorButton.EVENT_COLOR, new PropertyChangeListener() {
 
             public void propertyChange(PropertyChangeEvent evt) {
-                VizModel vizModel = Lookup.getDefault().lookup(VizModel.class);
+                VizModel vizModel = Lookup.getDefault().lookup(VisualizationController.class).getVizModel();
                 vizModel.setEdgeUniColor(((JColorButton) edgeColorButton).getColor());
             }
         });
         sourceNodeColorCheckbox.addItemListener(new ItemListener() {
 
             public void itemStateChanged(ItemEvent e) {
-                VizModel vizModel = Lookup.getDefault().lookup(VizModel.class);
+                VizModel vizModel = Lookup.getDefault().lookup(VisualizationController.class).getVizModel();
                 vizModel.setEdgeHasUniColor(!sourceNodeColorCheckbox.isSelected());
             }
         });
         selectionColorCheckbox.addItemListener(new ItemListener() {
 
             public void itemStateChanged(ItemEvent e) {
-                VizModel vizModel = Lookup.getDefault().lookup(VizModel.class);
+                VizModel vizModel = Lookup.getDefault().lookup(VisualizationController.class).getVizModel();
                 vizModel.setEdgeSelectionColor(selectionColorCheckbox.isSelected());
             }
         });
         edgeInSelectionColorChooser.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent ae) {
-                VizModel vizModel = Lookup.getDefault().lookup(VizModel.class);
+                VizModel vizModel = Lookup.getDefault().lookup(VisualizationController.class).getVizModel();
                 vizModel.setEdgeInSelectionColor(edgeInSelectionColorChooser.getColor());
             }
         });
         edgeBothSelectionColorChooser.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent ae) {
-                VizModel vizModel = Lookup.getDefault().lookup(VizModel.class);
+                VizModel vizModel = Lookup.getDefault().lookup(VisualizationController.class).getVizModel();
                 vizModel.setEdgeBothSelectionColor(edgeBothSelectionColorChooser.getColor());
             }
         });
         edgeOutSelectionColorChooser.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent ae) {
-                VizModel vizModel = Lookup.getDefault().lookup(VizModel.class);
+                VizModel vizModel = Lookup.getDefault().lookup(VisualizationController.class).getVizModel();
                 vizModel.setEdgeOutSelectionColor(edgeOutSelectionColorChooser.getColor());
             }
         });
         scaleSlider.addChangeListener(new ChangeListener() {
 
             public void stateChanged(ChangeEvent e) {
-                VizModel vizModel = Lookup.getDefault().lookup(VizModel.class);
+                VizModel vizModel = Lookup.getDefault().lookup(VisualizationController.class).getVizModel();
                 if (vizModel.getEdgeScale() != (scaleSlider.getValue() / 10f + 0.1f)) {
                     vizModel.setEdgeScale(scaleSlider.getValue() / 10f + 0.1f);
                 }
@@ -137,7 +138,7 @@ public class EdgeSettingsPanel extends javax.swing.JPanel {
         metaScaleSlider.addChangeListener(new ChangeListener() {
 
             public void stateChanged(ChangeEvent e) {
-                VizModel vizModel = Lookup.getDefault().lookup(VizModel.class);
+                VizModel vizModel = Lookup.getDefault().lookup(VisualizationController.class).getVizModel();
                 int val = metaScaleSlider.getValue();
                 if (vizModel.getMetaEdgeScale() != (val / 50f + 0.0001f)) {
                     vizModel.setMetaEdgeScale(val / 50f + 0.0001f);
@@ -147,7 +148,7 @@ public class EdgeSettingsPanel extends javax.swing.JPanel {
     }
 
     private void refreshSharedConfig() {
-        VizModel vizModel = Lookup.getDefault().lookup(VizModel.class);
+        VizModel vizModel = Lookup.getDefault().lookup(VisualizationController.class).getVizModel();
         setEnable(!vizModel.isDefaultModel());
         if (vizModel.isDefaultModel()) {
             return;

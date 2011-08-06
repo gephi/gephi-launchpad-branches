@@ -29,8 +29,10 @@ import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import org.gephi.ui.utils.UIUtils;
+import org.gephi.visualization.api.controller.VisualizationController;
 import org.gephi.visualization.api.selection.SelectionManager;
 import org.gephi.visualization.api.selection.SelectionType;
+import org.gephi.visualization.api.vizmodel.VizConfig;
 import org.openide.util.Lookup;
 import org.openide.util.NbBundle;
 
@@ -69,17 +71,16 @@ public class SelectionBar extends javax.swing.JPanel {
     }
 
     public JPopupMenu createPopup() {
-
-        SelectionManager manager = Lookup.getDefault().lookup(SelectionManager.class);
+        VizConfig vizConfig = Lookup.getDefault().lookup(VisualizationController.class).getVizConfig();
         final MouseSelectionPopupPanel popupPanel = new MouseSelectionPopupPanel();
-        popupPanel.setDiameter(manager.getMouseSelectionDiameter());
-        popupPanel.setProportionnalToZoom(manager.isMouseSelectionZoomProportional());
+        popupPanel.setDiameter(vizConfig.getIntProperty(VizConfig.MOUSE_SELECTION_DIAMETER));
+        popupPanel.setProportionnalToZoom(vizConfig.getBooleanProperty(VizConfig.MOUSE_SELECTION_ZOOM_PROPORTIONAL));
         popupPanel.setChangeListener(new ChangeListener() {
 
             public void stateChanged(ChangeEvent e) {
-                SelectionManager manager = Lookup.getDefault().lookup(SelectionManager.class);
-                manager.setMouseSelectionDiameter(popupPanel.getDiameter());
-                manager.setMouseSelectionZoomProportionnal(popupPanel.isProportionnalToZoom());
+                VizConfig vizConfig = Lookup.getDefault().lookup(VisualizationController.class).getVizConfig();
+                vizConfig.setProperty(VizConfig.MOUSE_SELECTION_DIAMETER, popupPanel.getDiameter());
+                vizConfig.setProperty(VizConfig.MOUSE_SELECTION_ZOOM_PROPORTIONAL, popupPanel.isProportionnalToZoom());
             }
         });
 

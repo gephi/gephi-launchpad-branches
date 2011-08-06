@@ -178,6 +178,16 @@ public class TextModelImpl implements TextModel {
     public void removeChangeListener(ChangeListener changeListener) {
         listeners.remove(changeListener);
     }
+    
+    @Override
+    public void setListeners(List<ChangeListener> listeners) {
+        this.listeners = listeners;
+    }
+
+    @Override
+    public List<ChangeListener> getListeners() {
+        return listeners;
+    }
 
     private void fireChangeEvent() {
         ChangeEvent evt = new ChangeEvent(this);

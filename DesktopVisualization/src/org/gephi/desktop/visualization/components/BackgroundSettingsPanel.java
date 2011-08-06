@@ -31,6 +31,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JTextField;
 import org.gephi.math.linalg.Vec2;
 import org.gephi.ui.components.JColorButton;
+import org.gephi.visualization.api.controller.VisualizationController;
 import org.gephi.visualization.api.rendering.background.Background;
 import org.gephi.visualization.api.rendering.background.BackgroundAttachment;
 import org.gephi.visualization.api.rendering.background.BackgroundPosition;
@@ -57,11 +58,13 @@ public class BackgroundSettingsPanel extends javax.swing.JPanel {
     }
 
     public void setup() {
-        VizModel vizModel = Lookup.getDefault().lookup(VizModel.class);
+        VizModel vizModel = Lookup.getDefault().lookup(VisualizationController.class).getVizModel();
         vizModel.addPropertyChangeListener(new PropertyChangeListener() {
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
-                if (evt.getPropertyName().equals(VizConfig.BACKGROUND)) {
+                if (evt.getPropertyName().equals("init")) {
+                    refreshSharedConfig();
+                } else if (evt.getPropertyName().equals(VizConfig.BACKGROUND)) {
                     refreshSharedConfig();
                 }
             }
@@ -70,7 +73,7 @@ public class BackgroundSettingsPanel extends javax.swing.JPanel {
         ((JColorButton) colorButton).addPropertyChangeListener(JColorButton.EVENT_COLOR, new PropertyChangeListener() {
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
-                VizModel vizModel = Lookup.getDefault().lookup(VizModel.class);
+                VizModel vizModel = Lookup.getDefault().lookup(VisualizationController.class).getVizModel();
                 if (!vizModel.getBackground().getColor().equals(((JColorButton) colorButton).getColor())) {
                     vizModel.setBackground(extractBackground());
                 }
@@ -86,7 +89,7 @@ public class BackgroundSettingsPanel extends javax.swing.JPanel {
                 if (fileChooser.showOpenDialog(WindowManager.getDefault().getMainWindow()) == JFileChooser.APPROVE_OPTION) {
                     String file = fileChooser.getSelectedFile().getAbsolutePath();
                     NbPreferences.forModule(BackgroundSettingsPanel.class).put(LAST_PATH, file);
-                    VizModel vizModel = Lookup.getDefault().lookup(VizModel.class);
+                    VizModel vizModel = Lookup.getDefault().lookup(VisualizationController.class).getVizModel();
                     fileTextField.setText(file);
                     if (!file.equals(vizModel.getBackground().image)) {
                         vizModel.setBackground(extractBackground());
@@ -100,7 +103,7 @@ public class BackgroundSettingsPanel extends javax.swing.JPanel {
         repeatComboBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                VizModel vizModel = Lookup.getDefault().lookup(VizModel.class);
+                VizModel vizModel = Lookup.getDefault().lookup(VisualizationController.class).getVizModel();
                 if (!vizModel.getBackground().repeat.equals((BackgroundRepeat) repeatComboBox.getSelectedItem())) {
                     vizModel.setBackground(extractBackground());
                 }
@@ -112,7 +115,7 @@ public class BackgroundSettingsPanel extends javax.swing.JPanel {
         attachmentComboBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                VizModel vizModel = Lookup.getDefault().lookup(VizModel.class);
+                VizModel vizModel = Lookup.getDefault().lookup(VisualizationController.class).getVizModel();
                 if (!vizModel.getBackground().attachment.equals((BackgroundAttachment) attachmentComboBox.getSelectedItem())) {
                     vizModel.setBackground(extractBackground());
                 }
@@ -124,7 +127,7 @@ public class BackgroundSettingsPanel extends javax.swing.JPanel {
         positionComboBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                VizModel vizModel = Lookup.getDefault().lookup(VizModel.class);
+                VizModel vizModel = Lookup.getDefault().lookup(VisualizationController.class).getVizModel();
                 if (!vizModel.getBackground().position.mode.equals((BackgroundPosition.Mode) positionComboBox.getSelectedItem())) {
                     vizModel.setBackground(extractBackground());
                 }
@@ -134,7 +137,7 @@ public class BackgroundSettingsPanel extends javax.swing.JPanel {
         positionTextField.addPropertyChangeListener(new PropertyChangeListener() {
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
-                VizModel vizModel = Lookup.getDefault().lookup(VizModel.class);
+                VizModel vizModel = Lookup.getDefault().lookup(VisualizationController.class).getVizModel();
                 if (!((VectorTextField) positionTextField).getVector().equals(vizModel.getBackground().position.parameter)) {
                     vizModel.setBackground(extractBackground());
                 }
@@ -160,7 +163,7 @@ public class BackgroundSettingsPanel extends javax.swing.JPanel {
         sizeComboBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                VizModel vizModel = Lookup.getDefault().lookup(VizModel.class);
+                VizModel vizModel = Lookup.getDefault().lookup(VisualizationController.class).getVizModel();
                 if (!vizModel.getBackground().size.mode.equals((BackgroundSize.Mode) sizeComboBox.getSelectedItem())) {
                     vizModel.setBackground(extractBackground());
                 }
@@ -170,7 +173,7 @@ public class BackgroundSettingsPanel extends javax.swing.JPanel {
         sizeTextField.addPropertyChangeListener(new PropertyChangeListener() {
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
-                VizModel vizModel = Lookup.getDefault().lookup(VizModel.class);
+                VizModel vizModel = Lookup.getDefault().lookup(VisualizationController.class).getVizModel();
                 if (!((VectorTextField) sizeTextField).getVector().equals(vizModel.getBackground().size.parameter)) {
                     vizModel.setBackground(extractBackground());
                 }
@@ -206,7 +209,11 @@ public class BackgroundSettingsPanel extends javax.swing.JPanel {
     }
     
     private void refreshSharedConfig() {
-        VizModel vizModel = Lookup.getDefault().lookup(VizModel.class);
+        VizModel vizModel = Lookup.getDefault().lookup(VisualizationController.class).getVizModel();
+        setEnable(!vizModel.isDefaultModel());
+        if (vizModel.isDefaultModel()) {
+            return;
+        }
         if (!vizModel.getBackground().getColor().equals(((JColorButton) colorButton).getColor())) {
             ((JColorButton) colorButton).setColor(vizModel.getBackground().getColor());
         }
@@ -235,6 +242,20 @@ public class BackgroundSettingsPanel extends javax.swing.JPanel {
         if (!((VectorTextField) sizeTextField).getVector().equals(vizModel.getBackground().size.parameter)) {
             ((VectorTextField) sizeTextField).setup(vizModel.getBackground().size.parameter);
         }
+    }
+    
+    private void setEnable(boolean enable) {
+        attachmentComboBox.setEnabled(enable);
+        colorButton.setEnabled(enable);
+        fileBrowseButton.setEnabled(enable);
+        fileTextField.setEnabled(enable);
+        positionComboBox.setEnabled(enable);
+        positionSetVectorButton.setEnabled(enable);
+        positionTextField.setEnabled(enable);
+        repeatComboBox.setEnabled(enable);
+        sizeComboBox.setEnabled(enable);
+        sizeSetVectorButton.setEnabled(enable);
+        sizeTextField.setEnabled(enable);
     }
     
     /** This method is called from within the constructor to

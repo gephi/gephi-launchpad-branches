@@ -36,12 +36,12 @@ import org.gephi.project.api.ProjectController;
 import org.gephi.project.api.Workspace;
 import org.gephi.project.api.WorkspaceListener;
 import org.gephi.visualization.api.controller.MotionManager;
+import org.gephi.visualization.api.controller.VisualizationController;
 import org.gephi.visualization.api.vizmodel.VizConfig;
 import org.gephi.visualization.api.selection.NodeSpatialStructure;
 import org.gephi.visualization.api.selection.SelectionManager;
 import org.gephi.visualization.api.selection.SelectionType;
 import org.gephi.visualization.api.selection.Shape;
-import org.gephi.visualization.api.vizmodel.VizModel;
 import org.gephi.visualization.apiimpl.shape.ShapeUtils;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.ServiceProvider;
@@ -53,18 +53,11 @@ public class SelectionManagerImpl implements SelectionManager, WorkspaceListener
 
     private boolean blocked;
 
-    private int mouseSelectionDiameter;
-    private boolean mouseSelectionZoomProportional;
-
-    private Shape singleNodeSelectionShape;
-
     private List<ChangeListener> listeners = new ArrayList<ChangeListener>();
 
     @Override
     public void initialize() {
         Lookup.getDefault().lookup(ProjectController.class).addWorkspaceListener(this);
-        mouseSelectionDiameter = Lookup.getDefault().lookup(VizModel.class).getConfig().getIntProperty(VizConfig.MOUSE_SELECTION_DIAMETER);
-        mouseSelectionZoomProportional = Lookup.getDefault().lookup(VizModel.class).getConfig().getBooleanProperty(VizConfig.MOUSE_SELECTION_ZOOM_PROPORTIONAL);
         nodeContainer = new Octree();
     }
 
@@ -95,20 +88,22 @@ public class SelectionManagerImpl implements SelectionManager, WorkspaceListener
 
     @Override
     public void selectSingle(Point point, boolean select) {
-        singleNodeSelectionShape = ShapeUtils.createEllipseShape(point.x - mouseSelectionDiameter, point.y - mouseSelectionDiameter, mouseSelectionDiameter, mouseSelectionDiameter);
+        int mouseSelectionDiameter = Lookup.getDefault().lookup(VisualizationController.class).getVizConfig().getIntProperty(VizConfig.MOUSE_SELECTION_DIAMETER);
+        Shape singleNodeSelectionShape = ShapeUtils.createEllipseShape(point.x - mouseSelectionDiameter, point.y - mouseSelectionDiameter, mouseSelectionDiameter, mouseSelectionDiameter);
         nodeContainer.clearContinuousSelection();
         nodeContainer.selectSingle(singleNodeSelectionShape, point, select, NodeSpatialStructure.SINGLE_NODE_CLOSEST);
     }
 
     @Override
     public boolean selectContinuousSingle(Point point, boolean select) {
-        singleNodeSelectionShape = ShapeUtils.createEllipseShape(point.x - mouseSelectionDiameter, point.y - mouseSelectionDiameter, mouseSelectionDiameter, mouseSelectionDiameter);
+        int mouseSelectionDiameter = Lookup.getDefault().lookup(VisualizationController.class).getVizConfig().getIntProperty(VizConfig.MOUSE_SELECTION_DIAMETER);
+        Shape singleNodeSelectionShape = ShapeUtils.createEllipseShape(point.x - mouseSelectionDiameter, point.y - mouseSelectionDiameter, mouseSelectionDiameter, mouseSelectionDiameter);
         return nodeContainer.selectContinuousSingle(singleNodeSelectionShape, point, select, NodeSpatialStructure.SINGLE_NODE_CLOSEST);
     }
 
     @Override
     public void refreshDataStructure() {
-        boolean use3d = Lookup.getDefault().lookup(VizModel.class).isUse3d();
+        boolean use3d = Lookup.getDefault().lookup(VisualizationController.class).getVizModel().isUse3d();
         GraphController graphController = Lookup.getDefault().lookup(GraphController.class);
         if (use3d) {
             nodeContainer = new Octree(graphController.getModel().getGraph());
@@ -120,7 +115,7 @@ public class SelectionManagerImpl implements SelectionManager, WorkspaceListener
     @Override
     public void blockSelection(boolean block) {
         // TODO implement reasonable block for tools
-        VizConfig vizConfig = Lookup.getDefault().lookup(VizModel.class).getConfig();
+        VizConfig vizConfig = Lookup.getDefault().lookup(VisualizationController.class).getVizConfig();
         if (vizConfig.getProperty(SelectionType.class, VizConfig.SELECTION_TYPE) != SelectionType.NONE) {
             this.blocked = block;
             vizConfig.setProperty(VizConfig.SELECTION, !block);
@@ -142,14 +137,10 @@ public class SelectionManagerImpl implements SelectionManager, WorkspaceListener
     }
 
     @Override
-    public int getMouseSelectionDiameter() {
-        return mouseSelectionDiameter;
-    }
-
-    @Override
     public Shape getNodePointerShape() {
+        int mouseSelectionDiameter = Lookup.getDefault().lookup(VisualizationController.class).getVizConfig().getIntProperty(VizConfig.MOUSE_SELECTION_DIAMETER);
         MotionManager motionManager = Lookup.getDefault().lookup(MotionManager.class);
-        singleNodeSelectionShape = ShapeUtils.createEllipseShape(motionManager.getMousePosition()[0] - mouseSelectionDiameter, 
+        Shape singleNodeSelectionShape = ShapeUtils.createEllipseShape(motionManager.getMousePosition()[0] - mouseSelectionDiameter, 
                                                                  motionManager.getMousePosition()[1] - mouseSelectionDiameter,
                                                                  mouseSelectionDiameter, mouseSelectionDiameter);
         return (isDirectMouseSelection() || isDraggingEnabled()) && motionManager.isInside() && !motionManager.isPressing() && mouseSelectionDiameter > 1 ? singleNodeSelectionShape : null;
@@ -162,32 +153,27 @@ public class SelectionManagerImpl implements SelectionManager, WorkspaceListener
 
     @Override
     public boolean isDirectMouseSelection() {
-        return Lookup.getDefault().lookup(VizModel.class).getConfig().getBooleanProperty(VizConfig.DIRECT_MOUSE_SELECTION);
+        return Lookup.getDefault().lookup(VisualizationController.class).getVizConfig().getBooleanProperty(VizConfig.DIRECT_MOUSE_SELECTION);
     }
 
     @Override
     public boolean isDraggingEnabled() {
-        return Lookup.getDefault().lookup(VizModel.class).getConfig().getBooleanProperty(VizConfig.DRAGGING);
-    }
-
-    @Override
-    public boolean isMouseSelectionZoomProportional() {
-        return mouseSelectionZoomProportional;
+        return Lookup.getDefault().lookup(VisualizationController.class).getVizConfig().getBooleanProperty(VizConfig.DRAGGING);
     }
 
     @Override
     public boolean isSelectionEnabled() {
-        return Lookup.getDefault().lookup(VizModel.class).getConfig().getBooleanProperty(VizConfig.SELECTION);
+        return Lookup.getDefault().lookup(VisualizationController.class).getVizConfig().getBooleanProperty(VizConfig.SELECTION);
     }
 
     @Override
     public boolean isNodeDraggingEnabled() {
-        return Lookup.getDefault().lookup(VizModel.class).getConfig().getBooleanProperty(VizConfig.NODE_DRAGGING);
+        return Lookup.getDefault().lookup(VisualizationController.class).getVizConfig().getBooleanProperty(VizConfig.NODE_DRAGGING);
     }
 
     @Override
     public SelectionType getSelectionType() {
-        return Lookup.getDefault().lookup(VizModel.class).getConfig().getProperty(SelectionType.class, VizConfig.SELECTION_TYPE);
+        return Lookup.getDefault().lookup(VisualizationController.class).getVizConfig().getProperty(SelectionType.class, VizConfig.SELECTION_TYPE);
     }
 
     @Override
@@ -222,14 +208,14 @@ public class SelectionManagerImpl implements SelectionManager, WorkspaceListener
     @Override
     public void setDraggingEnabled(boolean dragging) {
         clearState();
-        Lookup.getDefault().lookup(VizModel.class).getConfig().setProperty(VizConfig.DRAGGING, true);
+        Lookup.getDefault().lookup(VisualizationController.class).getVizConfig().setProperty(VizConfig.DRAGGING, true);
         fireChangeEvent();
     }
 
     @Override
     public void setSelectionType(SelectionType selectionType) {
         clearState();
-        VizConfig vizConfig = Lookup.getDefault().lookup(VizModel.class).getConfig();
+        VizConfig vizConfig = Lookup.getDefault().lookup(VisualizationController.class).getVizConfig();
         vizConfig.setProperty(VizConfig.SELECTION, true);
         vizConfig.setProperty(VizConfig.SELECTION_TYPE, selectionType);
         fireChangeEvent();
@@ -238,7 +224,7 @@ public class SelectionManagerImpl implements SelectionManager, WorkspaceListener
     @Override
     public void setDirectMouseSelection() {
         clearState();
-        VizConfig vizConfig = Lookup.getDefault().lookup(VizModel.class).getConfig();
+        VizConfig vizConfig = Lookup.getDefault().lookup(VisualizationController.class).getVizConfig();
         vizConfig.setProperty(VizConfig.SELECTION, true);
         vizConfig.setProperty(VizConfig.DIRECT_MOUSE_SELECTION, true);
         fireChangeEvent();
@@ -247,30 +233,20 @@ public class SelectionManagerImpl implements SelectionManager, WorkspaceListener
     @Override
     public void setNodeDraggingEnabled() {
         clearState();
-        VizConfig vizConfig = Lookup.getDefault().lookup(VizModel.class).getConfig();
+        VizConfig vizConfig = Lookup.getDefault().lookup(VisualizationController.class).getVizConfig();
         vizConfig.setProperty(VizConfig.SELECTION, true);
         vizConfig.setProperty(VizConfig.NODE_DRAGGING, true);
         fireChangeEvent();
     }
 
     private void clearState() {
-        VizConfig vizConfig = Lookup.getDefault().lookup(VizModel.class).getConfig();
+        VizConfig vizConfig = Lookup.getDefault().lookup(VisualizationController.class).getVizConfig();
         vizConfig.setProperty(VizConfig.SELECTION, false);
         vizConfig.setProperty(VizConfig.DRAGGING, false);
         vizConfig.setProperty(VizConfig.NODE_DRAGGING, false);
         vizConfig.setProperty(VizConfig.DIRECT_MOUSE_SELECTION, false);
         vizConfig.setProperty(VizConfig.SELECTION_TYPE, SelectionType.NONE);
         this.blocked = false;
-    }
-
-    @Override
-    public void setMouseSelectionDiameter(int mouseSelectionDiameter) {
-        this.mouseSelectionDiameter = mouseSelectionDiameter;
-    }
-
-    @Override
-    public void setMouseSelectionZoomProportionnal(boolean mouseSelectionZoomProportionnal) {
-        this.mouseSelectionZoomProportional = mouseSelectionZoomProportionnal;
     }
 
     @Override

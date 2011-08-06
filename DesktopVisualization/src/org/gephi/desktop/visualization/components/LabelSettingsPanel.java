@@ -29,10 +29,10 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import org.gephi.ui.components.JColorButton;
+import org.gephi.visualization.api.controller.VisualizationController;
 import org.gephi.visualization.api.vizmodel.TextModel;
 import org.gephi.visualization.api.vizmodel.VizModel;
 import org.openide.DialogDescriptor;
@@ -56,7 +56,7 @@ public class LabelSettingsPanel extends javax.swing.JPanel {
     }
 
     public void setup() {
-        VizModel vizModel = Lookup.getDefault().lookup(VizModel.class);
+        VizModel vizModel = Lookup.getDefault().lookup(VisualizationController.class).getVizModel();
         TextModel model = vizModel.getTextModel();
         vizModel.addPropertyChangeListener(new PropertyChangeListener() {
 
@@ -72,7 +72,7 @@ public class LabelSettingsPanel extends javax.swing.JPanel {
 
             public void itemStateChanged(ItemEvent e) {
                 boolean value = showNodeLabelsCheckbox.isSelected();
-                TextModel model = Lookup.getDefault().lookup(VizModel.class).getTextModel();
+                TextModel model = Lookup.getDefault().lookup(VisualizationController.class).getVizModel().getTextModel();
                 if (value != model.isShowNodeLabels()) {
                     model.setShowNodeLabels(value);
                     setEnable(true);
@@ -82,7 +82,7 @@ public class LabelSettingsPanel extends javax.swing.JPanel {
         nodeFontButton.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
-                TextModel model = Lookup.getDefault().lookup(VizModel.class).getTextModel();
+                TextModel model = Lookup.getDefault().lookup(VisualizationController.class).getVizModel().getTextModel();
                 Font font = JFontChooser.showDialog(WindowManager.getDefault().getMainWindow(), model.getNodeFont());
                 if (font != null && font != model.getNodeFont()) {
                     model.setNodeFont(font);
@@ -92,7 +92,7 @@ public class LabelSettingsPanel extends javax.swing.JPanel {
         ((JColorButton) nodeColorButton).addPropertyChangeListener(JColorButton.EVENT_COLOR, new PropertyChangeListener() {
 
             public void propertyChange(PropertyChangeEvent evt) {
-                TextModel model = Lookup.getDefault().lookup(VizModel.class).getTextModel();
+                TextModel model = Lookup.getDefault().lookup(VisualizationController.class).getVizModel().getTextModel();
                 if (!model.getNodeColor().equals(((JColorButton) nodeColorButton).getColor())) {
                     model.setNodeColor(((JColorButton) nodeColorButton).getColor());
                 }
@@ -102,7 +102,7 @@ public class LabelSettingsPanel extends javax.swing.JPanel {
         nodeSizeSlider.addChangeListener(new ChangeListener() {
 
             public void stateChanged(ChangeEvent e) {
-                TextModel model = Lookup.getDefault().lookup(VizModel.class).getTextModel();
+                TextModel model = Lookup.getDefault().lookup(VisualizationController.class).getVizModel().getTextModel();
                 if (model.getNodeSizeFactor() != nodeSizeSlider.getValue() / 100f) {
                     model.setNodeSizeFactor(nodeSizeSlider.getValue() / 100f);
                 }
@@ -114,7 +114,7 @@ public class LabelSettingsPanel extends javax.swing.JPanel {
 
             public void itemStateChanged(ItemEvent e) {
                 boolean value = showEdgeLabelsCheckbox.isSelected();
-                TextModel model = Lookup.getDefault().lookup(VizModel.class).getTextModel();
+                TextModel model = Lookup.getDefault().lookup(VisualizationController.class).getVizModel().getTextModel();
                 if (value != model.isShowEdgeLabels()) {
                     model.setShowEdgeLabels(value);
                     setEnable(true);
@@ -124,7 +124,7 @@ public class LabelSettingsPanel extends javax.swing.JPanel {
         edgeFontButton.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
-                TextModel model = Lookup.getDefault().lookup(VizModel.class).getTextModel();
+                TextModel model = Lookup.getDefault().lookup(VisualizationController.class).getVizModel().getTextModel();
                 Font font = JFontChooser.showDialog(WindowManager.getDefault().getMainWindow(), model.getEdgeFont());
                 if (font != null && font != model.getEdgeFont()) {
                     model.setEdgeFont(font);
@@ -134,7 +134,7 @@ public class LabelSettingsPanel extends javax.swing.JPanel {
         ((JColorButton) edgeColorButton).addPropertyChangeListener(JColorButton.EVENT_COLOR, new PropertyChangeListener() {
 
             public void propertyChange(PropertyChangeEvent evt) {
-                TextModel model = Lookup.getDefault().lookup(VizModel.class).getTextModel();
+                TextModel model = Lookup.getDefault().lookup(VisualizationController.class).getVizModel().getTextModel();
                 if (!model.getEdgeColor().equals(((JColorButton) edgeColorButton).getColor())) {
                     model.setEdgeColor(((JColorButton) edgeColorButton).getColor());
                 }
@@ -143,7 +143,7 @@ public class LabelSettingsPanel extends javax.swing.JPanel {
         edgeSizeSlider.addChangeListener(new ChangeListener() {
 
             public void stateChanged(ChangeEvent e) {
-                TextModel model = Lookup.getDefault().lookup(VizModel.class).getTextModel();
+                TextModel model = Lookup.getDefault().lookup(VisualizationController.class).getVizModel().getTextModel();
                 model.setEdgeSizeFactor(edgeSizeSlider.getValue() / 100f);
             }
         });
@@ -176,7 +176,7 @@ public class LabelSettingsPanel extends javax.swing.JPanel {
         hideNonSelectedCheckbox.addItemListener(new ItemListener() {
 
             public void itemStateChanged(ItemEvent e) {
-                TextModel model = Lookup.getDefault().lookup(VizModel.class).getTextModel();
+                TextModel model = Lookup.getDefault().lookup(VisualizationController.class).getVizModel().getTextModel();
                 if (model.isSelectedOnly() != hideNonSelectedCheckbox.isSelected()) {
                     model.setSelectedOnly(hideNonSelectedCheckbox.isSelected());
                 }
@@ -187,7 +187,7 @@ public class LabelSettingsPanel extends javax.swing.JPanel {
         configureLabelsButton.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
-                TextModel model = Lookup.getDefault().lookup(VizModel.class).getTextModel();
+                TextModel model = Lookup.getDefault().lookup(VisualizationController.class).getVizModel().getTextModel();
                 LabelAttributesPanel panel = new LabelAttributesPanel();
                 panel.setup(model);
                 DialogDescriptor dd = new DialogDescriptor(panel, NbBundle.getMessage(VizBarController.class, "LabelAttributesPanel.title"), true, NotifyDescriptor.OK_CANCEL_OPTION, null, null);
@@ -209,7 +209,7 @@ public class LabelSettingsPanel extends javax.swing.JPanel {
     }
 
     private void refreshSharedConfig() {
-        VizModel vizModel = Lookup.getDefault().lookup(VizModel.class);
+        VizModel vizModel = Lookup.getDefault().lookup(VisualizationController.class).getVizModel();
         setEnable(!vizModel.isDefaultModel());
         if (vizModel.isDefaultModel()) {
             return;
@@ -260,7 +260,7 @@ public class LabelSettingsPanel extends javax.swing.JPanel {
         labelSizeMode.setEnabled(enable);
         configureLabelsButton.setEnabled(enable);
 
-        TextModel model = Lookup.getDefault().lookup(VizModel.class).getTextModel();
+        TextModel model = Lookup.getDefault().lookup(VisualizationController.class).getVizModel().getTextModel();
         boolean edgeValue = model.isShowEdgeLabels();
         edgeFontButton.setEnabled(enable && edgeValue);
         edgeColorButton.setEnabled(enable && edgeValue);

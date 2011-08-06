@@ -115,7 +115,7 @@ public final class GraphTopComponent extends TopComponent {
 
     private void initCollapsePanel() {
         vizBarController = new VizBarController();
-        if (Lookup.getDefault().lookup(VizModel.class).getConfig().getBooleanProperty(VizConfig.VIZBAR)) {
+        if (Lookup.getDefault().lookup(VisualizationController.class).getVizModel().getConfig().getBooleanProperty(VizConfig.VIZBAR)) {
             collapsePanel.init(vizBarController.getToolbar(), vizBarController.getExtendedBar(), false);
         } else {
             collapsePanel.setVisible(false);
@@ -125,7 +125,7 @@ public final class GraphTopComponent extends TopComponent {
     private void initToolPanels() {
         ToolController tc = Lookup.getDefault().lookup(ToolController.class);
         if (tc != null) {
-            VizConfig vizConfig = Lookup.getDefault().lookup(VizModel.class).getConfig();
+            VizConfig vizConfig = Lookup.getDefault().lookup(VisualizationController.class).getVizModel().getConfig();
             if (vizConfig.getBooleanProperty(VizConfig.TOOLBAR)) {
                 JPanel westPanel = new JPanel(new BorderLayout(0, 0));
                 if (UIUtils.isAquaLookAndFeel()) {

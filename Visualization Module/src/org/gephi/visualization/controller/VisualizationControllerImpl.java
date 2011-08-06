@@ -42,6 +42,7 @@ import org.gephi.visualization.api.controller.MotionManager;
 import org.gephi.visualization.api.camera.Camera;
 import org.gephi.visualization.api.controller.VisualizationController;
 import org.gephi.visualization.api.selection.SelectionManager;
+import org.gephi.visualization.api.vizmodel.VizConfig;
 import org.gephi.visualization.api.vizmodel.VizModel;
 import org.gephi.visualization.camera.Camera2d;
 import org.gephi.visualization.camera.Camera3d;
@@ -49,6 +50,7 @@ import org.gephi.visualization.data.FrameDataBridge;
 import org.gephi.visualization.geometry.AABB;
 import org.gephi.visualization.model.Model;
 import org.gephi.visualization.view.View;
+import org.gephi.visualization.vizmodel.VizModelImpl;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.ServiceProvider;
 
@@ -70,14 +72,16 @@ public class VisualizationControllerImpl implements VisualizationController, Key
 
     private Dimension viewSize;
 
+    private VizModel vizModel;
+    
     private boolean centerGraph = true;
     private boolean centerZero;
     private float[] centerNode;
 
     private boolean use3d;
-
+    private boolean reinit;
     private boolean hasWorkspace;
-
+    
     // TODO remove when architecture bugs fixed
     private static final Camera DEFAULT_CAMERA = new Camera2d(300, 300, 100f, 10000.0f);
 
@@ -88,8 +92,14 @@ public class VisualizationControllerImpl implements VisualizationController, Key
         this.frameDataBridge = new FrameDataBridge();
         this.view = new View(this, this.frameDataBridge);
         this.dataManager = new Model(this, this.frameDataBridge, 33);
+        this.vizModel = new VizModelImpl(true);
+        
+        ProjectController pc = Lookup.getDefault().lookup(ProjectController.class);
+        pc.addWorkspaceListener(this);
 
-        Lookup.getDefault().lookup(ProjectController.class).addWorkspaceListener(this);
+        if (pc.getCurrentWorkspace() != null) {
+            reinit = true;
+        }
         
         // Initialize SelectionManager
         Lookup.getDefault().lookup(SelectionManager.class).initialize();
@@ -143,6 +153,16 @@ public class VisualizationControllerImpl implements VisualizationController, Key
     }
 
     @Override
+    public VizModel getVizModel() {
+        return vizModel;
+    }
+
+    @Override
+    public VizConfig getVizConfig() {
+        return vizModel.getConfig();
+    }
+    
+    @Override
     public void centerOnGraph() {
         centerGraph = true;
     }
@@ -164,7 +184,7 @@ public class VisualizationControllerImpl implements VisualizationController, Key
 
     @Override
     public void modeChanged() {
-        boolean modelUse3d = Lookup.getDefault().lookup(VizModel.class).isUse3d();
+        boolean modelUse3d = Lookup.getDefault().lookup(VisualizationController.class).getVizModel().isUse3d();
         if (modelUse3d == this.use3d) {
             return;
         }
@@ -221,6 +241,10 @@ public class VisualizationControllerImpl implements VisualizationController, Key
     }
 
     public void beginRenderFrame() {
+        if (reinit) {
+            refreshWorkspace();
+            reinit = false;
+        }
     }
 
     public void endRenderFrame() {
@@ -238,6 +262,28 @@ public class VisualizationControllerImpl implements VisualizationController, Key
         this.view.stop();
     }
 
+    public void refreshWorkspace() {
+        ProjectController pc = Lookup.getDefault().lookup(ProjectController.class);
+        VizModel model = null;
+        if (pc.getCurrentWorkspace() == null) {
+            model = new VizModelImpl(true);
+        } else {
+            model = pc.getCurrentWorkspace().getLookup().lookup(VizModel.class);
+            if (model == null) {
+                model = new VizModelImpl();
+                pc.getCurrentWorkspace().add(model);
+            }
+        }
+        if (model != vizModel) {
+            model.setListeners(vizModel.getListeners());
+            model.getTextModel().setListeners(vizModel.getTextModel().getListeners());
+            vizModel.setListeners(null);
+            vizModel.getTextModel().setListeners(null);
+            vizModel = model;
+            vizModel.init();
+        }
+    }
+    
     // User events
     @Override
     public void keyTyped(KeyEvent e) {
@@ -310,6 +356,7 @@ public class VisualizationControllerImpl implements VisualizationController, Key
     // Workspace events
     @Override
     public void initialize(Workspace workspace) {
+        workspace.add(new VizModelImpl());
     }
 
     @Override
@@ -320,6 +367,7 @@ public class VisualizationControllerImpl implements VisualizationController, Key
             workspace.add(camera);
         }
         hasWorkspace = true;
+        reinit = true;
     }
 
     @Override
@@ -332,6 +380,7 @@ public class VisualizationControllerImpl implements VisualizationController, Key
 
     @Override
     public void disable() {
+        reinit = true;
     }
-
+    
 }

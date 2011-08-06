@@ -174,7 +174,7 @@ public final class Octree extends QuadrantTree {
         final Camera camera = Lookup.getDefault().lookup(VisualizationController.class).getCameraCopy();
         final List<Node> nodes = new ArrayList<Node>();
         final Set<Node> neighbors = new HashSet<Node>();
-        final boolean autoSelectNeighbor = Lookup.getDefault().lookup(VizModel.class).isAutoSelectNeighbor();
+        final boolean autoSelectNeighbor = Lookup.getDefault().lookup(VisualizationController.class).getVizModel().isAutoSelectNeighbor();
 
         final boolean select = shape.getSelectionModifier().isPositive();
 
@@ -267,7 +267,7 @@ public final class Octree extends QuadrantTree {
         Octant octant = root;
         final Camera camera = Lookup.getDefault().lookup(VisualizationController.class).getCameraCopy();
         final Node[] nodes = new Node[1];
-        boolean autoSelectNeighbor = Lookup.getDefault().lookup(VizModel.class).isAutoSelectNeighbor();
+        boolean autoSelectNeighbor = Lookup.getDefault().lookup(VisualizationController.class).getVizModel().isAutoSelectNeighbor();
 
         singleFound = false;
 

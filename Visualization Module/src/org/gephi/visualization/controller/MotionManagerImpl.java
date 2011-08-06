@@ -35,7 +35,6 @@ import org.gephi.visualization.api.selection.SelectionManager;
 import org.gephi.visualization.api.selection.SelectionType;
 import org.gephi.visualization.api.selection.Shape;
 import org.gephi.visualization.api.selection.Shape.SelectionModifier;
-import org.gephi.visualization.api.vizmodel.VizModel;
 import org.gephi.visualization.apiimpl.contextmenu.GraphContextMenu;
 import org.gephi.visualization.apiimpl.shape.ShapeUtils;
 import org.openide.util.Lookup;
@@ -153,7 +152,7 @@ public class MotionManagerImpl implements MotionManager {
             controller.getCamera().startTranslation();
             controller.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
         } else if (SwingUtilities.isMiddleMouseButton(e)) {
-            Dimension viewDimension = VisualizationControllerImpl.getDefault().getViewDimensions();
+            Dimension viewDimension = controller.getViewDimensions();
             int dx = e.getX() - viewDimension.width / 2;
             int dy = e.getY() - viewDimension.height / 2;
             float orbitModifier = (float) (Math.sqrt(dx * dx + dy * dy) / Math.sqrt(viewDimension.width * viewDimension.width / 4 + viewDimension.height * viewDimension.height / 4));
@@ -165,7 +164,7 @@ public class MotionManagerImpl implements MotionManager {
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        VizConfig vizConfig = Lookup.getDefault().lookup(VizModel.class).getConfig();
+        VizConfig vizConfig = controller.getVizConfig();
         SelectionManager selectionManager = Lookup.getDefault().lookup(SelectionManager.class);
         
         if (selectionManager.isNodeDraggingEnabled()) {

@@ -25,6 +25,7 @@ import org.gephi.graph.api.Node;
 import org.gephi.math.linalg.Vec2;
 import org.gephi.math.linalg.Vec3;
 import org.gephi.visualization.api.color.Color;
+import org.gephi.visualization.api.controller.VisualizationController;
 import org.gephi.visualization.api.vizmodel.VizConfig;
 import org.gephi.visualization.api.vizmodel.VizModel;
 import org.gephi.visualization.data.graph.NodeStyler;
@@ -39,7 +40,7 @@ public class BasicNodeStyler implements NodeStyler {
 
     @Override
     public VizNode2D toVisual2D(Node node) {
-        VizModel vizModel = Lookup.getDefault().lookup(VizModel.class);
+        VizModel vizModel = Lookup.getDefault().lookup(VisualizationController.class).getVizModel();
         boolean selected = node.getNodeData().isSelected();
         boolean neighbor = node.getNodeData().isAutoSelected();
         Color color, borderColor;
@@ -98,7 +99,7 @@ public class BasicNodeStyler implements NodeStyler {
 
     @Override
     public VizNode3D toVisual3D(Node node) {
-        VizModel vizModel = Lookup.getDefault().lookup(VizModel.class);
+        VizModel vizModel = Lookup.getDefault().lookup(VisualizationController.class).getVizModel();
         boolean selected = node.getNodeData().isSelected();
         boolean neighbor = node.getNodeData().isAutoSelected();
         Color color, borderColor;

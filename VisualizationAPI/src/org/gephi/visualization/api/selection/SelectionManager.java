@@ -75,13 +75,9 @@ public interface SelectionManager {
      */
     boolean selectContinuousSingle(Point point, boolean select);
 
-    void addChangeListener(ChangeListener changeListener);
-
     void blockSelection(boolean block);
 
     void disableSelection();
-
-    int getMouseSelectionDiameter();
 
     /**
      * Returns the shape that is drawn around the pointer for single selection,
@@ -95,15 +91,11 @@ public interface SelectionManager {
 
     boolean isDraggingEnabled();
 
-    boolean isMouseSelectionZoomProportional();
-
     boolean isSelectionEnabled();
 
     boolean isNodeDraggingEnabled();
 
     SelectionType getSelectionType();
-
-    void removeChangeListener(ChangeListener changeListener);
 
     void selectEdge(Edge edge);
 
@@ -119,10 +111,6 @@ public interface SelectionManager {
 
     void setNodeDraggingEnabled();
 
-    void setMouseSelectionDiameter(int mouseSelectionDiameter);
-
-    void setMouseSelectionZoomProportionnal(boolean mouseSelectionZoomProportionnal);
-
     void setSelectionType(SelectionType selectionType);
 
     /**
@@ -130,5 +118,10 @@ public interface SelectionManager {
      * data structure.
      */
     void refreshDataStructure();
+    
+    // Events
+    void addChangeListener(ChangeListener changeListener);
+    
+    void removeChangeListener(ChangeListener changeListener);
 
 }

@@ -38,9 +38,9 @@ import org.gephi.tools.spi.ToolEventListener;
 import org.gephi.tools.spi.ToolSelectionType;
 import org.gephi.ui.tools.plugin.ShortestPathPanel;
 import org.gephi.tools.spi.ToolUI;
+import org.gephi.visualization.api.controller.VisualizationController;
 import org.gephi.visualization.api.vizmodel.VizConfig;
 import org.gephi.visualization.api.selection.SelectionManager;
-import org.gephi.visualization.api.vizmodel.VizModel;
 import org.openide.util.Lookup;
 import org.openide.util.NbBundle;
 import org.openide.util.lookup.ServiceProvider;
@@ -67,8 +67,8 @@ public class ShortestPath implements Tool {
     }
 
     public void select() {
-        settingEdgeSourceColor = !Lookup.getDefault().lookup(VizModel.class).isEdgeHasUniColor();
-        Lookup.getDefault().lookup(VizModel.class).setEdgeHasUniColor(true);
+        settingEdgeSourceColor = !Lookup.getDefault().lookup(VisualizationController.class).getVizModel().isEdgeHasUniColor();
+        Lookup.getDefault().lookup(VisualizationController.class).getVizModel().setEdgeHasUniColor(true);
         Lookup.getDefault().lookup(VizConfig.class).setProperty(VizConfig.AUTO_SELECT_NEIGHBOUR, true);
     }
 
@@ -76,7 +76,7 @@ public class ShortestPath implements Tool {
         listeners = null;
         sourceNode = null;
         shortestPathPanel = null;
-        Lookup.getDefault().lookup(VizModel.class).setEdgeHasUniColor(settingEdgeSourceColor);
+        Lookup.getDefault().lookup(VisualizationController.class).getVizModel().setEdgeHasUniColor(settingEdgeSourceColor);
         Lookup.getDefault().lookup(VizConfig.class).setProperty(VizConfig.AUTO_SELECT_NEIGHBOUR, true);
     }
 

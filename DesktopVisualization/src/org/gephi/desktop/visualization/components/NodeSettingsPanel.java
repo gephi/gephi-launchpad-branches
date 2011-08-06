@@ -28,6 +28,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import javax.swing.DefaultComboBoxModel;
 import org.gephi.graph.api.NodeShape;
+import org.gephi.visualization.api.controller.VisualizationController;
 import org.gephi.visualization.api.vizmodel.VizConfig;
 import org.gephi.visualization.api.vizmodel.VizModel;
 import org.openide.util.Lookup;
@@ -44,12 +45,12 @@ public class NodeSettingsPanel extends javax.swing.JPanel {
     }
 
     public void setup() {
-        VizModel vizModel = Lookup.getDefault().lookup(VizModel.class);
+        VizModel vizModel = Lookup.getDefault().lookup(VisualizationController.class).getVizModel();
         adjustTextCheckbox.setSelected(vizModel.isAdjustByText());
         adjustTextCheckbox.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent e) {
-                VizModel vizModel = Lookup.getDefault().lookup(VizModel.class);
+                VizModel vizModel = Lookup.getDefault().lookup(VisualizationController.class).getVizModel();
                 vizModel.setAdjustByText(adjustTextCheckbox.isSelected());
             }
         });
@@ -60,7 +61,7 @@ public class NodeSettingsPanel extends javax.swing.JPanel {
         shapeCombo.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                VizModel vizModel = Lookup.getDefault().lookup(VizModel.class);
+                VizModel vizModel = Lookup.getDefault().lookup(VisualizationController.class).getVizModel();
                 if (vizModel.getGlobalNodeShape() != comboModel.getSelectedItem()) {
                     vizModel.setGlobalNodeShape((NodeShape) comboModel.getSelectedItem());
                 }
@@ -71,7 +72,7 @@ public class NodeSettingsPanel extends javax.swing.JPanel {
         showHullsCheckbox.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent e) {
-                VizModel vizModel = Lookup.getDefault().lookup(VizModel.class);
+                VizModel vizModel = Lookup.getDefault().lookup(VisualizationController.class).getVizModel();
                 vizModel.setShowHulls(showHullsCheckbox.isSelected());
             }
         });
@@ -94,7 +95,7 @@ public class NodeSettingsPanel extends javax.swing.JPanel {
     }
 
     private void refreshSharedConfig() {
-        VizModel vizModel = Lookup.getDefault().lookup(VizModel.class);
+        VizModel vizModel = Lookup.getDefault().lookup(VisualizationController.class).getVizModel();
         setEnable(!vizModel.isDefaultModel());
         if (vizModel.isDefaultModel()) {
             return;

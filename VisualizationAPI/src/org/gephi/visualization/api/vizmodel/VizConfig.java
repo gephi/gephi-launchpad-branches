@@ -123,23 +123,7 @@ public interface VizConfig {
     String SELECTION_TYPE = "VizConfig.selectionType";
     String ZOOM_FACTOR = "VizConfig.zoomFactor";
     
-    public void setProperty(String key, String value);
-
-    public void setProperty(String key, Integer value);
-
-    public void setProperty(String key, Float value);
-
-    public void setProperty(String key, Boolean value);
-
-    public void setProperty(String key, Vec2 value);
-    
-    public void setProperty(String key, Vec3 value);
-    
-    public void setProperty(String key, Font font);
-
-    public void setProperty(String key, Color color);
-
-    public void setProperty(String key, Enum value);
+    public void setProperty(String key, Object value);
     
     public String getStringProperty(String key);
 
@@ -163,8 +147,8 @@ public interface VizConfig {
     
     public static class PropertyNotAvailableException extends RuntimeException {
         
-        public PropertyNotAvailableException(String message) {
-            super(message);
+        public PropertyNotAvailableException(String property, boolean typeMismatch) {
+            super("Property '" + property + "' " + (typeMismatch ? " type mismatch." : " not found."));
         }
         
     }

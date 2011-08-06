@@ -49,7 +49,6 @@ import org.openide.util.lookup.ServiceProvider;
  *
  * @author Mathieu Bastian
  */
-@ServiceProvider(service = VizModel.class)
 public class VizModelImpl implements VizModel {
 
     protected final VizConfigImpl config;
@@ -367,6 +366,16 @@ public class VizModelImpl implements VizModel {
         listeners.remove(listener);
     }
 
+    @Override
+    public List<PropertyChangeListener> getListeners() {
+        return listeners;
+    }
+
+    @Override
+    public void setListeners(List<PropertyChangeListener> listeners) {
+        this.listeners = listeners;
+    }
+    
     @Override
     public void fireProperyChange(String propertyName, Object oldvalue, Object newValue) {
         PropertyChangeEvent evt = new PropertyChangeEvent(this, propertyName, oldvalue, newValue);

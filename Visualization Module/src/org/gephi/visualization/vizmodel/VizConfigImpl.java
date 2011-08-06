@@ -126,7 +126,7 @@ public class VizConfigImpl implements VizConfig {
         initDefault(ROTATING, true);
         initDefault(SELECTION, true);
         initDefault(SELECTION_TYPE, SelectionType.NONE);
-        initDefault(ZOOM_FACTOR, 0.2f);
+        initDefault(ZOOM_FACTOR, 0.8f);
     }
     
     private void initDefault(String property, Object defaultValue) {
@@ -160,55 +160,7 @@ public class VizConfigImpl implements VizConfig {
     }
 
     @Override
-    public void setProperty(String key, String value) {
-        modelData.put(key, value);
-    }
-
-    @Override
-    public void setProperty(String key, Integer value) {
-        modelData.put(key, value);
-    }
-
-    @Override
-    public void setProperty(String key, Float value) {
-        modelData.put(key, value);
-    }
-
-    @Override
-    public void setProperty(String key, Boolean value) {
-        modelData.put(key, value);
-    }
-
-    @Override
-    public void setProperty(String key, Vec2 value) {
-        modelData.put(key, value);
-    }
-
-    @Override
-    public void setProperty(String key, Vec3 value) {
-        modelData.put(key, value);
-    }
-
-    @Override
-    public void setProperty(String key, Font font) {
-        modelData.put(key, font);
-    }
-
-    @Override
-    public void setProperty(String key, Color color) {
-        modelData.put(key, color);
-    }
-
-    @Override
-    public void setProperty(String key, Enum value) {
-        modelData.put(key, value);
-    }
-    
-    protected void setProperty(String key, AttributeColumn[] array) {
-        modelData.put(key, array);
-    }
-    
-    protected void setProperty(String key, Background value) {
+    public void setProperty(String key, Object value) {
         modelData.put(key, value);
     }
     
@@ -216,7 +168,7 @@ public class VizConfigImpl implements VizConfig {
     public String getStringProperty(String key) {
         Object val = modelData.get(key);
         if (val == null || !(val instanceof String)) {
-            throw new PropertyNotAvailableException(key);
+            throw new PropertyNotAvailableException(key, !(val instanceof String));
         }
         return (String) val;
     }
@@ -225,7 +177,7 @@ public class VizConfigImpl implements VizConfig {
     public Integer getIntProperty(String key) {
         Object val = modelData.get(key);
         if (val == null || !(val instanceof Integer)) {
-            throw new PropertyNotAvailableException(key);
+            throw new PropertyNotAvailableException(key, !(val instanceof Integer));
         }
         return (Integer) val;
     }
@@ -234,7 +186,7 @@ public class VizConfigImpl implements VizConfig {
     public Float getFloatProperty(String key) {
         Object val = modelData.get(key);
         if (val == null || !(val instanceof Float)) {
-            throw new PropertyNotAvailableException(key);
+            throw new PropertyNotAvailableException(key, !(val instanceof Float));
         }
         return (Float) val;
     }
@@ -243,7 +195,7 @@ public class VizConfigImpl implements VizConfig {
     public Boolean getBooleanProperty(String key) {
         Object val = modelData.get(key);
         if (val == null || !(val instanceof Boolean)) {
-            throw new PropertyNotAvailableException(key);
+            throw new PropertyNotAvailableException(key, !(val instanceof Boolean));
         }
         return (Boolean) val;
     }
@@ -252,7 +204,7 @@ public class VizConfigImpl implements VizConfig {
     public Vec2 getVec2Property(String key) {
         Object val = modelData.get(key);
         if (val == null || !(val instanceof Vec2)) {
-            throw new PropertyNotAvailableException(key);
+            throw new PropertyNotAvailableException(key, !(val instanceof Vec2));
         }
         return (Vec2) val;
     }
@@ -261,7 +213,7 @@ public class VizConfigImpl implements VizConfig {
     public Vec3 getVec3Property(String key) {
         Object val = modelData.get(key);
         if (val == null || !(val instanceof Vec3)) {
-            throw new PropertyNotAvailableException(key);
+            throw new PropertyNotAvailableException(key, !(val instanceof Vec3));
         }
         return (Vec3) val;
     }
@@ -270,7 +222,7 @@ public class VizConfigImpl implements VizConfig {
     public Font getFontProperty(String key) {
         Object val = modelData.get(key);
         if (val == null || !(val instanceof Font)) {
-            throw new PropertyNotAvailableException(key);
+            throw new PropertyNotAvailableException(key, !(val instanceof Font));
         }
         return (Font) val;
     }
@@ -279,7 +231,7 @@ public class VizConfigImpl implements VizConfig {
     public Color getColorProperty(String key) {
         Object val = modelData.get(key);
         if (val == null || !(val instanceof Color)) {
-            throw new PropertyNotAvailableException(key);
+            throw new PropertyNotAvailableException(key, !(val instanceof Color));
         }
         return (Color) val;
     }
@@ -288,7 +240,7 @@ public class VizConfigImpl implements VizConfig {
     public <T> T getProperty(Class<T> type, String key) {
         Object val = modelData.get(key);
         if (val == null || !type.isAssignableFrom(val.getClass())) {
-            throw new PropertyNotAvailableException(key);
+            throw new PropertyNotAvailableException(key, !type.isAssignableFrom(val.getClass()));
         }
         return type.cast(val);
     }
@@ -297,7 +249,7 @@ public class VizConfigImpl implements VizConfig {
     public Class getPropertyType(String key) {
         Object val = modelData.get(key);
         if (val == null) {
-            throw new PropertyNotAvailableException(key);
+            throw new PropertyNotAvailableException(key, false);
         }
         return val.getClass();
     }
@@ -305,7 +257,7 @@ public class VizConfigImpl implements VizConfig {
     protected AttributeColumn[] getAttributeColumnArrayProperty(String key) {
         Object val = modelData.get(key);
         if (val == null || !(val instanceof AttributeColumn[])) {
-            throw new PropertyNotAvailableException(key);
+            throw new PropertyNotAvailableException(key, !(val instanceof AttributeColumn[]));
         }
         return (AttributeColumn[]) val;
     }

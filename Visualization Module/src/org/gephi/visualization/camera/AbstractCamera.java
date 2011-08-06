@@ -23,7 +23,7 @@ package org.gephi.visualization.camera;
 import org.gephi.lib.gleem.linalg.Vec2f;
 import org.gephi.lib.gleem.linalg.Vec3f;
 import org.gephi.visualization.api.camera.Camera;
-import org.gephi.visualization.api.vizmodel.VizModel;
+import org.gephi.visualization.api.controller.VisualizationController;
 import org.openide.util.Lookup;
 
 /**
@@ -38,7 +38,7 @@ abstract class AbstractCamera implements Camera {
     protected float fovy;
     protected float relativeZoom;
 
-    protected static final float MAX_ZOOM = 1.5f;
+    protected static final float MAX_ZOOM = 1.0f;
     protected static final float MIN_ZOOM = -4.0f;
 
     @Override
@@ -50,13 +50,13 @@ abstract class AbstractCamera implements Camera {
     @Override
     public void zoom(float by) {
         setFov((float) Math.max(Math.min(fovy * Math.exp(by), Math.exp(MAX_ZOOM)), Math.exp(MIN_ZOOM)));
-        Lookup.getDefault().lookup(VizModel.class).setZoomFactor(getZoom());
+        Lookup.getDefault().lookup(VisualizationController.class).getVizModel().setZoomFactor(getZoom());
     }
 
     @Override
     public void setZoom(float relativeZoom) {
         setFov((float) Math.exp(MIN_ZOOM + relativeZoom * (MAX_ZOOM - MIN_ZOOM)));
-        Lookup.getDefault().lookup(VizModel.class).setZoomFactor(relativeZoom);
+        Lookup.getDefault().lookup(VisualizationController.class).getVizModel().setZoomFactor(relativeZoom);
     }
 
     @Override
