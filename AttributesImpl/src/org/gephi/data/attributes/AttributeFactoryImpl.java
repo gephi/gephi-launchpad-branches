@@ -71,7 +71,7 @@ public class AttributeFactoryImpl implements AttributeValueFactory, AttributeRow
         if (value != null && value.getClass() != column.getType().getType() && value.getClass() == String.class) {
             value = column.getType().parse((String) value);
         }
-
+        
         Object managedValue = value;
         if (!column.getOrigin().equals(AttributeOrigin.PROPERTY)) {
             managedValue = model.getManagedValue(value, column.getType());
