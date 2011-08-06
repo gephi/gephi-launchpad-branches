@@ -36,7 +36,6 @@ import org.gephi.visualization.rendering.command.Technique;
  * @author Antonio Patriarca <antoniopatriarca@gmail.com>
  */
 public final class Shape2DTechniqueGL12 implements Technique<VizNode2D> {
-    private final NodeShape shape;
     private final int fillTex;
     private final int borderTex;
     private final float texBorderSize;
@@ -44,8 +43,6 @@ public final class Shape2DTechniqueGL12 implements Technique<VizNode2D> {
     private int currentPass;
     
     public Shape2DTechniqueGL12(GL gl, NodeShape shape) {
-        this.shape = shape;
-        
         int size;
         {
             final IntBuffer buffer = Buffers.newDirectIntBuffer(1); 

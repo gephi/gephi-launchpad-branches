@@ -22,6 +22,7 @@ package org.gephi.visualization.rendering;
 
 import com.jogamp.opengl.util.FPSAnimator;
 import java.awt.Component;
+import javax.media.opengl.GL;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLCapabilities;
 import javax.media.opengl.GLEventListener;
@@ -29,7 +30,9 @@ import javax.media.opengl.GLProfile;
 import javax.media.opengl.awt.GLCanvas;
 import org.gephi.visualization.api.rendering.RenderingController;
 import org.gephi.visualization.controller.VisualizationControllerImpl;
+import org.gephi.visualization.data.FrameData;
 import org.gephi.visualization.data.FrameDataBridge;
+import org.gephi.visualization.rendering.pipeline.Pipeline;
 import org.openide.util.Lookup;
 
 /**
@@ -43,12 +46,14 @@ public class RenderingEngine {
     private final GLCanvas drawable;
     private final GLEventListener eventListener;
     private final RenderingScheduler scheduler;
+
+    private final Pipeline pipeline;
     
     private final VisualizationControllerImpl controller;
     
     private final FrameDataBridge bridge;
 
-    public RenderingEngine(VisualizationControllerImpl controller) {
+    public RenderingEngine(final VisualizationControllerImpl controller) {
         this.controller = controller;
         
         final GLCapabilities caps = createGLCapabilities();
@@ -61,26 +66,51 @@ public class RenderingEngine {
         this.drawable.addMouseMotionListener(controller);
         this.drawable.addMouseWheelListener(controller);
         
+        /* TODO: make pipeline... */
+        this.pipeline = null;
+        
         this.eventListener = new GLEventListener() {
 
             @Override
             public void init(GLAutoDrawable glad) {
-                throw new UnsupportedOperationException("Not supported yet.");
+                final GL gl = glad.getGL();
+                
+                gl.setSwapInterval(1);
+                
+                pipeline.init(gl);
             }
 
             @Override
             public void dispose(GLAutoDrawable glad) {
-                throw new UnsupportedOperationException("Not supported yet.");
+                pipeline.dispose(glad.getGL());
             }
 
             @Override
             public void display(GLAutoDrawable glad) {
-                throw new UnsupportedOperationException("Not supported yet.");
+                final GL gl = glad.getGL();
+                
+                FrameData frameData = bridge.updateCurrent();
+
+                if (frameData == null) {
+                    return;
+                }
+
+                controller.beginRenderFrame();
+
+                pipeline.draw(gl, frameData, false);
+
+                controller.endRenderFrame();
             }
 
             @Override
-            public void reshape(GLAutoDrawable glad, int i, int i1, int i2, int i3) {
-                throw new UnsupportedOperationException("Not supported yet.");
+            public void reshape(GLAutoDrawable glad, int x, int y, int w, int h) {
+                final GL gl = glad.getGL();
+
+                int h2 = h == 0 ? 1 : h;
+
+                pipeline.reshape(gl, x, y, w, h2);
+
+                controller.resize(w, h2);
             }
         };
         
