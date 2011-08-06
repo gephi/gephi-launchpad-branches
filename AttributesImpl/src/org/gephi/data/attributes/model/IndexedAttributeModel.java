@@ -60,6 +60,8 @@ public class IndexedAttributeModel extends AbstractAttributeModel {
         createPropertiesColumn();
 
         eventManager.start();
+        
+        System.out.println("CachedAttributeModel");
     }
 
     @Override

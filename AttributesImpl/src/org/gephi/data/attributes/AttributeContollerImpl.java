@@ -43,14 +43,17 @@ package org.gephi.data.attributes;
 
 import org.gephi.data.attributes.api.AttributeController;
 import org.gephi.data.attributes.api.AttributeModel;
+import org.gephi.data.attributes.model.CachedAttributeModel;
 import org.gephi.data.attributes.model.IndexedAttributeModel;
 import org.gephi.data.attributes.model.TemporaryAttributeModel;
 import org.gephi.data.store.api.StoreController;
+import org.gephi.data.store.options.DiskCachePanel;
 import org.gephi.project.api.ProjectController;
 import org.gephi.project.api.WorkspaceProvider;
 import org.gephi.project.api.Workspace;
 import org.gephi.project.api.WorkspaceListener;
 import org.openide.util.Lookup;
+import org.openide.util.NbPreferences;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -69,7 +72,7 @@ public class AttributeContollerImpl implements AttributeController {
             public void initialize(Workspace workspace) {
                 AttributeModel m = workspace.getLookup().lookup(AttributeModel.class);
                 if (m == null) {
-                    m = new IndexedAttributeModel();
+                    m = getNewAttributeModel();
                     workspace.add(m);
                 }
             }
@@ -98,7 +101,7 @@ public class AttributeContollerImpl implements AttributeController {
             for (Workspace workspace : projectController.getCurrentProject().getLookup().lookup(WorkspaceProvider.class).getWorkspaces()) {
                 AttributeModel m = workspace.getLookup().lookup(AttributeModel.class);
                 if (m == null) {
-                    m = new IndexedAttributeModel();
+                    m = getNewAttributeModel();
                     workspace.add(m);
                 }
             }
@@ -112,7 +115,7 @@ public class AttributeContollerImpl implements AttributeController {
             if (model != null) {
                 return model;
             }
-            model = new IndexedAttributeModel();
+            model = getNewAttributeModel();
             workspace.add(model);
             
             return model;
@@ -125,7 +128,7 @@ public class AttributeContollerImpl implements AttributeController {
         if (model != null) {
             return model;
         }
-        model = new IndexedAttributeModel();
+        model = getNewAttributeModel();
         workspace.add(model);
         
         return model;
@@ -134,5 +137,17 @@ public class AttributeContollerImpl implements AttributeController {
     public AttributeModel newModel() {
         TemporaryAttributeModel model = new TemporaryAttributeModel();
         return model;
+    }
+    
+    private AttributeModel getNewAttributeModel() {
+        if (isDiskStoreEnabled())
+            return new CachedAttributeModel();
+        else {
+            return new IndexedAttributeModel();
+        }
+    }
+    
+    private boolean isDiskStoreEnabled() {
+        return NbPreferences.forModule(DiskCachePanel.class).getBoolean("diskStoreEnabled", false);
     }
 }

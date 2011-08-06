@@ -6,13 +6,22 @@ import com.sleepycat.je.Database;
 import com.sleepycat.je.DatabaseConfig;
 import com.sleepycat.je.Environment;
 import com.sleepycat.je.EnvironmentConfig;
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import net.sf.ehcache.CacheManager;
 import org.gephi.data.attributes.api.AttributeModel;
+import org.gephi.data.store.options.DiskCachePanel;
+import org.openide.util.NbPreferences;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -33,8 +42,14 @@ public class AttributeStoreController implements StoreController {
     private final Map<AttributeModel, Store> stores = new HashMap<AttributeModel, Store>();
 
     public AttributeStoreController() {
-        URL configURL = getClass().getResource("ehcache.xml");
-        cacheManager = new CacheManager(configURL);
+        try {
+            InputStream is = getConfigInputStream();
+            cacheManager = new CacheManager(is);
+            is.close();
+        }
+        catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
         
         defaultEnvConfig.setAllowCreate(true);
         defaultEnvConfig.setTransactional(false);
@@ -45,6 +60,28 @@ public class AttributeStoreController implements StoreController {
         defaultDbConfig.setExclusiveCreate(true);      
         defaultDbConfig.setTransactional(false);       
         defaultDbConfig.setSortedDuplicates(false);
+
+        defaultEnvConfig.setConfigParam(EnvironmentConfig.LOG_FILE_MAX, 
+                Long.toString(120L * 1024L * 1024L));
+        defaultEnvConfig.setConfigParam(EnvironmentConfig.CHECKPOINTER_BYTES_INTERVAL,
+                Long.toString(20L * 1024L * 1024L));
+        defaultEnvConfig.setConfigParam(EnvironmentConfig.CLEANER_MIN_FILE_UTILIZATION,
+                Integer.toString(5));
+        defaultEnvConfig.setConfigParam(EnvironmentConfig.CLEANER_MIN_UTILIZATION,
+                Integer.toString(50));
+        defaultEnvConfig.setConfigParam(EnvironmentConfig.CLEANER_THREADS,
+                Integer.toString(2));
+        defaultEnvConfig.setConfigParam(EnvironmentConfig.CLEANER_LOOK_AHEAD_CACHE_SIZE,
+                Integer.toString(64 * 1024));
+        defaultEnvConfig.setConfigParam(EnvironmentConfig.LOCK_N_LOCK_TABLES,
+                Integer.toString(1));
+        defaultEnvConfig.setConfigParam(EnvironmentConfig.ENV_FAIR_LATCHES,
+                Boolean.toString(false));
+        defaultEnvConfig.setConfigParam(EnvironmentConfig.CHECKPOINTER_HIGH_PRIORITY,
+                Boolean.toString(false));
+        defaultEnvConfig.setConfigParam(EnvironmentConfig.CLEANER_MAX_BATCH_FILES,
+                Integer.toString(0));
+        defaultEnvConfig.setLockTimeout(5, TimeUnit.SECONDS);
     }
     
     public Store newStore(AttributeModel model) {
@@ -85,6 +122,34 @@ public class AttributeStoreController implements StoreController {
     public void shutdown() {
         for (Store ns : stores.values()) {
             ((AttributeStore) ns).close();
+        }
+    }
+    
+    /**
+     * Ehcache does not offer a programatic way of changing the maxBytesLocalOnHeap
+     * config parameter. To go around this limitation the config xml is read completely
+     * into memory, the parameter is modified on-the-fly and then passed to the CacheManager 
+     * constructor.
+     */
+    private InputStream getConfigInputStream() {
+        try {
+            URL configURL = getClass().getResource("ehcache.xml");    
+            URLConnection conn = configURL.openConnection();
+            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = br.readLine()) != null) {
+                sb.append(line + "\n");
+            }
+
+            int cachePercent = NbPreferences.forModule(DiskCachePanel.class).getInt("cacheSizePercent", 40);
+            String config = sb.toString().replaceAll("maxBytesLocalOnHeap=\".+\"", "maxBytesLocalOnHeap=\"" + cachePercent + "%\"");
+
+            return new ByteArrayInputStream(config.getBytes());
+        }
+        catch (IOException ex) {
+            throw new RuntimeException(ex);
         }
     }
     
