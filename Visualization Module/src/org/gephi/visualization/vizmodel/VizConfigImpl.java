@@ -59,7 +59,6 @@ public class VizConfigImpl implements VizConfig {
         initDefault(ANTIALIASING, 4);
         initDefault(AUTO_SELECT_NEIGHBOUR, false);
         initDefault(BACKGROUND, new Background(Color.WHITE, null, new BackgroundPosition(BackgroundPosition.Mode.LEFT_TOP), new BackgroundSize(BackgroundSize.Mode.CONTAIN), BackgroundRepeat.NO_REPEAT, BackgroundAttachment.SCREEN));
-        initDefault(BACKGROUND_COLOR, Color.WHITE);
         initDefault(BLENDING, true);
         initDefault(CLEAN_DELETED_MODELS, true);
         initDefault(CONTEXT_MENU, true);

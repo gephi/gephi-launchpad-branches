@@ -54,8 +54,6 @@ public interface VizModel {
 
     public Background getBackground();
     
-    public Color getBackgroundColor();
-
     public Vec3 getCameraPosition();
 
     public Vec3 getCameraTarget();
@@ -111,8 +109,6 @@ public interface VizModel {
 
     public void setBackground(Background background);
 
-    public void setBackgroundColor(Color backgroundColor);
-    
     public void setShowEdges(boolean showEdges);
 
     public void setEdgeHasUniColor(boolean edgeHasUniColor);

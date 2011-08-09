@@ -52,7 +52,6 @@ public interface VizConfig {
     String ANTIALIASING = "VizConfig.antialiasing";
     String AUTO_SELECT_NEIGHBOUR = "VizConfig.autoSelectNeighbor";
     String BACKGROUND = "VizConfig.background";
-    String BACKGROUND_COLOR = "VizConfig.backgroundColor";
     String BLENDING = "VizConfig.blending";
     String CLEAN_DELETED_MODELS = "VizConfig.cleanDeletedModels";
     String CONTEXT_MENU = "VizConfig.contextMenu";

@@ -79,6 +79,10 @@ public final class Background {
         this.attachment = attachment;
     }
     
+    public Background deriveBackground(java.awt.Color color) {
+        return new Background(color, image, position, size, repeat, attachment);
+    }
+    
     public java.awt.Color getColor() {
         return this.color.toAWTColor();
     }

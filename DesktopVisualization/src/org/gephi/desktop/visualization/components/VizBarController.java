@@ -21,6 +21,7 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 package org.gephi.desktop.visualization.components;
 
 import com.connectina.swing.fontchooser.JFontChooser;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -40,8 +41,10 @@ import net.java.dev.colorchooser.ColorChooser;
 import org.gephi.ui.components.JColorButton;
 import org.gephi.ui.components.JDropDownButton;
 import org.gephi.ui.components.JPopupButton;
+import org.gephi.ui.utils.ColorUtils;
 import org.gephi.visualization.api.controller.VisualizationController;
 import org.gephi.visualization.api.vizmodel.TextModel;
+import org.gephi.visualization.api.vizmodel.VizConfig;
 import org.gephi.visualization.api.vizmodel.VizModel;
 import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
@@ -111,22 +114,24 @@ public class VizBarController {
 
             //Background color
             VizModel vizModel = Lookup.getDefault().lookup(VisualizationController.class).getVizModel();
-            final JButton backgroundColorButton = new JColorButton(vizModel.getBackgroundColor());
+            final JButton backgroundColorButton = new JColorButton(vizModel.getBackground().getColor());
             backgroundColorButton.setToolTipText(NbBundle.getMessage(VizBarController.class, "VizToolbar.Global.background"));
             backgroundColorButton.addPropertyChangeListener(JColorButton.EVENT_COLOR, new PropertyChangeListener() {
 
                 public void propertyChange(PropertyChangeEvent evt) {
                     VizModel vizModel = Lookup.getDefault().lookup(VisualizationController.class).getVizModel();
-                    vizModel.setBackgroundColor(((JColorButton) backgroundColorButton).getColor());
+                    if (!vizModel.getBackground().getColor().equals(((JColorButton) backgroundColorButton).getColor())) {
+                        vizModel.setBackground(vizModel.getBackground().deriveBackground(((JColorButton) backgroundColorButton).getColor()));
+                    }
                 }
             });
             vizModel.addPropertyChangeListener(new PropertyChangeListener() {
 
                 public void propertyChange(PropertyChangeEvent evt) {
-                    if (evt.getPropertyName().equals("backgroundColor")) {
+                    if (evt.getPropertyName().equals(VizConfig.BACKGROUND)) {
                         VizModel vizModel = Lookup.getDefault().lookup(VisualizationController.class).getVizModel();
-                        if (!(((JColorButton) backgroundColorButton).getColor()).equals(vizModel.getBackgroundColor())) {
-                            ((JColorButton) backgroundColorButton).setColor(vizModel.getBackgroundColor());
+                        if (!vizModel.getBackground().getColor().equals(((JColorButton) backgroundColorButton).getColor())) {
+                            ((JColorButton) backgroundColorButton).setColor(vizModel.getBackground().getColor());
                         }
                     }
                 }

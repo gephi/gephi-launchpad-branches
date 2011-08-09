@@ -42,7 +42,6 @@ import org.gephi.visualization.api.rendering.background.Background;
 import org.gephi.visualization.api.vizmodel.VizConfig;
 import org.gephi.visualization.api.vizmodel.TextModel;
 import org.gephi.visualization.api.vizmodel.VizModel;
-import org.openide.util.lookup.ServiceProvider;
 
 /**
  * Model class for visualization. Contains most visualization related settings.
@@ -117,11 +116,6 @@ public class VizModelImpl implements VizModel {
     @Override
     public Background getBackground() {
         return config.getProperty(Background.class, VizConfig.BACKGROUND);
-    }
-
-    @Override
-    public Color getBackgroundColor() {
-        return config.getColorProperty(VizConfig.BACKGROUND_COLOR);
     }
 
     @Override
@@ -251,12 +245,6 @@ public class VizModelImpl implements VizModel {
     public void setBackground(Background background) {
         config.setProperty(VizConfig.BACKGROUND, background);
         fireProperyChange(VizConfig.BACKGROUND, null, background);
-    }
-
-    @Override
-    public void setBackgroundColor(Color backgroundColor) {
-        config.setProperty(VizConfig.BACKGROUND_COLOR, backgroundColor);
-        fireProperyChange(VizConfig.BACKGROUND_COLOR, null, backgroundColor);
     }
 
     @Override
@@ -420,7 +408,6 @@ public class VizModelImpl implements VizModel {
         writeXmlAttribute(config, writer, VizConfig.ADJUST_BY_TEXT);
         writeXmlAttribute(config, writer, VizConfig.ANTIALIASING);
         writeXmlAttribute(config, writer, VizConfig.AUTO_SELECT_NEIGHBOUR);
-        writeXmlAttribute(config, writer, VizConfig.BACKGROUND_COLOR);
         writeXmlAttribute(config, writer, VizConfig.BLENDING);
         writeXmlAttribute(config, writer, VizConfig.CLEAN_DELETED_MODELS);
         writeXmlAttribute(config, writer, VizConfig.CONTEXT_MENU);
