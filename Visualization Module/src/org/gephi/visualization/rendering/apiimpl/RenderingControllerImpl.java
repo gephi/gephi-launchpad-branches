@@ -23,7 +23,6 @@ package org.gephi.visualization.rendering.apiimpl;
 import java.awt.Component;
 import java.util.List;
 import org.gephi.visualization.api.rendering.RenderingController;
-import org.gephi.visualization.api.rendering.ScreenshotSettings;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -43,17 +42,7 @@ public class RenderingControllerImpl implements RenderingController {
     public int getFPS() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
-
-    @Override
-    public void setScreenshotSettings(ScreenshotSettings screenshotSettings) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public ScreenshotSettings setScreenshotSettings() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
+    
     @Override
     public Component renderingCanvas() {
         throw new UnsupportedOperationException("Not supported yet.");
@@ -70,7 +59,7 @@ public class RenderingControllerImpl implements RenderingController {
     }
 
     @Override
-    public void makeScreenshot(String filename) {
+    public void makeScreenshot() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

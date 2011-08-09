@@ -45,26 +45,9 @@ public interface RenderingController {
     public int getFPS();
     
     /**
-     * Sets the new screenshot settings.
-     * 
-     * @param screenshotSettings the new screenshot settings
+     * Makes a screenshot of the screen using the current settings.
      */
-    public void setScreenshotSettings(ScreenshotSettings screenshotSettings);
-    
-    /**
-     * Gets the current screenshot settings.
-     * 
-     * @return the screenshot settings 
-     */
-    public ScreenshotSettings setScreenshotSettings();
-    
-    /**
-     * Makes a screenshot of the screen using the current settings and saves it
-     * in filename.
-     * 
-     * @param filename the filename of the screeshot file
-     */
-    public void makeScreenshot(String filename);
+    public void makeScreenshot();
     
     /**
      * Returns the current component used for drawing or it creates a new one

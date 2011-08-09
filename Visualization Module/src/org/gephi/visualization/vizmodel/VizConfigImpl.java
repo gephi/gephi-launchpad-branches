@@ -30,6 +30,7 @@ import org.gephi.math.linalg.Vec2;
 import org.gephi.math.linalg.Vec3;
 import org.gephi.ui.utils.ColorUtils;
 import org.gephi.ui.utils.FontUtils;
+import org.gephi.visualization.api.rendering.ScreenshotSettings;
 import org.gephi.visualization.api.rendering.background.Background;
 import org.gephi.visualization.api.rendering.background.BackgroundAttachment;
 import org.gephi.visualization.api.rendering.background.BackgroundPosition;
@@ -124,6 +125,7 @@ public class VizConfigImpl implements VizConfig {
         initDefault(OCTREE_DEPTH, 5);
         initDefault(OCTREE_WIDTH, 50000);
         initDefault(ROTATING, true);
+        initDefault(SCREENSHOT_SETTINGS, new ScreenshotSettings(1024, 876, false, null));
         initDefault(SELECTION, true);
         initDefault(SELECTION_TYPE, SelectionType.NONE);
         initDefault(ZOOM_FACTOR, 0.8f);

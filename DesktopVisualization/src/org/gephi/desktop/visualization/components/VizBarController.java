@@ -21,7 +21,6 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 package org.gephi.desktop.visualization.components;
 
 import com.connectina.swing.fontchooser.JFontChooser;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -30,7 +29,6 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import javax.swing.JButton;
 import javax.swing.JComponent;
-import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JSlider;
@@ -40,12 +38,12 @@ import javax.swing.event.ChangeListener;
 import net.java.dev.colorchooser.ColorChooser;
 import org.gephi.ui.components.JColorButton;
 import org.gephi.ui.components.JDropDownButton;
-import org.gephi.ui.components.JPopupButton;
-import org.gephi.ui.utils.ColorUtils;
 import org.gephi.visualization.api.controller.VisualizationController;
+import org.gephi.visualization.api.rendering.RenderingController;
 import org.gephi.visualization.api.vizmodel.TextModel;
 import org.gephi.visualization.api.vizmodel.VizConfig;
 import org.gephi.visualization.api.vizmodel.VizModel;
+import org.netbeans.validation.api.ui.ValidationPanel;
 import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
@@ -142,20 +140,24 @@ public class VizBarController {
             JPopupMenu screenshotPopup = new JPopupMenu();
             JMenuItem configureScreenshotItem = new JMenuItem(NbBundle.getMessage(VizBarController.class, "VizToolbar.Global.screenshot.configure"));
             configureScreenshotItem.addActionListener(new ActionListener() {
-
+                @Override
                 public void actionPerformed(ActionEvent e) {
-                    // TODO: Change the code to use the Rendering Controller
-                    //VizController.getInstance().getScreenshotMaker().configure();
+                    ScreenshotSettingsPanel panel = new ScreenshotSettingsPanel();
+                    panel.setup();
+                    ValidationPanel validationPanel = ScreenshotSettingsPanel.createValidationPanel(panel);
+                    if (validationPanel.showOkCancelDialog(NbBundle.getMessage(VizBarController.class, "ScreenshotMaker.configure.title"))) {
+                        panel.unsetup();
+                        return;
+                    }
                 }
             });
             screenshotPopup.add(configureScreenshotItem);
             final JButton screenshotButton = new JDropDownButton(new javax.swing.ImageIcon(getClass().getResource("/org/gephi/desktop/visualization/components/screenshot.png")), screenshotPopup);
             screenshotButton.setToolTipText(NbBundle.getMessage(VizBarController.class, "VizToolbar.Global.screenshot"));
             screenshotButton.addActionListener(new ActionListener() {
-
+                @Override
                 public void actionPerformed(ActionEvent e) {
-                    // TODO
-                    // VizController.getInstance().getScreenshotMaker().takeScreenshot();
+                    Lookup.getDefault().lookup(RenderingController.class).makeScreenshot(); 
                 }
             });
             components[1] = screenshotButton;

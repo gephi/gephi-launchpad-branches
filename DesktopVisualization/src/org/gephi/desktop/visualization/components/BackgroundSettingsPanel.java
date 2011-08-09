@@ -25,6 +25,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.File;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JFileChooser;
@@ -52,6 +53,8 @@ import org.openide.windows.WindowManager;
  */
 public class BackgroundSettingsPanel extends javax.swing.JPanel {
 
+    private File selectedFile;
+    
     /** Creates new form BackgroundPanel */
     public BackgroundSettingsPanel() {
         initComponents();
@@ -87,11 +90,10 @@ public class BackgroundSettingsPanel extends javax.swing.JPanel {
                 final String path = NbPreferences.forModule(BackgroundSettingsPanel.class).get(LAST_PATH, null);
                 JFileChooser fileChooser = new JFileChooser(path);
                 if (fileChooser.showOpenDialog(WindowManager.getDefault().getMainWindow()) == JFileChooser.APPROVE_OPTION) {
-                    String file = fileChooser.getSelectedFile().getAbsolutePath();
-                    NbPreferences.forModule(BackgroundSettingsPanel.class).put(LAST_PATH, file);
+                    selectedFile = fileChooser.getSelectedFile();
+                    NbPreferences.forModule(BackgroundSettingsPanel.class).put(LAST_PATH, selectedFile.getAbsolutePath());
                     VizModel vizModel = Lookup.getDefault().lookup(VisualizationController.class).getVizModel();
-                    fileTextField.setText(file);
-                    if (!file.equals(vizModel.getBackground().image)) {
+                    if (!selectedFile.getAbsolutePath().equals(vizModel.getBackground().image)) {
                         vizModel.setBackground(extractBackground());
                     }
                 }
@@ -199,7 +201,7 @@ public class BackgroundSettingsPanel extends javax.swing.JPanel {
 
     private Background extractBackground() {
         return new Background(((JColorButton) colorButton).getColor(), 
-                              fileTextField.getText(), 
+                              selectedFile == null ? null : selectedFile.getAbsolutePath(), 
                               new BackgroundPosition((BackgroundPosition.Mode) positionComboBox.getSelectedItem(), 
                                                     ((VectorTextField) positionTextField).getVector()), 
                               new BackgroundSize((BackgroundSize.Mode) sizeComboBox.getSelectedItem(), 
@@ -217,11 +219,15 @@ public class BackgroundSettingsPanel extends javax.swing.JPanel {
         if (!vizModel.getBackground().getColor().equals(((JColorButton) colorButton).getColor())) {
             ((JColorButton) colorButton).setColor(vizModel.getBackground().getColor());
         }
-        if (!fileTextField.getText().equals(vizModel.getBackground().image)) {
+        if (selectedFile == null) {
+            if (vizModel.getBackground().image != null) {
+                selectedFile = new File(vizModel.getBackground().image);
+            }
+        } else {
             if (vizModel.getBackground().image == null) {
-                fileTextField.setText("");
-            } else {
-                fileTextField.setText(vizModel.getBackground().image);
+                selectedFile = null;
+            } else if (selectedFile.getAbsolutePath().equals(vizModel.getBackground().image)) {
+                selectedFile = new File(vizModel.getBackground().image);
             }
         }
         if (!vizModel.getBackground().repeat.equals((BackgroundRepeat) repeatComboBox.getSelectedItem())) {
@@ -248,7 +254,6 @@ public class BackgroundSettingsPanel extends javax.swing.JPanel {
         attachmentComboBox.setEnabled(enable);
         colorButton.setEnabled(enable);
         fileBrowseButton.setEnabled(enable);
-        fileTextField.setEnabled(enable);
         positionComboBox.setEnabled(enable);
         positionSetVectorButton.setEnabled(enable);
         positionTextField.setEnabled(enable);
@@ -274,7 +279,6 @@ public class BackgroundSettingsPanel extends javax.swing.JPanel {
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
         colorButton = new JColorButton(Color.WHITE);
-        fileTextField = new javax.swing.JTextField();
         fileBrowseButton = new javax.swing.JButton();
         repeatComboBox = new javax.swing.JComboBox();
         attachmentComboBox = new javax.swing.JComboBox();
@@ -299,9 +303,6 @@ public class BackgroundSettingsPanel extends javax.swing.JPanel {
         jLabel6.setText(org.openide.util.NbBundle.getMessage(BackgroundSettingsPanel.class, "BackgroundSettingsPanel.size")); // NOI18N
 
         colorButton.setText(org.openide.util.NbBundle.getMessage(BackgroundSettingsPanel.class, "BackgroundSettingsPanel.colorButton.text")); // NOI18N
-
-        fileTextField.setEditable(false);
-        fileTextField.setText(org.openide.util.NbBundle.getMessage(BackgroundSettingsPanel.class, "BackgroundSettingsPanel.fileTextField.text")); // NOI18N
 
         fileBrowseButton.setText(org.openide.util.NbBundle.getMessage(BackgroundSettingsPanel.class, "BackgroundSettingsPanel.fileBrowseButton.text")); // NOI18N
 
@@ -338,12 +339,9 @@ public class BackgroundSettingsPanel extends javax.swing.JPanel {
                 .addGap(40, 40, 40)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(repeatComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(fileTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(fileBrowseButton, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(colorButton, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(34, 34, 34)
+                    .addComponent(colorButton, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(fileBrowseButton, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(75, 75, 75)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel4)
                     .addComponent(jLabel5)
@@ -381,11 +379,10 @@ public class BackgroundSettingsPanel extends javax.swing.JPanel {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                     .addComponent(positionTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(positionComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(fileBrowseButton, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(fileTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(positionSetVectorButton, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 14, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel2))
+                    .addComponent(jLabel2)
+                    .addComponent(fileBrowseButton, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                     .addComponent(sizeTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -402,7 +399,6 @@ public class BackgroundSettingsPanel extends javax.swing.JPanel {
     private javax.swing.JComboBox attachmentComboBox;
     private javax.swing.JButton colorButton;
     private javax.swing.JButton fileBrowseButton;
-    private javax.swing.JTextField fileTextField;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;

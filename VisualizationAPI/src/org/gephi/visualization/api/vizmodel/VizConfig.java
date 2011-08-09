@@ -119,6 +119,7 @@ public interface VizConfig {
     String OCTREE_DEPTH = "VizConfig.octreeDepth";
     String OCTREE_WIDTH = "VizConfig.octreeWidth";
     String ROTATING = "VizConfig.rotatingEnabled";
+    String SCREENSHOT_SETTINGS = "VizConfig.screenshotSettings";
     String SELECTION = "VizConfig.selectionEnable";
     String SELECTION_TYPE = "VizConfig.selectionType";
     String ZOOM_FACTOR = "VizConfig.zoomFactor";
