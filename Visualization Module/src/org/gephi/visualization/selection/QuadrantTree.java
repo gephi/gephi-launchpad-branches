@@ -51,4 +51,9 @@ public abstract class QuadrantTree implements NodeSpatialStructure {
         reassignNodes = !running;
     }
     
+    @Override
+    public boolean isNodeSelected() {
+        return !getSelectedNodes().isEmpty();
+    }
+    
 }

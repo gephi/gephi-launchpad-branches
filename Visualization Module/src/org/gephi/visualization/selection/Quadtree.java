@@ -24,7 +24,6 @@ package org.gephi.visualization.selection;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -39,7 +38,6 @@ import org.gephi.visualization.api.controller.VisualizationController;
 import org.gephi.visualization.api.selection.NodeSpatialStructure;
 import org.gephi.visualization.api.selection.Shape;
 import org.gephi.visualization.api.selection.Shape.Intersection;
-import org.gephi.visualization.api.vizmodel.VizModel;
 import org.openide.util.Lookup;
 
 /**

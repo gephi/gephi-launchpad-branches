@@ -108,12 +108,12 @@ public class DesktopToolController implements ToolController {
                 selectionManager.disableSelection();
                 break;
             case SELECTION:
-                selectionManager.blockSelection(true);
+                //electionManager.blockSelection(true);
                 selectionManager.setDraggingEnabled(false);
                 selectionManager.setDirectMouseSelection();
                 break;
             case SELECTION_AND_DRAGGING:
-                selectionManager.blockSelection(true);
+                //selectionManager.blockSelection(true);
                 selectionManager.setDraggingEnabled(true);
                 selectionManager.setDirectMouseSelection();
                 break;
@@ -152,11 +152,10 @@ public class DesktopToolController implements ToolController {
 
         }
         //Sort by priority
-        Collections.sort(toolsUI, new Comparator() {
-
-            public int compare(Object o1, Object o2) {
-                Integer p1 = ((ToolUI) o1).getPosition();
-                Integer p2 = ((ToolUI) o2).getPosition();
+        Collections.sort(toolsUI, new Comparator<ToolUI>() {
+            public int compare(ToolUI o1, ToolUI o2) {
+                Integer p1 = o1.getPosition();
+                Integer p2 = o2.getPosition();
                 return p1.compareTo(p2);
             }
         });

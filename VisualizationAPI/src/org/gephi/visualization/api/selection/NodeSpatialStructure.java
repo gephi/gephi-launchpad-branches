@@ -67,8 +67,16 @@ public interface NodeSpatialStructure {
      */
     public void clearContinuousSelection();
     
+    /**
+     * Returns every selected node.
+     */
     public Collection<Node> getSelectedNodes();
 
+    /**
+     * Returns <code>true</code> if any node is selected.
+     */
+    public boolean isNodeSelected();
+    
     /**
      * Adds or removes single node from a permanent selection.
      * @param shape the shape to determine the selected node.

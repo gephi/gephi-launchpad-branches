@@ -160,8 +160,8 @@ public class VizModelImpl implements VizModel {
     }
 
     @Override
-    public boolean isLightenNonSelectedAuto() {
-        return config.getBooleanProperty(VizConfig.HIGHLIGHT_NON_SELECTED);
+    public boolean isHighlightNonSelectedEnabled() {
+        return config.getBooleanProperty(VizConfig.HIGHLIGHT_NON_SELECTED_ENABLED);
     }
 
     @Override
@@ -284,7 +284,7 @@ public class VizModelImpl implements VizModel {
     }
 
     @Override
-    public void setLightenNonSelectedAuto(boolean lightenNonSelectedAuto) {
+    public void setHighlightNonSelectedEnabled(boolean lightenNonSelectedAuto) {
         config.setProperty(VizConfig.HIGHLIGHT_NON_SELECTED, lightenNonSelectedAuto);
         fireProperyChange(VizConfig.HIGHLIGHT_NON_SELECTED, null, lightenNonSelectedAuto);
     }

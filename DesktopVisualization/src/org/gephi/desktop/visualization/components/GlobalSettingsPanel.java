@@ -71,7 +71,7 @@ public class GlobalSettingsPanel extends javax.swing.JPanel {
             @Override
             public void itemStateChanged(ItemEvent e) {
                 VizModel vizModel = Lookup.getDefault().lookup(VisualizationController.class).getVizModel();
-                vizModel.setLightenNonSelectedAuto(hightlightCheckBox.isSelected());
+                vizModel.setHighlightNonSelectedEnabled(hightlightCheckBox.isSelected());
             }
         });
         ((JColorButton) backgroundColorButton).addPropertyChangeListener(JColorButton.EVENT_COLOR, new PropertyChangeListener() {
@@ -121,8 +121,8 @@ public class GlobalSettingsPanel extends javax.swing.JPanel {
             autoSelectNeigborCheckbox.setSelected(vizModel.isAutoSelectNeighbor());
         }
         ((JColorButton) backgroundColorButton).setColor(vizModel.getBackgroundColor());
-        if (hightlightCheckBox.isSelected() != vizModel.isLightenNonSelectedAuto()) {
-            hightlightCheckBox.setSelected(vizModel.isLightenNonSelectedAuto());
+        if (hightlightCheckBox.isSelected() != vizModel.isHighlightNonSelectedEnabled()) {
+            hightlightCheckBox.setSelected(vizModel.isHighlightNonSelectedEnabled());
         }
         if (use3dCheckbox.isSelected() != vizModel.isUse3d()) {
             use3dCheckbox.setSelected(vizModel.isUse3d());

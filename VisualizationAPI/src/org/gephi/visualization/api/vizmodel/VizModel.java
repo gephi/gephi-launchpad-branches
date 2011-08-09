@@ -70,7 +70,7 @@ public interface VizModel {
 
     public boolean isHideNonSelectedEdges();
 
-    public boolean isLightenNonSelectedAuto();
+    public boolean isHighlightNonSelectedEnabled();
 
     public boolean isLighting();
 
@@ -121,7 +121,7 @@ public interface VizModel {
 
     public void setHideNonSelectedEdges(boolean hideNonSelectedEdges);
 
-    public void setLightenNonSelectedAuto(boolean lightenNonSelectedAuto);
+    public void setHighlightNonSelectedEnabled(boolean highlightNonSelectedEnabled);
 
     public void setNodeSelectedUniqueColor(boolean uniColorSelected);
 

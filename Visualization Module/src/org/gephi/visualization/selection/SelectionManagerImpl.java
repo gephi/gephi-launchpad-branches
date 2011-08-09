@@ -49,56 +49,59 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = SelectionManager.class)
 public class SelectionManagerImpl implements SelectionManager, WorkspaceListener, GraphListener {
 
-    private NodeSpatialStructure nodeContainer;
-
-    private boolean blocked;
+    private NodeSpatialStructure nodeStructure;
 
     private List<ChangeListener> listeners = new ArrayList<ChangeListener>();
 
     @Override
     public void initialize() {
         Lookup.getDefault().lookup(ProjectController.class).addWorkspaceListener(this);
-        nodeContainer = new Octree();
+        nodeStructure = new Octree();
     }
 
     @Override
     public Collection<Node> getSelectedNodes() {
-        return nodeContainer.getSelectedNodes();
+        return nodeStructure.getSelectedNodes();
     }
 
     @Override
+    public boolean isNodeSelected() {
+        return nodeStructure.isNodeSelected();
+    }
+    
+    @Override
     public void applySelection(Shape shape) {
-        nodeContainer.applySelection(shape);
+        nodeStructure.applySelection(shape);
     }
 
     @Override
     public void applyContinuousSelection(Shape shape) {
-        nodeContainer.applyContinuousSelection(shape);
+        nodeStructure.applyContinuousSelection(shape);
     }
 
     @Override
     public void cancelContinuousSelection() {
-        nodeContainer.clearContinuousSelection();
+        nodeStructure.clearContinuousSelection();
     }
 
     @Override
     public void clearSelection() {
-        nodeContainer.clearSelection();
+        nodeStructure.clearSelection();
     }
 
     @Override
     public void selectSingle(Point point, boolean select) {
         int mouseSelectionDiameter = Lookup.getDefault().lookup(VisualizationController.class).getVizConfig().getIntProperty(VizConfig.MOUSE_SELECTION_DIAMETER);
         Shape singleNodeSelectionShape = ShapeUtils.createEllipseShape(point.x - mouseSelectionDiameter, point.y - mouseSelectionDiameter, mouseSelectionDiameter, mouseSelectionDiameter);
-        nodeContainer.clearContinuousSelection();
-        nodeContainer.selectSingle(singleNodeSelectionShape, point, select, NodeSpatialStructure.SINGLE_NODE_CLOSEST);
+        nodeStructure.clearContinuousSelection();
+        nodeStructure.selectSingle(singleNodeSelectionShape, point, select, NodeSpatialStructure.SINGLE_NODE_CLOSEST);
     }
 
     @Override
     public boolean selectContinuousSingle(Point point, boolean select) {
         int mouseSelectionDiameter = Lookup.getDefault().lookup(VisualizationController.class).getVizConfig().getIntProperty(VizConfig.MOUSE_SELECTION_DIAMETER);
         Shape singleNodeSelectionShape = ShapeUtils.createEllipseShape(point.x - mouseSelectionDiameter, point.y - mouseSelectionDiameter, mouseSelectionDiameter, mouseSelectionDiameter);
-        return nodeContainer.selectContinuousSingle(singleNodeSelectionShape, point, select, NodeSpatialStructure.SINGLE_NODE_CLOSEST);
+        return nodeStructure.selectContinuousSingle(singleNodeSelectionShape, point, select, NodeSpatialStructure.SINGLE_NODE_CLOSEST);
     }
 
     @Override
@@ -106,32 +109,19 @@ public class SelectionManagerImpl implements SelectionManager, WorkspaceListener
         boolean use3d = Lookup.getDefault().lookup(VisualizationController.class).getVizModel().isUse3d();
         GraphController graphController = Lookup.getDefault().lookup(GraphController.class);
         if (use3d) {
-            nodeContainer = new Octree(graphController.getModel().getGraph());
+            nodeStructure = new Octree(graphController.getModel().getGraph());
         } else {
-            nodeContainer = new Quadtree(graphController.getModel().getGraph());
-        }
-    }
-
-    @Override
-    public void blockSelection(boolean block) {
-        // TODO implement reasonable block for tools
-        VizConfig vizConfig = Lookup.getDefault().lookup(VisualizationController.class).getVizConfig();
-        if (vizConfig.getProperty(SelectionType.class, VizConfig.SELECTION_TYPE) != SelectionType.NONE) {
-            this.blocked = block;
-            vizConfig.setProperty(VizConfig.SELECTION, !block);
-            fireChangeEvent();
-        } else {
-            setDirectMouseSelection();
+            nodeStructure = new Quadtree(graphController.getModel().getGraph());
         }
     }
 
     @Override
     public void disableSelection() {
         // move to NodeSpatialStructure and clear marker
-        for (Node node : nodeContainer.getSelectedNodes()) {
+        for (Node node : nodeStructure.getSelectedNodes()) {
             node.getNodeData().setSelected(false);
         }
-        nodeContainer.clearCache();
+        nodeStructure.clearCache();
         clearState();
         fireChangeEvent();
     }
@@ -144,11 +134,6 @@ public class SelectionManagerImpl implements SelectionManager, WorkspaceListener
                                                                  motionManager.getMousePosition()[1] - mouseSelectionDiameter,
                                                                  mouseSelectionDiameter, mouseSelectionDiameter);
         return (isDirectMouseSelection() || isDraggingEnabled()) && motionManager.isInside() && !motionManager.isPressing() && mouseSelectionDiameter > 1 ? singleNodeSelectionShape : null;
-    }
-
-    @Override
-    public boolean isBlocked() {
-        return blocked;
     }
 
     @Override
@@ -194,7 +179,7 @@ public class SelectionManagerImpl implements SelectionManager, WorkspaceListener
     @Override
     public void selectNode(Node node) {
         node.getNodeData().setSelected(true);
-        nodeContainer.clearCache();
+        nodeStructure.clearCache();
     }
 
     @Override
@@ -202,7 +187,7 @@ public class SelectionManagerImpl implements SelectionManager, WorkspaceListener
         for (Node node : nodes) {
             node.getNodeData().setSelected(true);
         }
-        nodeContainer.clearCache();
+        nodeStructure.clearCache();
     }
 
     @Override
@@ -246,7 +231,6 @@ public class SelectionManagerImpl implements SelectionManager, WorkspaceListener
         vizConfig.setProperty(VizConfig.NODE_DRAGGING, false);
         vizConfig.setProperty(VizConfig.DIRECT_MOUSE_SELECTION, false);
         vizConfig.setProperty(VizConfig.SELECTION_TYPE, SelectionType.NONE);
-        this.blocked = false;
     }
 
     @Override
@@ -264,13 +248,13 @@ public class SelectionManagerImpl implements SelectionManager, WorkspaceListener
     // Graph event
     @Override
     public void graphChanged(GraphEvent event) {
-        if (nodeContainer == null) {
+        if (nodeStructure == null) {
             refreshDataStructure();
         }
         switch (event.getEventType()) {
             case ADD_NODES:
                 for (Node node : event.getData().addedNodes()) {
-                    nodeContainer.addNode(node);
+                    nodeStructure.addNode(node);
                 }
                 break;
             case ADD_EDGES:

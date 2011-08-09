@@ -38,7 +38,6 @@ import org.gephi.visualization.api.camera.Camera;
 import org.gephi.visualization.api.controller.VisualizationController;
 import org.gephi.visualization.api.selection.NodeSpatialStructure;
 import org.gephi.visualization.api.selection.Shape.Intersection;
-import org.gephi.visualization.api.vizmodel.VizModel;
 import org.openide.util.Lookup;
 
 /**
@@ -151,7 +150,7 @@ public final class Octree extends QuadrantTree {
         
         return selectedNodes;
     }
-
+    
     @Override
     public void applyContinuousSelection(Shape shape) {
         temporarySelectedNodes = applySelection(shape);

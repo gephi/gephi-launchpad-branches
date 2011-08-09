@@ -37,8 +37,16 @@ public interface SelectionManager {
 
     void initialize();
 
+    /**
+     * Returns every selected node.
+     */
     Collection<Node> getSelectedNodes();
 
+    /**
+     * Returns <code>true</code> if any node is selected.
+     */
+    boolean isNodeSelected();
+    
     /**
      * Adds or removes nodes from inside the shape to a permanent selection.
      */
@@ -75,8 +83,6 @@ public interface SelectionManager {
      */
     boolean selectContinuousSingle(Point point, boolean select);
 
-    void blockSelection(boolean block);
-
     void disableSelection();
 
     /**
@@ -84,8 +90,6 @@ public interface SelectionManager {
      * usually a zero radius circle.
      */
     Shape getNodePointerShape();
-
-    boolean isBlocked();
 
     boolean isDirectMouseSelection();
 

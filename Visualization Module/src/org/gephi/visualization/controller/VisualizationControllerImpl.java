@@ -69,6 +69,8 @@ public class VisualizationControllerImpl implements VisualizationController, Key
     private final View view;
     private final Model dataManager;
     private final FrameDataBridge frameDataBridge;
+    
+    private final SelectionManager selectionManager;
 
     private Dimension viewSize;
 
@@ -82,6 +84,9 @@ public class VisualizationControllerImpl implements VisualizationController, Key
     private boolean reinit;
     private boolean hasWorkspace;
     
+    private float lightenAnimationDelta;
+    private boolean previouslySelected;
+    
     // TODO remove when architecture bugs fixed
     private static final Camera DEFAULT_CAMERA = new Camera2d(300, 300, 100f, 10000.0f);
 
@@ -93,6 +98,7 @@ public class VisualizationControllerImpl implements VisualizationController, Key
         this.view = new View(this, this.frameDataBridge);
         this.dataManager = new Model(this, this.frameDataBridge, 33);
         this.vizModel = new VizModelImpl(true);
+        this.selectionManager = Lookup.getDefault().lookup(SelectionManager.class);
         
         ProjectController pc = Lookup.getDefault().lookup(ProjectController.class);
         pc.addWorkspaceListener(this);
@@ -102,7 +108,7 @@ public class VisualizationControllerImpl implements VisualizationController, Key
         }
         
         // Initialize SelectionManager
-        Lookup.getDefault().lookup(SelectionManager.class).initialize();
+        selectionManager.initialize();
     }
 
     synchronized static VisualizationControllerImpl getDefault() {
@@ -184,7 +190,7 @@ public class VisualizationControllerImpl implements VisualizationController, Key
 
     @Override
     public void modeChanged() {
-        boolean modelUse3d = Lookup.getDefault().lookup(VisualizationController.class).getVizModel().isUse3d();
+        boolean modelUse3d = vizModel.isUse3d();
         if (modelUse3d == this.use3d) {
             return;
         }
@@ -209,10 +215,42 @@ public class VisualizationControllerImpl implements VisualizationController, Key
             }
         }
         workspace.add(camera);
-        Lookup.getDefault().lookup(SelectionManager.class).refreshDataStructure();
+        selectionManager.refreshDataStructure();
     }
 
     public void beginUpdateFrame() {
+        if (reinit) {
+            refreshWorkspace();
+            reinit = false;
+        }
+        // Highlight non-selected nodes animation setup
+        boolean anySelected = selectionManager.isNodeSelected();
+        if (vizModel.isHighlightNonSelectedEnabled()) {
+            if (vizModel.getConfig().getBooleanProperty(VizConfig.HIGHLIGHT_NON_SELECTED_ANIMATION)) {
+                if (!anySelected && previouslySelected) {
+                    //Start animation
+                    lightenAnimationDelta = 0.07f;
+                } else if (anySelected && !previouslySelected) {
+                    //Stop animation
+                    lightenAnimationDelta = -0.07f;
+                }
+                vizModel.getConfig().setProperty(VizConfig.HIGHLIGHT_NON_SELECTED, previouslySelected || lightenAnimationDelta != 0);
+            } else {
+                vizModel.getConfig().setProperty(VizConfig.HIGHLIGHT_NON_SELECTED, previouslySelected);
+            }
+        }
+        previouslySelected = anySelected;
+        // Highlight non-selected nodes animation step
+        if (lightenAnimationDelta != 0) {
+            float factor = vizModel.getConfig().getFloatProperty(VizConfig.HIGHLIGHT_NON_SELECTED_FACTOR);
+            factor += lightenAnimationDelta;
+            if (factor >= 0.5f && factor <= 0.98f) {
+                vizModel.getConfig().setProperty(VizConfig.HIGHLIGHT_NON_SELECTED_FACTOR, factor);
+            } else {
+                lightenAnimationDelta = 0;
+                vizModel.getConfig().setProperty(VizConfig.HIGHLIGHT_NON_SELECTED, previouslySelected);
+            }
+        }
     }
 
     public void endUpdateFrame(AABB box) {
@@ -241,10 +279,6 @@ public class VisualizationControllerImpl implements VisualizationController, Key
     }
 
     public void beginRenderFrame() {
-        if (reinit) {
-            refreshWorkspace();
-            reinit = false;
-        }
     }
 
     public void endRenderFrame() {

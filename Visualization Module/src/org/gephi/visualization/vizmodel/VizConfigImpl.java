@@ -75,10 +75,7 @@ public class VizConfigImpl implements VizConfig {
         initDefault(EDGE_UNIQUE_COLOR, new Color(0.5F, 0.5F, 0.5F, 0.5F));
         initDefault(GLJPANEL, false);
         initDefault(HIDE_NONSELECTED_EDGES, false);
-        initDefault(HIGHLIGHT_NON_SELECTED_ANIMATION, true);
-        initDefault(HIGHLIGHT_NON_SELECTED_COLOR, new Color(0.95F, 0.95F, 0.95F, 1.0F));
-        initDefault(HIGHLIGHT_NON_SELECTED_FACTOR, 0.5f);
-        initDefault(HIGHLIGHT_NON_SELECTED, true);
+        initDefault(HIGHLIGHT_NON_SELECTED_ENABLED, true);
         initDefault(LABEL_ANTIALIASED, true);
         initDefault(LABEL_FRACTIONAL_METRICS, true);
         initDefault(LABEL_MIPMAP, true);
@@ -117,6 +114,10 @@ public class VizConfigImpl implements VizConfig {
         initDefault(CAMERA_TARGET, new float[]{0f, 0f, 0f});
         initDefault(DIRECT_MOUSE_SELECTION, true);
         initDefault(DRAGGING, true);
+        initDefault(HIGHLIGHT_NON_SELECTED, false);
+        initDefault(HIGHLIGHT_NON_SELECTED_ANIMATION, true);
+        initDefault(HIGHLIGHT_NON_SELECTED_COLOR, new Color(0.95F, 0.95F, 0.95F, 1.0F));
+        initDefault(HIGHLIGHT_NON_SELECTED_FACTOR, 0.5f);
         initDefault(MOUSE_SELECTION_DIAMETER, 1);
         initDefault(MOUSE_SELECTION_WHILE_DRAGGING, false);
         initDefault(MOUSE_SELECTION_ZOOM_PROPORTIONAL, false);

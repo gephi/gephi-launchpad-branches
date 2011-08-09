@@ -68,10 +68,7 @@ public interface VizConfig {
     String EDGE_UNIQUE_COLOR = "VizConfig.edgeUniColor";
     String GLJPANEL = "VizConfig.useGLJPanel";
     String HIDE_NONSELECTED_EDGES = "VizConfig.hideNonSelectedEdges";
-    String HIGHLIGHT_NON_SELECTED_ANIMATION = "VizConfig.highlightNonSelectedAnimation";
-    String HIGHLIGHT_NON_SELECTED_COLOR = "VizConfig.highlightNonSelectedColor";
-    String HIGHLIGHT_NON_SELECTED_FACTOR = "VizConfig.highlightNonSelectedFactor";
-    String HIGHLIGHT_NON_SELECTED = "VizConfig.highlightNonSelected";
+    String HIGHLIGHT_NON_SELECTED_ENABLED = "VizConfig.highlightNonSelectedEnabled";
     String LABEL_ANTIALIASED = "VizConfig.labelAntialiased";
     String LABEL_FRACTIONAL_METRICS = "VizConfig.labelFractionalMetrics";
     String LABEL_MIPMAP = "VizConfig.labelMipMap";
@@ -112,6 +109,10 @@ public interface VizConfig {
     String CAMERA_TARGET = "VizConfig.cameraTarget";
     String DIRECT_MOUSE_SELECTION = "VizConfig.directMouseSelection";
     String DRAGGING = "VizConfig.draggingEnable";
+    String HIGHLIGHT_NON_SELECTED = "VizConfig.highlightNonSelected";
+    String HIGHLIGHT_NON_SELECTED_ANIMATION = "VizConfig.highlightNonSelectedAnimation";
+    String HIGHLIGHT_NON_SELECTED_COLOR = "VizConfig.highlightNonSelectedColor";
+    String HIGHLIGHT_NON_SELECTED_FACTOR = "VizConfig.highlightNonSelectedFactor";
     String MOUSE_SELECTION_DIAMETER = "VizConfig.mouseSelectionDiameter";
     String MOUSE_SELECTION_WHILE_DRAGGING = "VizConfig.mouseSelectionUpdateWhileDragging";
     String MOUSE_SELECTION_ZOOM_PROPORTIONAL = "VizConfig.mouseSelectionZoomProportionnal";
