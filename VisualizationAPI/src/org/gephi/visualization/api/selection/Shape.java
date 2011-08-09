@@ -46,13 +46,13 @@ public interface Shape {
      * Returns the shape updated with one new permanent pair of coordinates.
      * Example: Polygon received new point.
      */
-    Shape singleUpdate(int x, int y);
+    Shape singleUpdate(float x, float y);
 
     /**
      * Returns the shape updated with one new temporary pair of coordinates.
      * Example: Rectangle corner coordinates updated.
      */
-    Shape continuousUpdate(int x, int y);
+    Shape continuousUpdate(float x, float y);
 
     /**
      * Returns true if this shape is built of many discrete steps and where

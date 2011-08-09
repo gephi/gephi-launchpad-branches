@@ -25,10 +25,10 @@ import java.nio.IntBuffer;
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 import org.gephi.graph.api.NodeShape;
-import org.gephi.visualization.api.camera.Camera;
 import org.gephi.visualization.camera.Camera2d;
 import org.gephi.visualization.data.graph.VizNode2D;
 import org.gephi.visualization.rendering.apiimpl.command.node.texture.Node2DTextureBuilder;
+import org.gephi.visualization.rendering.camera.Camera;
 import org.gephi.visualization.rendering.command.Technique;
 
 /**
@@ -60,6 +60,7 @@ public final class Shape2DTechniqueGL12 implements Technique<VizNode2D> {
 
     @Override
     public void begin(GL gl, Camera camera) {
+        /*
         GL2 gl2 = gl.getGL2();
         if (gl2 == null || !(camera instanceof Camera2d)) return;
         
@@ -77,6 +78,8 @@ public final class Shape2DTechniqueGL12 implements Technique<VizNode2D> {
         gl2.glLoadMatrixf(matrix, 0);
         
         this.initialized = true;
+         * */
+         
     }
 
     @Override

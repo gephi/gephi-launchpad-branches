@@ -40,6 +40,8 @@ public interface Pipeline {
     public boolean init(GL gl);
 
     public void draw(GL gl, FrameData frameData);
+    
+    public void reshape(GL gl, int x, int y, int w, int h);
 
     public void dispose(GL gl);
     

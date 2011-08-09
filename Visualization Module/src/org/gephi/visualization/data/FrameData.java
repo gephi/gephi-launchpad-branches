@@ -23,12 +23,12 @@ package org.gephi.visualization.data;
 
 import org.gephi.graph.api.Edge;
 import org.gephi.graph.api.Node;
-import org.gephi.visualization.api.camera.Camera;
 import org.gephi.visualization.api.view.ui.UIShape;
 import org.gephi.visualization.data.buffer.Buffer;
 import org.gephi.visualization.data.graph.VizEdge;
 import org.gephi.visualization.data.graph.VizNode;
 import org.gephi.visualization.data.layout.Layout;
+import org.gephi.visualization.rendering.camera.Camera;
 
 /**
  * Class used to get the current graph data in View.
@@ -44,8 +44,6 @@ public class FrameData {
     private final Buffer<Node, VizNode> nodeBuffer;
     private final Buffer<Edge, VizEdge> edgeBuffer;
     private final Buffer<UIShape, UIShape> uiBuffer;
-    
-    
 
     FrameData(Camera camera, boolean somethingIsSelected, Buffer<Node, VizNode> nodeBuffer, Buffer<Edge, VizEdge> edgeBuffer, Buffer<UIShape, UIShape> uiBuffer) {
         this.camera = camera;

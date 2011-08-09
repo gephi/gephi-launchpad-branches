@@ -41,36 +41,37 @@ import org.gephi.visualization.api.view.ui.UIStyle;
  */
 class Polygon extends AbstractShape {
 
-    private final Set<Point> points;
-    private final Point tempPoint;
+    private final Set<Vec2> points;
+    private final Vec2 tempPoint;
 
-    private final Point[] convexHull;
+    private final Vec2[] convexHull;
     private final float[][] lineInfo;
 
-    Polygon(int x, int y) {
-        Point point = new Point(x, y);
-        this.points = new HashSet<Point>();
+    Polygon(float x, float y) {
+        Vec2 point = new Vec2(x, y);
+        this.points = new HashSet<Vec2>();
         this.points.add(point);
         this.tempPoint = point;
-        this.convexHull = new Point[] {point};
+        this.convexHull = new Vec2[] {point};
         this.lineInfo = new float[1][4];
     }
 
-    Polygon(Polygon polygon, Point tempPoint) {
+    Polygon(Polygon polygon, Vec2 tempPoint) {
         this.points = polygon.points;
         this.tempPoint = tempPoint;
         this.convexHull = computeConvexHull();
         this.lineInfo = computeLineInfo();
     }
 
-    public boolean isPointInside(int x, int y, int radius) {
+    @Override
+    public boolean isPointInside(float x, float y, float radius) {
         if (lineInfo.length <= 2) {
             return false;
         }
         for (int i = 0; i < lineInfo.length; i++) {
             // Difference vector betwen point and line center
-            float vecx = x - convexHull[i].x;
-            float vecy = y - convexHull[i].y;
+            float vecx = x - convexHull[i].x();
+            float vecy = y - convexHull[i].y();
             // Compute inner product
             if (vecx * lineInfo[i][0] + vecy * lineInfo[i][1] > radius) {
                 return false;
@@ -79,39 +80,35 @@ class Polygon extends AbstractShape {
         return true;
     }
 
-    public Shape singleUpdate(int x, int y) {
-        points.add(new Point(x, y));
-        return new Polygon(this, new Point(x, y));
+    public Shape singleUpdate(float x, float y) {
+        Vec2 p = new Vec2(x, y);
+        points.add(p);
+        return new Polygon(this, p);
     }
 
-    public Shape continuousUpdate(int x, int y) {
-        return new Polygon(this, new Point(x, y));
+    public Shape continuousUpdate(float x, float y) {
+        return new Polygon(this, new Vec2(x, y));
     }
 
     public UIShape getUIPrimitive() {
-        Vec2[] polygonPoints = new Vec2[convexHull.length];
-        for (int i = 0; i < convexHull.length; i++) {
-            polygonPoints[i] = new Vec2(convexHull[i].x, convexHull[i].y);
-        }
-        return UIShape.polygon(UIStyle.SELECTION, polygonPoints);
+        return UIShape.polygon(UIStyle.SELECTION, convexHull);
     }
 
     private float[][] computeLineInfo() {
         // First two elements for line normal, other two for line center
         float[][] lNormals = new float[convexHull.length][2];
-        for (int i = 0; i < convexHull.length; i++) {
-            int j = i < convexHull.length - 1 ? i + 1 : 0;
+        for (int i = 0, j = convexHull.length - 1; i < convexHull.length; j = i++) {
             // Normal
-            lNormals[i][0] = -(convexHull[j].y - convexHull[i].y);
-            lNormals[i][1] = convexHull[j].x - convexHull[i].x;
+            lNormals[j][0] = -(convexHull[i].y() - convexHull[j].y());
+            lNormals[j][1] = convexHull[i].x() - convexHull[j].x();
         }
         return lNormals;
     }
 
-    private Point[] computeConvexHull() {
-        Point[] ps = new Point[points.size() + 1];
+    private Vec2[] computeConvexHull() {
+        Vec2[] ps = new Vec2[points.size() + 1];
         int i = 0;
-        for (Point point : points) {
+        for (Vec2 point : points) {
             ps[i++] = point;
         }
         ps[i] = tempPoint;
@@ -122,26 +119,26 @@ class Polygon extends AbstractShape {
         }
         
         // Compute convex hull
-        Arrays.sort(ps, new Comparator<Point>() {
-            public int compare(Point o1, Point o2) {
-                return o1.x > o2.x ? 1 :
-                       o1.x < o2.x ? -1 :
-                       o1.y > o2.y ? 1 :
-                       o1.y < o2.y ? -1 : 0;
+        Arrays.sort(ps, new Comparator<Vec2>() {
+            public int compare(Vec2 o1, Vec2 o2) {
+                return o1.x() > o2.x() ? 1 :
+                       o1.x() < o2.x() ? -1 :
+                       o1.y() > o2.y() ? 1 :
+                       o1.y() < o2.y() ? -1 : 0;
             }
         });
-        List<Point> polygon = new ArrayList<Point>();
+        List<Vec2> polygon = new ArrayList<Vec2>();
         // ps[0] contains the most bottom left vertex
         polygon.add(ps[0]);
         i = 0;
         while (i < ps.length - 1) {
-            Point best = ps[i + 1];
+            Vec2 best = ps[i + 1];
             int b = i + 1;
             for (int j = i + 1; j < ps.length; j++) {
-                if ((ps[j].x == best.x && ps[j].y > best.y) ||
-                    (best.x != ps[i].x &&
-                     ps[j].x > best.x && (ps[j].y - ps[i].y) / (float) (ps[j].x - ps[i].x) >
-                                         (best.y - ps[i].y) / (float) (best.x - ps[i].x))) {
+                if ((ps[j].x() == best.x() && ps[j].y() > best.y()) ||
+                    (best.x() != ps[i].x() &&
+                     ps[j].x() > best.x() && (ps[j].y() - ps[i].y()) / (ps[j].x() - ps[i].x()) >
+                                         (best.y() - ps[i].y()) / (best.x() - ps[i].x()))) {
                      best = ps[j];
                      b = j;
                 }
@@ -151,13 +148,13 @@ class Polygon extends AbstractShape {
         }
         i = ps.length - 1;
         while (i > 0) {
-            Point best = ps[i - 1];
+            Vec2 best = ps[i - 1];
             int b = i - 1;
             for (int j = i - 1; j >= 0; j--) {
-                if ((ps[j].x == best.x && ps[j].y < best.y) ||
-                    (best.x != ps[i].x &&
-                     ps[j].x < best.x && (ps[j].y - ps[i].y) / (float) (ps[j].x - ps[i].x) >
-                                         (best.y - ps[i].y) / (float) (best.x - ps[i].x))) {
+                if ((ps[j].x() == best.x() && ps[j].y() < best.y()) ||
+                    (best.x() != ps[i].x() &&
+                     ps[j].x() < best.x() && (ps[j].y() - ps[i].y()) / (ps[j].x() - ps[i].x()) >
+                                         (best.y() - ps[i].y()) / (best.x() - ps[i].x()))) {
                      best = ps[j];
                      b = j;
                 }
@@ -167,7 +164,7 @@ class Polygon extends AbstractShape {
             }
             i = b;
         }
-        return polygon.toArray(new Point[]{});
+        return polygon.toArray(new Vec2[]{});
     }
 
     public boolean isDiscretelyUpdated() {
@@ -175,13 +172,14 @@ class Polygon extends AbstractShape {
     }
 
     @Override
-    protected boolean intersectsCircle(int x, int y, int radius) {
-        for (Point point : points) {
-            if ((point.x - x) * (point.x - x) + (point.y - y) * (point.y - y) <= (float) radius * radius) {
+    protected boolean intersectsCircle(float x, float y, float radius) {
+        for (Vec2 point : points) {
+            final Vec2 diff = new Vec2(point.x() - x, point.y() - y);
+            if (diff.lengthSquared() <= radius * radius) {
                 return true;
             }
         }
-        return ((tempPoint.x - x) * (tempPoint.x - x) + (tempPoint.y - y) * (tempPoint.y - y) <= (float) radius * radius);
+        return (tempPoint.lengthSquared() <= radius * radius);
     }
 
     public SelectionType getSelectionType() {

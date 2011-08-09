@@ -27,18 +27,20 @@ import javax.media.opengl.glu.GLU;
 import javax.media.opengl.glu.GLUquadric;
 import javax.media.opengl.glu.gl2.GLUgl2;
 import org.gephi.math.linalg.Vec3;
-import org.gephi.visualization.api.camera.Camera;
 import org.gephi.visualization.api.color.Color;
 import org.gephi.visualization.data.FrameData;
 import org.gephi.visualization.data.graph.VizNode;
-import org.gephi.visualization.view.pipeline.Pipeline;
+import org.gephi.visualization.rendering.camera.Camera;
+import org.gephi.visualization.rendering.camera.Rectangle;
+import org.gephi.visualization.rendering.camera.RenderArea;
+import org.gephi.visualization.view.pipeline.AbstractPipeline;
 
 /**
  * 3D Node pipeline using OpenGL 1.1
  *
  * @author Antonio Patriarca <antoniopatriarca@gmail.com>
  */
-public class GL11NodePipeline3D implements Pipeline {
+public class GL11NodePipeline3D extends AbstractPipeline {
 
     @Override
     public String name() {
@@ -94,17 +96,15 @@ public class GL11NodePipeline3D implements Pipeline {
         final GL2 gl2 = gl.getGL2();
 
         final Camera camera = frameData.camera();
+        final RenderArea area = new RenderArea(this.screenWidth / this.screenHeight, new Rectangle(0.0f, 0.0f, 1.0f, 1.0f), -500000.0f, 500000.0f);
         gl2.glMatrixMode(GL2.GL_PROJECTION);
 
-        float[] matrix = new float[16];
-        camera.projectiveMatrix().getColumnMajorData(matrix);
-        gl2.glLoadMatrixf(matrix, 0);
+        gl2.glLoadMatrixf(camera.projMatrix(area).toArray(), 0);
 
         gl2.glMatrixMode(GL2.GL_MODELVIEW);
         gl2.glLoadIdentity();
 
-        camera.viewMatrix().getColumnMajorData(matrix);
-        gl2.glLoadMatrixf(matrix, 0);
+        gl2.glLoadMatrixf(camera.viewMatrix(area).toArray(), 0);
 
         for (VizNode node : frameData.nodeBuffer()) {
             gl2.glPushMatrix();
@@ -149,5 +149,7 @@ public class GL11NodePipeline3D implements Pipeline {
         
         gl.getGL2().glDeleteLists(this.smallerSphere, numLods);
     }
+    
+    
 
 }

@@ -23,13 +23,15 @@ package org.gephi.visualization.data;
 
 import org.gephi.graph.api.Edge;
 import org.gephi.graph.api.Node;
-import org.gephi.visualization.api.camera.Camera;
 import org.gephi.visualization.api.view.ui.UIShape;
+import org.gephi.visualization.camera.Camera2d;
+import org.gephi.visualization.camera.Camera3d;
 import org.gephi.visualization.data.buffer.BufferBuilder;
 import org.gephi.visualization.data.buffer.Buffer;
 import org.gephi.visualization.data.graph.VizEdge;
 import org.gephi.visualization.data.graph.VizNode;
 import org.gephi.visualization.data.layout.Layout;
+import org.gephi.visualization.rendering.camera.Camera;
 
 /**
  * Class used to create FrameData objects.
@@ -39,6 +41,7 @@ import org.gephi.visualization.data.layout.Layout;
 public class FrameDataBuilder {
 
     private Camera camera;
+    private boolean is3D;
 
     private boolean somethingIsSelected;
 
@@ -48,6 +51,7 @@ public class FrameDataBuilder {
 
     public FrameDataBuilder(Layout<Node, VizNode> nodeLayout, Layout<Edge, VizEdge> edgeLayout, Layout<UIShape, UIShape> uiLayout) {
         this.camera = null;
+        this.is3D = false;
 
         this.somethingIsSelected = false;
 
@@ -66,8 +70,14 @@ public class FrameDataBuilder {
         this.uiBufferBuilder = new BufferBuilder<UIShape, UIShape>(uiBuffer);
     }
 
-    public void setCamera(Camera camera) {
-        this.camera = camera;
+    public void setCamera(org.gephi.visualization.api.camera.Camera camera) {
+        if (camera instanceof Camera2d) {
+            this.camera = Camera.from((Camera2d)camera);
+            this.is3D = false;
+        } else if (camera instanceof Camera3d) {
+            this.camera = Camera.from((Camera3d)camera);
+            this.is3D = false;
+        }
     }
 
     public void add(Node node) {

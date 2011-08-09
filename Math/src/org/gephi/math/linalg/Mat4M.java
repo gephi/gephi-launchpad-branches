@@ -22,7 +22,6 @@ package org.gephi.math.linalg;
 
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
-import java.util.Arrays;
 
 /**
  *
@@ -32,6 +31,13 @@ public final class Mat4M extends Mat4Base {
     
     /*----------------------------- CONSTRUCTORS -----------------------------*/
 
+    /**
+     * Default constructor.
+     */
+    public Mat4M() {
+        super(0.0f);
+    }
+    
     /**
      * Creates a diagonal matrix with all the entries on the diagonal equal.
      *

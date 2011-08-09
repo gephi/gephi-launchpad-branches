@@ -21,7 +21,6 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 
 package org.gephi.visualization.apiimpl.shape;
 
-import java.awt.Point;
 import org.gephi.math.linalg.Vec2;
 import org.gephi.visualization.api.selection.SelectionType;
 import org.gephi.visualization.api.selection.Shape;
@@ -35,35 +34,35 @@ import org.gephi.visualization.api.view.ui.UIStyle;
  */
 class Ellipse extends AbstractShape {
 
-    private final Point origin;
-    private final int a, b;
+    private final Vec2 origin;
+    private final float a, b;
 
-    Ellipse(int x, int y, int a, int b) {
-        this.origin = new Point(x, y);
+    Ellipse(float x, float y, float a, float b) {
+        this.origin = new Vec2(x, y);
         this.a = a;
         this.b = b;
     }
 
-    Ellipse(int x, int y) {
+    Ellipse(float x, float y) {
         this(x, y, 0, 0);
     }
 
     @Override
-    protected boolean isPointInside(int x, int y, int radius) {
+    protected boolean isPointInside(float x, float y, float radius) {
         if (a == 0 || b == 0) {
             return false;
         }
-        int x1 = Math.abs(origin.x + a - x) > radius ? Math.abs(origin.x + a - x) - radius : 0;
-        int y1 = Math.abs(origin.y + b - y) > radius ? Math.abs(origin.y + b - y) - radius : 0;
-        return x1 * x1 / (float) (a * a) + y1 * y1 / (float) (b * b) <= 1;
+        float x1 = Math.abs(origin.x() + a - x) > radius ? Math.abs(origin.x() + a - x) - radius : 0;
+        float y1 = Math.abs(origin.y() + b - y) > radius ? Math.abs(origin.y() + b - y) - radius : 0;
+        return x1 * x1 + y1 * y1 <= a*a*b*b;
     }
 
-    public Shape singleUpdate(int x, int y) {
+    public Shape singleUpdate(float x, float y) {
         return new Ellipse(x, y);
     }
 
-    public Shape continuousUpdate(int x, int y) {
-        return new Ellipse(origin.x, origin.y, (x - origin.x) / 2, (y - origin.y) / 2);
+    public Shape continuousUpdate(float x, float y) {
+        return new Ellipse(origin.x(), origin.y(), (x - origin.x()) / 2, (y - origin.y()) / 2);
     }
 
     public boolean isDiscretelyUpdated() {
@@ -71,13 +70,13 @@ class Ellipse extends AbstractShape {
     }
 
     public UIShape getUIPrimitive() {
-        return UIShape.orientedEllipse(UIStyle.SELECTION, new Vec2(origin.x + a, origin.y + b), a, b);
+        return UIShape.orientedEllipse(UIStyle.SELECTION, new Vec2(origin.x() + a, origin.y() + b), a, b);
     }
 
     @Override
-    protected boolean intersectsCircle(int x, int y, int radius) {
-        int centerX = origin.x + a;
-        int centerY = origin.y + b;
+    protected boolean intersectsCircle(float x, float y, float radius) {
+        float centerX = origin.x() + a;
+        float centerY = origin.y() + b;
         if (a == 0 || b == 0) {
             return false;
         }
@@ -85,11 +84,11 @@ class Ellipse extends AbstractShape {
             return radius + b < Math.abs(y - centerY);
         }
         // Tangent
-        float k = (float) (y - centerY) / (x - centerX);
+        float k = (y - centerY) / (x - centerX);
 
         // Boundary ellipse point intersect the difference vector direction
-        float a2 = (float) a * a;
-        float b2 = (float) b * b;
+        float a2 = a * a;
+        float b2 = b * b;
         float boundaryX = (float) Math.sqrt((a2 * b2) / (b2 + a2 * k * k)) * Math.signum(x - centerX);
         float boundaryY = k * boundaryX;
         float ellipseRadius = (float) Math.sqrt(boundaryX * boundaryX + boundaryY * boundaryY);

@@ -22,7 +22,7 @@ package org.gephi.visualization.rendering.command;
 
 import java.util.List;
 import javax.media.opengl.GL;
-import org.gephi.visualization.api.camera.Camera;
+import org.gephi.visualization.rendering.camera.Camera;
 
 /**
  * Generic implementation of command. This implementation works equally well

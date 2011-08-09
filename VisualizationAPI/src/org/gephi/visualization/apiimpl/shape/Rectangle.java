@@ -21,8 +21,9 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 
 package org.gephi.visualization.apiimpl.shape;
 
-import java.awt.Point;
 import org.gephi.math.linalg.Vec2;
+import org.gephi.math.linalg.Vec2Base;
+import org.gephi.math.linalg.Vec2M;
 import org.gephi.visualization.api.selection.SelectionType;
 import org.gephi.visualization.api.selection.Shape;
 import org.gephi.visualization.api.view.ui.UIShape;
@@ -35,42 +36,43 @@ import org.gephi.visualization.api.view.ui.UIStyle;
  */
 class Rectangle extends AbstractShape {
 
-    Point origin, opposite;
+    Vec2M origin, opposite;
 
-    Rectangle(Point origin, Point opposite) {
-        this.origin = origin;
-        this.opposite = opposite;
+    Rectangle(Vec2Base origin, Vec2Base opposite) {
+        this.origin = origin.copyM();
+        this.opposite = opposite.copyM();
     }
 
     /**
      * @param origin Top left corner of the rectangle.
      * @param dimension Dimensions of the rectangle.
      */
-    private Rectangle(int x, int y, int width, int height) {
-        this(new Point(x, y), new Point(x + width, y + height));
+    private Rectangle(float x, float y, float width, float height) {
+        this.origin = new Vec2M(x, y);
+        this.opposite = new Vec2M(x + width, y + height);
     }
 
-    Rectangle(int x, int y) {
+    Rectangle(float x, float y) {
         this(x, y, 0, 0);
     }
 
-    public boolean isPointInside(int x, int y, int radius) {
-        return ((x + radius >= origin.x && x - radius <= opposite.x) || (x - radius <= origin.x && x + radius >= opposite.x)) &&
-               ((y + radius >= origin.y && y - radius <= opposite.y) || (y - radius <= origin.y && y + radius >= opposite.y));
+    @Override
+    public boolean isPointInside(float x, float y, float radius) {
+        return ((x + radius >= origin.x() && x - radius <= opposite.x()) || (x - radius <= origin.x() && x + radius >= opposite.x())) &&
+               ((y + radius >= origin.y() && y - radius <= opposite.y()) || (y - radius <= origin.y() && y + radius >= opposite.y()));
     }
 
-    public Shape continuousUpdate(int x, int y) {
-        this.opposite.x = x;
-        this.opposite.y = y;
+    public Shape continuousUpdate(float x, float y) {
+        this.opposite.set(x, y);
         return this;
     }
 
-    public Shape singleUpdate(int x, int y) {
+    public Shape singleUpdate(float x, float y) {
         return new Rectangle(x, y);
     }
 
     public UIShape getUIPrimitive() {
-        return UIShape.orientedQuad(UIStyle.SELECTION, new Vec2((float)origin.x, (float)origin.y), new Vec2((float)opposite.x, (float)opposite.y));
+        return UIShape.orientedQuad(UIStyle.SELECTION, this.origin.copy(), this.opposite.copy());
     }
 
     public boolean isDiscretelyUpdated() {
@@ -78,11 +80,11 @@ class Rectangle extends AbstractShape {
     }
 
     @Override
-    protected boolean intersectsCircle(int x, int y, int radius) {
-        return (origin.x - x) * (origin.x - x) + (origin.y - y) * (origin.y - y) <= (float) radius * radius ||
-               (origin.x - x) * (origin.x - x) + (opposite.y - y) * (opposite.y - y) <= (float) radius * radius ||
-               (opposite.x - x) * (opposite.x - x) + (origin.y - y) * (origin.y - y) <= (float) radius * radius ||
-               (opposite.x - x) * (opposite.x - x) + (opposite.y - y) * (opposite.y - y) <= (float) radius * radius;
+    protected boolean intersectsCircle(float x, float y, float radius) {
+        return (origin.x() - x) * (origin.x() - x) + (origin.y() - y) * (origin.y() - y) <= radius * radius ||
+               (origin.x() - x) * (origin.x() - x) + (opposite.y() - y) * (opposite.y() - y) <= radius * radius ||
+               (opposite.x() - x) * (opposite.x() - x) + (origin.y() - y) * (origin.y() - y) <= radius * radius ||
+               (opposite.x() - x) * (opposite.x() - x) + (opposite.y() - y) * (opposite.y() - y) <= radius * radius;
     }
 
     public SelectionType getSelectionType() {

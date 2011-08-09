@@ -34,12 +34,12 @@ public final class Mat4 extends Mat4Base {
     /**
      * Zero matrix.
      */
-    public final Mat4 ZERO = new Mat4(0.0f);
+    public final static Mat4 ZERO = new Mat4(0.0f);
     
     /**
      * Identity matrix.
      */
-    public final Mat4 IDENTITY = new Mat4(1.0f);
+    public final static Mat4 IDENTITY = new Mat4(1.0f);
     
     
     /*----------------------------- CONSTRUCTORS -----------------------------*/

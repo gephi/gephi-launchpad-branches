@@ -31,14 +31,6 @@
                     </run-dependency>
                 </dependency>
                 <dependency>
-                    <code-name-base>org.gephi.lib.gleem</code-name-base>
-                    <build-prerequisite/>
-                    <compile-dependency/>
-                    <run-dependency>
-                        <specification-version>1.0</specification-version>
-                    </run-dependency>
-                </dependency>
-                <dependency>
                     <code-name-base>org.gephi.math</code-name-base>
                     <build-prerequisite/>
                     <compile-dependency/>
@@ -84,6 +76,7 @@
                 <package>org.gephi.visualization.api.color</package>
                 <package>org.gephi.visualization.api.controller</package>
                 <package>org.gephi.visualization.api.event</package>
+                <package>org.gephi.visualization.api.geometry</package>
                 <package>org.gephi.visualization.api.rendering</package>
                 <package>org.gephi.visualization.api.rendering.background</package>
                 <package>org.gephi.visualization.api.selection</package>

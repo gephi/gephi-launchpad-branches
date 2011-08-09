@@ -27,7 +27,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import javax.swing.SwingUtilities;
 import org.gephi.graph.api.Node;
-import org.gephi.lib.gleem.linalg.Vec3f;
+import org.gephi.math.linalg.Vec3;
 import org.gephi.visualization.api.controller.MotionManager;
 import org.gephi.visualization.api.vizmodel.VizConfig;
 import org.gephi.visualization.api.event.VizEventManager;
@@ -51,7 +51,6 @@ public class MotionManagerImpl implements MotionManager {
 
     private VisualizationControllerImpl controller;
 
-    protected static float MOVE_FACTOR = 5.0f;
     protected static float ZOOM_FACTOR = 0.008f;
     protected static float ORBIT_FACTOR = 0.005f;
 
@@ -91,9 +90,8 @@ public class MotionManagerImpl implements MotionManager {
     }
 
     @Override
-    public float[] getMousePosition3d() {
-        Vec3f position = controller.getCamera().projectPointInverse(mousePosition[0], mousePosition[1]);
-        return new float[]{position.x(), position.y(), position.z()};
+    public Vec3 getMousePosition3d() {
+        return controller.getCamera().projectPointInverse(mousePosition[0], mousePosition[1]);
     }
 
     @Override
@@ -149,7 +147,6 @@ public class MotionManagerImpl implements MotionManager {
         
         // Movement
         if (SwingUtilities.isRightMouseButton(e)) {
-            controller.getCamera().startTranslation();
             controller.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
         } else if (SwingUtilities.isMiddleMouseButton(e)) {
             Dimension viewDimension = controller.getViewDimensions();
@@ -209,7 +206,7 @@ public class MotionManagerImpl implements MotionManager {
         } else if (selectionManager.isNodeDraggingEnabled()) {
             controller.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
             if (SwingUtilities.isLeftMouseButton(e)) {
-                Vec3f translation = controller.getCamera().projectVectorInverse(-x, y);
+                Vec3 translation = controller.getCamera().projectVectorInverse(-x, y);
                 for (Node node : selectionManager.getSelectedNodes()) {
                     node.getNodeData().setPosition(node.getNodeData().x() - translation.x(), node.getNodeData().y() - translation.y(), node.getNodeData().z() - translation.z());
                 }
@@ -219,7 +216,7 @@ public class MotionManagerImpl implements MotionManager {
         }
         // Movement
         if (SwingUtilities.isRightMouseButton(e)) {
-            controller.getCamera().updateTranslation(-MOVE_FACTOR * x, MOVE_FACTOR * y);
+            controller.getCamera().translate(x, y);
         } else if (SwingUtilities.isMiddleMouseButton(e)) {
             controller.getCamera().updateOrbit(ORBIT_FACTOR * x, ORBIT_FACTOR * y);
         }
@@ -300,7 +297,7 @@ public class MotionManagerImpl implements MotionManager {
 
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
-        controller.getCamera().zoom(ZOOM_FACTOR * e.getUnitsToScroll());
+        controller.getCamera().zoom(mousePosition[0], mousePosition[1], ZOOM_FACTOR * e.getUnitsToScroll());
     }
 
     private SelectionModifier extractSelectionModifier(MouseEvent e) {

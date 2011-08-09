@@ -17,18 +17,25 @@ GNU Affero General Public License for more details.
 
 You should have received a copy of the GNU Affero General Public License
 along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
-*/
-package org.gephi.visualization.rendering.command;
-
-import javax.media.opengl.GL;
-import org.gephi.visualization.rendering.camera.Camera;
+ */
+package org.gephi.visualization.rendering.camera;
 
 /**
- * A Rendering Command contains a list of objects to draw using the same 
- * rendering technique and the technique to draw it.
  *
  * @author Antonio Patriarca <antoniopatriarca@gmail.com>
  */
-public interface Command {    
-    public void draw(GL gl, Camera camera);
+public final class RenderArea {
+    public final float aspectRatio;
+    
+    public final Rectangle renderRect;
+ 
+    public final float near;
+    public final float far;
+
+    public RenderArea(float aspectRatio, Rectangle renderRect, float near, float far) {
+        this.aspectRatio = aspectRatio;
+        this.renderRect = renderRect;
+        this.near = near;
+        this.far = far;
+    }
 }

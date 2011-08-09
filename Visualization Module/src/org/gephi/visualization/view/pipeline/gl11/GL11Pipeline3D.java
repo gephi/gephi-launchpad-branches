@@ -72,5 +72,15 @@ public class GL11Pipeline3D implements Pipeline {
         this.uiPipeline.dispose(gl);
     }
 
+    @Override
+    public void reshape(GL gl, int x, int y, int w, int h) {
+        int h2 = h == 0 ? 1 : h;
+
+        gl.glViewport(0, 0, w, h2);
+        
+        this.nodePipeline.reshape(gl, x, y, w, h);
+        this.uiPipeline.reshape(gl, x, y, w, h);
+    }
+
 
 }

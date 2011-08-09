@@ -21,7 +21,7 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 package org.gephi.visualization.rendering.command;
 
 import javax.media.opengl.GL;
-import org.gephi.visualization.api.camera.Camera;
+import org.gephi.visualization.rendering.camera.Camera;
 
 /**
  * A rendering technique is a class which can be used to draw some kind of 

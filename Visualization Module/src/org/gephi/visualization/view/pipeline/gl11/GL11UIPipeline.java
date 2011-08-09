@@ -29,15 +29,15 @@ import org.gephi.math.linalg.Vec2M;
 import org.gephi.visualization.api.camera.Camera;
 import org.gephi.visualization.api.view.ui.UIShape;
 import org.gephi.visualization.data.FrameData;
-import org.gephi.visualization.view.pipeline.Pipeline;
 import org.gephi.visualization.api.view.ui.UIStyle;
+import org.gephi.visualization.view.pipeline.AbstractPipeline;
 
 /**
  * UI pipeline based on OpenGL 1.1
  *
  * Antonio Patriarca <antoniopatriarca@gmail.com>
  */
-public class GL11UIPipeline implements Pipeline {
+public class GL11UIPipeline extends AbstractPipeline {
 
     @Override
     public String name() {
@@ -71,12 +71,10 @@ public class GL11UIPipeline implements Pipeline {
         gl2.glEnable(GL2.GL_BLEND);
         gl2.glBlendFunc(GL2.GL_ONE, GL2.GL_ONE_MINUS_SRC_ALPHA);
 
-        final Camera camera = frameData.camera();
-
         gl2.glMatrixMode(GL2.GL_PROJECTION);
 
         gl2.glLoadIdentity();
-        glu.gluOrtho2D(0.0f, camera.imageWidth(), camera.imageHeight(), 0.0f);
+        glu.gluOrtho2D(0.0f, this.screenWidth, this.screenHeight, 0.0f);
 
         gl2.glMatrixMode(GL2.GL_MODELVIEW);
 

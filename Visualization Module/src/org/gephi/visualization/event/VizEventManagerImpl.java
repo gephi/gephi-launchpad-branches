@@ -31,6 +31,7 @@ import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import org.gephi.graph.api.Node;
+import org.gephi.math.linalg.Vec3;
 import org.gephi.visualization.api.controller.MotionManager;
 import org.gephi.visualization.api.event.VizEvent;
 import org.gephi.visualization.api.event.VizEventListener;
@@ -104,8 +105,8 @@ public class VizEventManagerImpl implements VizEventManager {
             Collection<Node> nodes = selectionManager.getSelectedNodes();
             if (nodes.isEmpty() || !selectionManager.isSelectionEnabled()) {
                 int[] mousePositionViewport = motionManager.getMousePosition();
-                float[] mousePosition3d = motionManager.getMousePosition3d();
-                float[] mousePos = new float[]{mousePositionViewport[0], mousePositionViewport[1], mousePosition3d[0], mousePosition3d[1], mousePosition3d[2]};
+                Vec3 mousePosition3d = motionManager.getMousePosition3d();
+                float[] mousePos = new float[]{mousePositionViewport[0], mousePositionViewport[1], mousePosition3d.x(), mousePosition3d.y(), mousePosition3d.z()};
                 handlers[VizEvent.Type.MOUSE_LEFT_CLICK.ordinal()].dispatch(mousePos);
             }
         }

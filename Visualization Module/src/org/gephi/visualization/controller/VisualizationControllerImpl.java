@@ -34,7 +34,7 @@ import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import org.gephi.graph.api.Node;
-import org.gephi.lib.gleem.linalg.Vec3f;
+import org.gephi.math.linalg.Vec3;
 import org.gephi.project.api.ProjectController;
 import org.gephi.project.api.Workspace;
 import org.gephi.project.api.WorkspaceListener;
@@ -48,7 +48,7 @@ import org.gephi.visualization.api.vizmodel.VizModel;
 import org.gephi.visualization.camera.Camera2d;
 import org.gephi.visualization.camera.Camera3d;
 import org.gephi.visualization.data.FrameDataBridge;
-import org.gephi.visualization.geometry.AABB;
+import org.gephi.visualization.api.geometry.AABB;
 import org.gephi.visualization.model.Model;
 import org.gephi.visualization.view.View;
 import org.gephi.visualization.vizmodel.VizModelImpl;
@@ -89,7 +89,7 @@ public class VisualizationControllerImpl implements VisualizationController, Key
     private boolean previouslySelected;
     
     // TODO remove when architecture bugs fixed
-    private static final Camera DEFAULT_CAMERA = new Camera2d(300, 300, 100f, 10000.0f);
+    private static final Camera DEFAULT_CAMERA = new Camera2d();
 
     public VisualizationControllerImpl() {
         // Random values
@@ -122,7 +122,7 @@ public class VisualizationControllerImpl implements VisualizationController, Key
     public void resize(int width, int height) {
         this.viewSize = new Dimension(width, height);
         if (camera != null) {
-            this.camera.setImageSize(viewSize);
+            this.camera.screenSize(viewSize);
         }
     }
 
@@ -256,24 +256,16 @@ public class VisualizationControllerImpl implements VisualizationController, Key
 
     public void endUpdateFrame(AABB box) {
         if (centerGraph && box != null) {
-            final Vec3f center = box.center();
-            final Vec3f scale = box.scale();
-            final Vec3f minVec = box.minVec();
-            final Vec3f maxVec = box.maxVec();
-
-            float d = scale.y() / (float)Math.tan(0.5 * camera.fov());
-
-            final Vec3f origin = new Vec3f(center.x(), center.y(), maxVec.z() + d*1.1f);
-            camera.lookAt(origin, center, Vec3f.Y_AXIS);
-            //camera.setClipPlanes(d, maxVec.z() - minVec.z() + d*1.2f);
+            camera.centerBox(box);
+            
             centerGraph = false;
         }
         if (centerZero) {
-            camera.lookAt(Vec3f.Z_AXIS, new Vec3f(0, 0, 0), Vec3f.Y_AXIS);
+            camera.lookAt(Vec3.ZERO, Vec3.E2);
             centerZero = false;
         }
         if (centerNode != null) {
-            camera.lookAt(new Vec3f(centerNode[0], centerNode[1], centerNode[2]), Vec3f.Y_AXIS);
+            camera.lookAt(new Vec3(centerNode[0], centerNode[1], centerNode[2]), Vec3.E2);
             centerNode = null;
         }
         Lookup.getDefault().lookup(MotionManager.class).refresh();
@@ -408,7 +400,7 @@ public class VisualizationControllerImpl implements VisualizationController, Key
     public void select(Workspace workspace) {
         camera = workspace.getLookup().lookup(Camera.class);
         if (camera == null) {
-            camera = new Camera2d(viewSize.width, viewSize.height, 100f, 10000.0f);
+            camera = new Camera2d(viewSize.width, viewSize.height);
             workspace.add(camera);
         }
         hasWorkspace = true;

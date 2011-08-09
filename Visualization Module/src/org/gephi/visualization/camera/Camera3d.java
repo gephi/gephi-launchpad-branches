@@ -22,12 +22,15 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 package org.gephi.visualization.camera;
 
 import java.awt.Dimension;
-import org.gephi.lib.gleem.linalg.Mat3f;
-import org.gephi.lib.gleem.linalg.Mat4f;
-import org.gephi.lib.gleem.linalg.Rotf;
-import org.gephi.lib.gleem.linalg.Vec3f;
-import org.gephi.lib.gleem.linalg.Vec4f;
+import org.gephi.math.linalg.Mat4M;
+import org.gephi.math.linalg.Vec3;
+import org.gephi.math.linalg.Vec3Base;
+import org.gephi.math.linalg.Vec3M;
+import org.gephi.math.linalg.Vec4;
 import org.gephi.visualization.api.camera.Camera;
+import org.gephi.visualization.api.controller.VisualizationController;
+import org.gephi.visualization.api.geometry.AABB;
+import org.openide.util.Lookup;
 
 /**
  * Class representing a camera for three dimensions. Enables basic camera movement.
@@ -35,225 +38,109 @@ import org.gephi.visualization.api.camera.Camera;
  * @author Antonio Patriarca <antoniopatriarca@gmail.com>
  * @author Vojtech Bardiovsky <vojtech.bardiovsky@gmail.com>
  */
-public class Camera3d extends AbstractCamera {
+public final class Camera3d implements Camera {
     
-    private Vec3f front, up;
-    private Vec3f position;
-    private Vec3f orbitCenter;
+    private Vec3M front, up, right;
+    private Vec3M position;
+    private Vec3M orbitCenter;
+    
+    private float fovy;
+    private float relativeZoom;
 
-    private Mat4f projectiveMatrix;
-    private Mat4f modelviewMatrix;
-
-    private float imageWidth, imageHeight, near, far;
+    private float screenWidth, screenHeight;
 
     private static final float MIN_ORBIT = 200.0f;
     private static final float MAX_ORBIT = 2000.0f;
 
-    public Camera3d(int width, int height, float near, float far) {
-        this.imageWidth = width;
-        this.imageHeight = height;
-        this.fovy = 1.0f;
-        this.near = near;
-        this.far = far;
+    private static final float MAX_ZOOM = 1.0f;
+    private static final float MIN_ZOOM = -4.0f;
 
-        this.position = new Vec3f();
-        this.front = new Vec3f(0.0f, 0.0f, -1.0f);
-        this.up = new Vec3f(0.0f, 1.0f, 0.0f);
+    public Camera3d() {
+        this.screenWidth = 1;
+        this.screenHeight = 1;
+        
+        this.position = Vec3.E3.copyM();
+        this.front = Vec3.E3_NEG.copyM();
+        this.up = Vec3.E2.copyM();
+        this.right = Vec3.E1.copyM();
+        this.orbitCenter = new Vec3M();
+        
+        this.fovy = 1.0f;
+        this.relativeZoom = 1.0f;
+    }
+    
+    public Camera3d(int width, int height) {
+        this();
+        
+        this.screenWidth = width;
+        this.screenHeight = height;
+    }
+    
+    public Camera3d(Camera3d camera) {
+        this.screenWidth = camera.screenWidth;
+        this.screenHeight = camera.screenHeight;
+        
+        this.position = camera.position.copyM();
+        this.front = camera.front.copyM();
+        this.up = camera.up.copyM();
+        this.right = camera.right.copyM();
+        this.orbitCenter = camera.orbitCenter.copyM();
+        
+        this.fovy = camera.fovy;
+        this.relativeZoom = camera.relativeZoom;
     }
 
     public Camera3d(Camera2d camera) {
-        this.imageWidth = camera.imageWidth();
-        this.imageHeight = camera.imageHeight();
-        this.fovy = camera.fov();
-        this.near = camera.near();
-        this.far = camera.far();
-
-        this.position = camera.position();
-        this.up = camera.upVector();
-        this.front = camera.upVector();
+        this((int)camera.screenWidth(), (int)camera.screenHeight());
+        // TODO: study a better way to create a 3D camera from a 2D one
     }
     
     @Override
     public Camera copy() {
-        Camera3d camera = new Camera3d((int) imageWidth, (int) imageHeight, near, far);
-        camera.fovy = this.fovy;
-        camera.position = this.position;
-        camera.front = this.front;
-        camera.up = this.up;
-        return camera;
+        return new Camera3d(this);
     }
 
     @Override
-    public void setImageSize(Dimension size) {
-        this.imageWidth = size.width;
-        this.imageHeight = size.height;
-        requireRecomputeMatrix();
-    }
-
-    private void translate(Vec3f v) {
-        this.position.add(v);
-        requireRecomputeMatrix();
+    public void screenSize(Dimension size) {
+        this.screenWidth = size.width;
+        this.screenHeight = size.height;
     }
 
     @Override
-    public void rotate(Vec3f axis, float angle) {
-        Rotf rot = new Rotf(axis, angle);
-        this.front = rot.rotateVector(this.front);
-        this.up = rot.rotateVector(up);
-        requireRecomputeMatrix();
-    }
-
-    @Override
-    public void rotate(Vec3f origin, Vec3f axis, float angle) {
-        Rotf rot = new Rotf(axis, angle);
-        this.front = rot.rotateVector(this.front);
-        this.up = rot.rotateVector(up);
-
-        Vec3f diff = this.position.minus(origin);
-        this.position.add(origin, rot.rotateVector(diff));
-        requireRecomputeMatrix();
-    }
-
-    @Override
-    public void lookAt(Vec3f center, Vec3f up) {
+    public void lookAt(Vec3Base center, Vec3Base up) {
         this.front.sub(center, this.position);
         this.front.normalize();
-        this.up = up.copy();
-        this.up.normalize();
-        requireRecomputeMatrix();
+        this.right.toCross(this.front, up);
+        this.right.normalize();
+        this.up.toCross(this.right, this.front);
+        this.up.normalize(); // it should be unnecessary
     }
 
-    @Override
-    public void lookAt(Vec3f position, Vec3f center, Vec3f up) {
-        this.position = position.copy();
+    public void lookAt(Vec3Base position, Vec3Base center, Vec3Base up) {
+        this.position.set(position);
         lookAt(center, up);
     }
 
     @Override
-    public void setClipPlanes(float near, float far) {
-        this.near = near;
-        this.far = far;
-        requireRecomputeMatrix();
+    public float screenWidth() {
+        return this.screenWidth;
     }
 
     @Override
-    public Vec3f frontVector() {
-        return this.front.copy();
-    }
-
-    @Override
-    public Vec3f upVector() {
-        return this.up.copy();
-    }
-
-    @Override
-    public Vec3f rightVector() {
-        return this.front.cross(this.up);
-    }
-
-    @Override
-    public Vec3f position() {
-        return this.position.copy();
-    }
-
-    @Override
-    public Vec3f lookAtPoint() {
-        Vec3f point = new Vec3f();
-        point.add(position, front);
-        return point;
-    }
-
-    @Override
-    public float imageWidth() {
-        return this.imageWidth;
-    }
-
-    @Override
-    public float imageHeight() {
-        return this.imageHeight;
-    }
-
-    @Override
-    public float near() {
-        return this.near;
-    }
-
-    @Override
-    public float far() {
-        return this.far;
-    }
-
-    @Override
-    public float fov() {
-        return this.fovy;
-    }
-
-    @Override
-    public float projectedDistanceFrom(Vec3f point) {
-        this.front.normalize();
-        Vec3f pnt = point.copy();
-        pnt.sub(this.position);
-        return pnt.dot(this.front);
-    }
-
-    /**
-     * Returns the model-view matrix.
-     */
-    @Override
-    public Mat4f viewMatrix() {
-        if (recomputeMatrix) {
-            Vec3f right = rightVector();
-            Mat4f mat = new Mat4f();
-            mat.setRotation(right, this.up, this.front.times(-1.0f));
-            mat.transpose();
-            mat.setTranslation(this.position.times(-1.0f));
-            mat.set(3, 3, 1.0f);
-            modelviewMatrix = mat;
-        }
-        return modelviewMatrix;
-    }
-
-    /**
-     * Returns the projective matrix.
-     */
-    @Override
-    public Mat4f projectiveMatrix() {
-        if (recomputeMatrix) {
-            Mat4f mat = new Mat4f();
-            float aspect = imageWidth / imageHeight;
-            float f = (float) (1.0 / Math.tan(this.fovy / 2.0));
-            mat.set(0, 0, f/aspect);
-            mat.set(1, 1, f);
-            mat.set(2, 2, (this.far + this.near)/(this.near - this.far));
-            mat.set(2, 3, (2.0f * this.far * this.near)/(this.near - this.far));
-            mat.set(3, 2, -1.0f);
-            projectiveMatrix = mat;
-        }
-        return projectiveMatrix;
+    public float screenHeight() {
+        return this.screenHeight;
     }
 
     /**
      * Returns the given point as it will appear on the screen together with its
      * size on screen after transformation have been applied.
-     * @return array of integers, where
+     * @return array of floats, where
      * [0,1] -> point coordinates on screen
      * [2]   -> size of the node on screen
      */
     @Override
-    public int[] projectPoint(float x, float y, float z, float size) {
-        int[] res = new int[3];
-        Vec4f point = new Vec4f(x, y, z, 1.0f);
-        Vec4f screenPoint = new Vec4f();
-        Mat4f viewProjMatrix = projectiveMatrix().mul(viewMatrix());
-        // multiply by modelview and projection matrices
-        viewProjMatrix.xformVec(point, screenPoint);
-        screenPoint.scale(1.0f/screenPoint.w());
-        // to NDC
-        // point.scale(1 / point.w());
-        res[0] = (int) ((screenPoint.x() + 1.0f) * imageWidth / 2.0f);
-        res[1] = (int) ((1.0f - screenPoint.y()) * imageHeight / 2.0f);
-        res[2] = 5;
-        return res;
+    public float[] projectPoint(float x, float y, float z, float size) {
+        return new float[]{0.0f, 0.0f, 0.0f}; // TODO: implement it
     }
 
     /**
@@ -261,58 +148,42 @@ public class Camera3d extends AbstractCamera {
      * on screen.
      */
     @Override
-    public Vec3f projectPointInverse(float x, float y) {
+    public Vec3 projectPointInverse(float x, float y) {
         // FIXME
-        Vec3f point = this.position.addScaled(getCameraDistance(), this.front);
-        return point.addScaled(y - imageHeight / 2, up).addScaled(x - imageWidth / 2, rightVector());
-    }
-
-    private float getCameraDistance() {
-        //TODO implement
-        Vec3f distance = new Vec3f();
-        distance.sub(new Vec3f(0, 0, 0), position);
-        return distance.length();
+        Vec3M point = this.position.plusM(this.position.length(), this.front);
+        return point.plusEq(y - screenHeight / 2, up).plus(x - screenWidth / 2, this.right);
     }
 
     /**
-     * Returns a vector from camera viewing plane corresponding to the 2D vector
-     * on screen.
+     * Returns the translation vector which corresponds to the (x,y) screen
+     * vector.
      */
     @Override
-    public Vec3f projectVectorInverse(float x, float y) {
+    public Vec3 projectVectorInverse(float x, float y) {
         float ratio = (float) Math.sqrt((1 - Math.cos(fovy)) / (1 - Math.cos(1.0)));
-        Vec3f rightVector = rightVector();
-        Vec3f horizontalTranslation = rightVector.times(x * ratio);
-        Vec3f verticalTranslation = this.up.times(y * ratio);
-        Vec3f translation = new Vec3f();
-        translation.add(horizontalTranslation, verticalTranslation);
-        Vec3f result = new Vec3f();
-        Mat3f rotationMatrix = new Mat3f();
-        rotationMatrix.setCol(0, rightVector);
-        rotationMatrix.setCol(1, this.up);
-        rotationMatrix.setCol(2, this.front);
-        rotationMatrix.invert();
-        rotationMatrix.xformVec(translation, result);
-        return result;
+        Vec3 horizontalTranslation = this.right.times(x * ratio);
+        Vec3 verticalTranslation = this.up.times(y * ratio);
+        Vec3 translation = horizontalTranslation.plus(verticalTranslation);
+        Mat4M rotationMatrix = new Mat4M(1.0f);
+        rotationMatrix.setColumn(0, this.right.x(), this.right.y(), this.right.z(), 0.0f);
+        rotationMatrix.setColumn(1, this.up.x(), this.up.y(), this.up.z(), 0.0f);
+        rotationMatrix.setColumn(2, this.front.x(), this.front.y(), this.front.z(), 0.0f);
+        rotationMatrix.invertOrthogonal();
+        return rotationMatrix.transformAffineVec(translation);
     }
 
     @Override
-    public int getPlanarDistance(float x, float y, float z, int a, int b) {
-        int[] point = projectPoint(x, y, z, 0);
-        return (int) Math.sqrt((point[0] - a) * (point[0] - a) + (point[1] - b) * (point[1] - b));
+    public float getPlanarDistance(float x, float y, float z, int a, int b) {
+        float[] point = projectPoint(x, y, z, 0);
+        return (float) Math.sqrt((point[0] - a) * (point[0] - a) + (point[1] - b) * (point[1] - b));
     }
 
     @Override
-    public void startTranslation() {}
-
-    @Override
-    public void updateTranslation(float horizontal, float vertical) {
+    public void translate(float horizontal, float vertical) {
         float ratio = (float) Math.sqrt((1 - Math.cos(fovy)) / (1 - Math.cos(1.0)));
-        Vec3f rightVector = rightVector();
-        Vec3f horizontalTranslation = rightVector.times(horizontal * ratio);
-        Vec3f verticalTranslation = this.up.times(vertical * ratio);
-        Vec3f translation = new Vec3f();
-        translation.add(horizontalTranslation, verticalTranslation);
+        Vec3 horizontalTranslation = this.right.times(horizontal * ratio);
+        Vec3 verticalTranslation = this.up.times(vertical * ratio);
+        Vec3 translation = horizontalTranslation.plus(verticalTranslation);
         //Vec3f result = new Vec3f();
         //Mat3f rotationMatrix = new Mat3f();
         //rotationMatrix.setCol(0, rightVector);
@@ -320,8 +191,8 @@ public class Camera3d extends AbstractCamera {
         //rotationMatrix.setCol(2, this.front);
         //rotationMatrix.invert();
         //rotationMatrix.xformVec(translation, result);
-        //System.out.println("Position: " + position);
-        translate(translation);
+        //System.out.println("Position: " + positionVector);
+        this.position.plusEq(translation);
     }
 
     private float orbitRadius(float modifier) {
@@ -334,33 +205,98 @@ public class Camera3d extends AbstractCamera {
      */
     @Override
     public void startOrbit(float orbitModifier) {
-        orbitCenter = new Vec3f(position).addScaled(orbitRadius(orbitModifier), front);
+        orbitCenter.add(position, orbitRadius(orbitModifier), front);
     }
 
     @Override
     public void updateOrbit(float x, float y) {
-        Vec3f fromCenter = new Vec3f();
-        fromCenter.sub(position, orbitCenter);
+        Vec3 fromCenter = this.position.minus(this.orbitCenter);
 
-        Mat3f rotationMatrix = new Mat3f();
+        Mat4M rotationMatrix = new Mat4M(1.0f);
         float sx = (float) Math.sin(y);
         float sy = (float) Math.sin(x);
         float cx = (float) Math.cos(y);
         float cy = (float) Math.cos(x);
-        rotationMatrix.setCol(0, new Vec3f(cy, sx * sy, -cx * sy));
-        rotationMatrix.setCol(1, new Vec3f(0, cx, sx));
-        rotationMatrix.setCol(2, new Vec3f(sy, -sx * cy, cx * cy));
-        Vec3f v = new Vec3f();
-        Vec3f u = new Vec3f(up);
+        rotationMatrix.setColumn(0, new Vec4(cy, sx * sy, -cx * sy, 0.0f));
+        rotationMatrix.setColumn(1, new Vec4(0, cx, sx, 0.0f));
+        rotationMatrix.setColumn(2, new Vec4(sy, -sx * cy, cx * cy, 0.0f));
+        Vec3 u = this.up.plus(fromCenter);
+        
+        Vec3M v = rotationMatrix.transformAffineVecM(fromCenter);
+        Vec3M ur = rotationMatrix.transformAffineVecM(u);
 
-        u.add(fromCenter);
-        Vec3f ur = new Vec3f();
-        rotationMatrix.xformVec(fromCenter, v);
-        rotationMatrix.xformVec(u, ur);
-
-        ur.sub(v);
-        v.add(orbitCenter);
+        ur.minusEq(v);
+        v.plusEq(orbitCenter);
         lookAt(v, orbitCenter, ur);
     }
+    
+    public Vec3 position() {
+        return new Vec3(this.position.x(), this.position.y(), this.position.z());
+    }
+    
+    public Vec3M positionM() {
+        return new Vec3M(this.position.x(), this.position.y(), this.position.z());
+    }
+    
+    public Vec3 up() {
+        return new Vec3(this.up.x(), this.up.y(), this.up.z());
+    }
+    
+    public Vec3M upM() {
+        return new Vec3M(this.up.x(), this.up.y(), this.up.z());
+    }
+    
+    public Vec3 front() {
+        return new Vec3(this.front.x(), this.front.y(), this.front.z());
+    }
+    
+    public Vec3M frontM() {
+        return new Vec3M(this.front.x(), this.front.y(), this.front.z());
+    }
+    
+    public Vec3 right() {
+        return this.front().cross(this.up());
+    }
+    
+    public Vec3M rightM() {
+        return this.frontM().crossEq(this.up());
+    }
 
+    @Override
+    public void centerBox(AABB box) {
+        final Vec3 center = box.center();
+        final Vec3 scale = box.scale();
+        final Vec3 maxVec = box.maxVec();
+
+        final float d = scale.y() / (float)Math.tan(0.5 * this.fovy);
+
+        final Vec3 origin = new Vec3(center.x(), center.y(), maxVec.z() + d*1.1f);
+        this.lookAt(origin, center, Vec3.E2);
+    }
+
+    public float fov() {
+        return this.fovy;
+    }
+    
+    public void setFov(float fov) {
+        this.fovy = fov;
+    }
+
+    @Override
+    public void zoom(float x, float y, float by) {
+        setFov((float) Math.max(Math.min(fovy * Math.exp(by), Math.exp(MAX_ZOOM)), Math.exp(MIN_ZOOM)));
+        Lookup.getDefault().lookup(VisualizationController.class).getVizModel().setZoomFactor(getZoom());
+    }
+
+    @Override
+    public void setZoom(float relativeZoom) {
+        setFov((float) Math.exp(MIN_ZOOM + relativeZoom * (MAX_ZOOM - MIN_ZOOM)));
+        Lookup.getDefault().lookup(VisualizationController.class).getVizModel().setZoomFactor(relativeZoom);
+    }
+
+    @Override
+    public float getZoom() {
+        return (float) ((Math.log(fovy) - MIN_ZOOM) / (MAX_ZOOM - MIN_ZOOM));
+    }
+    
 }

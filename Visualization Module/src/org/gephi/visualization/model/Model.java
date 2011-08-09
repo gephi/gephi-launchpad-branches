@@ -26,7 +26,7 @@ import org.gephi.graph.api.GraphController;
 import org.gephi.graph.api.GraphModel;
 import org.gephi.graph.api.Node;
 import org.gephi.graph.api.NodeData;
-import org.gephi.lib.gleem.linalg.Vec3f;
+import org.gephi.math.linalg.Vec3;
 import org.gephi.project.api.ProjectController;
 import org.gephi.project.api.Workspace;
 import org.gephi.project.api.WorkspaceListener;
@@ -35,7 +35,7 @@ import org.gephi.visualization.api.selection.SelectionManager;
 import org.gephi.visualization.api.selection.Shape;
 import org.gephi.visualization.controller.VisualizationControllerImpl;
 import org.gephi.visualization.data.FrameDataBridgeIn;
-import org.gephi.visualization.geometry.AABB;
+import org.gephi.visualization.api.geometry.AABB;
 import org.gephi.visualization.model.styler.BasicEdgeStyler;
 import org.gephi.visualization.model.styler.BasicNodeStyler;
 import org.openide.util.Lookup;
@@ -108,8 +108,8 @@ public class Model implements Runnable, WorkspaceListener {
                 if (graph != null) {
                     for (Node n : graph.getNodes()) {
                         NodeData nd = n.getNodeData();
-                        Vec3f p = new Vec3f(nd.x(), nd.y(), nd.z());
-                        Vec3f s = new Vec3f(nd.getSize(), nd.getSize(), nd.getSize());
+                        Vec3 p = new Vec3(nd.x(), nd.y(), nd.z());
+                        Vec3 s = new Vec3(nd.getSize(), nd.getSize(), nd.getSize());
                         if (box == null) {
                             box = new AABB(p, s);
                         } else {

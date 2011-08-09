@@ -22,277 +22,321 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 package org.gephi.visualization.camera;
 
 import java.awt.Dimension;
-import org.gephi.lib.gleem.linalg.Mat4f;
-import org.gephi.lib.gleem.linalg.Vec2f;
-import org.gephi.lib.gleem.linalg.Vec3f;
-import org.gephi.lib.gleem.linalg.Vec4f;
+import org.gephi.math.linalg.Vec2;
+import org.gephi.math.linalg.Vec2Base;
+import org.gephi.math.linalg.Vec2M;
+import org.gephi.math.linalg.Vec3;
+import org.gephi.math.linalg.Vec3Base;
 import org.gephi.visualization.api.camera.Camera;
+import org.gephi.visualization.api.geometry.AABB;
 
 /**
- * Class representing a camera for two dimensions. Enables basic camera movement.
+ * Camera for 2D mode. It only supports translation and zoom.
  *
  * @author Antonio Patriarca <antoniopatriarca@gmail.com>
  * @author Vojtech Bardiovsky <vojtech.bardiovsky@gmail.com>
  */
-public class Camera2d extends AbstractCamera {
+public final class Camera2d implements Camera {
+    /**
+     * Camera position in 2D. It corresponds to the center of the screen.
+     */
+    private final Vec2M center;
+    
+    /**
+     * Camera scale factor. It is the scalar which should be multiplied to a
+     * vector in world coordinates to get the screen coordinates.
+     */
+    private float scale;
 
-    private Vec2f up;
-    private Vec2f position;
-    private final Vec3f front;
+    /**
+     * Width of the screen in pixels.
+     */
+    private float screenWidth;
+            
+    /**
+     * Height of the screen in pixels.
+     */
+    private float screenHeight;
 
-    private Mat4f projectiveMatrix;
-    private Mat4f modelviewMatrix;
-
-    private float imageWidth, imageHeight, near, far;
-
-    public Camera2d(int width, int height, float near, float far) {
-        this.imageWidth = width;
-        this.imageHeight = height;
-        this.fovy = 1.0f;
-        this.near = near;
-        this.far = far;
-
-        this.position = new Vec2f();
-        this.up = new Vec2f(0.0f, 1.0f);
-        this.front = Vec3f.NEG_Z_AXIS;
+    /**
+     * Creates a camera centered at the origin with a 1x1 screen.
+     */
+    public Camera2d() {
+        this(1, 1);
     }
-
+    
+    /**
+     * Creates a camera centered at the origin with a specific screen dimension
+     * and scale factor equal to one.
+     * 
+     * @param width the width of the screen
+     * @param height the height of the screen
+     */
+    public Camera2d(int width, int height) {
+        this.screenWidth = width;
+        this.screenHeight = height;
+        
+        this.center = new Vec2M();
+        this.scale = 1.0f;
+    }
+    
+    /**
+     * Creates a camera centered at <code>center</code> and with scale factor
+     * <code>scale</code> with a screen dimension of <code>width * height</code>
+     * 
+     * @param width the width of the screen
+     * @param height the height of the screen
+     * @param center the center of the screen in world coordinates
+     * @param scale the scale factor
+     */
+    public Camera2d(int width, int height, Vec2Base center, float scale) {
+        this.screenWidth = width;
+        this.screenHeight = height;
+        
+        this.center = center.copyM();
+        this.scale = scale;
+    }
+    
+    /**
+     * Creates a new camera from another 2D camera.
+     * 
+     * @param camera the other camera
+     */
+    public Camera2d(Camera2d camera) {
+        this((int)camera.screenWidth, (int)camera.screenHeight, camera.center, camera.scale);
+    }
+    
+    /**
+     * Creates a 2D camera from a 3D one.
+     * 
+     * @param camera the 3D camera
+     */
     public Camera2d(Camera3d camera) {
-        this.imageWidth = camera.imageWidth();
-        this.imageHeight = camera.imageHeight();
-        this.fovy = camera.fov();
-        this.near = camera.near();
-        this.far = camera.far();
-
-        this.position = convertTo2d(camera.position());
-        this.up = convertTo2d(camera.upVector());
-        this.front = Vec3f.NEG_Z_AXIS;
+        this.screenWidth = camera.screenWidth();
+        this.screenHeight = camera.screenHeight();
+        
+        // TODO: find better values
+        this.center = new Vec2M();
+        this.scale = 1.0f;
     }
-
+    
+    /**
+     * Creates a new copy of this camera.
+     * 
+     * @return the copy
+     */
     @Override
     public Camera copy() {
-        Camera2d camera = new Camera2d((int) imageWidth, (int) imageHeight, near, far);
-        camera.fovy = this.fovy;
-        camera.position = this.position;
-        camera.up = this.up;
-        return camera;
-    }
-
-    @Override
-    public void setImageSize(Dimension size) {
-        this.imageWidth = size.width;
-        this.imageHeight = size.height;
-        requireRecomputeMatrix();
-    }
-
-    private void translate(Vec3f v) {
-        this.position.add(convertTo2d(v));
-        requireRecomputeMatrix();
+        return new Camera2d(this);
     }
 
     /**
-     * No rotation for 2D is implemented at the moment.
+     * Sets the screen size. It updates the scale factor to show the same
+     * vertical region of the graph.
+     * 
+     * @param size the screen size
      */
     @Override
-    public void rotate(Vec3f axis, float angle) {}
-
+    public void screenSize(Dimension size) {
+        this.screenWidth = size.width;
+        this.scale = ((float)size.height * this.scale) / this.screenHeight;
+        this.screenHeight = size.height;
+    }
+    
     /**
-     * No rotation for 2D is implemented at the moment.
+     * Returns the screen width.
+     * 
+     * @return the screen width
      */
     @Override
-    public void rotate(Vec3f origin, Vec3f axis, float angle) {}
-
-    /**
-     * Moves the camera above the center.
-     */
-    @Override
-    public void lookAt(Vec3f center, Vec3f up) {
-        this.up = convertTo2d(up);
-        this.up.normalize();
-        this.position = convertTo2d(center);
-        requireRecomputeMatrix();
-    }
-
-    /**
-     * One of the center or position vectors are redundant. The position vector
-     * will be ignored and camera moved above the center.
-     */
-    @Override
-    public void lookAt(Vec3f position, Vec3f center, Vec3f up) {
-        lookAt(center, up);
-    }
-
-    @Override
-    public void setClipPlanes(float near, float far) {
-        this.near = near;
-        this.far = far;
-        requireRecomputeMatrix();
-    }
-
-    @Override
-    public Vec3f frontVector() {
-        return this.front;
-    }
-
-    @Override
-    public Vec3f upVector() {
-        return new Vec3f(up.x(), up.y(), 0);
-    }
-
-    @Override
-    public Vec3f rightVector() {
-        return frontVector().cross(upVector());
-    }
-
-    @Override
-    public Vec3f position() {
-        return new Vec3f(position.x(), position.y(), 5550);
-    }
-
-    @Override
-    public Vec3f lookAtPoint() {
-        return new Vec3f(position.x(), position.y(), 0);
-    }
-
-    @Override
-    public float imageWidth() {
-        return this.imageWidth;
-    }
-
-    @Override
-    public float imageHeight() {
-        return this.imageHeight;
-    }
-
-    @Override
-    public float near() {
-        return this.near;
-    }
-
-    @Override
-    public float far() {
-        return this.far;
-    }
-
-    @Override
-    public float fov() {
-        return this.fovy;
-    }
-
-    @Override
-    public float projectedDistanceFrom(Vec3f point) {
-        return (float) Math.sqrt((position.x() - point.x()) * (position.x() - point.x()) + (position.y() - point.y()) * (position.y() - point.y()));
+    public float screenWidth() {
+        return this.screenWidth;
     }
 
     /**
-     * Returns the model-view matrix.
+     * Returns the screen height.
+     * 
+     * @return the screen height
      */
     @Override
-    public Mat4f viewMatrix() {
-        // FIXME may have better implementation or even return type
-        if (recomputeMatrix) {
-            Vec3f right = rightVector();
-            Mat4f mat = new Mat4f();
-            mat.setRotation(right, upVector(), this.front.times(-1.0f));
-            mat.transpose();
-            mat.setTranslation(this.position().times(-1.0f));
-            mat.set(3, 3, 1.0f);
-            modelviewMatrix = mat;
-        }
-        return modelviewMatrix;
+    public float screenHeight() {
+        return this.screenHeight;
     }
 
     /**
-     * Returns the projective matrix.
+     * Moves the center of the screen to <code>center</code>. It ignores the
+     * 3<sup>rd</sup> components of the <code>center</code> vector and the
+     * <code>up</code> completely.
+     * 
+     * @param center the new center of the screen. The third component is not
+     *               used
+     * @param up it is ignored by this method
      */
     @Override
-    public Mat4f projectiveMatrix() {
-        // FIXME may have better implementation or even return type
-        if (recomputeMatrix) {
-            Mat4f mat = new Mat4f();
-            float aspect = imageWidth / imageHeight;
-            float f = (float) (1.0 / Math.tan(this.fovy / 2.0));
-            mat.set(0, 0, f/aspect);
-            mat.set(1, 1, f);
-            mat.set(2, 2, (this.far + this.near)/(this.near - this.far));
-            mat.set(2, 3, (2.0f * this.far * this.near)/(this.near - this.far));
-            mat.set(3, 2, -1.0f);
-            projectiveMatrix = mat;
-        }
-        return projectiveMatrix;
+    public void lookAt(Vec3Base center, Vec3Base up) {
+        this.center.set(center.x(), center.y());        
     }
 
     /**
      * Returns the given point as it will appear on the screen together with its
      * size on screen after transformation have been applied.
-     * @return array of integers, where
-     * [0,1] -> point coordinates on screen
+     * 
+     * @param x first component of the point in world coordinates
+     * @param y second component of the point in world coordinates
+     * @param z ignored by this method
+     * @param size the size of the object on screen
+     * @return array of floats, where <br />
+     * [0,1] -> point coordinates on screen <br />
      * [2]   -> size of the node on screen
      */
     @Override
-    public int[] projectPoint(float x, float y, float z, float size) {
-        // FIXME may have better implementation
-        int[] res = new int[3];
-        Vec4f point = new Vec4f(x, y, 0, 1.0f);
-        Vec4f perimPoint = new Vec4f(x + size, y, 0, 1.0f);
-        Vec4f screenPoint = new Vec4f();
-        Vec4f screenPerimPoint = new Vec4f();
-        Mat4f viewProjMatrix = projectiveMatrix().mul(viewMatrix());
-        // multiply by modelview and projection matrices
-        viewProjMatrix.xformVec(point, screenPoint);
-        viewProjMatrix.xformVec(perimPoint, screenPerimPoint);
-        screenPoint.scale(1.0f / screenPoint.w());
-        screenPerimPoint.scale(1.0f / screenPerimPoint.w());
-        // to NDC
-        // point.scale(1 / point.w());
-        res[0] = (int) ((screenPoint.x() + 1.0f) * imageWidth / 2.0f);
-        int perim = (int) ((screenPerimPoint.x() + 1.0f) * imageWidth / 2.0f);
-        res[1] = (int) ((1.0f - screenPoint.y()) * imageHeight / 2.0f);
-        res[2] = (int) (perim - res[0]);
-        return res;
+    public float[] projectPoint(float x, float y, float z, float size) {        
+        final float xs = 0.5f * this.screenWidth + (x - this.center.x()) * scale;
+        final float ys = 0.5f * this.screenHeight - (y - this.center.y()) * scale;
+        
+        return new float[]{xs, ys, size*scale};
     }
 
     /**
      * Returns a point from camera viewing plane corresponding to the 2D point
      * on screen.
+     * TODO: See if really required.
      */
     @Override
-    public Vec3f projectPointInverse(float x, float y) {
-        return new Vec3f(position.x(), position.y(), 0);
+    public Vec3 projectPointInverse(float x, float y) {
+        final float invScale = 1.0f / scale;
+        return new Vec3(this.center.x() + (x - this.screenWidth * 0.5f) * invScale, 
+                this.center.y() - (y - this.screenHeight * 0.5f) * invScale, 0.0f);
     }
 
     /**
-     * Returns a vector from camera viewing plane corresponding to the 2D vector
-     * on screen.
+     * Returns the 3D vector which correponds to the translation on the screen
+     * by <code>(x,y)</code>. In this case the 
+     * 
+     * @param x the first component of the vector in screen coordinates
+     * @param y the second component of the vector in screen coordinates
+     * @return the translation vector in world coordinate
      */
     @Override
-    public Vec3f projectVectorInverse(float x, float y) {
-        float ratio = 10.0f * (float) Math.sqrt((1 - Math.cos(fovy)) / (1 - Math.cos(1.0)));
-        return new Vec3f(x * ratio, y * ratio, 0);
+    public Vec3 projectVectorInverse(float x, float y) {
+        final float invScale = 1.0f / scale;
+        return new Vec3(x * invScale, - y * invScale, 0.0f);
     }
-
-    @Override
-    public int getPlanarDistance(float x, float y, float z, int a, int b) {
-        int [] point = projectPoint(x, y, z, 0);
-        return (int) Math.sqrt((point[0] - a) * (point[0] - a) + (point[1] - b) * (point[1] - b));
-    }
-
-    @Override
-    public void startTranslation() {}
-
-    @Override
-    public void updateTranslation(float horizontal, float vertical) {
-        float ratio = (float) Math.sqrt((1 - Math.cos(fovy)) / (1 - Math.cos(1.0)));
-        translate(new Vec3f(horizontal * ratio, vertical * ratio, 0));
-    }
-
-    @Override
-    public void startOrbit(float orbitModifier) {}
 
     /**
-     * No rotation for 2D is implemented at the moment.
+     * Gets the distance on the screen between a point in world coordinates
+     * and a point in screen coordinates.
+     * 
+     * @param x the first component of the point in world coordinates
+     * @param y the second component of the point in world coordinates
+     * @param z ignored by this method
+     * @param a the first component of the point in screen coordinates
+     * @param b the second component of the point in screen coordinates
+     * @return the distance between the two points on the screen
      */
     @Override
-    public void updateOrbit(float x, float y) {}
+    public float getPlanarDistance(float x, float y, float z, int a, int b) {
+        final float[] pr = this.projectPoint(x, y, z, 0.0f);
+        
+        return (float)Math.sqrt(pr[0]*pr[0] + pr[1]*pr[1]);
+    }
 
+    /**
+     * Moves the camera by the screen vector <code>(dx, dy)</code>
+     * 
+     * @param dx the first component of the translation vector on the screen
+     * @param dy the second component of the translation vector on the screen
+     */
+    @Override
+    public void translate(float dx, float dy) {
+        final float invScale = 1.0f / this.scale;
+        final Vec2 v = new Vec2(- dx * invScale, dy * invScale);
+        this.center.plusEq(v);
+    }
+
+    /**
+     * NOT SUPPORTED
+     * 
+     * @param orbitModifier ignored by this method
+     */
+    @Override
+    public void startOrbit(float orbitModifier) { /* NOT SUPPORTED */ }
+
+    /**
+     * NOT SUPPORTED
+     * 
+     * @param x ignored by this method
+     * @param y ignored by this method
+     */
+    @Override
+    public void updateOrbit(float x, float y) { /* NOT SUPPORTED */ }
+
+    /**
+     * Returns the center of the camera in world coordinates.
+     * 
+     * @return the center of the screen
+     */
+    public Vec2 center() {
+        return this.center.copy();        
+    }
+    
+    /**
+     * The height of the rendered area in world coordinates.
+     * 
+     * @return the height of the rendered area
+     */
+    public float height() {
+        return this.screenHeight / this.scale;
+    }
+
+    /**
+     * Centers the box on the screen and updates the scale factor to see the
+     * entire box.
+     * 
+     * @param box the box
+     */
+    @Override
+    public void centerBox(AABB box) {
+        Vec3 boxCenter = box.center();
+        this.center.set(boxCenter.x(), boxCenter.y());
+        
+        Vec3 boxScale = box.scale();
+        this.scale = Math.min(this.screenWidth / boxScale.x(), this.screenHeight / boxScale.y());
+    }
+
+    /**
+     * Increases the scale factor by some amount.
+     * 
+     * @param by the increased amount
+     */
+    @Override
+    public void zoom(float x, float y, float by) {
+        final float newScale = this.scale - by;
+        final Vec2M p = new Vec2M(x - this.screenWidth * 0.5f, this.screenHeight * 0.5f - y);
+        final float s = 1.0f / (this.scale * newScale);
+        p.timesEq(- by * s);
+        this.center.plusEq(p);
+        this.scale = newScale;
+    }
+
+    /**
+     * Gets the current scale factor.
+     * 
+     * @return the scale factor
+     */
+    @Override
+    public float getZoom() {
+        return scale;
+    }
+
+    /**
+     * Sets the current scale factor.
+     * 
+     * @param relativeZoom the scale factor
+     */
+    // TODO: verifies if this is the correct interpretation of the API
+    @Override
+    public void setZoom(float relativeZoom) {
+        scale = relativeZoom;
+    }
 }

@@ -23,6 +23,7 @@ package org.gephi.visualization.api.controller;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
+import org.gephi.math.linalg.Vec3;
 import org.gephi.visualization.api.selection.Shape;
 
 /**
@@ -41,7 +42,7 @@ public interface MotionManager {
 
     public int[] getMousePosition();
 
-    public float[] getMousePosition3d();
+    public Vec3 getMousePosition3d();
 
     public boolean isPressing();
 

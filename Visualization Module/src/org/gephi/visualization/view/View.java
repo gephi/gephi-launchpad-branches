@@ -160,10 +160,8 @@ public class View implements GLEventListener {
     public void reshape(GLAutoDrawable glad, int x, int y, int w, int h) {
         final GL gl = glad.getGL();
 
-        int h2 = h == 0 ? 1 : h;
+        this.pipeline.reshape(gl, x, y, w, h);
 
-        gl.glViewport(0, 0, w, h2);
-
-        this.controller.resize(w, h2);
+        this.controller.resize(w, h);
     }
 }

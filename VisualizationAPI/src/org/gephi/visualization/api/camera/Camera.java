@@ -22,8 +22,9 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 package org.gephi.visualization.api.camera;
 
 import java.awt.Dimension;
-import org.gephi.lib.gleem.linalg.Mat4f;
-import org.gephi.lib.gleem.linalg.Vec3f;
+import org.gephi.math.linalg.Vec3;
+import org.gephi.math.linalg.Vec3Base;
+import org.gephi.visualization.api.geometry.AABB;
 
 /**
  * Class representing a camera. Enables basic camera movement.
@@ -33,64 +34,25 @@ import org.gephi.lib.gleem.linalg.Vec3f;
 public interface Camera {
 
     public Camera copy();
+    
+    
+    public void screenSize(Dimension size);
+    
+    public float screenWidth();
 
-    public void setImageSize(Dimension size);
+    public float screenHeight();
 
-    public void rotate(Vec3f axis, float angle);
 
-    public void rotate(Vec3f origin, Vec3f axis, float angle);
-
-    public void lookAt(Vec3f center, Vec3f up);
-
-    public void lookAt(Vec3f position, Vec3f center, Vec3f up);
-
-    public void setFov(float fov);
-
-    public void setClipPlanes(float near, float far);
-
-    public Vec3f frontVector();
-
-    public Vec3f upVector();
-
-    public Vec3f rightVector();
-
-    public Vec3f position();
-
-    /**
-     * Return the look at point of the camera in any distance.
-     */
-    public Vec3f lookAtPoint();
-
-    public float imageWidth();
-
-    public float imageHeight();
-
-    public float near();
-
-    public float far();
-
-    public float fov();
-
-    public float projectedDistanceFrom(Vec3f point);
-
-    /**
-     * Returns the model-view matrix.
-     */
-    public Mat4f viewMatrix();
-
-    /**
-     * Returns the projective matrix.
-     */
-    public Mat4f projectiveMatrix();
+    public void lookAt(Vec3Base center, Vec3Base up);
 
     /**
      * Returns the given point as it will appear on the screen together with its
      * size on screen after transformation have been applied.
-     * @return array of integers, where
+     * @return array of floats, where
      * [0,1] -> point coordinates on screen
      * [2]   -> size of the node on screen
      */
-    public int[] projectPoint(float x, float y, float z, float size);
+    public float[] projectPoint(float x, float y, float z, float size);
 
     /**
      * Returns a point from camera viewing plane corresponding to the 2D point
@@ -98,23 +60,26 @@ public interface Camera {
      * specifying how the point will be projected (e.g intersection with z=0, or
      * some distance from the camera)
      */
-    public Vec3f projectPointInverse(float x, float y);
+    public Vec3 projectPointInverse(float x, float y);
 
     /**
-     * Returns a vector from camera viewing plane corresponding to the 2D vector
-     * on screen.
+     * Returns the translation vector which corresponds to the (x,y) screen
+     * vector.
      */
-    public Vec3f projectVectorInverse(float x, float y);
+    public Vec3 projectVectorInverse(float x, float y);
 
     /**
      * Returns the distance of a point [a,b] on the screen to the projection of
      * point [x,y,z].
      */
-    public int getPlanarDistance(float x, float y, float z, int a, int b);
+    public float getPlanarDistance(float x, float y, float z, int a, int b);
 
-    public void startTranslation();
-
-    public void updateTranslation(float horizontal, float vertical);
+    /**
+     * 
+     * @param dx
+     * @param dy 
+     */
+    public void translate(float dx, float dy);
 
     /**
      * Initialize orbiting around a center point.
@@ -124,7 +89,7 @@ public interface Camera {
 
     public void updateOrbit(float x, float y);
 
-    public void zoom(float by);
+    public void zoom(float x, float y, float by);
 
     /**
      * Returns the relative camera zoom.
@@ -136,5 +101,11 @@ public interface Camera {
      * @param relativeZoom float from interval [0.0, 1.0]
      */
     public void setZoom(float relativeZoom);
-
+    
+    /**
+     * Centers the box on the screen.
+     * 
+     * @param box the box to center
+     */
+    public void centerBox(AABB box);
 }

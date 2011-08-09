@@ -270,10 +270,10 @@ public final class Quadtree extends QuadrantTree {
                 break;
             case SINGLE_NODE_CLOSEST:
                 nodeFunction = new NodeFunction() {
-                                    private int minDistance = Integer.MAX_VALUE;
+                                    private float minDistance = Float.POSITIVE_INFINITY;
                                     @Override
                                     public void apply(Node node) {
-                                        int distance = camera.getPlanarDistance(node.getNodeData().x(), node.getNodeData().y(), node.getNodeData().z(), point.x, point.y);
+                                        float distance = camera.getPlanarDistance(node.getNodeData().x(), node.getNodeData().y(), node.getNodeData().z(), point.x, point.y);
                                         if (node.getNodeData().isSelected() != select &&
                                             distance < minDistance &&
                                             shape.isInside3D(node.getNodeData().x(), node.getNodeData().y(), node.getNodeData().z(), node.getNodeData().getSize(), camera)) {
