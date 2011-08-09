@@ -41,6 +41,7 @@ import org.gephi.project.api.WorkspaceListener;
 import org.gephi.visualization.api.controller.MotionManager;
 import org.gephi.visualization.api.camera.Camera;
 import org.gephi.visualization.api.controller.VisualizationController;
+import org.gephi.visualization.api.rendering.RecordingListener;
 import org.gephi.visualization.api.selection.SelectionManager;
 import org.gephi.visualization.api.vizmodel.VizConfig;
 import org.gephi.visualization.api.vizmodel.VizModel;
@@ -296,6 +297,16 @@ public class VisualizationControllerImpl implements VisualizationController, Key
         this.view.stop();
     }
 
+    @Override
+    public void startRecording(RecordingListener listener, Dimension imageDimensions) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void stopRecording(RecordingListener listener) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+    
     public void refreshWorkspace() {
         ProjectController pc = Lookup.getDefault().lookup(ProjectController.class);
         VizModel model = null;

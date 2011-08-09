@@ -27,6 +27,7 @@ import java.awt.Dimension;
 import java.awt.Point;
 import org.gephi.graph.api.Node;
 import org.gephi.visualization.api.camera.Camera;
+import org.gephi.visualization.api.rendering.RecordingListener;
 import org.gephi.visualization.api.vizmodel.VizConfig;
 import org.gephi.visualization.api.vizmodel.VizModel;
 
@@ -108,4 +109,16 @@ public interface VisualizationController {
      */
     public void stop();
 
+    /**
+     * Starts the recording of the visualization output.
+     * @param listener the listener that will be informed about recorded images.
+     */
+    public void startRecording(RecordingListener listener, Dimension imageDimensions);
+    
+    /**
+     * Stops the recording of the visualization output.
+     * @param listener the listener related to the recording that should be stopped.
+     */
+    public void stopRecording(RecordingListener listener);
+    
 }
