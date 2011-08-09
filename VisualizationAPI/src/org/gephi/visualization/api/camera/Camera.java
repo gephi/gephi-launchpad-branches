@@ -41,8 +41,7 @@ public interface Camera {
     public Camera copy();
 
     /**
-     * Sets the screen size. It updates the scale factor to show the same
-     * vertical region of the graph.
+     * Sets the screen size.
      * 
      * @param size the screen size
      */
@@ -63,13 +62,14 @@ public interface Camera {
     public float screenHeight();
 
     /**
-     * Moves the center of the screen to <code>center</code>. It ignores the
-     * 3<sup>rd</sup> components of the <code>center</code> vector and the
-     * <code>up</code> completely.
+     * In 3D, it rotates the camera so that <code>center</code> is displayed at 
+     * the center of the screen and the camera up vector is contained in the 
+     * plane spanned by <code>center - this.front</code> and <code>up</code>.
+     * In 2D, it moves the camera so that <code>(center.x, center.y)</code> is
+     * displayed at the center of the screen.
      * 
-     * @param center the new center of the screen. The third component is not
-     *               used
-     * @param up it is ignored by this method
+     * @param center the new center of the screen
+     * @param up the vector used to define the camera up vector in 3D
      */
     public void lookAt(Vec3Base center, Vec3Base up);
 
@@ -79,8 +79,8 @@ public interface Camera {
      * 
      * @param x first component of the point in world coordinates
      * @param y second component of the point in world coordinates
-     * @param z ignored by this method
-     * @param size the size of the object on screen
+     * @param z third component of the point in world coordinates
+     * @param size the size of the object in world coordinates
      * @return array of floats, where <br />
      * [0,1] -> point coordinates on screen <br />
      * [2]   -> size of the node on screen
@@ -88,8 +88,11 @@ public interface Camera {
     public float[] projectPoint(float x, float y, float z, float size);
 
     /**
-     * Returns a point from camera viewing plane corresponding to the 2D point
-     * on screen.
+     * Returns a 3D point corresponding to a 2D point on the screen.
+     * 
+     * @param x the first component of the point on screen
+     * @param y the second component of the point on the screen
+     * @return the 3D point
      */
     public Vec3 projectPointInverse(float x, float y);
 
@@ -109,7 +112,7 @@ public interface Camera {
      * 
      * @param x the first component of the point in world coordinates
      * @param y the second component of the point in world coordinates
-     * @param z ignored by this method
+     * @param z the third component of the point in world coordinates
      * @param a the first component of the point in screen coordinates
      * @param b the second component of the point in screen coordinates
      * @return the distance between the two points on the screen
@@ -127,7 +130,7 @@ public interface Camera {
     /**
      * Starts the orbiting function.
      * 
-     * @param orbitModifier ignored by this method
+     * @param orbitModifier parameter of the orbiting procedure
      */
     public void startOrbit(float orbitModifier);
 
@@ -140,31 +143,33 @@ public interface Camera {
     public void updateOrbit(float x, float y);
 
     /**
-     * Centers the box on the screen and updates the scale factor to see the
-     * entire box.
+     * Centers the box on the screen and updates the scale factor or the 
+     * position of the camera to see the entire box.
      * 
      * @param box the box
      */
     public void centerBox(AABB box);
 
     /**
-     * Increases the scale factor by some amount.
+     * Zooms toward a point on the screen.
      * 
-     * @param by the increased amount
+     * @param x the first component of the point to zoom to
+     * @param y the second component of the point to zoom to
+     * @param by the zoom amount
      */
     public void zoom(float x, float y, float by);
 
     /**
-     * Gets the current scale factor.
+     * Gets the current zoom factor.
      * 
-     * @return the scale factor
+     * @return the zoom factor
      */
     public float getZoom();
 
     /**
-     * Sets the current scale factor.
+     * Sets the current zoom factor.
      * 
-     * @param relativeZoom the scale factor
+     * @param relativeZoom the zoom factor
      */
     public void setZoom(float relativeZoom);
             

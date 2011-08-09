@@ -184,7 +184,7 @@ public final class Camera2d implements Camera {
      * @param x first component of the point in world coordinates
      * @param y second component of the point in world coordinates
      * @param z ignored by this method
-     * @param size the size of the object on screen
+     * @param size the size of the object in world coordinates
      * @return array of floats, where <br />
      * [0,1] -> point coordinates on screen <br />
      * [2]   -> size of the node on screen
@@ -198,9 +198,13 @@ public final class Camera2d implements Camera {
     }
 
     /**
-     * Returns a point from camera viewing plane corresponding to the 2D point
-     * on screen.
-     * TODO: See if really required.
+     * Returns a 3D point corresponding to a 2D point on the screen. In this 
+     * case the third component of the 3D point is simply zero and the other
+     * are the 2D world coordinates of the point.
+     * 
+     * @param x the first component of the point on screen
+     * @param y the second component of the point on the screen
+     * @return the 3D point
      */
     @Override
     public Vec3 projectPointInverse(float x, float y) {
@@ -305,9 +309,11 @@ public final class Camera2d implements Camera {
     }
 
     /**
-     * Increases the scale factor by some amount.
+     * Zooms toward a point on the screen.
      * 
-     * @param by the increased amount
+     * @param x the first component of the point to zoom to
+     * @param y the second component of the point to zoom to
+     * @param by the zoom amount
      */
     @Override
     public void zoom(float x, float y, float by) {
