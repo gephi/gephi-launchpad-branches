@@ -1,7 +1,6 @@
 /*
 Copyright 2008-2011 Gephi
-Authors : Mathieu Bastian <mathieu.bastian@gephi.org>
-          Vojtech Bardiovsky <vojtech.bardiovsky@gmail.com>
+Authors : Mathieu Bastian <mathieu.bastian@gephi.org>, Vojtech Bardiovsky <vojtech.bardiovsky@gmail.com>
 Website : http://www.gephi.org
 
 This file is part of Gephi.
@@ -38,6 +37,7 @@ import org.gephi.visualization.api.rendering.background.BackgroundRepeat;
 import org.gephi.visualization.api.rendering.background.BackgroundSize;
 import org.gephi.visualization.api.vizmodel.VizConfig;
 import org.gephi.visualization.api.selection.SelectionType;
+import org.gephi.visualization.api.vizmodel.GraphLimits;
 import org.openide.util.NbPreferences;
 
 /**
@@ -74,6 +74,7 @@ public class VizConfigImpl implements VizConfig {
         initDefault(EDGE_TEXT_COLUMNS, new AttributeColumn[0]);
         initDefault(EDGE_UNIQUE_COLOR, new Color(0.5F, 0.5F, 0.5F, 0.5F));
         initDefault(GLJPANEL, false);
+        initDefault(GRAPH_LIMITS, new GraphLimits());
         initDefault(HIDE_NONSELECTED_EDGES, false);
         initDefault(HIGHLIGHT_NON_SELECTED_ENABLED, true);
         initDefault(LABEL_ANTIALIASED, true);

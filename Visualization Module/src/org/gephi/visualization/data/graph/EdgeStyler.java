@@ -29,8 +29,8 @@ import org.gephi.graph.api.Edge;
  */
 public interface EdgeStyler {
     
-    public VizEdge2D toVisual2D(Edge node);
+    public VizEdge2D toVisual2D(Edge edge);
     
-    public VizEdge3D toVisual3D(Edge node);
+    public VizEdge3D toVisual3D(Edge edge);
     
 }

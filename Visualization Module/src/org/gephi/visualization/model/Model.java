@@ -95,14 +95,16 @@ public class Model implements Runnable, WorkspaceListener {
             this.controller.beginUpdateFrame();
             
             this.bridge.beginFrame(this.controller.getCameraCopy());
-
-            this.bridge.setStylers(new BasicNodeStyler(), new BasicEdgeStyler());
+            
+            this.bridge.setStylers(new BasicNodeStyler(controller.getVizModel()), new BasicEdgeStyler(controller.getVizModel()));
             
             final Graph graph;
             synchronized(this.graphModelLock) {
                 graph = this.graphModel.getGraph();
             }
 
+            // FIXME - do not build a box, but fill data inside the graphLimits -> the controller will access it itself
+            // GraphLimits graphLimits = controller.getVizModel().getGraphLimits()
             AABB box = null;
             if (this.controller.isCentering()) {
                 if (graph != null) {

@@ -25,30 +25,35 @@ import org.gephi.graph.api.Node;
 import org.gephi.math.linalg.Vec2;
 import org.gephi.math.linalg.Vec3;
 import org.gephi.visualization.api.color.Color;
-import org.gephi.visualization.api.controller.VisualizationController;
 import org.gephi.visualization.api.vizmodel.VizConfig;
 import org.gephi.visualization.api.vizmodel.VizModel;
 import org.gephi.visualization.data.graph.NodeStyler;
 import org.gephi.visualization.data.graph.VizNode2D;
 import org.gephi.visualization.data.graph.VizNode3D;
-import org.openide.util.Lookup;
 
 /**
  * @author Vojtech Bardiovsky
  */
 public class BasicNodeStyler implements NodeStyler {
 
+    private final VizModel vizModel;
+    private final VizConfig vizConfig;
+    
+    public BasicNodeStyler(VizModel vizModel) {
+        this.vizModel = vizModel;
+        this.vizConfig = vizModel.getConfig();
+    }
+    
     @Override
     public VizNode2D toVisual2D(Node node) {
-        VizModel vizModel = Lookup.getDefault().lookup(VisualizationController.class).getVizModel();
         boolean selected = node.getNodeData().isSelected();
         boolean neighbor = node.getNodeData().isAutoSelected();
         Color color, borderColor;
         
         if (!selected) {
-            if (vizModel.getConfig().getBooleanProperty(VizConfig.HIGHLIGHT_NON_SELECTED)) {
-                float[] lightColor = vizModel.getConfig().getColorProperty(VizConfig.HIGHLIGHT_NON_SELECTED_COLOR).getColorComponents(null);
-                float lightColorFactor = vizModel.getConfig().getFloatProperty(VizConfig.HIGHLIGHT_NON_SELECTED_FACTOR);
+            if (vizConfig.getBooleanProperty(VizConfig.HIGHLIGHT_NON_SELECTED)) {
+                float[] lightColor = vizConfig.getColorProperty(VizConfig.HIGHLIGHT_NON_SELECTED_COLOR).getColorComponents(null);
+                float lightColorFactor = vizConfig.getFloatProperty(VizConfig.HIGHLIGHT_NON_SELECTED_FACTOR);
                 // Node color
                 float r = node.getNodeData().r();
                 float g = node.getNodeData().g();
@@ -75,9 +80,9 @@ public class BasicNodeStyler implements NodeStyler {
             float bborder;
             if (vizModel.isNodeSelectedUniqueColor()) {
                 if (neighbor) {
-                    c = vizModel.getConfig().getColorProperty(VizConfig.NODE_NEIGHBOR_SELECTED_UNIQUE_COLOR).getColorComponents(null);
+                    c = vizConfig.getColorProperty(VizConfig.NODE_NEIGHBOR_SELECTED_UNIQUE_COLOR).getColorComponents(null);
                 } else {
-                    c = vizModel.getConfig().getColorProperty(VizConfig.NODE_SELECTED_UNIQUE_COLOR).getColorComponents(null);
+                    c = vizConfig.getColorProperty(VizConfig.NODE_SELECTED_UNIQUE_COLOR).getColorComponents(null);
                 }
                 rborder = 0.498f * c[0];
                 gborder = 0.498f * c[1];
@@ -99,15 +104,14 @@ public class BasicNodeStyler implements NodeStyler {
 
     @Override
     public VizNode3D toVisual3D(Node node) {
-        VizModel vizModel = Lookup.getDefault().lookup(VisualizationController.class).getVizModel();
         boolean selected = node.getNodeData().isSelected();
         boolean neighbor = node.getNodeData().isAutoSelected();
         Color color, borderColor;
         
         if (!selected) {
-            if (vizModel.getConfig().getBooleanProperty(VizConfig.HIGHLIGHT_NON_SELECTED)) {
-                float[] lightColor = vizModel.getConfig().getColorProperty(VizConfig.HIGHLIGHT_NON_SELECTED_COLOR).getColorComponents(null);
-                float lightColorFactor = vizModel.getConfig().getFloatProperty(VizConfig.HIGHLIGHT_NON_SELECTED_FACTOR);
+            if (vizConfig.getBooleanProperty(VizConfig.HIGHLIGHT_NON_SELECTED)) {
+                float[] lightColor = vizConfig.getColorProperty(VizConfig.HIGHLIGHT_NON_SELECTED_COLOR).getColorComponents(null);
+                float lightColorFactor = vizConfig.getFloatProperty(VizConfig.HIGHLIGHT_NON_SELECTED_FACTOR);
                 // Node color
                 float r = node.getNodeData().r();
                 float g = node.getNodeData().g();
@@ -134,9 +138,9 @@ public class BasicNodeStyler implements NodeStyler {
             float bborder;
             if (vizModel.isNodeSelectedUniqueColor()) {
                 if (neighbor) {
-                    c = vizModel.getConfig().getColorProperty(VizConfig.NODE_NEIGHBOR_SELECTED_UNIQUE_COLOR).getColorComponents(null);
+                    c = vizConfig.getColorProperty(VizConfig.NODE_NEIGHBOR_SELECTED_UNIQUE_COLOR).getColorComponents(null);
                 } else {
-                    c = vizModel.getConfig().getColorProperty(VizConfig.NODE_SELECTED_UNIQUE_COLOR).getColorComponents(null);
+                    c = vizConfig.getColorProperty(VizConfig.NODE_SELECTED_UNIQUE_COLOR).getColorComponents(null);
                 }
                 rborder = 0.498f * c[0];
                 gborder = 0.498f * c[1];

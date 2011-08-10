@@ -66,6 +66,7 @@ public interface VizConfig {
     String EDGE_TEXT_COLUMNS = "VizConfig.edgeTextColumns";
     String EDGE_UNIQUE_COLOR = "VizConfig.edgeUniColor";
     String GLJPANEL = "VizConfig.useGLJPanel";
+    String GRAPH_LIMITS = "VizConfig.graphLimits";
     String HIDE_NONSELECTED_EDGES = "VizConfig.hideNonSelectedEdges";
     String HIGHLIGHT_NON_SELECTED_ENABLED = "VizConfig.highlightNonSelectedEnabled";
     String LABEL_ANTIALIASED = "VizConfig.labelAntialiased";

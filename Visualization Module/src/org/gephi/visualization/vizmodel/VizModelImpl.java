@@ -1,6 +1,6 @@
 /*
 Copyright 2008-2010 Gephi
-Authors : Mathieu Bastian <mathieu.bastian@gephi.org>
+Authors : Mathieu Bastian <mathieu.bastian@gephi.org>, Vojtech Bardiovsky <vojtech.bardiovsky@gmail.com>
 Website : http://www.gephi.org
 
 This file is part of Gephi.
@@ -39,6 +39,7 @@ import org.gephi.math.linalg.Vec3;
 import org.gephi.project.api.Workspace;
 import org.gephi.ui.utils.ColorUtils;
 import org.gephi.visualization.api.rendering.background.Background;
+import org.gephi.visualization.api.vizmodel.GraphLimits;
 import org.gephi.visualization.api.vizmodel.VizConfig;
 import org.gephi.visualization.api.vizmodel.TextModel;
 import org.gephi.visualization.api.vizmodel.VizModel;
@@ -146,6 +147,11 @@ public class VizModelImpl implements VizModel {
     @Override
     public Color getEdgeUniColor() {
         return config.getColorProperty(VizConfig.EDGE_UNIQUE_COLOR);
+    }
+
+    @Override
+    public GraphLimits getGraphLimits() {
+        return config.getProperty(GraphLimits.class, VizConfig.GRAPH_LIMITS);
     }
 
     @Override
@@ -335,6 +341,12 @@ public class VizModelImpl implements VizModel {
     public void setGlobalNodeShape(NodeShape nodeShape) {
         config.setProperty(VizConfig.NODE_GLOBAL_SHAPE, nodeShape);
         fireProperyChange(VizConfig.NODE_GLOBAL_SHAPE, null, nodeShape);
+    }
+
+    @Override
+    public void setGraphLimits(GraphLimits graphLimits) {
+        config.setProperty(VizConfig.GRAPH_LIMITS, graphLimits);
+        fireProperyChange(VizConfig.GRAPH_LIMITS, null, graphLimits);
     }
     
     @Override

@@ -1,7 +1,6 @@
 /*
 Copyright 2008-2010 Gephi
-Authors : Mathieu Bastian <mathieu.bastian@gephi.org>
-          Vojtech Bardiovsky <vojtech.bardiovsky@gmail.com>
+Authors : Mathieu Bastian <mathieu.bastian@gephi.org>, Vojtech Bardiovsky <vojtech.bardiovsky@gmail.com>
 Website : http://www.gephi.org
 
 This file is part of Gephi.
@@ -65,7 +64,9 @@ public interface VizModel {
     public boolean isEdgeHasUniColor();
 
     public Color getEdgeUniColor();
-
+    
+    public GraphLimits getGraphLimits();
+    
     public boolean isHideNonSelectedEdges();
 
     public boolean isHighlightNonSelectedEnabled();
@@ -114,6 +115,8 @@ public interface VizModel {
     public void setEdgeHasUniColor(boolean edgeHasUniColor);
 
     public void setEdgeUniColor(Color edgeUniColor);
+    
+    public void setGraphLimits(GraphLimits graphLimits);
 
     public void setHideNonSelectedEdges(boolean hideNonSelectedEdges);
 
