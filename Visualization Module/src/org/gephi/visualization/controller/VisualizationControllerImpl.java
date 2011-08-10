@@ -47,10 +47,9 @@ import org.gephi.visualization.api.vizmodel.VizConfig;
 import org.gephi.visualization.api.vizmodel.VizModel;
 import org.gephi.visualization.camera.Camera2d;
 import org.gephi.visualization.camera.Camera3d;
-import org.gephi.visualization.data.FrameDataBridge;
 import org.gephi.visualization.api.geometry.AABB;
 import org.gephi.visualization.model.Model;
-import org.gephi.visualization.view.View;
+import org.gephi.visualization.rendering.RenderingEngine;
 import org.gephi.visualization.vizmodel.VizModelImpl;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.ServiceProvider;
@@ -67,9 +66,8 @@ public class VisualizationControllerImpl implements VisualizationController, Key
     private Camera camera;
 
     private static VisualizationControllerImpl instance;
-    private final View view;
+    private final RenderingEngine renderingEngine;
     private final Model dataManager;
-    private final FrameDataBridge frameDataBridge;
     
     private final SelectionManager selectionManager;
 
@@ -95,11 +93,11 @@ public class VisualizationControllerImpl implements VisualizationController, Key
         // Random values
         this.viewSize = new Dimension();
 
-        this.frameDataBridge = new FrameDataBridge();
-        this.view = new View(this, this.frameDataBridge);
-        this.dataManager = new Model(this, this.frameDataBridge, 33);
         this.vizModel = new VizModelImpl(true);
         this.selectionManager = Lookup.getDefault().lookup(SelectionManager.class);
+        
+        this.renderingEngine = new RenderingEngine(this, this.vizModel);
+        this.dataManager = new Model(this, this.renderingEngine.bridge(), 33);
         
         ProjectController pc = Lookup.getDefault().lookup(ProjectController.class);
         pc.addWorkspaceListener(this);
@@ -133,16 +131,16 @@ public class VisualizationControllerImpl implements VisualizationController, Key
 
     @Override
     public Point getViewLocationOnScreen() {
-        return view.getCanvas().getLocationOnScreen();
+        return this.renderingEngine.renderingCanvas().getLocationOnScreen();
     }
 
     @Override
     public Component getViewComponent() {
-        return view.getCanvas();
+        return this.renderingEngine.renderingCanvas();
     }
 
     public void setCursor(Cursor cursor) {
-        view.getCanvas().setCursor(cursor);
+        this.renderingEngine.renderingCanvas().setCursor(cursor);
     }
 
     @Override
@@ -280,13 +278,13 @@ public class VisualizationControllerImpl implements VisualizationController, Key
     @Override
     public void start() {
         this.dataManager.start();
-        this.view.start();
+        this.renderingEngine.startRendering();
     }
 
     @Override
     public void stop() {
         this.dataManager.stop();
-        this.view.stop();
+        this.renderingEngine.stopRendering();
     }
 
     @Override
@@ -357,6 +355,8 @@ public class VisualizationControllerImpl implements VisualizationController, Key
 
     @Override
     public void mouseEntered(MouseEvent e) {
+        this.renderingEngine.setFPS(this.vizModel.getNormalFPS());
+        
         if (hasWorkspace) {
             Lookup.getDefault().lookup(MotionManager.class).mouseEntered(e);
         }
@@ -364,6 +364,10 @@ public class VisualizationControllerImpl implements VisualizationController, Key
 
     @Override
     public void mouseExited(MouseEvent e) {
+        if (this.vizModel.isReduceFPSWhenMouseOut()) {
+            this.renderingEngine.setFPS(this.vizModel.getReduceFPSWhenMouseOutValue());
+        }
+        
         if (hasWorkspace) {
             Lookup.getDefault().lookup(MotionManager.class).mouseExited(e);
         }

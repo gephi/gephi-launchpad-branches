@@ -17,29 +17,22 @@ GNU Affero General Public License for more details.
 
 You should have received a copy of the GNU Affero General Public License
 along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
+package org.gephi.visualization.data.graph.styler;
 
-package org.gephi.visualization.data.graph;
-
-import org.gephi.math.linalg.Vec3;
-import org.gephi.visualization.api.color.Color;
+import org.gephi.graph.api.Edge;
+import org.gephi.visualization.data.graph.VizEdge2D;
+import org.gephi.visualization.data.graph.VizEdge3D;
 
 /**
- * Immutable node visualization data class.
- *
+ * An EdgeStyler defines how an Edge look like when rendered.
+ * 
  * @author Antonio Patriarca <antoniopatriarca@gmail.com>
  */
-public final class VizNode {
-
-    public final Vec3 position;
-    public final float size;
-    public final Color color;
-    public final boolean selected;
-
-    public VizNode(Vec3 position, float size, Color color, boolean selected) {
-        this.position = position;
-        this.size = size;
-        this.color = color;
-        this.selected = selected;
-    }
+public interface EdgeStyler {
+    
+    public VizEdge2D toVisual2D(Edge edge);
+    
+    public VizEdge3D toVisual3D(Edge edge);
+    
 }

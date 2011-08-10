@@ -130,11 +130,6 @@ public class VizModelImpl implements VizModel {
     }
 
     @Override
-    public boolean isCulling() {
-        return config.getBooleanProperty(VizConfig.CULLING);
-    }
-
-    @Override
     public boolean isShowEdges() {
         return config.getBooleanProperty(VizConfig.SHOW_EDGES);
     }
@@ -165,16 +160,6 @@ public class VizModelImpl implements VizModel {
     }
 
     @Override
-    public boolean isLighting() {
-        return config.getBooleanProperty(VizConfig.LIGHTING);
-    }
-
-    @Override
-    public boolean isMaterial() {
-        return config.getBooleanProperty(VizConfig.MATERIAL);
-    }
-
-    @Override
     public boolean isRotatingEnable() {
         return config.getBooleanProperty(VizConfig.ROTATING);
     }
@@ -192,6 +177,11 @@ public class VizModelImpl implements VizModel {
     @Override
     public boolean isEdgeSelectionColor() {
         return config.getBooleanProperty(VizConfig.SELECTEDNODE_UNIQUE_COLOR);
+    }
+    
+    @Override
+    public int getAntiAliasing() {
+        return config.getIntProperty(VizConfig.ANTIALIASING);
     }
 
     @Override
@@ -235,6 +225,12 @@ public class VizModelImpl implements VizModel {
     }
 
     //SETTERS
+    @Override
+    public void setAntiAliasing(int antiAliasing) {
+        config.setProperty(VizConfig.ANTIALIASING, antiAliasing);
+        // no need to fire an event
+    }
+    
     @Override
     public void setAdjustByText(boolean adjustByText) {
         config.setProperty(VizConfig.ADJUST_BY_TEXT, adjustByText);
@@ -354,6 +350,49 @@ public class VizModelImpl implements VizModel {
         config.setProperty(VizConfig.ZOOM_FACTOR, distance);
         fireProperyChange(VizConfig.ZOOM_FACTOR, null, distance);
     }
+    
+    @Override
+    public boolean isReduceFPSWhenMouseOut() {
+        return config.getBooleanProperty(VizConfig.REDUCE_FPS_MOUSE_OUT);
+    }
+
+    @Override
+    public int getReduceFPSWhenMouseOutValue() {
+        return config.getIntProperty(VizConfig.REDUCE_FPS_MOUSE_OUT_VALUE);
+    }
+
+    @Override
+    public void setReduceFPSWhenMouseOut(boolean reduceFPS) {
+        config.setProperty(VizConfig.REDUCE_FPS_MOUSE_OUT, reduceFPS);
+        // no need to fire an event
+    }
+
+    @Override
+    public void setReduceFPSWhenMouseOutValue(int fps) {
+        config.setProperty(VizConfig.REDUCE_FPS_MOUSE_OUT_VALUE, fps);
+        // no need to fire an event
+    }
+    
+    @Override
+    public int getNormalFPS() {
+        return config.getIntProperty(VizConfig.NORMAL_FPS);
+    }
+
+    @Override
+    public void setNormalFPS(int fps) {
+        config.setProperty(VizConfig.NORMAL_FPS, fps);
+        fireProperyChange(VizConfig.NORMAL_FPS, null, fps);
+    }
+    
+    @Override
+    public boolean isShowFPS() {
+        return config.getBooleanProperty(VizConfig.SHOW_FPS);
+    }
+
+    @Override
+    public void setShowFPS(boolean showFPS) {
+        config.setProperty(VizConfig.SHOW_FPS, showFPS);
+    }
 
     //EVENTS
     @Override
@@ -420,28 +459,21 @@ public class VizModelImpl implements VizModel {
         writeXmlAttribute(config, writer, VizConfig.ADJUST_BY_TEXT);
         writeXmlAttribute(config, writer, VizConfig.ANTIALIASING);
         writeXmlAttribute(config, writer, VizConfig.AUTO_SELECT_NEIGHBOUR);
-        writeXmlAttribute(config, writer, VizConfig.BLENDING);
         writeXmlAttribute(config, writer, VizConfig.CLEAN_DELETED_MODELS);
         writeXmlAttribute(config, writer, VizConfig.CONTEXT_MENU);
-        writeXmlAttribute(config, writer, VizConfig.CULLING);
-        writeXmlAttribute(config, writer, VizConfig.DISABLE_LOD);
         writeXmlAttribute(config, writer, VizConfig.EDGE_HAS_UNIQUE_COLOR);
         writeXmlAttribute(config, writer, VizConfig.EDGE_SCALE);
         writeXmlAttribute(config, writer, VizConfig.EDGE_UNIQUE_COLOR);
-        writeXmlAttribute(config, writer, VizConfig.GLJPANEL);
         writeXmlAttribute(config, writer, VizConfig.HIDE_NONSELECTED_EDGES);
         writeXmlAttribute(config, writer, VizConfig.HIGHLIGHT_NON_SELECTED_ANIMATION);
         writeXmlAttribute(config, writer, VizConfig.HIGHLIGHT_NON_SELECTED_COLOR);
         writeXmlAttribute(config, writer, VizConfig.HIGHLIGHT_NON_SELECTED);
-        writeXmlAttribute(config, writer, VizConfig.LIGHTING);
-        writeXmlAttribute(config, writer, VizConfig.MATERIAL);
         writeXmlAttribute(config, writer, VizConfig.META_EDGE_SCALE);
         writeXmlAttribute(config, writer, VizConfig.NODE_NEIGHBOR_SELECTED_UNIQUE_COLOR);
         writeXmlAttribute(config, writer, VizConfig.NODE_SELECTED_UNIQUE_COLOR);
         writeXmlAttribute(config, writer, VizConfig.NODE_GLOBAL_SHAPE);
         writeXmlAttribute(config, writer, VizConfig.OCTREE_DEPTH);
         writeXmlAttribute(config, writer, VizConfig.OCTREE_WIDTH);
-        writeXmlAttribute(config, writer, VizConfig.PAUSE_LOOP_MOUSE_OUT);
         writeXmlAttribute(config, writer, VizConfig.PROPERTIES_BAR);
         writeXmlAttribute(config, writer, VizConfig.RECTANGLE_SELECTION);
         writeXmlAttribute(config, writer, VizConfig.RECTANGLE_SELECTION_COLOR);
@@ -458,7 +490,6 @@ public class VizModelImpl implements VizModel {
         writeXmlAttribute(config, writer, VizConfig.TOOLBAR);
         writeXmlAttribute(config, writer, VizConfig.USE_3D);
         writeXmlAttribute(config, writer, VizConfig.VIZBAR);
-        writeXmlAttribute(config, writer, VizConfig.WIREFRAME);
 
         writer.writeEndElement();
     }

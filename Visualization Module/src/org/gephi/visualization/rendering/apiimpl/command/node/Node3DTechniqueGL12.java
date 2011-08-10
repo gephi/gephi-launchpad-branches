@@ -23,6 +23,7 @@ package org.gephi.visualization.rendering.apiimpl.command.node;
 import javax.media.opengl.GL;
 import org.gephi.visualization.data.graph.VizNode3D;
 import org.gephi.visualization.rendering.camera.Camera;
+import org.gephi.visualization.rendering.camera.RenderArea;
 import org.gephi.visualization.rendering.command.Technique;
 
 /**
@@ -36,11 +37,6 @@ public class Node3DTechniqueGL12 implements Technique<VizNode3D> {
     
     public Node3DTechniqueGL12() {
         this.smallerSphere = 0;
-    }
-    
-    @Override
-    public void begin(GL gl, Camera camera) {
-        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
@@ -65,6 +61,11 @@ public class Node3DTechniqueGL12 implements Technique<VizNode3D> {
 
     @Override
     public void dispose(GL gl) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void begin(GL gl, Camera camera, RenderArea renderArea) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
     

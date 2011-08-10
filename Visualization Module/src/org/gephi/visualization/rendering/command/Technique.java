@@ -22,6 +22,7 @@ package org.gephi.visualization.rendering.command;
 
 import javax.media.opengl.GL;
 import org.gephi.visualization.rendering.camera.Camera;
+import org.gephi.visualization.rendering.camera.RenderArea;
 
 /**
  * A rendering technique is a class which can be used to draw some kind of 
@@ -39,7 +40,7 @@ public interface Technique<E> {
      * @param gl the GL object used for rendering
      * @param camera the current camera
      */
-    public void begin(GL gl, Camera camera);
+    public void begin(GL gl, Camera camera, RenderArea renderArea);
     
     /**
      * Initializes the rendering states for the <code>i</code><sup>th</sup> 

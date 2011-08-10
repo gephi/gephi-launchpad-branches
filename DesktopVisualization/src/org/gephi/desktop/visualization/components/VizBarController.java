@@ -39,7 +39,6 @@ import net.java.dev.colorchooser.ColorChooser;
 import org.gephi.ui.components.JColorButton;
 import org.gephi.ui.components.JDropDownButton;
 import org.gephi.visualization.api.controller.VisualizationController;
-import org.gephi.visualization.api.rendering.RenderingController;
 import org.gephi.visualization.api.vizmodel.TextModel;
 import org.gephi.visualization.api.vizmodel.VizConfig;
 import org.gephi.visualization.api.vizmodel.VizModel;
@@ -157,7 +156,7 @@ public class VizBarController {
             screenshotButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    Lookup.getDefault().lookup(RenderingController.class).makeScreenshot(); 
+                    //Lookup.getDefault().lookup(RenderingController.class).makeScreenshot(); 
                 }
             });
             components[1] = screenshotButton;

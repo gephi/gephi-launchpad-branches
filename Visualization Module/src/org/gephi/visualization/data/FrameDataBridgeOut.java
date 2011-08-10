@@ -21,14 +21,7 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 
 package org.gephi.visualization.data;
 
-import org.gephi.graph.api.Edge;
-import org.gephi.graph.api.Node;
-import org.gephi.visualization.api.view.ui.UIShape;
-import org.gephi.visualization.data.graph.VizEdge;
-import org.gephi.visualization.data.graph.VizNode;
-import org.gephi.visualization.data.layout.Layout;
-import org.gephi.visualization.rendering.command.CommandListBuilders2D;
-import org.gephi.visualization.rendering.command.CommandListBuilders3D;
+import org.gephi.visualization.rendering.command.CommandListBuilders;
 
 /**
  * Interface used by View to retrieve frame data from Model.
@@ -38,11 +31,6 @@ import org.gephi.visualization.rendering.command.CommandListBuilders3D;
 public interface FrameDataBridgeOut {
 
     public FrameData updateCurrent();
-
-    public void setNodeLayout(Layout<Node, VizNode> layout);
-    public void setEdgeLayout(Layout<Edge, VizEdge> layout);
-    public void setUILayout(Layout<UIShape, UIShape> layout);
     
-    public void setCommandListBuilders2D(CommandListBuilders2D builders);
-    public void setCommandListBuilders3D(CommandListBuilders3D builders);
+    public void setCommandListBuilders(CommandListBuilders builders);
 }

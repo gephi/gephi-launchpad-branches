@@ -18,30 +18,24 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 */
+package org.gephi.visualization.rendering.pipeline;
 
-package org.gephi.visualization.data.graph;
+import javax.media.opengl.GL;
+import org.gephi.visualization.data.FrameData;
 
 /**
- * Immutable edge visualization data class.
+ * A pipeline controls how the frame is rendered.
  *
  * @author Antonio Patriarca <antoniopatriarca@gmail.com>
  */
-public final class VizEdge {
-
-    public final VizNode start;
-    public final VizNode end;
-    public final float thickness;
-    public final boolean selected;
-    public final float directional;
-    public final float bidirectional;
-
-    public VizEdge(VizNode start, VizNode end, float thickness, boolean selected,
-            float directional, float bidirectional) {
-        this.start = start;
-        this.end = end;
-        this.thickness = thickness;
-        this.selected = selected;
-        this.directional = directional;
-        this.bidirectional = bidirectional;
-    }
+public interface PipelineImpl {
+    
+    public boolean init(GL gl);
+    
+    public void reshape(GL gl, int x, int y, int width, int height);
+    
+    public void draw(GL gl, FrameData frameData);
+    
+    public void dispose(GL gl);
+    
 }

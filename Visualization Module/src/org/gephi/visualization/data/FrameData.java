@@ -21,14 +21,10 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 
 package org.gephi.visualization.data;
 
-import org.gephi.graph.api.Edge;
-import org.gephi.graph.api.Node;
-import org.gephi.visualization.api.view.ui.UIShape;
-import org.gephi.visualization.data.buffer.Buffer;
-import org.gephi.visualization.data.graph.VizEdge;
-import org.gephi.visualization.data.graph.VizNode;
-import org.gephi.visualization.data.layout.Layout;
+import java.util.Collections;
+import java.util.List;
 import org.gephi.visualization.rendering.camera.Camera;
+import org.gephi.visualization.rendering.command.Command;
 
 /**
  * Class used to get the current graph data in View.
@@ -37,51 +33,21 @@ import org.gephi.visualization.rendering.camera.Camera;
  */
 public class FrameData {
 
-    private final Camera camera;
+    public final Camera camera;
+    public final float near;
+    public final float far;
 
-    private final boolean somethingIsSelected;
+    public final List<Command> nodeCommands;
+    public final List<Command> edgeCommands;
+    public final List<Command> uiCommands;
 
-    private final Buffer<Node, VizNode> nodeBuffer;
-    private final Buffer<Edge, VizEdge> edgeBuffer;
-    private final Buffer<UIShape, UIShape> uiBuffer;
-
-    FrameData(Camera camera, boolean somethingIsSelected, Buffer<Node, VizNode> nodeBuffer, Buffer<Edge, VizEdge> edgeBuffer, Buffer<UIShape, UIShape> uiBuffer) {
+    public FrameData(Camera camera, float near, float far, List<Command> nodeCommands, List<Command> edgeCommands, List<Command> uiCommands) {
         this.camera = camera;
-        this.somethingIsSelected = somethingIsSelected;
-        this.nodeBuffer = nodeBuffer;
-        this.edgeBuffer = edgeBuffer;
-        this.uiBuffer = uiBuffer;
+        this.near = near;
+        this.far = far;
+        this.nodeCommands = Collections.unmodifiableList(nodeCommands);
+        this.edgeCommands = Collections.unmodifiableList(edgeCommands);
+        this.uiCommands = Collections.unmodifiableList(uiCommands);
     }
-
-    public Camera camera() {
-        return this.camera;
-    }
-
-    public boolean somethingIsSelected() {
-        return this.somethingIsSelected;
-    }
-
-    public Buffer<Node, VizNode> nodeBuffer() {
-        return this.nodeBuffer;
-    }
-
-    public Layout<Node, VizNode> nodeLayout() {
-        return this.nodeBuffer.layout();
-    }
-
-    public Buffer<Edge, VizEdge> edgeBuffer() {
-        return this.edgeBuffer;
-    }
-
-    public Layout<Edge, VizEdge> edgeLayout() {
-        return this.edgeBuffer.layout();
-    }
-
-    public Buffer<UIShape, UIShape> uiBuffer() {
-        return this.uiBuffer;
-    }
-
-    public Layout<UIShape, UIShape> uiLayout() {
-        return this.uiBuffer.layout();
-    }
+    
 }

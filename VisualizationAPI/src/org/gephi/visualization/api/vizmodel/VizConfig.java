@@ -52,11 +52,8 @@ public interface VizConfig {
     String ANTIALIASING = "VizConfig.antialiasing";
     String AUTO_SELECT_NEIGHBOUR = "VizConfig.autoSelectNeighbor";
     String BACKGROUND = "VizConfig.background";
-    String BLENDING = "VizConfig.blending";
     String CLEAN_DELETED_MODELS = "VizConfig.cleanDeletedModels";
     String CONTEXT_MENU = "VizConfig.contextMenu";
-    String CULLING = "VizConfig.culling";
-    String DISABLE_LOD = "VizConfig.disableLOD";
     String EDGE_HAS_UNIQUE_COLOR = "VizConfig.edgeHasUniColor";
     String EDGE_LABELS = "VizConfig.showEdgeLabels";
     String EDGE_LABEL_COLOR = "VizConfig.edgeLabelColor";
@@ -65,7 +62,6 @@ public interface VizConfig {
     String EDGE_SCALE = "VizConfig.edgeScale";
     String EDGE_TEXT_COLUMNS = "VizConfig.edgeTextColumns";
     String EDGE_UNIQUE_COLOR = "VizConfig.edgeUniColor";
-    String GLJPANEL = "VizConfig.useGLJPanel";
     String GRAPH_LIMITS = "VizConfig.graphLimits";
     String HIDE_NONSELECTED_EDGES = "VizConfig.hideNonSelectedEdges";
     String HIGHLIGHT_NON_SELECTED_ENABLED = "VizConfig.highlightNonSelectedEnabled";
@@ -73,8 +69,6 @@ public interface VizConfig {
     String LABEL_FRACTIONAL_METRICS = "VizConfig.labelFractionalMetrics";
     String LABEL_MIPMAP = "VizConfig.labelMipMap";
     String LABEL_SELECTION_ONLY = "VizConfig.showLabelOnSelectedOnly";
-    String LIGHTING = "VizConfig.lighting";
-    String MATERIAL = "VizConfig.material";
     String META_EDGE_SCALE = "VizConfig.metaEdgeScale";
     String NODE_GLOBAL_SHAPE = "VizConfig.nodeGlobalShape";
     String NODE_LABELS = "VizConfig.showNodeLabels";
@@ -84,12 +78,12 @@ public interface VizConfig {
     String NODE_NEIGHBOR_SELECTED_UNIQUE_COLOR = "VizConfig.uniColorSelectedNeigborColor";
     String NODE_SELECTED_UNIQUE_COLOR = "VizConfig.uniColorSelectedColor";
     String NODE_TEXT_COLUMNS = "VizConfig.nodeTextColumns";
-    String PAUSE_LOOP_MOUSE_OUT = "VizConfig.pauseLoopWhenMouseOut";
     String PROPERTIES_BAR = "VizConfig.propertiesBar";
     String RECTANGLE_SELECTION = "VizConfig.rectangleSelection";
     String RECTANGLE_SELECTION_COLOR = "VizConfig.rectangleSelectionColor";
     String REDUCE_FPS_MOUSE_OUT = "VizConfig.reduceFpsWhenMouseOut";
     String REDUCE_FPS_MOUSE_OUT_VALUE = "VizConfig.reduceFpsWhenMouseOutValue";
+    String NORMAL_FPS = "VizConfig.normalFPS";
     String SELECTEDEDGE_BOTH_COLOR = "VizConfig.edgeBothSelectedColor";
     String SELECTEDEDGE_HAS_COLOR = "VizConfig.edgeSelectionColor";
     String SELECTEDEDGE_IN_COLOR = "VizConfig.edgeInSelectedColor";
@@ -101,7 +95,6 @@ public interface VizConfig {
     String TOOLBAR = "VizConfig.toolbar";
     String USE_3D = "VizConfig.use3d";
     String VIZBAR = "VizConfig.showVizVar";
-    String WIREFRAME = "VizConfig.wireFrame";
 
     // Other configuration
     String CAMERA_CONTROL = "VizConfig.cameraControlEnable";

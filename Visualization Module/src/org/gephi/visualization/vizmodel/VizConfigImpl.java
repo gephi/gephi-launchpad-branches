@@ -60,11 +60,8 @@ public class VizConfigImpl implements VizConfig {
         initDefault(ANTIALIASING, 4);
         initDefault(AUTO_SELECT_NEIGHBOUR, false);
         initDefault(BACKGROUND, new Background(Color.WHITE, null, new BackgroundPosition(BackgroundPosition.Mode.LEFT_TOP), new BackgroundSize(BackgroundSize.Mode.CONTAIN), BackgroundRepeat.NO_REPEAT, BackgroundAttachment.SCREEN));
-        initDefault(BLENDING, true);
         initDefault(CLEAN_DELETED_MODELS, true);
         initDefault(CONTEXT_MENU, true);
-        initDefault(CULLING, false);
-        initDefault(DISABLE_LOD, false);
         initDefault(EDGE_HAS_UNIQUE_COLOR, false);
         initDefault(EDGE_LABELS, false);
         initDefault(EDGE_LABEL_COLOR, new Color(0.5F, 0.5F, 0.5F, 1.0F));
@@ -73,7 +70,6 @@ public class VizConfigImpl implements VizConfig {
         initDefault(EDGE_SCALE, 1.0F);
         initDefault(EDGE_TEXT_COLUMNS, new AttributeColumn[0]);
         initDefault(EDGE_UNIQUE_COLOR, new Color(0.5F, 0.5F, 0.5F, 0.5F));
-        initDefault(GLJPANEL, false);
         initDefault(GRAPH_LIMITS, new GraphLimits());
         initDefault(HIDE_NONSELECTED_EDGES, false);
         initDefault(HIGHLIGHT_NON_SELECTED_ENABLED, true);
@@ -90,12 +86,12 @@ public class VizConfigImpl implements VizConfig {
         initDefault(NODE_NEIGHBOR_SELECTED_UNIQUE_COLOR, new Color(0.2F, 1.0F, 0.3F));
         initDefault(NODE_SELECTED_UNIQUE_COLOR, new Color(0.8F, 0.2F, 0.2F));
         initDefault(NODE_TEXT_COLUMNS, new AttributeColumn[0]);
-        initDefault(PAUSE_LOOP_MOUSE_OUT, false);
         initDefault(PROPERTIES_BAR, true);
         initDefault(RECTANGLE_SELECTION, false);
         initDefault(RECTANGLE_SELECTION_COLOR, new Color(0.16F, 0.48F, 0.81F, 0.2F));
         initDefault(REDUCE_FPS_MOUSE_OUT, true);
-        initDefault(REDUCE_FPS_MOUSE_OUT_VALUE, 20);
+        initDefault(REDUCE_FPS_MOUSE_OUT_VALUE, 15);
+        initDefault(NORMAL_FPS, 30);
         initDefault(SELECTEDEDGE_BOTH_COLOR, new Color(248, 215, 83, 255));
         initDefault(SELECTEDEDGE_HAS_COLOR, false);
         initDefault(SELECTEDEDGE_IN_COLOR, new Color(32, 95, 154, 255));
@@ -107,7 +103,6 @@ public class VizConfigImpl implements VizConfig {
         initDefault(TOOLBAR, true);
         initDefault(USE_3D, false);
         initDefault(VIZBAR, true);
-        initDefault(WIREFRAME, false);
 
         // Other configuration
         initDefault(CAMERA_CONTROL, true);

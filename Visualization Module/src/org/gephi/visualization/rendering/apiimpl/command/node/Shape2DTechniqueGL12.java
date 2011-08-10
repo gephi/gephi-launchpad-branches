@@ -25,10 +25,10 @@ import java.nio.IntBuffer;
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 import org.gephi.graph.api.NodeShape;
-import org.gephi.visualization.camera.Camera2d;
 import org.gephi.visualization.data.graph.VizNode2D;
 import org.gephi.visualization.rendering.apiimpl.command.node.texture.Node2DTextureBuilder;
 import org.gephi.visualization.rendering.camera.Camera;
+import org.gephi.visualization.rendering.camera.RenderArea;
 import org.gephi.visualization.rendering.command.Technique;
 
 /**
@@ -58,7 +58,6 @@ public final class Shape2DTechniqueGL12 implements Technique<VizNode2D> {
         this.currentPass = -1;
     }
 
-    @Override
     public void begin(GL gl, Camera camera) {
         /*
         GL2 gl2 = gl.getGL2();
@@ -145,6 +144,11 @@ public final class Shape2DTechniqueGL12 implements Technique<VizNode2D> {
         
         gl.glBlendFunc(GL2.GL_ONE, GL2.GL_ONE_MINUS_SRC_ALPHA);
         gl.glBlendEquation(GL2.GL_FUNC_ADD);
+    }
+
+    @Override
+    public void begin(GL gl, Camera camera, RenderArea renderArea) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
     
 }

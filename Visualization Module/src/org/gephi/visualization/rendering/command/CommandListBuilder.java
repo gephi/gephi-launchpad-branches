@@ -35,10 +35,6 @@ public interface CommandListBuilder<E> {
     
     public void add(E e);
     
-    public void add(Collection<? extends E> c);
-    
-    public void add(E[] es);
-    
     public List<Command> create();
     
 }

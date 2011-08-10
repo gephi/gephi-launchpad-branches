@@ -57,8 +57,6 @@ public interface VizModel {
 
     public Vec3 getCameraTarget();
 
-    public boolean isCulling();
-
     public boolean isShowEdges();
 
     public boolean isEdgeHasUniColor();
@@ -71,19 +69,23 @@ public interface VizModel {
 
     public boolean isHighlightNonSelectedEnabled();
 
-    public boolean isLighting();
-
-    public boolean isMaterial();
-
     public boolean isRotatingEnable();
 
     public boolean isNodeSelectedUniqueColor();
 
     public boolean isUse3d();
+    
+    public boolean isReduceFPSWhenMouseOut();
+    
+    public int getReduceFPSWhenMouseOutValue();
+    
+    public int getNormalFPS();
 
     public VizConfig getConfig();
 
     public boolean isEdgeSelectionColor();
+    
+    public int getAntiAliasing();
 
     public Color getEdgeInSelectionColor();
 
@@ -92,6 +94,8 @@ public interface VizModel {
     public Color getEdgeBothSelectionColor();
 
     public boolean isShowHulls();
+    
+    public boolean isShowFPS();
 
     public float getEdgeScale();
 
@@ -104,6 +108,8 @@ public interface VizModel {
     public NodeShape getGlobalNodeShape();
 
     //SETTERS
+    public void setAntiAliasing(int antiAliasing);
+
     public void setAdjustByText(boolean adjustByText);
 
     public void setAutoSelectNeighbor(boolean autoSelectNeighbor);
@@ -135,10 +141,18 @@ public interface VizModel {
     public void setEdgeBothSelectionColor(Color edgeBothSelectionColor);
 
     public void setShowHulls(boolean showHulls);
+    
+    public void setShowFPS(boolean showFPS);
 
     public void setEdgeScale(float edgeScale);
 
     public void setMetaEdgeScale(float metaEdgeScale);
+    
+    public void setReduceFPSWhenMouseOut(boolean reduceFPS);
+    
+    public void setReduceFPSWhenMouseOutValue(int fps);
+    
+    public void setNormalFPS(int fps);
     
     /**
      * Sets relative distance of camera from the world.

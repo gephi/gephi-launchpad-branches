@@ -21,179 +21,105 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 
 package org.gephi.visualization.data;
 
-import java.util.Queue;
-import java.util.concurrent.ArrayBlockingQueue;
 import org.gephi.graph.api.Edge;
 import org.gephi.graph.api.Node;
 import org.gephi.visualization.api.camera.Camera;
 import org.gephi.visualization.api.view.ui.UIShape;
-import org.gephi.visualization.data.graph.EdgeStyler;
-import org.gephi.visualization.data.graph.NodeStyler;
-import org.gephi.visualization.data.graph.VizEdge;
-import org.gephi.visualization.data.graph.VizNode;
-import org.gephi.visualization.data.layout.Layout;
-import org.gephi.visualization.rendering.command.CommandListBuilders2D;
-import org.gephi.visualization.rendering.command.CommandListBuilders3D;
+import org.gephi.visualization.data.graph.styler.EdgeStyler;
+import org.gephi.visualization.data.graph.styler.NodeStyler;
+import org.gephi.visualization.rendering.command.CommandListBuilders;
 
 /**
  * Class used to exchange frame data information between Model and View.
  *
  * Antonio Patriarca <antoniopatriarca@gmail.com>
  */
-public class FrameDataBridge implements FrameDataBridgeIn, FrameDataBridgeOut {
-
-    private Layout<Node, VizNode> nodeLayout;
-    private Layout<Edge, VizEdge> edgeLayout;
-    private Layout<UIShape, UIShape> uiLayout;
-    
-    private CommandListBuilders2D commandListBuilders2D;
-    private CommandListBuilders3D commandListBuilders3D;
+public class FrameDataBridge implements FrameDataBridgeIn, FrameDataBridgeOut {    
+    private CommandListBuilders commandListBuilders;
     
     private NodeStyler nodeStyler;
     private EdgeStyler edgeStyler;
 
-    private final Queue<FrameDataBuilder> waitingQueue;
     private FrameDataBuilder currentBuilder;
     private FrameData newFrameData;
     private FrameData oldFrameData;
 
-    private final Object lock;
-
-    private boolean isUpdating;
+    private boolean isInizialized;
     
     public FrameDataBridge() {
-        this.lock = new Object();
-
-        this.nodeLayout = null;
-        this.edgeLayout = null;
-
-        this.waitingQueue = new ArrayBlockingQueue<FrameDataBuilder>(5);
-
+        this.commandListBuilders = null;
+        
+        this.nodeStyler = null;
+        this.edgeStyler = null;
+        
         this.currentBuilder = null;
         this.newFrameData = null;
         this.oldFrameData = null;
 
-        this.isUpdating = false;
+        this.isInizialized = false;
     }
 
     @Override
-    public void beginFrame(Camera camera) {
-        if (this.isUpdating) return;
+    public synchronized void beginFrame(Camera camera) {
+        if (!this.isInizialized || this.currentBuilder != null) return;
 
-        this.isUpdating = true;
-
-        this.currentBuilder = this.waitingQueue.poll();
-
-        if (this.currentBuilder == null) {
-            this.currentBuilder = new FrameDataBuilder(this.nodeLayout, this.edgeLayout, this.uiLayout);
-        }
-
-        this.currentBuilder.setCamera(camera);
+        this.currentBuilder = new FrameDataBuilder(camera, this.nodeStyler,
+                this.edgeStyler, this.commandListBuilders);
     }
 
     @Override
-    public void add(Node node) {
-        if (this.isUpdating) {
+    public synchronized void add(Node node) {
+        if (this.currentBuilder != null) {
             this.currentBuilder.add(node);
         }
     }
 
     @Override
-    public void add(Edge edge) {
-        if (this.isUpdating) {
+    public synchronized void add(Edge edge) {
+        if (this.currentBuilder != null) {
             this.currentBuilder.add(edge);
         }
     }
 
     @Override
-    public void add(UIShape shape) {
-        if (this.isUpdating) {
+    public synchronized void add(UIShape shape) {
+        if (this.currentBuilder != null) {
             this.currentBuilder.add(shape);
         }
     }
 
     @Override
-    public void endFrame() {
-        if (!this.isUpdating) return;
+    public synchronized void endFrame() {
+        if (this.currentBuilder == null) return;
 
-        synchronized(lock) {
-            if (this.newFrameData != null &&
-                    this.newFrameData.nodeLayout() == this.nodeLayout &&
-                    this.newFrameData.edgeLayout() == this.edgeLayout) {
-                FrameDataBuilder newBuilder = new FrameDataBuilder(this.newFrameData.nodeBuffer(), this.newFrameData.edgeBuffer(), this.newFrameData.uiBuffer());
-                this.waitingQueue.offer(newBuilder);
-            }
-            this.newFrameData = this.currentBuilder.createFrameData();
-            this.currentBuilder = null;
-        }
-
-        this.isUpdating = false;
+        this.newFrameData = this.currentBuilder.createFrameData();
+        this.currentBuilder = null;
     }
 
     @Override
-    public void setNodeLayout(Layout<Node, VizNode> layout) {
-        synchronized(this.lock) {
-            this.nodeLayout = layout;
+    public synchronized FrameData updateCurrent() {
+        if (this.newFrameData == null) {
+            return this.oldFrameData;
+        } else {
+            this.oldFrameData = this.newFrameData;
+            this.newFrameData = null;
+            return this.oldFrameData;
         }
     }
 
     @Override
-    public void setEdgeLayout(Layout<Edge, VizEdge> layout) {
-        synchronized(this.lock) {
-            this.edgeLayout = layout;
-        }
-    }
-
-    @Override
-    public void setUILayout(Layout<UIShape, UIShape> layout) {
-        synchronized(this.lock) {
-            this.uiLayout = layout;
-        }
-    }
-
-    @Override
-    public FrameData updateCurrent() {
-        synchronized(this.lock) {
-            if (this.newFrameData == null) {
-                if (this.oldFrameData != null &&
-                    this.oldFrameData.nodeLayout() == this.nodeLayout &&
-                    this.oldFrameData.edgeLayout() == this.edgeLayout)
-                    return this.oldFrameData;
-                else
-                    return null;
-            } else if (this.newFrameData.nodeLayout() == this.nodeLayout &&
-                    this.newFrameData.edgeLayout() == this.edgeLayout) {
-                if (this.oldFrameData != null &&
-                    this.oldFrameData.nodeLayout() == this.nodeLayout &&
-                    this.oldFrameData.edgeLayout() == this.edgeLayout) {
-                    FrameDataBuilder newBuilder = new FrameDataBuilder(this.oldFrameData.nodeBuffer(), this.oldFrameData.edgeBuffer(), this.oldFrameData.uiBuffer());
-                    this.waitingQueue.offer(newBuilder);
-                }
-
-                this.oldFrameData = this.newFrameData;
-                this.newFrameData = null;
-
-                return this.oldFrameData;
-            } else {
-                return null;
-            }
-        }
-    }
-
-    @Override
-    public void setCommandListBuilders2D(CommandListBuilders2D builders) {
-        this.commandListBuilders2D = builders;
-    }
-
-    @Override
-    public void setCommandListBuilders3D(CommandListBuilders3D builders) {
-        this.commandListBuilders3D = builders;
+    public void setCommandListBuilders(CommandListBuilders builders) {
+        this.commandListBuilders = builders;
+        this.isInizialized = this.commandListBuilders != null && 
+                this.nodeStyler != null && this.edgeStyler != null;
     }
 
     @Override
     public void setStylers(NodeStyler nodeStyler, EdgeStyler edgeStyler) {
         this.nodeStyler = nodeStyler;
         this.edgeStyler = edgeStyler;
+        this.isInizialized = this.commandListBuilders != null && 
+                this.nodeStyler != null && this.edgeStyler != null;
     }
 
 }

@@ -21,17 +21,20 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 
 package org.gephi.visualization.data;
 
+import java.util.List;
 import org.gephi.graph.api.Edge;
 import org.gephi.graph.api.Node;
 import org.gephi.visualization.api.view.ui.UIShape;
 import org.gephi.visualization.camera.Camera2d;
 import org.gephi.visualization.camera.Camera3d;
-import org.gephi.visualization.data.buffer.BufferBuilder;
-import org.gephi.visualization.data.buffer.Buffer;
-import org.gephi.visualization.data.graph.VizEdge;
-import org.gephi.visualization.data.graph.VizNode;
-import org.gephi.visualization.data.layout.Layout;
+import org.gephi.visualization.data.graph.styler.EdgeStyler;
+import org.gephi.visualization.data.graph.styler.NodeStyler;
+import org.gephi.visualization.data.graph.VizNode2D;
+import org.gephi.visualization.data.graph.VizNode3D;
 import org.gephi.visualization.rendering.camera.Camera;
+import org.gephi.visualization.rendering.camera.PerspCamera;
+import org.gephi.visualization.rendering.command.Command;
+import org.gephi.visualization.rendering.command.CommandListBuilders;
 
 /**
  * Class used to create FrameData objects.
@@ -40,64 +43,92 @@ import org.gephi.visualization.rendering.camera.Camera;
  */
 public class FrameDataBuilder {
 
-    private Camera camera;
-    private boolean is3D;
+    private final Camera camera;
+    private final boolean is3D;
+    
+    private float near;
+    private float far;
+    
+    private final NodeStyler nodeStyler;
+    private final EdgeStyler edgeStyler;
+    
+    private final CommandListBuilders builders;
 
-    private boolean somethingIsSelected;
-
-    private final BufferBuilder<Node, VizNode> nodeBufferBuilder;
-    private final BufferBuilder<Edge, VizEdge> edgeBufferBuilder;
-    private final BufferBuilder<UIShape, UIShape> uiBufferBuilder;
-
-    public FrameDataBuilder(Layout<Node, VizNode> nodeLayout, Layout<Edge, VizEdge> edgeLayout, Layout<UIShape, UIShape> uiLayout) {
-        this.camera = null;
-        this.is3D = false;
-
-        this.somethingIsSelected = false;
-
-        this.nodeBufferBuilder = new BufferBuilder<Node, VizNode>(nodeLayout);
-        this.edgeBufferBuilder = new BufferBuilder<Edge, VizEdge>(edgeLayout);
-        this.uiBufferBuilder = new BufferBuilder<UIShape, UIShape>(uiLayout);
-    }
-
-    public FrameDataBuilder(Buffer<Node, VizNode> nodeBuffer, Buffer<Edge, VizEdge> edgeBuffer, Buffer<UIShape, UIShape> uiBuffer) {
-        this.camera = null;
-
-        this.somethingIsSelected = false;
-
-        this.nodeBufferBuilder = new BufferBuilder<Node, VizNode>(nodeBuffer);
-        this.edgeBufferBuilder = new BufferBuilder<Edge, VizEdge>(edgeBuffer);
-        this.uiBufferBuilder = new BufferBuilder<UIShape, UIShape>(uiBuffer);
-    }
-
-    public void setCamera(org.gephi.visualization.api.camera.Camera camera) {
+    public FrameDataBuilder(org.gephi.visualization.api.camera.Camera camera,
+            NodeStyler nodeStyler, EdgeStyler edgeStyler,
+            CommandListBuilders builders) {
         if (camera instanceof Camera2d) {
             this.camera = Camera.from((Camera2d)camera);
             this.is3D = false;
         } else if (camera instanceof Camera3d) {
             this.camera = Camera.from((Camera3d)camera);
+            this.is3D = true;
+        } else {
+            // It should never execute the following code
+            assert false;
+            this.camera = null;
             this.is3D = false;
         }
+        
+        this.near = Float.POSITIVE_INFINITY;
+            this.far = 0.0f;
+
+        this.nodeStyler = nodeStyler;
+        this.edgeStyler = edgeStyler;
+        
+        this.builders = builders;
     }
 
     public void add(Node node) {
-        if (node.getNodeData().isSelected()) this.somethingIsSelected = true;
-        this.nodeBufferBuilder.add(node);
+        if (this.is3D) {
+            final VizNode3D n = this.nodeStyler.toVisual3D(node);
+            this.builders.node3DBuilder.add(n);
+            final PerspCamera camera3d = (PerspCamera) this.camera;
+            final float distNear = camera3d.frontNeg.dot(n.position.minus(camera3d.position)) - n.size;
+            if (distNear >= 0.1f && distNear < this.near) {
+                this.near = distNear;
+            }
+            final float distFar = distNear + 2.0f * n.size;
+            if (distFar > this.far) {
+                this.far = distFar;
+            }
+        } else {
+            final VizNode2D n = this.nodeStyler.toVisual2D(node);
+            this.builders.node2DBuilder.add(n);
+            final float distNear = n.size * 0.009f;
+            if (distNear < this.near) {
+                this.near = distNear;
+            }
+            final float distFar = n.size * 1.001f;
+            if (distFar > this.far) {
+                this.far = distFar;
+            }
+        }
     }
 
     public void add(Edge edge) {
-        this.edgeBufferBuilder.add(edge);
+        if (this.is3D) {
+            this.builders.edge3DBuilder.add(this.edgeStyler.toVisual3D(edge));
+        } else {
+            this.builders.edge2DBuilder.add(this.edgeStyler.toVisual2D(edge));
+        }
     }
 
     public void add(UIShape shape) {
-        this.uiBufferBuilder.add(shape);
+        this.builders.uiShapeBuilder.add(shape);
     }
 
     public FrameData createFrameData() {
-        Buffer<Node, VizNode> nodeBuffer = this.nodeBufferBuilder.create();
-        Buffer<Edge, VizEdge> edgeBuffer = this.edgeBufferBuilder.create();
-        Buffer<UIShape, UIShape> uiBuffer = this.uiBufferBuilder.create();
+        List<Command> nodeCommands, edgeCommands;
+        if (this.is3D) {
+            nodeCommands = this.builders.node3DBuilder.create();
+            edgeCommands = this.builders.edge3DBuilder.create();
+        } else {
+            nodeCommands = this.builders.node2DBuilder.create();
+            edgeCommands = this.builders.edge2DBuilder.create();
+        }
+        final List<Command> uiCommands = this.builders.uiShapeBuilder.create();
 
-        return new FrameData(camera, somethingIsSelected, nodeBuffer, edgeBuffer, uiBuffer);
+        return new FrameData(this.camera, this.near, this.far, nodeCommands, edgeCommands, uiCommands);
     }
 }

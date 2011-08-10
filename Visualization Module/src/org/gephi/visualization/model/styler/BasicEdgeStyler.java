@@ -22,6 +22,7 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 package org.gephi.visualization.model.styler;
 
 import org.gephi.graph.api.Edge;
+import org.gephi.visualization.data.graph.styler.EdgeStyler;
 import org.gephi.graph.api.MetaEdge;
 import org.gephi.graph.api.Node;
 import org.gephi.graph.api.NodeData;
@@ -30,7 +31,6 @@ import org.gephi.visualization.api.color.Color;
 import org.gephi.visualization.api.vizmodel.VizConfig;
 import org.gephi.visualization.api.vizmodel.VizModel;
 import org.gephi.visualization.api.vizmodel.GraphLimits;
-import org.gephi.visualization.data.graph.EdgeStyler;
 import org.gephi.visualization.data.graph.VizEdge2D;
 import org.gephi.visualization.data.graph.VizEdge3D;
 import org.gephi.visualization.data.graph.VizEdgeShape;

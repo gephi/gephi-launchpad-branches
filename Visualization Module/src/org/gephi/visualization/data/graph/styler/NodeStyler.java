@@ -18,19 +18,21 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.gephi.visualization.data.graph;
+package org.gephi.visualization.data.graph.styler;
 
-import org.gephi.graph.api.Edge;
+import org.gephi.graph.api.Node;
+import org.gephi.visualization.data.graph.VizNode2D;
+import org.gephi.visualization.data.graph.VizNode3D;
 
 /**
- * An EdgeStyler defines how an Edge look like when rendered.
+ * A NodeStyler defines how a Node look like when rendered.
  * 
  * @author Antonio Patriarca <antoniopatriarca@gmail.com>
  */
-public interface EdgeStyler {
+public interface NodeStyler {
     
-    public VizEdge2D toVisual2D(Edge edge);
+    public VizNode2D toVisual2D(Node node);
     
-    public VizEdge3D toVisual3D(Edge edge);
+    public VizNode3D toVisual3D(Node node);
     
 }

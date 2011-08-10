@@ -22,6 +22,7 @@ package org.gephi.visualization.rendering.command;
 
 import javax.media.opengl.GL;
 import org.gephi.visualization.rendering.camera.Camera;
+import org.gephi.visualization.rendering.camera.RenderArea;
 
 /**
  * A Rendering Command contains a list of objects to draw using the same 
@@ -30,5 +31,5 @@ import org.gephi.visualization.rendering.camera.Camera;
  * @author Antonio Patriarca <antoniopatriarca@gmail.com>
  */
 public interface Command {    
-    public void draw(GL gl, Camera camera);
+    public void draw(GL gl, Camera camera, RenderArea renderArea);
 }

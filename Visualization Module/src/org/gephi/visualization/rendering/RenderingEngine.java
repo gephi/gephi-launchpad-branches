@@ -20,7 +20,6 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.gephi.visualization.rendering;
 
-import com.jogamp.opengl.util.FPSAnimator;
 import java.awt.Component;
 import javax.media.opengl.GL;
 import javax.media.opengl.GLAutoDrawable;
@@ -28,15 +27,18 @@ import javax.media.opengl.GLCapabilities;
 import javax.media.opengl.GLEventListener;
 import javax.media.opengl.GLProfile;
 import javax.media.opengl.awt.GLCanvas;
-import org.gephi.visualization.api.rendering.RenderingController;
+import org.gephi.visualization.api.controller.VisualizationController;
+import org.gephi.visualization.api.vizmodel.VizModel;
 import org.gephi.visualization.controller.VisualizationControllerImpl;
 import org.gephi.visualization.data.FrameData;
 import org.gephi.visualization.data.FrameDataBridge;
+import org.gephi.visualization.data.FrameDataBridgeIn;
 import org.gephi.visualization.rendering.pipeline.Pipeline;
 import org.openide.util.Lookup;
 
 /**
- *
+ * Class which controls the rendering loop and all graphics resources.
+ * 
  * @author Antonio Patriarca <antoniopatriarca@gmail.com>
  */
 public class RenderingEngine {
@@ -46,15 +48,15 @@ public class RenderingEngine {
     private final GLCanvas drawable;
     private final GLEventListener eventListener;
     private final RenderingScheduler scheduler;
+    
+    private final VizModel model;
 
     private final Pipeline pipeline;
     
-    private final VisualizationControllerImpl controller;
-    
     private final FrameDataBridge bridge;
 
-    public RenderingEngine(final VisualizationControllerImpl controller) {
-        this.controller = controller;
+    public RenderingEngine(final VisualizationControllerImpl controller, VizModel model) {
+        this.model = model;
         
         final GLCapabilities caps = createGLCapabilities();
         this.drawable = new GLCanvas(caps);
@@ -67,10 +69,9 @@ public class RenderingEngine {
         this.drawable.addMouseWheelListener(controller);
         
         /* TODO: make pipeline... */
-        this.pipeline = null;
+        this.pipeline = new Pipeline(this, this.model);
         
         this.eventListener = new GLEventListener() {
-
             @Override
             public void init(GLAutoDrawable glad) {
                 final GL gl = glad.getGL();
@@ -91,13 +92,14 @@ public class RenderingEngine {
                 
                 FrameData frameData = bridge.updateCurrent();
 
-                if (frameData == null) {
-                    return;
-                }
+                // frame data is not currently used by the pipeline
+                //if (frameData == null) {
+                //    return;
+                //}
 
                 controller.beginRenderFrame();
 
-                pipeline.draw(gl, frameData, false);
+                pipeline.draw(gl, frameData);
 
                 controller.endRenderFrame();
             }
@@ -114,8 +116,8 @@ public class RenderingEngine {
             }
         };
         
-        final RenderingController renderingController = Lookup.getDefault().lookup(RenderingController.class);
-        this.scheduler = new RenderingScheduler(this.drawable, renderingController.getFPS());
+        final int fps = this.model.getNormalFPS();
+        this.scheduler = new RenderingScheduler(this.drawable, 30);
         
         this.bridge = new FrameDataBridge();
     }
@@ -126,9 +128,7 @@ public class RenderingEngine {
         result.setDoubleBuffered(true);
         result.setHardwareAccelerated(true);
         
-        
-        final RenderingController renderingController = Lookup.getDefault().lookup(RenderingController.class);
-        final int antiAA = renderingController.getAASamples();
+        final int antiAA = this.model.getAntiAliasing();
         if (antiAA > 0) {
             result.setSampleBuffers(true);
             result.setNumSamples(antiAA);
@@ -171,5 +171,23 @@ public class RenderingEngine {
      */
     public int getFPS() {
         return (int) this.scheduler.getFPS();
+    }
+    
+    /**
+     * Gets the current rate at which the screen is displayed.
+     * 
+     * @return the frame rate
+     */
+    public double getComputedFPS() {
+        return (int) this.scheduler.getComputedFPS();
+    }
+    
+    /**
+     * Gets the class used to pass the graph data to the rendering engine.
+     * 
+     * @return the frame data bridge
+     */
+    public FrameDataBridgeIn bridge() {
+        return this.bridge;
     }
 }

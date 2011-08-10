@@ -23,6 +23,7 @@ package org.gephi.visualization.rendering.command;
 import java.util.List;
 import javax.media.opengl.GL;
 import org.gephi.visualization.rendering.camera.Camera;
+import org.gephi.visualization.rendering.camera.RenderArea;
 
 /**
  * Generic implementation of command. This implementation works equally well
@@ -41,8 +42,8 @@ public final class GenericCommand<E> implements Command {
     }
     
     @Override
-    public void draw(GL gl, Camera camera) {
-        this.technique.begin(gl, camera);
+    public void draw(GL gl, Camera camera, RenderArea renderArea) {
+        this.technique.begin(gl, camera, renderArea);
         
         final int n = this.technique.numberOfPasses();
         for (int i = 0; i < n; ++i) {

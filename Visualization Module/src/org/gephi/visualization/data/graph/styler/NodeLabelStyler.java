@@ -18,19 +18,21 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.gephi.visualization.data.graph;
+package org.gephi.visualization.data.graph.styler;
 
 import org.gephi.graph.api.Node;
+import org.gephi.visualization.data.graph.VizLabel2D;
+import org.gephi.visualization.data.graph.VizLabel3D;
 
 /**
- * A NodeStyler defines how a Node look like when rendered.
+ * A NodeLabelStyler defines how a Node Label looks like when rendered.
  * 
  * @author Antonio Patriarca <antoniopatriarca@gmail.com>
  */
-public interface NodeStyler {
+public interface NodeLabelStyler {
     
-    public VizNode2D toVisual2D(Node node);
+    public VizLabel2D toVisual2D(Node node);
     
-    public VizNode3D toVisual3D(Node node);
+    public VizLabel3D toVisual3D(Node node);
     
 }
