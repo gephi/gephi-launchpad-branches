@@ -3,14 +3,15 @@
 <ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     updateCheck="false" 
     monitoring="autoDetect"
-    dynamicConfig="true"
-    maxBytesLocalOnHeap="40%" >
+    dynamicConfig="true" 
+    maxBytesLocalHeap="30%"
+    >
 
-    <diskStore path="java.io.tmpdir" />
-    
+<!-- NOTE: maxBytesLocalHeap and maxElementsInMemory can't be set both at the same time -->
+
+<!--        maxElementsInMemory="50000"-->
     <defaultCache
         eternal="true"
-        maxElementsInMemory="10000"
         statistics="false"
         memoryStoreEvictionPolicy="LFU"
         overflowToDisk="false"

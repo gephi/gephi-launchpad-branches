@@ -27,13 +27,14 @@ import org.netbeans.spi.options.OptionsPanelController;
 import org.openide.util.HelpCtx;
 import org.openide.util.Lookup;
 
-@OptionsPanelController.SubRegistration(location = "Advanced",
-displayName = "#AdvancedOption_DisplayName_DiskCache",
-keywords = "#AdvancedOption_Keywords_DiskCache",
-keywordsCategory = "Advanced/DiskCache")
-public final class DiskCacheOptionsPanelController extends OptionsPanelController {
+@OptionsPanelController.SubRegistration(location = "DiskCache",
+displayName = "#AdvancedOption_DisplayName_General",
+keywords = "#AdvancedOption_Keywords_General",
+keywordsCategory = "DiskCache/General",
+position=10)
+public final class GeneralOptionsPanelController extends OptionsPanelController {
 
-    private DiskCachePanel panel;
+    private GeneralPanel panel;
     private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
     private boolean changed;
 
@@ -75,9 +76,9 @@ public final class DiskCacheOptionsPanelController extends OptionsPanelControlle
         pcs.removePropertyChangeListener(l);
     }
 
-    private DiskCachePanel getPanel() {
+    private GeneralPanel getPanel() {
         if (panel == null) {
-            panel = new DiskCachePanel(this);
+            panel = new GeneralPanel(this);
         }
         return panel;
     }

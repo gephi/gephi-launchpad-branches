@@ -47,7 +47,7 @@ import org.gephi.data.attributes.model.CachedAttributeModel;
 import org.gephi.data.attributes.model.IndexedAttributeModel;
 import org.gephi.data.attributes.model.TemporaryAttributeModel;
 import org.gephi.data.store.api.StoreController;
-import org.gephi.data.store.options.DiskCachePanel;
+import org.gephi.data.store.attributes.AttributeStore;
 import org.gephi.project.api.ProjectController;
 import org.gephi.project.api.WorkspaceProvider;
 import org.gephi.project.api.Workspace;
@@ -135,8 +135,7 @@ public class AttributeContollerImpl implements AttributeController {
     }
 
     public AttributeModel newModel() {
-        TemporaryAttributeModel model = new TemporaryAttributeModel();
-        return model;
+        return new TemporaryAttributeModel();
     }
     
     private AttributeModel getNewAttributeModel() {
@@ -148,6 +147,6 @@ public class AttributeContollerImpl implements AttributeController {
     }
     
     private boolean isDiskStoreEnabled() {
-        return NbPreferences.forModule(DiskCachePanel.class).getBoolean("diskStoreEnabled", false);
+        return NbPreferences.forModule(AttributeStore.class).getBoolean("diskStoreEnabled", false);
     }
 }

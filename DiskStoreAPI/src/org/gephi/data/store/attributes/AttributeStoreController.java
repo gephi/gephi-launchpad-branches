@@ -6,20 +6,15 @@ import com.sleepycat.je.Database;
 import com.sleepycat.je.DatabaseConfig;
 import com.sleepycat.je.Environment;
 import com.sleepycat.je.EnvironmentConfig;
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
+import com.sleepycat.je.EnvironmentStats;
+import com.sleepycat.je.StatsConfig;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import net.sf.ehcache.CacheManager;
 import org.gephi.data.attributes.api.AttributeModel;
-import org.gephi.data.store.options.DiskCachePanel;
 import org.openide.util.NbPreferences;
 import org.openide.util.lookup.ServiceProvider;
 
@@ -41,48 +36,77 @@ public class AttributeStoreController implements StoreController {
     private final Map<AttributeModel, Store> stores = new HashMap<AttributeModel, Store>();
 
     public AttributeStoreController() {
-        try {
-            InputStream is = getConfigInputStream();
-            cacheManager = new CacheManager(is);
-            is.close();
-        }
-        catch (IOException ex) {
-            throw new RuntimeException(ex);
-        }
+        URL xmlConfigURL = getClass().getResource("ehcache.xml");
+        cacheManager = new CacheManager(xmlConfigURL);
         
-        defaultEnvConfig.setAllowCreate(true);
-        defaultEnvConfig.setTransactional(false);
-        defaultEnvConfig.setCachePercent(30);
-        defaultEnvConfig.setLockTimeout(10, TimeUnit.MINUTES);
+        int ehcacheMemoryPercent = NbPreferences.forModule(AttributeStore.class).getInt("cacheSizePercent", 30);
+        int bdbMemoryPercent = NbPreferences.forModule(AttributeStore.class).getInt("bdbMaxMemoryPercent", 10);
+        
+        long totalMemory = Runtime.getRuntime().maxMemory();
+        long ehcacheMemory = (long)(totalMemory * ehcacheMemoryPercent / 100.0);
+        long bdbMemory = (long)(totalMemory * bdbMemoryPercent / 100.0);
+        System.out.println("Ehcache memory: " + ehcacheMemory / 1024 + " Kbytes");
+        System.out.println("BDB cache memory: " + bdbMemory / 1024 + " Kbytes");
+        
+        cacheManager.getConfiguration().setMaxBytesLocalHeap(ehcacheMemoryPercent + "%");
         
         defaultDbConfig.setAllowCreate(true);          
         defaultDbConfig.setExclusiveCreate(true);      
         defaultDbConfig.setTransactional(false);       
         defaultDbConfig.setSortedDuplicates(false);
 
-        defaultEnvConfig.setConfigParam(EnvironmentConfig.LOG_FILE_MAX, 
-                Long.toString(120L * 1024L * 1024L));
+        defaultEnvConfig.setAllowCreate(true);
+        defaultEnvConfig.setTransactional(false);
+
+        // Max memory usage for BDB (see above)
+        // See http://download.oracle.com/docs/cd/E17277_02/html/java/com/sleepycat/je/EnvironmentMutableConfig.html#setCacheSize(long)
+        defaultEnvConfig.setConfigParam(EnvironmentConfig.MAX_MEMORY_PERCENT, 
+                Long.toString(bdbMemoryPercent));
+        
+        // Eviction algorithm
+        // See http://www.oracle.com/technetwork/database/berkeleydb/je-faq-096044.html#35
+        defaultEnvConfig.setConfigParam(EnvironmentConfig.EVICTOR_LRU_ONLY,
+                Boolean.toString(false));
+        defaultEnvConfig.setConfigParam(EnvironmentConfig.EVICTOR_NODES_PER_SCAN,
+                Integer.toString(100));
+
+        int bdbLogFileSize = NbPreferences.forModule(AttributeStore.class).getInt("bdbLogFileSize", 20);
+        int bdbLogFaultReadSize = NbPreferences.forModule(AttributeStore.class).getInt("bdbLogFaultReadSize", 5120);
+        int bdbLogIteratorReadSize = NbPreferences.forModule(AttributeStore.class).getInt("bdbLogIteratorReadSize", 16384);
+        int bdbTotalLogBufferSize = NbPreferences.forModule(AttributeStore.class).getInt("bdbTotalLogBufferSize", 12288);
+        int bdbLogNumBuffers = NbPreferences.forModule(AttributeStore.class).getInt("bdbLogNumBuffers", 3);
+
+        // Log file size and cleaner threads
+        // See http://download.oracle.com/docs/cd/E17277_02/html/GettingStartedGuide/logfilesrevealed.html
+        defaultEnvConfig.setConfigParam(EnvironmentConfig.LOG_FILE_MAX,
+                Integer.toString(bdbLogFileSize * 1024 * 1024));
         defaultEnvConfig.setConfigParam(EnvironmentConfig.CHECKPOINTER_BYTES_INTERVAL,
-                Long.toString(20L * 1024L * 1024L));
-        defaultEnvConfig.setConfigParam(EnvironmentConfig.CLEANER_MIN_FILE_UTILIZATION,
-                Integer.toString(5));
-        defaultEnvConfig.setConfigParam(EnvironmentConfig.CLEANER_MIN_UTILIZATION,
-                Integer.toString(50));
-        defaultEnvConfig.setConfigParam(EnvironmentConfig.CLEANER_THREADS,
-                Integer.toString(2));
+                Integer.toString((bdbLogFileSize / 4) * 1024 * 1024));
         defaultEnvConfig.setConfigParam(EnvironmentConfig.CLEANER_LOOK_AHEAD_CACHE_SIZE,
                 Integer.toString(64 * 1024));
-        defaultEnvConfig.setConfigParam(EnvironmentConfig.LOCK_N_LOCK_TABLES,
-                Integer.toString(1));
-        defaultEnvConfig.setConfigParam(EnvironmentConfig.ENV_FAIR_LATCHES,
-                Boolean.toString(false));
-        defaultEnvConfig.setConfigParam(EnvironmentConfig.CHECKPOINTER_HIGH_PRIORITY,
-                Boolean.toString(false));
-        defaultEnvConfig.setConfigParam(EnvironmentConfig.CLEANER_MAX_BATCH_FILES,
-                Integer.toString(0));
-        defaultEnvConfig.setLockTimeout(5, TimeUnit.SECONDS);
+
+        // BDB Read buffers
+        // See http://www.oracle.com/technetwork/database/berkeleydb/je-faq-096044.html#39
+        defaultEnvConfig.setConfigParam(EnvironmentConfig.LOG_FAULT_READ_SIZE,
+                Integer.toString(bdbLogFaultReadSize));
+        // Double the buffer size for multiple object reads from disk (default 8K)
+        defaultEnvConfig.setConfigParam(EnvironmentConfig.LOG_ITERATOR_READ_SIZE,
+                Integer.toString(bdbLogIteratorReadSize));
+        
+        // BDB Write buffers
+        // See http://www.oracle.com/technetwork/database/berkeleydb/je-faq-096044.html#40
+        // According to link: total buffer bytes = buffer size * num buffers
+        defaultEnvConfig.setConfigParam(EnvironmentConfig.LOG_TOTAL_BUFFER_BYTES, 
+                Integer.toString(bdbTotalLogBufferSize));
+        defaultEnvConfig.setConfigParam(EnvironmentConfig.LOG_NUM_BUFFERS, 
+                Integer.toString(bdbLogNumBuffers));
+        defaultEnvConfig.setConfigParam(EnvironmentConfig.LOG_BUFFER_SIZE, 
+                Integer.toString(bdbTotalLogBufferSize / bdbLogNumBuffers));
+        
+        defaultEnvConfig.setLockTimeout(1, TimeUnit.SECONDS);
     }
     
+    @Override
     public Store newStore(AttributeModel model) {
         Environment env = getEnvironment(model);
         String dbName = getRandomName();
@@ -99,10 +123,12 @@ public class AttributeStoreController implements StoreController {
         return store;
     }
     
+    @Override
     public Store getStore(AttributeModel model) {
         return stores.get(model);
     }
 
+    @Override
     public void removeStore(AttributeModel model) {
         Store ns = stores.get(model);
         
@@ -118,38 +144,28 @@ public class AttributeStoreController implements StoreController {
         System.out.println(log);
     }
 
+    @Override
     public void shutdown() {
         for (Store ns : stores.values()) {
             ((AttributeStore) ns).close();
         }
     }
     
-    /**
-     * Ehcache does not offer a programatic way of changing the maxBytesLocalOnHeap
-     * config parameter. To go around this limitation the config xml is read completely
-     * into memory, the parameter is modified on-the-fly and then passed to the CacheManager 
-     * constructor.
-     */
-    private InputStream getConfigInputStream() {
-        try {
-            URL configURL = getClass().getResource("ehcache.xml");    
-            URLConnection conn = configURL.openConnection();
-            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-
-            StringBuilder sb = new StringBuilder();
-            String line;
-            while ((line = br.readLine()) != null) {
-                sb.append(line + "\n");
-            }
-
-            int cachePercent = NbPreferences.forModule(DiskCachePanel.class).getInt("cacheSizePercent", 40);
-            String config = sb.toString().replaceAll("maxBytesLocalOnHeap=\".+\"", "maxBytesLocalOnHeap=\"" + cachePercent + "%\"");
-
-            return new ByteArrayInputStream(config.getBytes());
+    public String getStats() {
+        StringBuilder sb = new StringBuilder();
+        
+        for (AttributeModel am : databases.keySet()) {
+            String name = databases.get(am).getDatabaseName();
+            String path = environments.get(am).getHome().getAbsolutePath();
+            
+            sb.append(name).append(" @ ").append(path).append("\n");
+            
+            StatsConfig statsConfig = new StatsConfig();
+            EnvironmentStats stats = environments.get(am).getStats(statsConfig);
+            sb.append(stats.toStringVerbose()).append("\n\n");
         }
-        catch (IOException ex) {
-            throw new RuntimeException(ex);
-        }
+        
+        return sb.toString();
     }
     
     private Environment getEnvironment(AttributeModel m) {
