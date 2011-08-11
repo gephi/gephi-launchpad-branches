@@ -24,6 +24,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import org.gephi.data.store.attributes.AttributeStore;
 import org.openide.util.NbPreferences;
+import static org.gephi.data.store.attributes.AttributeStore.*;
 
 final class GeneralPanel extends javax.swing.JPanel {
 
@@ -117,8 +118,8 @@ final class GeneralPanel extends javax.swing.JPanel {
     void load() {
         // Example:        
         // someCheckBox.setSelected(NbPreferences.forModule(GeneralPanel.class).getBoolean("someFlag", false));
-        boolean diskStoreEnabled = NbPreferences.forModule(AttributeStore.class).getBoolean("diskStoreEnabled", false);
-        int cachePercent = NbPreferences.forModule(AttributeStore.class).getInt("cacheSizePercent", 30);
+        boolean diskStoreEnabled = NbPreferences.forModule(AttributeStore.class).getBoolean(CACHE_ENABLED, false);
+        int cachePercent = NbPreferences.forModule(AttributeStore.class).getInt(CACHE_SIZE_PERCENT, 30);
         cacheEnabledChkBox.setSelected(diskStoreEnabled);
         cachePercentSlider.setValue(cachePercent);
         cachePercentLabel.setText(cachePercent + "%");
@@ -129,8 +130,8 @@ final class GeneralPanel extends javax.swing.JPanel {
         // NbPreferences.forModule(GeneralPanel.class).putBoolean("someFlag", someCheckBox.isSelected());
         boolean diskStoreEnabled = cacheEnabledChkBox.isSelected();
         int cachePercent = cachePercentSlider.getValue();
-        NbPreferences.forModule(AttributeStore.class).putBoolean("diskStoreEnabled", diskStoreEnabled);
-        NbPreferences.forModule(AttributeStore.class).putInt("cacheSizePercent", cachePercent);
+        NbPreferences.forModule(AttributeStore.class).putBoolean(CACHE_ENABLED, diskStoreEnabled);
+        NbPreferences.forModule(AttributeStore.class).putInt(CACHE_SIZE_PERCENT, cachePercent);
     }
 
     boolean valid() {

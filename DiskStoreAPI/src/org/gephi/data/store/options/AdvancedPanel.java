@@ -22,6 +22,7 @@ package org.gephi.data.store.options;
 
 import org.gephi.data.store.attributes.AttributeStore;
 import org.openide.util.NbPreferences;
+import static org.gephi.data.store.attributes.AttributeStore.*;
 
 final class AdvancedPanel extends javax.swing.JPanel {
 
@@ -169,12 +170,12 @@ final class AdvancedPanel extends javax.swing.JPanel {
     void load() {
         // Example:        
         // someCheckBox.setSelected(NbPreferences.forModule(AdvancedPanel.class).getBoolean("someFlag", false));
-        int bdbMaxMemoryPercent = NbPreferences.forModule(AttributeStore.class).getInt("bdbMaxMemoryPercent", 10);
-        int bdbLogFileSize = NbPreferences.forModule(AttributeStore.class).getInt("bdbLogFileSize", 20);
-        int bdbLogFaultReadSize = NbPreferences.forModule(AttributeStore.class).getInt("bdbLogFaultReadSize", 5120);
-        int bdbLogIteratorReadSize = NbPreferences.forModule(AttributeStore.class).getInt("bdbLogIteratorReadSize", 16384);
-        int bdbTotalLogBufferSize = NbPreferences.forModule(AttributeStore.class).getInt("bdbTotalLogBufferSize", 12288);
-        int bdbLogNumBuffers = NbPreferences.forModule(AttributeStore.class).getInt("bdbLogNumBuffers", 3);
+        int bdbMaxMemoryPercent = NbPreferences.forModule(AttributeStore.class).getInt(BDB_MAX_MEMORY_PERCENT, 10);
+        int bdbLogFileSize = NbPreferences.forModule(AttributeStore.class).getInt(BDB_LOG_FILE_SIZE, 20);
+        int bdbLogFaultReadSize = NbPreferences.forModule(AttributeStore.class).getInt(BDB_LOG_FAULT_READ_SIZE, 5120);
+        int bdbLogIteratorReadSize = NbPreferences.forModule(AttributeStore.class).getInt(BDB_LOG_ITERATOR_READ_SIZE, 16384);
+        int bdbTotalLogBufferSize = NbPreferences.forModule(AttributeStore.class).getInt(BDB_TOTAL_LOG_BUFFER_SIZE, 12288);
+        int bdbLogNumBuffers = NbPreferences.forModule(AttributeStore.class).getInt(BDB_LOG_NUM_BUFFERS, 3);
         bdbCacheSizeSlider.setValue(bdbMaxMemoryPercent);
         bdbLogFileSizeSpinner.setValue(bdbLogFileSize);
         bdbLogFaultReadSizeSpinner.setValue(bdbLogFaultReadSize);
@@ -192,12 +193,12 @@ final class AdvancedPanel extends javax.swing.JPanel {
         int bdbLogIteratorReadSize = (Integer)bdbLogIteratorReadSizeSpinner.getValue();
         int bdbTotalLogBufferSize = (Integer)bdbTotalLogBufferSizeSpinner.getValue();
         int bdbLogNumBuffers = (Integer)bdbLogNumBuffersSpinner.getValue();
-        NbPreferences.forModule(AttributeStore.class).putInt("bdbMaxMemoryPercent", bdbMaxMemoryPercent);
-        NbPreferences.forModule(AttributeStore.class).putInt("bdbLogFileSize", bdbLogFileSize);
-        NbPreferences.forModule(AttributeStore.class).putInt("bdbLogFaultReadSize", bdbLogFaultReadSize);
-        NbPreferences.forModule(AttributeStore.class).putInt("bdbLogIteratorReadSize", bdbLogIteratorReadSize);
-        NbPreferences.forModule(AttributeStore.class).putInt("bdbTotalLogBufferSize", bdbTotalLogBufferSize);
-        NbPreferences.forModule(AttributeStore.class).putInt("bdbLogNumBuffers", bdbLogNumBuffers);
+        NbPreferences.forModule(AttributeStore.class).putInt(BDB_MAX_MEMORY_PERCENT, bdbMaxMemoryPercent);
+        NbPreferences.forModule(AttributeStore.class).putInt(BDB_LOG_FILE_SIZE, bdbLogFileSize);
+        NbPreferences.forModule(AttributeStore.class).putInt(BDB_LOG_FAULT_READ_SIZE, bdbLogFaultReadSize);
+        NbPreferences.forModule(AttributeStore.class).putInt(BDB_LOG_ITERATOR_READ_SIZE, bdbLogIteratorReadSize);
+        NbPreferences.forModule(AttributeStore.class).putInt(BDB_TOTAL_LOG_BUFFER_SIZE, bdbTotalLogBufferSize);
+        NbPreferences.forModule(AttributeStore.class).putInt(BDB_LOG_NUM_BUFFERS, bdbLogNumBuffers);
     }
 
     boolean valid() {

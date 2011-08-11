@@ -17,6 +17,7 @@ import net.sf.ehcache.CacheManager;
 import org.gephi.data.attributes.api.AttributeModel;
 import org.openide.util.NbPreferences;
 import org.openide.util.lookup.ServiceProvider;
+import static org.gephi.data.store.attributes.AttributeStore.*;
 
 /**
  *
@@ -24,6 +25,7 @@ import org.openide.util.lookup.ServiceProvider;
  */
 @ServiceProvider(service = StoreController.class)
 public class AttributeStoreController implements StoreController {
+    
     private static final String DB_HOME = "cache";
     
     private final CacheManager cacheManager;
@@ -39,8 +41,8 @@ public class AttributeStoreController implements StoreController {
         URL xmlConfigURL = getClass().getResource("ehcache.xml");
         cacheManager = new CacheManager(xmlConfigURL);
         
-        int ehcacheMemoryPercent = NbPreferences.forModule(AttributeStore.class).getInt("cacheSizePercent", 30);
-        int bdbMemoryPercent = NbPreferences.forModule(AttributeStore.class).getInt("bdbMaxMemoryPercent", 10);
+        int ehcacheMemoryPercent = NbPreferences.forModule(AttributeStore.class).getInt(CACHE_SIZE_PERCENT, 30);
+        int bdbMemoryPercent = NbPreferences.forModule(AttributeStore.class).getInt(BDB_MAX_MEMORY_PERCENT, 10);
         
         long totalMemory = Runtime.getRuntime().maxMemory();
         long ehcacheMemory = (long)(totalMemory * ehcacheMemoryPercent / 100.0);
@@ -58,7 +60,7 @@ public class AttributeStoreController implements StoreController {
         defaultEnvConfig.setAllowCreate(true);
         defaultEnvConfig.setTransactional(false);
 
-        // Max memory usage for BDB (see above)
+        // Max memory usage for BDB
         // See http://download.oracle.com/docs/cd/E17277_02/html/java/com/sleepycat/je/EnvironmentMutableConfig.html#setCacheSize(long)
         defaultEnvConfig.setConfigParam(EnvironmentConfig.MAX_MEMORY_PERCENT, 
                 Long.toString(bdbMemoryPercent));
@@ -70,11 +72,11 @@ public class AttributeStoreController implements StoreController {
         defaultEnvConfig.setConfigParam(EnvironmentConfig.EVICTOR_NODES_PER_SCAN,
                 Integer.toString(100));
 
-        int bdbLogFileSize = NbPreferences.forModule(AttributeStore.class).getInt("bdbLogFileSize", 20);
-        int bdbLogFaultReadSize = NbPreferences.forModule(AttributeStore.class).getInt("bdbLogFaultReadSize", 5120);
-        int bdbLogIteratorReadSize = NbPreferences.forModule(AttributeStore.class).getInt("bdbLogIteratorReadSize", 16384);
-        int bdbTotalLogBufferSize = NbPreferences.forModule(AttributeStore.class).getInt("bdbTotalLogBufferSize", 12288);
-        int bdbLogNumBuffers = NbPreferences.forModule(AttributeStore.class).getInt("bdbLogNumBuffers", 3);
+        int bdbLogFileSize = NbPreferences.forModule(AttributeStore.class).getInt(BDB_LOG_FILE_SIZE, 20);
+        int bdbLogFaultReadSize = NbPreferences.forModule(AttributeStore.class).getInt(BDB_LOG_FAULT_READ_SIZE, 5120);
+        int bdbLogIteratorReadSize = NbPreferences.forModule(AttributeStore.class).getInt(BDB_LOG_ITERATOR_READ_SIZE, 16384);
+        int bdbTotalLogBufferSize = NbPreferences.forModule(AttributeStore.class).getInt(BDB_TOTAL_LOG_BUFFER_SIZE, 12288);
+        int bdbLogNumBuffers = NbPreferences.forModule(AttributeStore.class).getInt(BDB_LOG_NUM_BUFFERS, 3);
 
         // Log file size and cleaner threads
         // See http://download.oracle.com/docs/cd/E17277_02/html/GettingStartedGuide/logfilesrevealed.html

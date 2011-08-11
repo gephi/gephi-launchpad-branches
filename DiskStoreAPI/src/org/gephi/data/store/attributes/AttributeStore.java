@@ -43,6 +43,15 @@ import org.gephi.data.store.attributes.serializers.AttributeValueSerializer;
  */
 public class AttributeStore implements Store<Integer, Object> {
 
+    public static final String CACHE_ENABLED = "diskStoreEnabled";
+    public static final String CACHE_SIZE_PERCENT = "cacheSizePercent";
+    public static final String BDB_MAX_MEMORY_PERCENT = "bdbMaxMemoryPercent";
+    public static final String BDB_LOG_FILE_SIZE = "bdbLogFileSize";
+    public static final String BDB_LOG_FAULT_READ_SIZE = "bdbLogFaultReadSize";
+    public static final String BDB_LOG_ITERATOR_READ_SIZE ="bdbLogIteratorReadSize";
+    public static final String BDB_TOTAL_LOG_BUFFER_SIZE = "bdbTotalLogBufferSize";
+    public static final String BDB_LOG_NUM_BUFFERS = "bdbLogNumBuffers";
+    
     private final String name;
     private final Environment env;
     private final Database db;
