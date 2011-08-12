@@ -32,32 +32,25 @@ import org.gephi.visualization.rendering.camera.RenderArea;
  */
 public interface Technique<E> {
     /**
-     * Initializes the rendering states to use this technique. The use of other 
-     * techniques methods between calls of this technique begin and end may 
-     * result in undefined behaviour. This method MUST be called before using
-     * any rendering method of this class.
+     * Initializes the rendering states to use this technique. This method MUST
+     * be called before using any rendering method of this class.
      * 
      * @param gl the GL object used for rendering
      * @param camera the current camera
+     * @return <code>true</code> if it is possible to initialize this technique.
      */
-    public void begin(GL gl, Camera camera, RenderArea renderArea);
+    public boolean begin(GL gl, Camera camera, RenderArea renderArea);
     
     /**
-     * Initializes the rendering states for the <code>i</code><sup>th</sup> 
-     * pass in the rendering process. If <code>i</code> is greater than the 
-     * number of passes of this technique then it does nothing.
+     * Initializes the rendering states for the next pass or returns false if
+     * there is no successive pass. It MUST be the first method called after the
+     * begin method to set the first pass.
      * 
      * @param gl the GL object used for rendering
-     * @param i the new current pass
+     * @return <code>true</code> if there is a successive pass, <code>false</code>
+     *         otherwise
      */
-    public void setCurrentPass(GL gl, int i);
-    
-    /**
-     * Returns the number of passes this technique uses to render the objects. 
-     * 
-     * @return the number of passes
-     */
-    public int numberOfPasses();
+    public boolean advanceToNextPass(GL gl);
     
     /**
      * Renders a single element. <code>e</code> can be a single instance or a 
@@ -75,6 +68,14 @@ public interface Technique<E> {
      * @param gl the GL object used for rendering 
      */
     public void end(GL gl);
+    
+    /**
+     * Used to reuse buffers or other resources allocated to create an object
+     * of type E.
+     * 
+     * @param e 
+     */
+    public void disposeElement(E e);
     
     /**
      * Frees all the graphics resources used by this technique.

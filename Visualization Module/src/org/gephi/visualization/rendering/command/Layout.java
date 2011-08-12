@@ -17,26 +17,14 @@ GNU Affero General Public License for more details.
 
 You should have received a copy of the GNU Affero General Public License
 along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 package org.gephi.visualization.rendering.command;
 
-import java.util.List;
-import javax.media.opengl.GL;
-
 /**
- * A command list builder creates a list of rendering commands from a list of
- * graph elements of type E, ie. nodes, edges, labels..
+ * Layout objects controls how the graph elements are stored in a buffer.
  * 
  * @author Antonio Patriarca <antoniopatriarca@gmail.com>
  */
-public interface CommandListBuilder<E> {
-    
-    public void begin();
-    
-    public void add(E e);
-    
-    public List<Command> create();
-    
-    public void dispose(GL gl);
+public class Layout<T> {
     
 }

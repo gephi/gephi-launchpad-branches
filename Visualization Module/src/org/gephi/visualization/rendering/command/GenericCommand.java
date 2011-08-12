@@ -43,12 +43,9 @@ public final class GenericCommand<E> implements Command {
     
     @Override
     public void draw(GL gl, Camera camera, RenderArea renderArea) {
-        this.technique.begin(gl, camera, renderArea);
+        if (!this.technique.begin(gl, camera, renderArea)) return;
         
-        final int n = this.technique.numberOfPasses();
-        for (int i = 0; i < n; ++i) {
-            this.technique.setCurrentPass(gl, i);
-            
+        while (this.technique.advanceToNextPass(gl)) {            
             for (E e : objects) {
                 this.technique.draw(gl, e);
             }
@@ -56,5 +53,15 @@ public final class GenericCommand<E> implements Command {
         
         this.technique.end(gl);
     }
-    
+
+    @Override
+    protected void finalize() throws Throwable {
+        try {
+            for (E e : objects) {
+                this.technique.disposeElement(e);
+            }
+        } finally {
+            super.finalize();
+        }
+    }
 }

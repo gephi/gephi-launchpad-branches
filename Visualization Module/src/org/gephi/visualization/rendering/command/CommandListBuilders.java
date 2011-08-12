@@ -20,6 +20,7 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.gephi.visualization.rendering.command;
 
+import javax.media.opengl.GL;
 import org.gephi.visualization.api.view.ui.UIShape;
 import org.gephi.visualization.data.graph.VizEdge2D;
 import org.gephi.visualization.data.graph.VizEdge3D;
@@ -41,7 +42,7 @@ public class CommandListBuilders {
     // TODO: add labels and group command lists builders..
     public final CommandListBuilder<UIShape> uiShapeBuilder;
 
-    public CommandListBuilders(CommandListBuilder<VizNode2D> node2DBuilder, 
+    private CommandListBuilders(CommandListBuilder<VizNode2D> node2DBuilder, 
             CommandListBuilder<VizEdge2D> edge2DBuilder, 
             CommandListBuilder<VizNode3D> node3DBuilder, 
             CommandListBuilder<VizEdge3D> edge3DBuilder,
@@ -51,5 +52,18 @@ public class CommandListBuilders {
         this.node3DBuilder = node3DBuilder;
         this.edge3DBuilder = edge3DBuilder;
         this.uiShapeBuilder = uiShapeBuilder;
+    }
+    
+    public static CommandListBuilders create(GL gl) {
+        // TODO: implement method
+        return null;
+    }
+    
+    public void dispose(GL gl) {
+        this.node2DBuilder.dispose(gl);
+        this.node3DBuilder.dispose(gl);
+        this.edge2DBuilder.dispose(gl);
+        this.edge3DBuilder.dispose(gl);
+        this.uiShapeBuilder.dispose(gl);
     }
 }

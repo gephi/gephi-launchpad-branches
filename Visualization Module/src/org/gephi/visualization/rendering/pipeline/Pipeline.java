@@ -21,13 +21,17 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 package org.gephi.visualization.rendering.pipeline;
 
 import com.jogamp.opengl.util.awt.TextRenderer;
-import java.awt.Color;
 import java.awt.Font;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.concurrent.atomic.AtomicReference;
 import javax.media.opengl.GL;
+import org.gephi.visualization.api.color.Color;
+import org.gephi.visualization.api.rendering.background.Background;
+import org.gephi.visualization.api.vizmodel.VizConfig;
 import org.gephi.visualization.api.vizmodel.VizModel;
 import org.gephi.visualization.data.FrameData;
 import org.gephi.visualization.rendering.RenderingEngine;
-import org.openide.util.Lookup;
 
 /**
  *
@@ -38,13 +42,16 @@ public class Pipeline {
     private int screenX, screenY;
     private int screenWidth, screenHeight;
     
-    // Text Renderer for statistics display
+    // text renderer used for drawing statistics
     private final TextRenderer textRenderer;
     
+    // VizModel used to get visualization preferences
     private final VizModel model;
-    
+     
     private final RenderingEngine engine;
-
+    
+    private final AtomicReference<Color> backgroundColor;
+    
     public Pipeline(RenderingEngine engine, VizModel model) {
         this.screenX = 0;
         this.screenY = 0;
@@ -56,6 +63,19 @@ public class Pipeline {
         this.textRenderer = new TextRenderer(new Font("SansSerif", Font.PLAIN, 14));
         
         this.model = model;
+        
+        this.backgroundColor = new AtomicReference<Color>(new Color(model.getBackground().getColor()));
+        
+        this.model.addPropertyChangeListener(new PropertyChangeListener() {
+
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                if (evt.getPropertyName().equals(VizConfig.BACKGROUND)) {
+                    Background background = (Background)evt.getNewValue();
+                    backgroundColor.set(new Color(background.getColor()));
+                }
+            }
+        });
     }
     
     public boolean init(GL gl) {
@@ -71,7 +91,8 @@ public class Pipeline {
     
     public void draw(GL gl, FrameData frameData) {
         // sets general states like background color
-        gl.glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+        Color bc = this.backgroundColor.get();
+        gl.glClearColor(bc.r, bc.g, bc.b, 1.0f);
         
         // screenshots ..
         
@@ -83,10 +104,10 @@ public class Pipeline {
         // draw graph
      
         if (this.model.isShowFPS()) {
-            this.textRenderer.setColor(Color.BLACK);
+            this.textRenderer.setColor(java.awt.Color.BLACK);
             this.textRenderer.beginRendering(this.screenWidth, this.screenHeight);
             
-            this.textRenderer.draw("FPS: " + engine.getComputedFPS(), 0, screenHeight - 20);
+            this.textRenderer.draw("FPS: " + engine.getFPS(), 0, screenHeight - 20);
             
             this.textRenderer.endRendering();
         }

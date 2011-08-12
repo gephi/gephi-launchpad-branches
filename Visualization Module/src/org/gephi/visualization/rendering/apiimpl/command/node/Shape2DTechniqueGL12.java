@@ -28,6 +28,7 @@ import org.gephi.graph.api.NodeShape;
 import org.gephi.visualization.data.graph.VizNode2D;
 import org.gephi.visualization.rendering.apiimpl.command.node.texture.Node2DTextureBuilder;
 import org.gephi.visualization.rendering.camera.Camera;
+import org.gephi.visualization.rendering.camera.OrthoCamera;
 import org.gephi.visualization.rendering.camera.RenderArea;
 import org.gephi.visualization.rendering.command.Technique;
 
@@ -39,7 +40,6 @@ public final class Shape2DTechniqueGL12 implements Technique<VizNode2D> {
     private final int fillTex;
     private final int borderTex;
     private final float texBorderSize;
-    private boolean initialized;
     private int currentPass;
     
     public Shape2DTechniqueGL12(GL gl, NodeShape shape) {
@@ -54,55 +54,7 @@ public final class Shape2DTechniqueGL12 implements Technique<VizNode2D> {
         this.fillTex = Node2DTextureBuilder.createFillTexture(gl, shape, size);
         this.borderTex = Node2DTextureBuilder.createBolderTexture(gl, shape, size, 0.2f);
         
-        this.initialized = false;
         this.currentPass = -1;
-    }
-
-    public void begin(GL gl, Camera camera) {
-        /*
-        GL2 gl2 = gl.getGL2();
-        if (gl2 == null || !(camera instanceof Camera2d)) return;
-        
-        gl2.glMatrixMode(GL2.GL_PROJECTION);
-        gl2.glLoadIdentity();
-        
-        float[] matrix = new float[16];
-        camera.projectiveMatrix().getColumnMajorData(matrix);
-        gl2.glLoadMatrixf(matrix, 0);
-        
-        gl2.glMatrixMode(GL2.GL_MODELVIEW);
-        gl2.glLoadIdentity();
-        
-        camera.viewMatrix().getColumnMajorData(matrix);
-        gl2.glLoadMatrixf(matrix, 0);
-        
-        this.initialized = true;
-         * */
-         
-    }
-
-    @Override
-    public void setCurrentPass(GL gl, int i) {
-        if (!this.initialized) return;
-        
-        GL2 gl2 = gl.getGL2();
-        if (gl2 == null || this.currentPass != (i-1)) return;
-        
-        switch(i) {
-            case 0:
-                setPass0(gl2);
-                break;
-            case 1:
-                setPass1(gl2);
-                break;
-            default:
-                return;
-        }        
-    }
-
-    @Override
-    public int numberOfPasses() {
-        return 2;
     }
 
     @Override
@@ -112,7 +64,19 @@ public final class Shape2DTechniqueGL12 implements Technique<VizNode2D> {
 
     @Override
     public void end(GL gl) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        GL2 gl2 = gl.getGL2();
+        if (gl2 == null) return;
+        
+        gl2.glMatrixMode(GL2.GL_PROJECTION);
+        gl2.glPopMatrix();
+        
+        gl2.glMatrixMode(GL2.GL_MODELVIEW);
+        gl2.glPopMatrix();
+        
+        gl2.glBindTexture(GL2.GL_TEXTURE_2D, 0);
+        gl2.glDisable(GL2.GL_BLEND);
+        
+        this.currentPass = -1;
     }
 
     @Override
@@ -147,7 +111,50 @@ public final class Shape2DTechniqueGL12 implements Technique<VizNode2D> {
     }
 
     @Override
-    public void begin(GL gl, Camera camera, RenderArea renderArea) {
+    public boolean begin(GL gl, Camera camera, RenderArea renderArea) {
+        GL2 gl2 = gl.getGL2();
+        if (gl2 == null || !(camera instanceof OrthoCamera)) return false;
+        
+        gl2.glMatrixMode(GL2.GL_PROJECTION);
+        gl2.glPushMatrix();
+        
+        gl2.glLoadIdentity();
+        
+        gl2.glLoadMatrixf(camera.projMatrix(renderArea).toArray(), 0);
+        
+        gl2.glMatrixMode(GL2.GL_MODELVIEW);
+        gl2.glPushMatrix();
+        
+        gl2.glLoadIdentity();
+        
+        gl2.glLoadMatrixf(camera.viewMatrix(renderArea).toArray(), 0);
+        
+        this.currentPass = 0;
+        
+        return true;
+    }
+
+    @Override
+    public boolean advanceToNextPass(GL gl) {
+        GL2 gl2 = gl.getGL2();
+        if (gl2 == null) return false;
+        
+        switch (this.currentPass) {
+            case 0:
+                setPass0(gl2);
+                ++this.currentPass;
+                return true;
+            case 1:
+                setPass1(gl2);
+                ++this.currentPass;
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    @Override
+    public void disposeElement(VizNode2D e) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
     

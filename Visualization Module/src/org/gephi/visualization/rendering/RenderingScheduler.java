@@ -20,7 +20,6 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.gephi.visualization.rendering;
 
-import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import javax.media.opengl.GLAutoDrawable;
@@ -56,7 +55,7 @@ class RenderingScheduler {
         this.drawable = drawable;
         
         this.counter = new FPSCounter();
-        this.frameTime = new AtomicLong(fps == 0 ? 0 : 1000000000 / fps);
+        this.frameTime = new AtomicLong(fps == 0 ? 0 : 1000 / fps);
         
         this.renderingThread = null;
         this.animating = new AtomicBoolean(false);
@@ -74,18 +73,13 @@ class RenderingScheduler {
                         drawable.display();
                         
                         final long delta = frameTime.get();
-                        if (delta == 0) {
+
+                        long timeout = delta - counter.timeSinceLastTick();
+                        while (timeout > 0) {
                             synchronized (lock) {
-                                lock.wait(0, 1);
+                                lock.wait(timeout);
                             }
-                            continue;
-                        }
-                        
-                        long timeout;
-                        while ((timeout = counter.timeSinceLastTick() - delta) > 0) {
-                            synchronized (lock) {
-                                lock.wait((int)(timeout / 1000000), (int)(timeout % 1000000));
-                            }
+                            timeout = delta - counter.timeSinceLastTick();
                         }
                         counter.tick();
                     }
@@ -106,8 +100,7 @@ class RenderingScheduler {
     }
     
     public void setFPS(int fps) {
-        long delta = fps == 0 ? 0 : 1000000000 / fps;
-        this.frameTime.set(delta);
+        this.frameTime.set(fps == 0 ? 0 : 1000 / fps);
         
         synchronized (this.lock) {
             this.lock.notify();
@@ -128,19 +121,6 @@ class RenderingScheduler {
     }
     
     public double getFPS() {
-        long delta = this.frameTime.get();
-        return delta != 0 ? Math.round(1000000000.0 / delta) : 0.0;
-    }
-    
-    public double getComputedFPS() {
         return this.counter.getFPS();
-    }
-    
-    public double getComputedFPSSmooth() {
-        return this.counter.getFPSSmooth();
-    }
-    
-    public List<Double> getComputedFPSList(int level) {
-        return this.counter.getFPSList(level);
     }
 }

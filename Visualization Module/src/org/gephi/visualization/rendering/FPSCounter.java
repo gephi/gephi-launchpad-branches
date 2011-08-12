@@ -20,51 +20,39 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.gephi.visualization.rendering;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 /**
- * Calculates a frame rate using the round robin algorithm using two levels.
+ * Calculates a frame rate as a moving average of the last few seconds.
  * 
  * @author Antonio Patriarca <antoniopatriarca@gmail.com>
  */
 public class FPSCounter {
     
     /**
-     * Number of samples in each circular queue (level).
+     * Number of samples in the circular queue.
      */
     private final static int NUM_SAMPLES = 32;
     
     /**
-     * Time of nanoseconds passed between successive writing in the queues.
+     * Time in milliseconds passed between successive writing in the queues.
      */
-    private final static long TIME_DELTA = 125000000;
+    private final static long TIME_DELTA = 125;
     
     /**
-     * Inverse of <code>TIME_DELTA<code> when calculated in seconds.
+     * Inverse of the total time of the moving window (TIME_DELTA * NUM_SAMPLES).
      */
-    private final static double UPDATE_RATE = 1000000000.0 / (double) TIME_DELTA;
+    private final static double ONE_OVER_TOTAL_TIME = 1000.0 / (double) (TIME_DELTA * NUM_SAMPLES);
     
     /**
-     * Level 0 circular queue.
+     * Circular queue where the number of frames in each time slice are stored.
      */
-    private final int[] level0;
+    private final int[] queue;
     
     /**
-     * Position in the level 0 circular queue.
+     * Position in circular queue.
      */
-    private int p0;
-    
-    /**
-     * Level 1 circular queue.
-     */
-    private final int[] level1;
-    
-    /**
-     * Position in the level 1 circular queue.
-     */
-    private int p1;
+    private int i;
     
     /**
      * Absolute time of the last writing on the queue.
@@ -80,39 +68,36 @@ public class FPSCounter {
      * Number of ticks from the last time to now.
      */
     private int count;
+    
+    /**
+     * Number of frames in the circular queue.
+     */
+    private int totalFrames;
 
     /**
      * Creates a new FPS Counter.
      */
     public FPSCounter() {
-        this.level0 = new int[NUM_SAMPLES];
-        this.p0 = 0;
+        this.queue = new int[NUM_SAMPLES];
+        this.i = 0;
         
-        this.level1 = new int[NUM_SAMPLES];
-        this.p1 = 0;
-        
-        this.lastUpdate = System.nanoTime();
+        this.lastUpdate = System.currentTimeMillis();
         this.lastTick = this.lastUpdate;
         this.count = 0;
+        this.totalFrames = 0;
     }
     
     /**
-     * Updates the circular buffers with the old data.
+     * Updates the circular queue if the time has passed.
      */
-    private void updateLevels() {
-        this.level0[ this.p0++ ] = this.count;
+    private void updateQueue() {
+        this.totalFrames -= this.queue[this.i];
+        this.totalFrames += this.count;
+        this.queue[this.i] = this.count;
         this.count = 0;
         
-        if (this.p0 >= NUM_SAMPLES) {
-            this.p0 = 0;
-            
-            int c = 0;
-            for (int i = 0; i < NUM_SAMPLES; ++i) {
-                c += this.level0[i];
-            }
-            this.level1[ this.p1++ ] = c;
-            
-            this.p1 = this.p1 < NUM_SAMPLES ? this.p1 : 0;
+        if (++this.i >= NUM_SAMPLES) {
+            this.i = 0;
         }
     }
     
@@ -120,10 +105,10 @@ public class FPSCounter {
      * Adds a frame to the counter and updates the internal queues if needed.
      */
     public synchronized void tick() {
-        this.lastTick = System.nanoTime();
+        this.lastTick = System.currentTimeMillis();
         
         while ((this.lastTick - this.lastUpdate) > TIME_DELTA) {
-            updateLevels();
+            updateQueue();
             this.lastUpdate += TIME_DELTA;            
         }
         
@@ -131,42 +116,12 @@ public class FPSCounter {
     }
     
     /**
-     * Returns a list of frame rates from a given level.
+     * Returns the average frame rate in the last NUM_SAMPLES * TIME_DELTA ms.
      * 
-     * @param level the level at which to get the frame rates
-     * @return the list of frame rates
-     */
-    public synchronized List<Double> getFPSList(int level) {
-        final List<Double> result = new ArrayList<Double>(NUM_SAMPLES);
-        
-        final int[] array = level == 0 ? this.level0 : this.level1;
-        final int p = level == 0 ? this.p0 : this.p1;
-        final double mult = level == 0 ? UPDATE_RATE : UPDATE_RATE / 32.0;
-        
-        for (int i = p+1; i < NUM_SAMPLES; ++i) {
-            result.add((double)array[i] * mult);
-        }
-        for (int i = 0; i <= p; ++i) {
-            result.add((double)array[i] * mult);
-        }
-        
-        return result;
-    }
-    
-    /**
-     * Returns the last frame rate reading from the level 0.
      * @return the FPS
      */
     public synchronized double getFPS() {
-        return this.level0[ (this.p0 + NUM_SAMPLES - 1) % NUM_SAMPLES ] * UPDATE_RATE;
-    }
-    
-    /**
-     * Returns the last frame rate reading from the level 1.
-     * @return the FPS
-     */
-    public synchronized double getFPSSmooth() {
-        return this.level1[ (this.p1 + NUM_SAMPLES - 1) % NUM_SAMPLES ] * UPDATE_RATE / 32.0;
+        return this.totalFrames * ONE_OVER_TOTAL_TIME;
     }
     
     /**
@@ -174,21 +129,19 @@ public class FPSCounter {
      * @return 
      */
     public long timeSinceLastTick() {
-        return System.nanoTime() - this.lastTick;        
+        return System.currentTimeMillis() - this.lastTick;
     }
     
     /**
      * Resets all counters and queues.
      */
     public synchronized void reset() {
-        Arrays.fill(this.level0, 0);
-        Arrays.fill(this.level1, 0);
+        Arrays.fill(this.queue, 0);
+        this.i = 0;
         
-        this.p0 = 0;
-        this.p1 = 0;
-        
-        this.lastUpdate = System.nanoTime();
+        this.lastUpdate = System.currentTimeMillis();
         this.lastTick = this.lastUpdate;
         this.count = 0;
+        this.totalFrames = 0;
     }
 }

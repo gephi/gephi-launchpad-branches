@@ -17,26 +17,23 @@ GNU Affero General Public License for more details.
 
 You should have received a copy of the GNU Affero General Public License
 along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 package org.gephi.visualization.rendering.command;
 
-import java.util.List;
-import javax.media.opengl.GL;
-
 /**
- * A command list builder creates a list of rendering commands from a list of
- * graph elements of type E, ie. nodes, edges, labels..
+ * Technique for drawing objects stored in a buffered.
  * 
  * @author Antonio Patriarca <antoniopatriarca@gmail.com>
  */
-public interface CommandListBuilder<E> {
+public abstract class BufferedTechnique<E> implements Technique<Buffer<E>> {
+    private final Layout<E> layout;
     
-    public void begin();
+    public BufferedTechnique(Layout<E> layout) {
+        this.layout = layout;
+    }
     
-    public void add(E e);
-    
-    public List<Command> create();
-    
-    public void dispose(GL gl);
+    public Layout<E> layout() {
+        return this.layout;
+    }
     
 }

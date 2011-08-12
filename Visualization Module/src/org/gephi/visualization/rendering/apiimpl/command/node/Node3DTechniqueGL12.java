@@ -40,16 +40,6 @@ public class Node3DTechniqueGL12 implements Technique<VizNode3D> {
     }
 
     @Override
-    public void setCurrentPass(GL gl, int i) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public int numberOfPasses() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
     public void draw(GL gl, VizNode3D e) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
@@ -65,7 +55,17 @@ public class Node3DTechniqueGL12 implements Technique<VizNode3D> {
     }
 
     @Override
-    public void begin(GL gl, Camera camera, RenderArea renderArea) {
+    public boolean begin(GL gl, Camera camera, RenderArea renderArea) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public boolean advanceToNextPass(GL gl) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void disposeElement(VizNode3D e) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
     

@@ -27,14 +27,13 @@ import javax.media.opengl.GLCapabilities;
 import javax.media.opengl.GLEventListener;
 import javax.media.opengl.GLProfile;
 import javax.media.opengl.awt.GLCanvas;
-import org.gephi.visualization.api.controller.VisualizationController;
 import org.gephi.visualization.api.vizmodel.VizModel;
 import org.gephi.visualization.controller.VisualizationControllerImpl;
 import org.gephi.visualization.data.FrameData;
 import org.gephi.visualization.data.FrameDataBridge;
 import org.gephi.visualization.data.FrameDataBridgeIn;
+import org.gephi.visualization.rendering.command.CommandListBuilders;
 import org.gephi.visualization.rendering.pipeline.Pipeline;
-import org.openide.util.Lookup;
 
 /**
  * Class which controls the rendering loop and all graphics resources.
@@ -72,12 +71,16 @@ public class RenderingEngine {
         this.pipeline = new Pipeline(this, this.model);
         
         this.eventListener = new GLEventListener() {
+            private CommandListBuilders commandListBuilders = null;
+            
             @Override
             public void init(GLAutoDrawable glad) {
                 final GL gl = glad.getGL();
                 
                 gl.setSwapInterval(1);
                 
+                this.commandListBuilders = CommandListBuilders.create(gl);
+                bridge.setCommandListBuilders(commandListBuilders);
                 pipeline.init(gl);
             }
 
@@ -169,17 +172,8 @@ public class RenderingEngine {
      * 
      * @return the frame rate
      */
-    public int getFPS() {
-        return (int) this.scheduler.getFPS();
-    }
-    
-    /**
-     * Gets the current rate at which the screen is displayed.
-     * 
-     * @return the frame rate
-     */
-    public double getComputedFPS() {
-        return (int) this.scheduler.getComputedFPS();
+    public double getFPS() {
+        return this.scheduler.getFPS();
     }
     
     /**
