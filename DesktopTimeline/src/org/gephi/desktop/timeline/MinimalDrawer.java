@@ -252,7 +252,7 @@ public class MinimalDrawer extends JPanel
 
         g2d.setBackground(settings.background.top);
         g2d.setPaint(settings.background.paint);
-        g2d.fillRect(0, settings.tmMarginTop + 1, width, height - settings.tmMarginBottom - 2);
+        g2d.fillRect(0, settings.tmMarginTop + 1, width-1, height - settings.tmMarginBottom - 2);
 
         if (!this.isEnabled()) {
             return;
@@ -365,7 +365,7 @@ public class MinimalDrawer extends JPanel
 //        }
 
         g2d.setColor(settings.defaultStrokeColor);
-        g2d.drawRect((int) sf, settings.tmMarginTop, sw, height - settings.tmMarginBottom - 1);
+        g2d.drawRect((int) sf, settings.tmMarginTop, sw-1, height - settings.tmMarginBottom - 1);
 
         double v = model.getValueFromFloat(currentMousePositionX * (1.0 / width));
 
@@ -417,7 +417,7 @@ public class MinimalDrawer extends JPanel
     private int inPosition(int x, int r) {
         boolean resizeFrom = inRange(x, (int) sf - 1, (int) sf + r + 1);
         boolean resizeTo = inRange(x, (int) st - r - 1, (int) st + 1);
-        if (resizeFrom & resizeTo) {
+        if (resizeFrom && resizeTo) {
             if (inRange(x, (int) sf - 1, (int) (sf + st) / 2)) {
                 return LOC_RESIZE_FROM;
             } else if (inRange(x, (int) (sf + st) / 2, (int) st + 1)) {
@@ -470,7 +470,7 @@ public class MinimalDrawer extends JPanel
         int x = e.getX();
         latestMousePositionX = x;
         currentMousePositionX = latestMousePositionX;
-        int r = 16;//skin.getSelectionHookSideLength();
+        int r = settings.selection.visibleHookWidth+settings.selection.invisibleHookMargin;
 
         if (currentState == TimelineState.IDLE) {
             int position = inPosition(x, r);

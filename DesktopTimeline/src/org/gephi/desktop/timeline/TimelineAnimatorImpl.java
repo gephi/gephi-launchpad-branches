@@ -59,7 +59,7 @@ public class TimelineAnimatorImpl
         paused = new AtomicBoolean(true);
 
         timer = new Timer(50, this);
-        timer.setInitialDelay(1000);        
+        timer.setInitialDelay(50);        
         
         relativeSelectionStart = 0.0;
         relativeSelectionEnd = 1.0;

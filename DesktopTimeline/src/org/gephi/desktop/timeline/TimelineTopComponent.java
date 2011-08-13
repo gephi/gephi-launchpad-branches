@@ -22,10 +22,7 @@ package org.gephi.desktop.timeline;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.Date;
-import java.util.Random;
 import java.util.logging.Logger;
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
@@ -41,6 +38,7 @@ import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.axis.NumberTickUnit;
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.StandardXYItemRenderer;
@@ -61,7 +59,7 @@ import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.util.Lookup;
 
 /**
- * Top component corresponding to the timeline component
+ * Top component corresponding to the Timeline component
  * 
  * @author Julian Bilcke, Daniel Bernardes
  */
@@ -83,20 +81,17 @@ public final class TimelineTopComponent extends TopComponent implements Timeline
     private double max;
     
     // drawer
-    private JPanel drawerPanel;
-    private MinimalDrawer mdrawer;
+    private MinimalDrawer drawerPanel;
         
-    // sparkline
+    // sparkline chart
     private XYDataset dataset;
-    private ValueAxis timeline;
-    private NumberAxis metric;
+    private ValueAxis timelineAxis;
+    private NumberAxis metricAxis;
     private XYPlot plot;
     private JFreeChart chart;
-    private JPanel chartpanel;
-    
-    // test
-    private Random r = new Random();
-    
+    private JPanel chartpanel;    
+    private GraphMetric metric = new GraphMetric(GraphMetric.SimpleMetric.NODES);
+    private final int samplepoints = 365; // another candidate: 840
         
     public TimelineTopComponent() {
         initComponents();
@@ -108,47 +103,48 @@ public final class TimelineTopComponent extends TopComponent implements Timeline
 
         // Setup drawer
         TimelineDrawer drawer = Lookup.getDefault().lookup(TimelineDrawer.class);
-        drawerPanel = (JPanel) drawer;
+        drawerPanel = (MinimalDrawer) drawer;
         drawerPanel.setOpaque(false);
         drawerPanel.setEnabled(false);
         timelinePanel.add(drawerPanel);
-        mdrawer = (MinimalDrawer) drawer;
 
         // Animator
         animator = new TimelineAnimatorImpl();
-        mdrawer.setAnimator(animator);
+        drawerPanel.setAnimator(animator);
         animator.addListener(this);        
         
         // Setup sparkline
         
         // Defaut unit format: real numbers
         dataset = new XYSeriesCollection();
-        timeline = new NumberAxis();
+        timelineAxis = new NumberAxis();
 
-        timeline.setTickLabelsVisible(true);
-        timeline.setTickMarksVisible(true);
-        timeline.setAxisLineVisible(true);
-        timeline.setNegativeArrowVisible(true);
-        timeline.setPositiveArrowVisible(true);
-        timeline.setVisible(true);
+        timelineAxis.setTickLabelsVisible(true);
+        timelineAxis.setTickMarksVisible(true);
+        timelineAxis.setAxisLineVisible(true);
+        timelineAxis.setNegativeArrowVisible(true);
+        timelineAxis.setPositiveArrowVisible(true);
+        timelineAxis.setVisible(true);
 
-        metric = new NumberAxis();
-        metric.setTickLabelsVisible(false);
-        metric.setTickMarksVisible(false);
-        metric.setAxisLineVisible(false);
-        metric.setNegativeArrowVisible(false);
-        metric.setPositiveArrowVisible(false);
-        metric.setVisible(false);
+        metricAxis = new NumberAxis();
+        metricAxis.setTickLabelsVisible(false);
+        metricAxis.setTickMarksVisible(false);
+        metricAxis.setAxisLineVisible(false);
+        metricAxis.setNegativeArrowVisible(false);
+        metricAxis.setPositiveArrowVisible(false);
+        metricAxis.setVerticalTickLabels(false);
+        metricAxis.setAutoRangeIncludesZero(true);
+        metricAxis.setVisible(true);
 
         plot = new XYPlot();
         plot.setInsets(new RectangleInsets(-1, -1, 0, 0));
         plot.setDataset(dataset);
-        plot.setDomainAxis(timeline);
+        plot.setDomainAxis(timelineAxis);
         plot.setDomainGridlinesVisible(false);
         plot.setDomainCrosshairVisible(false);
         plot.setRangeGridlinesVisible(false);
         plot.setRangeCrosshairVisible(false);
-        plot.setRangeAxis(metric);
+        plot.setRangeAxis(metricAxis);
         plot.setRenderer(new StandardXYItemRenderer(StandardXYItemRenderer.LINES));
 
         chart = new JFreeChart(null, JFreeChart.DEFAULT_TITLE_FONT, plot, false);
@@ -176,7 +172,7 @@ public final class TimelineTopComponent extends TopComponent implements Timeline
                 } else if (!visible && TimelineTopComponent.this.isOpened()) {
                     TimelineTopComponent.this.close();
                 }
-                timelinePanel.setSize(tlcontainer.getSize());
+                timelinePanel.setSize(new Dimension(tlcontainer.getWidth(), tlcontainer.getHeight()));
                 chartpanel.setSize(new Dimension(tlcontainer.getWidth(), tlcontainer.getHeight()-6));
             }
         });
@@ -186,45 +182,56 @@ public final class TimelineTopComponent extends TopComponent implements Timeline
         // change unit formats if needed and refresh data
         if (model.getUnit() == DateTime.class && dataset instanceof XYSeriesCollection) {
             dataset = new TimeSeriesCollection();
-            timeline = new DateAxis();
+            timelineAxis = new DateAxis();
             plot.setDataset(dataset);
-            plot.setDomainAxis(timeline);
+            plot.setDomainAxis(timelineAxis);
         } else if (model.getUnit() != DateTime.class && dataset instanceof TimeSeriesCollection) {
             dataset = new XYSeriesCollection();
-            timeline = new NumberAxis();
+            timelineAxis = new NumberAxis();
             plot.setDataset(dataset);
-            plot.setDomainAxis(timeline);
+            plot.setDomainAxis(timelineAxis);
         }
-        timeline.setRange(refreshModelData());
+        Range range = refreshModelData();
+        timelineAxis.setRange(range);
     }
 
     
     private Range refreshModelData() {
-        //TODO provide metric as argument
-        final int samplepoints = 365; // another candidate: 840
-        final String metricId = "Number of nodes";
-
+        int y, ymax = 0, ymin = Integer.MAX_VALUE; // default value since SimpleMetrics are natural numbers
         if (dataset instanceof TimeSeriesCollection) {
             TimeSeriesCollection dataSet = (TimeSeriesCollection) dataset;
-            TimeSeries data = new TimeSeries(metricId);
+            TimeSeries data = new TimeSeries(metric.getMetricName());
 
             long Min = (long) min; // model.getMinValue();
             long Max = (long) max; // model.getMaxValue();
+
             for (long t = Min; t <= Max; t += (Max-Min)/(samplepoints-1)) {
-                data.add(new Millisecond(new Date(t)), model.getSnapshotGraph(t).getNodeCount());
+                y = metric.getGraphMetric(model.getSnapshotGraph(t));
+                if (ymax < y)
+                    ymax = y;
+                if (ymin > y)
+                    ymin = y;
+                data.add(new Millisecond(new Date(t)), y);
             }
             dataSet.removeAllSeries();
             dataSet.addSeries(data);
+            metricAxis.setTickUnit(new NumberTickUnit(ymax));
             return dataSet.getDomainBounds(false);
         } else {
             XYSeriesCollection dataSet = (XYSeriesCollection) dataset;
-            XYSeries data = new XYSeries(metricId);
+            XYSeries data = new XYSeries(metric.getMetricName());
             
             for (double t=min; t<=max; t+=(max-min)/(samplepoints-1)) {
-                data.add(t,model.getSnapshotGraph(t).getNodeCount());
+                y = metric.getGraphMetric(model.getSnapshotGraph(t));
+                if (ymax < y)
+                    ymax = y;
+                if (ymin > y)
+                    ymin = y;
+                data.add(t,y);
             }
             dataSet.removeAllSeries();
             dataSet.addSeries(data);
+            metricAxis.setTickUnit(new NumberTickUnit(ymax));
             return dataSet.getDomainBounds(false);
         } 
     }
@@ -289,14 +296,16 @@ public final class TimelineTopComponent extends TopComponent implements Timeline
         setMinimumSize(new java.awt.Dimension(414, 58));
         setLayout(new java.awt.GridBagLayout());
 
-        playButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/gephi/desktop/timeline/resources/disabled.png"))); // NOI18N
+        playButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/gephi/desktop/timeline/resources/enabled.png"))); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(playButton, org.openide.util.NbBundle.getMessage(TimelineTopComponent.class, "TimelineTopComponent.playButton.text")); // NOI18N
+        playButton.setToolTipText(org.openide.util.NbBundle.getMessage(TimelineTopComponent.class, "TimelineTopComponent.playButton.toolTipText")); // NOI18N
         playButton.setDisabledIcon(new javax.swing.ImageIcon(getClass().getResource("/org/gephi/desktop/timeline/resources/disabled.png"))); // NOI18N
-        playButton.setDisabledSelectedIcon(new javax.swing.ImageIcon(getClass().getResource("/org/gephi/desktop/timeline/resources/disabled.png"))); // NOI18N
         playButton.setEnabled(false);
         playButton.setFocusable(false);
         playButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        playButton.setSelectedIcon(new javax.swing.ImageIcon(getClass().getResource("/org/gephi/desktop/timeline/resources/enabled.png"))); // NOI18N
+        playButton.setRequestFocusEnabled(false);
+        playButton.setRolloverEnabled(false);
+        playButton.setSelectedIcon(new javax.swing.ImageIcon(getClass().getResource("/org/gephi/desktop/timeline/resources/playback_pause3.png"))); // NOI18N
         playButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         playButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -349,6 +358,7 @@ public final class TimelineTopComponent extends TopComponent implements Timeline
 
         resetButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/gephi/desktop/timeline/resources/reset_icon.png"))); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(resetButton, org.openide.util.NbBundle.getMessage(TimelineTopComponent.class, "TimelineTopComponent.resetButton.text")); // NOI18N
+        resetButton.setToolTipText(org.openide.util.NbBundle.getMessage(TimelineTopComponent.class, "TimelineTopComponent.resetButton.toolTipText")); // NOI18N
         resetButton.setFocusable(false);
         resetButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         resetButton.setMaximumSize(new java.awt.Dimension(44, 44));
@@ -369,25 +379,27 @@ public final class TimelineTopComponent extends TopComponent implements Timeline
     private void playButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_playButtonActionPerformed
         if(playButton.isSelected()) {
             animator.play(model.getFromFloat(), model.getToFloat());
+            playButton.setToolTipText("Pause");
         } else {
             animator.stop();
+            playButton.setToolTipText("Play");
         }
     }//GEN-LAST:event_playButtonActionPerformed
 
     private void tlcontainerResize(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_tlcontainerResize
-        timelinePanel.setSize(tlcontainer.getSize());
+        timelinePanel.setSize(new Dimension(tlcontainer.getWidth(), tlcontainer.getHeight()));
         chartpanel.setSize(new Dimension(tlcontainer.getWidth(), tlcontainer.getHeight()-6));
     }//GEN-LAST:event_tlcontainerResize
 
     private void resetButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetButtonActionPerformed
+        animator.stop();
+        drawerPanel.refreshBounds();
         if (model != null) {
             model.setEnabled(true);
+            model.setRangeFromFloat(0.0, 1.0);
             TimelineTopComponent.this.setEnabled(true);
             setupSparkline();
         }
-        animator.stop();
-        model.setRangeFromFloat(0.0, 1.0);
-        mdrawer.refreshBounds();
     }//GEN-LAST:event_resetButtonActionPerformed
 
     private void closeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_closeButtonActionPerformed

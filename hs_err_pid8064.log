@@ -1,0 +1,47 @@
+#
+# A fatal error has been detected by the Java Runtime Environment:
+#
+#  SIGBUS (0x7) at pc=0x6b062671, pid=8064, tid=1794927472
+#
+# JRE version: 6.0_26-b03
+# Java VM: Java HotSpot(TM) Server VM (20.1-b02 mixed mode linux-x86 )
+# Problematic frame:
+# 
+[error occurred during error reporting (printing problematic frame), id 0x7]
+
+# If you would like to submit a bug report, please visit:
+#   http://java.sun.com/webapps/bugreport/crash.jsp
+# The crash happened outside the Java Virtual Machine in native code.
+# See problematic frame for where to report the bug.
+#
+
+---------------  T H R E A D  ---------------
+
+Current thread (0x0a93c400):  JavaThread "AWT-EventQueue-1" [_thread_in_native, id=8090, stack(0x6af76000,0x6afc7000)]
+
+siginfo:si_signo=SIGBUS: si_errno=0, si_code=2 (BUS_ADRERR), si_addr=0x6b062671
+
+Registers:
+EAX=0x6b062671, EBX=0x725125c8, ECX=0x0a93c520, EDX=0x72517890
+ESP=0x6afc560c, EBP=0x6afc5650, ESI=0x725125c8, EDI=0x0a93c400
+EIP=0x6b062671, EFLAGS=0x00210a06, CR2=0x6b062671
+
+Top of Stack: (sp=0x6afc560c)
+0x6afc560c:   b39c864a 0a93c520 6afc5658 702cb9f0
+0x6afc561c:   00000000 04e00080 00000000 6e76c660
+0x6afc562c:   00000000 6afc5630 00000000 6afc5674
+0x6afc563c:   72517890 00000000 725125c8 00000000
+0x6afc564c:   6afc5660 6afc5698 b39c0ee1 72515c88
+0x6afc565c:   b39c64a0 6e76c660 00000000 04e00080
+0x6afc566c:   00000000 702cb9f0 00000000 6afc5678
+0x6afc567c:   724ff736 6afc56a4 72538338 00000000 
+
+Instructions: (pc=0x6b062671)
+0x6b062651:   89 74 24 08 89 54 24 04 89 04 24 8b 45 f0 ff d0
+0x6b062661:   89 45 f4 8b 45 f4 0f b6 c0 83 c4 50 5b 5e 5d c3
+0x6b062671:   55 89 e5 53 83 ec 44 e8 5b 7e ff ff 81 c3 0b 0f
+0x6b062681:   09 00 8b 45 10 89 45 e0 8b 45 14 89 45 e4 8b 45 
+
+Register to memory mapping:
+
+EAX=
