@@ -17,23 +17,23 @@ GNU Affero General Public License for more details.
 
 You should have received a copy of the GNU Affero General Public License
 along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
- */
-package org.gephi.visualization.rendering.command;
+*/
+package org.gephi.visualization.rendering.command.buffer;
 
 /**
- * Technique for drawing objects stored in a buffered.
- * 
+ * Vertex Arrays based buffer implementation.
+ *
  * @author Antonio Patriarca <antoniopatriarca@gmail.com>
  */
-public abstract class BufferedTechnique<E> implements Technique<Buffer<E>> {
-    private final Layout<E> layout;
-    
-    public BufferedTechnique(Layout<E> layout) {
-        this.layout = layout;
+public class VertexArrayBuffer<E> extends BufferImpl<E> {
+
+    public VertexArrayBuffer(Buffer<E> buffer) {
+        super(buffer);
     }
-    
-    public Layout<E> layout() {
-        return this.layout;
+
+    @Override
+    public void drawBuffer() {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
     
 }

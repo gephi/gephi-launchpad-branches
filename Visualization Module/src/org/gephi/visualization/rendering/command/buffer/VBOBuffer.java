@@ -17,14 +17,23 @@ GNU Affero General Public License for more details.
 
 You should have received a copy of the GNU Affero General Public License
 along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
- */
-package org.gephi.visualization.rendering.command;
+*/
+package org.gephi.visualization.rendering.command.buffer;
 
 /**
- * Layout objects controls how the graph elements are stored in a buffer.
- * 
+ * VBO based buffer implementation.
+ *
  * @author Antonio Patriarca <antoniopatriarca@gmail.com>
  */
-public class Layout<T> {
+public class VBOBuffer<E> extends BufferImpl<E> {
+
+    public VBOBuffer(Buffer<E> buffer) {
+        super(buffer);
+    }
+    
+    @Override
+    public void drawBuffer() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
     
 }
