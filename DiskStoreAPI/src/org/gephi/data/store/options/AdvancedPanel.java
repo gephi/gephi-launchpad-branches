@@ -20,6 +20,8 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.gephi.data.store.options;
 
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import org.gephi.data.store.attributes.AttributeStore;
 import org.openide.util.NbPreferences;
 import static org.gephi.data.store.attributes.AttributeStore.*;
@@ -31,7 +33,15 @@ final class AdvancedPanel extends javax.swing.JPanel {
     AdvancedPanel(AdvancedOptionsPanelController controller) {
         this.controller = controller;
         initComponents();
+        
         // TODO listen to changes in form fields and call controller.changed()
+        bdbCacheSizeSlider.addChangeListener(new ChangeListener() {
+
+            @Override
+            public void stateChanged(ChangeEvent ce) {
+                bdbCacheSizeLabel.setText(bdbCacheSizeSlider.getValue() + "%");
+            }
+        });        
     }
 
     /** This method is called from within the constructor to

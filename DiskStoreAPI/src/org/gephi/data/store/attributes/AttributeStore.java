@@ -72,10 +72,9 @@ public class AttributeStore implements Store<Integer, Object> {
         this.cacheManager = manager;
         
         manager.addCache(name);
-        
         cache = new SelfPopulatingCache(manager.getEhcache(name), getCacheEntryFactory());
         cache.getCacheEventNotificationService().registerListener(getCacheEventListener());
-
+        
         serializer = new AttributeValueSerializer();
     }
 

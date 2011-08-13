@@ -52,15 +52,14 @@
                 <package>org.gephi.data.store.api</package>
                 <package>org.gephi.data.store.attributes</package>
                 <package>org.gephi.data.store.options</package>
-                <package>org.gephi.data.store.options_</package>
             </public-packages>
             <class-path-extension>
                 <runtime-relative-path>ext/slf4j-api-1.6.1.jar</runtime-relative-path>
                 <binary-origin>release/modules/ext/slf4j-api-1.6.1.jar</binary-origin>
             </class-path-extension>
             <class-path-extension>
-                <runtime-relative-path>ext/ehcache-core-2.5.0-20110712.011635-218.jar</runtime-relative-path>
-                <binary-origin>release/modules/ext/ehcache-core-2.5.0-20110712.011635-218.jar</binary-origin>
+                <runtime-relative-path>ext/ehcache-core-ee-2.5.0-SNAPSHOT.jar</runtime-relative-path>
+                <binary-origin>release/modules/ext/ehcache-core-ee-2.5.0-SNAPSHOT.jar</binary-origin>
             </class-path-extension>
             <class-path-extension>
                 <runtime-relative-path>ext/slf4j-jdk14-1.6.1.jar</runtime-relative-path>

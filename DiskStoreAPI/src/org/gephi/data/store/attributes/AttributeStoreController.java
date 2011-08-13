@@ -1,5 +1,10 @@
 package org.gephi.data.store.attributes;
 
+import net.sf.ehcache.config.CacheConfiguration;
+import net.sf.ehcache.config.Configuration;
+import net.sf.ehcache.config.Configuration.Monitoring;
+import net.sf.ehcache.config.MemoryUnit;
+import net.sf.ehcache.store.MemoryStoreEvictionPolicy;
 import org.gephi.data.store.api.StoreController;
 import org.gephi.data.store.api.Store;
 import com.sleepycat.je.Database;
@@ -9,7 +14,6 @@ import com.sleepycat.je.EnvironmentConfig;
 import com.sleepycat.je.EnvironmentStats;
 import com.sleepycat.je.StatsConfig;
 import java.io.File;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -38,19 +42,32 @@ public class AttributeStoreController implements StoreController {
     private final Map<AttributeModel, Store> stores = new HashMap<AttributeModel, Store>();
 
     public AttributeStoreController() {
-        URL xmlConfigURL = getClass().getResource("ehcache.xml");
-        cacheManager = new CacheManager(xmlConfigURL);
-        
         int ehcacheMemoryPercent = NbPreferences.forModule(AttributeStore.class).getInt(CACHE_SIZE_PERCENT, 30);
         int bdbMemoryPercent = NbPreferences.forModule(AttributeStore.class).getInt(BDB_MAX_MEMORY_PERCENT, 10);
-        
+
         long totalMemory = Runtime.getRuntime().maxMemory();
+        
         long ehcacheMemory = (long)(totalMemory * ehcacheMemoryPercent / 100.0);
         long bdbMemory = (long)(totalMemory * bdbMemoryPercent / 100.0);
+        System.out.println("Max JVM memory: " + totalMemory);
         System.out.println("Ehcache memory: " + ehcacheMemory / 1024 + " Kbytes");
         System.out.println("BDB cache memory: " + bdbMemory / 1024 + " Kbytes");
-        
-        cacheManager.getConfiguration().setMaxBytesLocalHeap(ehcacheMemoryPercent + "%");
+
+        Configuration config = new Configuration();
+        config.updateCheck(false)
+            .monitoring(Monitoring.AUTODETECT)
+            .dynamicConfig(true)
+            .maxBytesLocalHeap(ehcacheMemory, MemoryUnit.BYTES);
+
+        config.defaultCache(new CacheConfiguration()
+                .eternal(true)
+                .statistics(true)
+                .memoryStoreEvictionPolicy(MemoryStoreEvictionPolicy.LFU)
+                .overflowToDisk(false)
+                .overflowToOffHeap(false)
+                .diskPersistent(false));
+
+        cacheManager = new CacheManager(config);
         
         defaultDbConfig.setAllowCreate(true);          
         defaultDbConfig.setExclusiveCreate(true);      
