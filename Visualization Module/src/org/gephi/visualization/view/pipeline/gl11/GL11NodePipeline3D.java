@@ -120,7 +120,7 @@ public class GL11NodePipeline3D extends AbstractPipeline {
                     gl2.glColor3f(color.r, color.g, color.b);
                 } else {
                     //Color lightColor = Color.WHITE;
-                    float lightColorFactor = 0.8f;
+                    float lightColorFactor = 0.65f;
                     final float r = color.r + (1.0f - color.r) * lightColorFactor;
                     final float g = color.g + (1.0f - color.g) * lightColorFactor;
                     final float b = color.b + (1.0f - color.b) * lightColorFactor;
@@ -130,7 +130,6 @@ public class GL11NodePipeline3D extends AbstractPipeline {
                 gl2.glColor3f(color.r, color.g, color.b);
             }
                 
-            gl2.glColor3f(color.r, color.g, color.b);
             gl2.glTranslatef(position.x(), position.y(), position.z());
             gl2.glScalef(size, size, size);
 

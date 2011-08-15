@@ -33,6 +33,8 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import org.gephi.graph.api.Node;
 import org.gephi.math.linalg.Vec3;
 import org.gephi.project.api.ProjectController;
@@ -107,6 +109,15 @@ public class VisualizationControllerImpl implements VisualizationController, Key
         if (pc.getCurrentWorkspace() != null) {
             reinit = true;
         }
+        
+        vizModel.addPropertyChangeListener(new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                if (VizConfig.USE_3D.equals(evt.getPropertyName())) {
+                    modeChanged();
+                }
+            }
+        });
         
         // Initialize SelectionManager
         selectionManager.initialize();
@@ -189,7 +200,6 @@ public class VisualizationControllerImpl implements VisualizationController, Key
         return centerGraph || centerZero || centerNode != null;
     }
 
-    @Override
     public void modeChanged() {
         boolean modelUse3d = vizModel.isUse3d();
         if (modelUse3d == this.use3d) {

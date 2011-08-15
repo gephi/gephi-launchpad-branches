@@ -58,6 +58,10 @@ public class MotionManagerImpl implements MotionManager {
     protected int[] mouseDrag = new int[2];
     protected int[] startDrag = new int[2];
 
+    // Represents the single mouse button that is marked as pressed to avoid
+    // multiple button press or drag: 0 - left, 1 - middle, 2 - right
+    protected int pressedButton = -1;
+    
     protected Shape selectionShape;
 
     protected boolean dragging;
@@ -96,12 +100,24 @@ public class MotionManagerImpl implements MotionManager {
 
     @Override
     public void mousePressed(MouseEvent e) {
+        if (pressing) {
+            return;
+        }
+        
         mousePosition[0] = e.getXOnScreen() - (int) controller.getViewLocationOnScreen().getX();
         mousePosition[1] = e.getYOnScreen() - (int) controller.getViewLocationOnScreen().getY();
         startDrag[0] = mousePosition[0];
         startDrag[1] = mousePosition[1];
         pressing = true;
 
+        if (SwingUtilities.isRightMouseButton(e)) {
+            pressedButton = 2;
+        } else if (SwingUtilities.isMiddleMouseButton(e)) {
+            pressedButton = 1;
+        } else if (SwingUtilities.isLeftMouseButton(e)) {
+            pressedButton = 0;
+        }
+        
         SelectionModifier modifier = extractSelectionModifier(e);
         SelectionManager selectionManager = Lookup.getDefault().lookup(SelectionManager.class);
         
@@ -198,14 +214,14 @@ public class MotionManagerImpl implements MotionManager {
         SelectionManager selectionManager = Lookup.getDefault().lookup(SelectionManager.class);
 
         if (selectionManager.getSelectionType() != SelectionType.NONE && selectionShape != null) {
-            if (SwingUtilities.isLeftMouseButton(e)) {
+            if (SwingUtilities.isLeftMouseButton(e) && pressedButton == 0) {
                 selectionShape = ShapeUtils.continuousUpdate(selectionShape, e.getX(), e.getY());
                 selectionManager.cancelContinuousSelection();
                 selectionManager.applyContinuousSelection(selectionShape);
             }
         } else if (selectionManager.isNodeDraggingEnabled()) {
             controller.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-            if (SwingUtilities.isLeftMouseButton(e)) {
+            if (SwingUtilities.isLeftMouseButton(e) && pressedButton == 0) {
                 Vec3 translation = controller.getCamera().projectVectorInverse(x, y);
                 for (Node node : selectionManager.getSelectedNodes()) {
                     node.getNodeData().setPosition(node.getNodeData().x() + translation.x(), node.getNodeData().y() + translation.y(), node.getNodeData().z() + translation.z());
@@ -215,15 +231,21 @@ public class MotionManagerImpl implements MotionManager {
             Lookup.getDefault().lookup(VizEventManager.class).drag();
         }
         // Movement
-        if (SwingUtilities.isRightMouseButton(e)) {
+        if (SwingUtilities.isRightMouseButton(e) && pressedButton == 2) {
             controller.getCamera().translate(x, y);
-        } else if (SwingUtilities.isMiddleMouseButton(e)) {
+        } else if (SwingUtilities.isMiddleMouseButton(e) && pressedButton == 1) {
             controller.getCamera().updateOrbit(ORBIT_FACTOR * x, ORBIT_FACTOR * y);
         }
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
+        if (SwingUtilities.isLeftMouseButton(e) && pressedButton != 0 ||
+            SwingUtilities.isMiddleMouseButton(e) && pressedButton != 1 ||
+            SwingUtilities.isRightMouseButton(e) && pressedButton != 2) {
+            return;
+        }
+        
         SelectionManager selectionManager = Lookup.getDefault().lookup(SelectionManager.class);
 
         if (selectionManager.getSelectionType() != SelectionType.NONE && selectionShape != null) {
@@ -252,6 +274,7 @@ public class MotionManagerImpl implements MotionManager {
         controller.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
         dragging = false;
         pressing = false;
+        pressedButton = -1;
     }
 
     @Override
