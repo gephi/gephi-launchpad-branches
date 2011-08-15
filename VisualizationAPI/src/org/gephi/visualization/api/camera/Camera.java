@@ -74,6 +74,17 @@ public interface Camera {
     public void lookAt(Vec3Base center, Vec3Base up);
 
     /**
+     * Returns the position of the camera.
+     */
+    public float[] getPosition();
+    
+    /**
+     * Returns a point from the camera look-at line at a normalized distance 
+     * from camera position.
+     */
+    public float[] getLookAt();
+    
+    /**
      * Returns the given point as it will appear on the screen together with its
      * size on screen after transformation have been applied.
      * 

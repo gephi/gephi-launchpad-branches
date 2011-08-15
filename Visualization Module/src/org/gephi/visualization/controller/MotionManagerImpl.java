@@ -83,12 +83,6 @@ public class MotionManagerImpl implements MotionManager {
     }
 
     @Override
-    public float[] getDrag3d() {
-        // TODO real displacement
-        return new float[3];
-    }
-
-    @Override
     public int[] getMousePosition() {
         return new int[] {mousePosition[0], mousePosition[1]};
     }

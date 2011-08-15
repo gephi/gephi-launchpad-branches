@@ -84,7 +84,7 @@ public final class Camera3d implements Camera {
         this.front = camera.front.copyM();
         this.up = camera.up.copyM();
         this.right = camera.right.copyM();
-        this.orbitCenter = camera.orbitCenter.copyM();
+        this.orbitCenter = new Vec3M();
         
         this.fovy = camera.fovy;
         this.relativeZoom = camera.relativeZoom;
@@ -121,6 +121,24 @@ public final class Camera3d implements Camera {
         lookAt(center, up);
     }
 
+    /**
+     * Returns the position of the camera.
+     */
+    @Override
+    public float[] getPosition() {
+        return position.toArray();
+    }
+
+    /**
+     * Returns a point from the camera look-at line at a normalized distance 
+     * from camera position.
+     */
+    @Override
+    public float[] getLookAt() {
+        Vec3 point = position.plus(front);
+        return point.toArray();
+    }
+    
     @Override
     public float screenWidth() {
         return this.screenWidth;

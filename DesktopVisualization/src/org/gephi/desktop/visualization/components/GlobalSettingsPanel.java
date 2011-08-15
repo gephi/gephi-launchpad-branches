@@ -54,7 +54,7 @@ public class GlobalSettingsPanel extends javax.swing.JPanel {
                     refreshSharedConfig();
                 } else if (evt.getPropertyName().equals(VizConfig.HIGHLIGHT_NON_SELECTED)) {
                     refreshSharedConfig();
-                } else if (evt.getPropertyName().equals(VizConfig.USE_3D)) {
+                } else if (evt.getPropertyName().equals(VizConfig.CAMERA_USE_3D)) {
                     refreshSharedConfig();
                 } else if (evt.getPropertyName().equals(VizConfig.ZOOM_FACTOR)) {
                     refreshSharedConfig();
@@ -94,7 +94,6 @@ public class GlobalSettingsPanel extends javax.swing.JPanel {
             public void itemStateChanged(ItemEvent e) {
                 VizModel vizModel = Lookup.getDefault().lookup(VisualizationController.class).getVizModel();
                 vizModel.setUse3d(use3dCheckbox.isSelected());
-                Lookup.getDefault().lookup(VisualizationController.class).modeChanged();
             }
         });
     }

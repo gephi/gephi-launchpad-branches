@@ -187,13 +187,9 @@ public class VizEventManagerImpl implements VizEventManager {
             VizEventTypeHandler handler = handlers[VizEvent.Type.DRAG.ordinal()];
             if (handler.hasListeners()) {
                 MotionManager motionManager = Lookup.getDefault().lookup(MotionManager.class);
-                float[] mouseDrag = new float[5];
-                float[] mouseDrag3d = motionManager.getDrag3d();
+                float[] mouseDrag = new float[2];
                 mouseDrag[0] = motionManager.getDrag()[0];
                 mouseDrag[1] = motionManager.getDrag()[1];
-                mouseDrag[2] = mouseDrag3d[0];
-                mouseDrag[3] = mouseDrag3d[1];
-                mouseDrag[4] = mouseDrag3d[2];
                 handler.dispatch(mouseDrag);
             }
         }

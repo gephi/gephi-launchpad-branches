@@ -66,8 +66,6 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = VisualizationController.class)
 public class VisualizationControllerImpl implements VisualizationController, KeyListener, MouseListener, MouseMotionListener, MouseWheelListener, WorkspaceListener {
 
-    private Camera camera;
-
     private static VisualizationControllerImpl instance;
     private final View view;
     private final Model dataManager;
@@ -90,9 +88,6 @@ public class VisualizationControllerImpl implements VisualizationController, Key
     private float lightenAnimationDelta;
     private boolean previouslySelected;
     
-    // TODO remove when architecture bugs fixed
-    private static final Camera DEFAULT_CAMERA = new Camera2d();
-
     public VisualizationControllerImpl() {
         // Random values
         this.viewSize = new Dimension();
@@ -113,7 +108,7 @@ public class VisualizationControllerImpl implements VisualizationController, Key
         vizModel.addPropertyChangeListener(new PropertyChangeListener() {
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
-                if (VizConfig.USE_3D.equals(evt.getPropertyName())) {
+                if (VizConfig.CAMERA_USE_3D.equals(evt.getPropertyName())) {
                     modeChanged();
                 }
             }
@@ -132,9 +127,9 @@ public class VisualizationControllerImpl implements VisualizationController, Key
 
     public void resize(int width, int height) {
         this.viewSize = new Dimension(width, height);
-        if (camera != null) {
-            this.camera.screenSize(viewSize);
-        }
+        Camera camera = vizModel.getCamera();
+        camera.screenSize(viewSize);
+        vizModel.setCamera(camera);
     }
 
     @Override
@@ -158,16 +153,12 @@ public class VisualizationControllerImpl implements VisualizationController, Key
 
     @Override
     public Camera getCamera() {
-        return this.camera;
+        return vizModel.getCamera();
     }
 
     @Override
     public Camera getCameraCopy() {
-        // TODO remove when architecture bugs fixed
-        if (camera == null) {
-            return DEFAULT_CAMERA.copy();
-        }
-        return this.camera.copy();
+        return vizModel.getCamera().copy();
     }
 
     @Override
@@ -205,13 +196,12 @@ public class VisualizationControllerImpl implements VisualizationController, Key
         if (modelUse3d == this.use3d) {
             return;
         }
-        Workspace workspace = Lookup.getDefault().lookup(ProjectController.class).getCurrentWorkspace();
-        Camera cam = workspace.getLookup().lookup(Camera.class);
-        workspace.remove(cam);
+        Camera newCamera = null;
+        Camera cam = vizModel.getCamera();
         if (modelUse3d) {
         // Set 2D mode
             if (cam instanceof Camera2d) {
-                camera = new Camera3d((Camera2d) cam);
+                newCamera = new Camera3d((Camera2d) cam);
                 
                 // TODO add other engine code
                 //
@@ -219,13 +209,13 @@ public class VisualizationControllerImpl implements VisualizationController, Key
         } else {
         // Set 3D mode
             if (cam instanceof Camera3d) {
-                camera = new Camera2d((Camera3d) cam);
+                newCamera = new Camera2d((Camera3d) cam);
 
                 // TODO add other engine code
                 //
             }
         }
-        workspace.add(camera);
+        vizModel.setCamera(newCamera);
         selectionManager.refreshDataStructure();
     }
 
@@ -265,9 +255,9 @@ public class VisualizationControllerImpl implements VisualizationController, Key
     }
 
     public void endUpdateFrame(AABB box) {
+        Camera camera = vizModel.getCamera();
         if (centerGraph && box != null) {
             camera.centerBox(box);
-            
             centerGraph = false;
         }
         if (centerZero) {
@@ -333,16 +323,13 @@ public class VisualizationControllerImpl implements VisualizationController, Key
     
     // User events
     @Override
-    public void keyTyped(KeyEvent e) {
-    }
+    public void keyTyped(KeyEvent e) {}
 
     @Override
-    public void keyPressed(KeyEvent e) {
-    }
+    public void keyPressed(KeyEvent e) {}
 
     @Override
-    public void keyReleased(KeyEvent e) {
-    }
+    public void keyReleased(KeyEvent e) {}
 
     @Override
     public void mouseClicked(MouseEvent e) {
@@ -408,22 +395,15 @@ public class VisualizationControllerImpl implements VisualizationController, Key
 
     @Override
     public void select(Workspace workspace) {
-        camera = workspace.getLookup().lookup(Camera.class);
-        if (camera == null) {
-            camera = new Camera2d(viewSize.width, viewSize.height);
-            workspace.add(camera);
-        }
         hasWorkspace = true;
         reinit = true;
     }
 
     @Override
-    public void unselect(Workspace workspace) {
-    }
+    public void unselect(Workspace workspace) {}
 
     @Override
-    public void close(Workspace workspace) {
-    }
+    public void close(Workspace workspace) {}
 
     @Override
     public void disable() {

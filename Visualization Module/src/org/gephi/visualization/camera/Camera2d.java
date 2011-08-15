@@ -176,7 +176,28 @@ public final class Camera2d implements Camera {
     public void lookAt(Vec3Base center, Vec3Base up) {
         this.center.set(center.x(), center.y());        
     }
+    
+    /**
+     * Returns the position of the camera.
+     */
+    @Override
+    public float[] getPosition() {
+        return new float[] {center.x(), center.y(), 0};
+    }
 
+    /**
+     * NOT SUPPORTED
+     * 
+     * Returns a point from the camera look-at line at a normalized distance 
+     * from camera position.
+     * 
+     * @return zero vector as the look at vector is defined from camera position.
+     */
+    @Override
+    public float[] getLookAt() {
+        return new float[] {0f, 0f, 0f};
+    }
+    
     /**
      * Returns the given point as it will appear on the screen together with its
      * size on screen after transformation have been applied.

@@ -29,6 +29,7 @@ import javax.xml.stream.XMLStreamWriter;
 import org.gephi.graph.api.NodeShape;
 import org.gephi.math.linalg.Vec3;
 import org.gephi.project.api.Workspace;
+import org.gephi.visualization.api.camera.Camera;
 import org.gephi.visualization.api.rendering.background.Background;
 
 /**
@@ -53,10 +54,8 @@ public interface VizModel {
 
     public Background getBackground();
     
-    public Vec3 getCameraPosition();
-
-    public Vec3 getCameraTarget();
-
+    public Camera getCamera();
+    
     public boolean isCulling();
 
     public boolean isShowEdges();
@@ -110,6 +109,8 @@ public interface VizModel {
 
     public void setBackground(Background background);
 
+    public void setCamera(Camera camera);
+    
     public void setShowEdges(boolean showEdges);
 
     public void setEdgeHasUniColor(boolean edgeHasUniColor);

@@ -38,8 +38,6 @@ public interface MotionManager {
 
     public int[] getDrag();
 
-    public float[] getDrag3d();
-
     public int[] getMousePosition();
 
     public Vec3 getMousePosition3d();
