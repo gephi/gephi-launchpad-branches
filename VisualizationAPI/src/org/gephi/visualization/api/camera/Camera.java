@@ -171,17 +171,9 @@ public interface Camera {
     public void zoom(float x, float y, float by);
 
     /**
-     * Gets the current zoom factor.
-     * 
-     * @return the zoom factor
+     * Zooms toward the center of screen.
+     * @param by the zoom amount
      */
-    public float getZoom();
-
-    /**
-     * Sets the current zoom factor.
-     * 
-     * @param relativeZoom the zoom factor
-     */
-    public void setZoom(float relativeZoom);
+    public void zoom(float by);
             
 }

@@ -122,7 +122,6 @@ public interface VizConfig {
     String SCREENSHOT_SETTINGS = "VizConfig.screenshotSettings";
     String SELECTION = "VizConfig.selectionEnable";
     String SELECTION_TYPE = "VizConfig.selectionType";
-    String ZOOM_FACTOR = "VizConfig.zoomFactor";
     
     public void setProperty(String key, Object value);
     

@@ -303,18 +303,15 @@ public final class Camera3d implements Camera {
     @Override
     public void zoom(float x, float y, float by) {
         setFov((float) Math.max(Math.min(fovy * Math.exp(by), Math.exp(MAX_ZOOM)), Math.exp(MIN_ZOOM)));
-        Lookup.getDefault().lookup(VisualizationController.class).getVizModel().setZoomFactor(getZoom());
     }
 
+    /**
+     * Zooms toward the center of screen.
+     * @param by the zoom amount
+     */
     @Override
-    public void setZoom(float relativeZoom) {
-        setFov((float) Math.exp(MIN_ZOOM + relativeZoom * (MAX_ZOOM - MIN_ZOOM)));
-        Lookup.getDefault().lookup(VisualizationController.class).getVizModel().setZoomFactor(relativeZoom);
-    }
-
-    @Override
-    public float getZoom() {
-        return (float) ((Math.log(fovy) - MIN_ZOOM) / (MAX_ZOOM - MIN_ZOOM));
+    public void zoom(float by) {
+        zoom(screenWidth * 0.5f, screenHeight * 0.5f, by);
     }
     
 }

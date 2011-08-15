@@ -98,8 +98,6 @@ public interface VizModel {
 
     public TextModel getTextModel();
 
-    public float getZoomFactor();
-
     public NodeShape getGlobalNodeShape();
 
     //SETTERS
@@ -141,12 +139,6 @@ public interface VizModel {
 
     public void setMetaEdgeScale(float metaEdgeScale);
     
-    /**
-     * Sets relative distance of camera from the world.
-     * @param factor float from interval [0.0, 1.0].
-     */
-    public void setZoomFactor(float factor);
-
     public void setGlobalNodeShape(NodeShape nodeShape);
 
     //EVENTS

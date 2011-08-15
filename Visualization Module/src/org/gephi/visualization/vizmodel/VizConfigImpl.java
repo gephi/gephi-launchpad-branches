@@ -129,7 +129,6 @@ public class VizConfigImpl implements VizConfig {
         initDefault(SCREENSHOT_SETTINGS, new ScreenshotSettings(1024, 876, false, null));
         initDefault(SELECTION, true);
         initDefault(SELECTION_TYPE, SelectionType.NONE);
-        initDefault(ZOOM_FACTOR, 0.8f);
     }
     
     private void initDefault(String property, Object defaultValue) {

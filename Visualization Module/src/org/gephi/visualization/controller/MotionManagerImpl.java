@@ -51,7 +51,6 @@ public class MotionManagerImpl implements MotionManager {
 
     private VisualizationControllerImpl controller;
 
-    protected static float ZOOM_FACTOR = 0.008f;
     protected static float ORBIT_FACTOR = 0.005f;
 
     protected int[] mousePosition = new int[2];
@@ -314,7 +313,7 @@ public class MotionManagerImpl implements MotionManager {
 
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
-        controller.getCamera().zoom(mousePosition[0], mousePosition[1], ZOOM_FACTOR * e.getUnitsToScroll());
+        controller.getCamera().zoom(mousePosition[0], mousePosition[1], e.getUnitsToScroll());
     }
 
     private SelectionModifier extractSelectionModifier(MouseEvent e) {

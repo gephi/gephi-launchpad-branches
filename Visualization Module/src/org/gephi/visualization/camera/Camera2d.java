@@ -37,6 +37,10 @@ import org.gephi.visualization.api.geometry.AABB;
  * @author Vojtech Bardiovsky <vojtech.bardiovsky@gmail.com>
  */
 public final class Camera2d implements Camera {
+    
+    protected final static float MAX_SCALE = 5.0f;
+    protected final static float SCALE_FACTOR = 1.01f;
+    
     /**
      * Camera position in 2D. It corresponds to the center of the screen.
      */
@@ -338,32 +342,22 @@ public final class Camera2d implements Camera {
      */
     @Override
     public void zoom(float x, float y, float by) {
-        final float newScale = this.scale - by;
+        final float newScale = Math.min(MAX_SCALE, this.scale / (float) Math.pow(SCALE_FACTOR, by));
         final Vec2M p = new Vec2M(x - this.screenWidth * 0.5f, this.screenHeight * 0.5f - y);
-        final float s = 1.0f / (this.scale * newScale);
-        p.timesEq(- by * s);
+        final float s = 0.008f / scale * newScale;
+        p.timesEq(-by * s);
         this.center.plusEq(p);
         this.scale = newScale;
+        System.out.println(scale);
     }
 
     /**
-     * Gets the current scale factor.
-     * 
-     * @return the scale factor
+     * Zooms toward the center of screen.
+     * @param by the zoom amount
      */
     @Override
-    public float getZoom() {
-        return scale;
+    public void zoom(float by) {
+        zoom(screenWidth * 0.5f, screenHeight * 0.5f, by);
     }
-
-    /**
-     * Sets the current scale factor.
-     * 
-     * @param relativeZoom the scale factor
-     */
-    // TODO: verifies if this is the correct interpretation of the API
-    @Override
-    public void setZoom(float relativeZoom) {
-        scale = relativeZoom;
-    }
+    
 }

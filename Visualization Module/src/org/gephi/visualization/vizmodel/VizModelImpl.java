@@ -227,11 +227,6 @@ public class VizModelImpl implements VizModel {
         return config.getProperty(NodeShape.class, VizConfig.NODE_GLOBAL_SHAPE);
     }
 
-    @Override
-    public float getZoomFactor() {
-        return config.getFloatProperty(VizConfig.ZOOM_FACTOR);
-    }
-
     //SETTERS
     @Override
     public void setAdjustByText(boolean adjustByText) {
@@ -353,12 +348,6 @@ public class VizModelImpl implements VizModel {
         fireProperyChange(VizConfig.GRAPH_LIMITS, null, graphLimits);
     }
     
-    @Override
-    public void setZoomFactor(float distance) {
-        config.setProperty(VizConfig.ZOOM_FACTOR, distance);
-        fireProperyChange(VizConfig.ZOOM_FACTOR, null, distance);
-    }
-
     //EVENTS
     @Override
     public void addPropertyChangeListener(PropertyChangeListener listener) {
@@ -524,7 +513,6 @@ public class VizModelImpl implements VizModel {
                 camera = new Camera2d();
                 camera.lookAt(new Vec3(position[0], position[1], position[2]), Vec3.E2);
             }
-            
         }
     }
     
