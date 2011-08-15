@@ -55,13 +55,7 @@ public final class GenericCommand<E> implements Command {
     }
 
     @Override
-    protected void finalize() throws Throwable {
-        try {
-            for (E e : objects) {
-                this.technique.disposeElement(e);
-            }
-        } finally {
-            super.finalize();
-        }
+    public void dispose(GL gl) {
+            this.technique.disposeElements(gl, this.objects);
     }
 }

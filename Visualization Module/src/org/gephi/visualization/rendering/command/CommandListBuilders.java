@@ -21,14 +21,18 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 package org.gephi.visualization.rendering.command;
 
 import javax.media.opengl.GL;
+import org.gephi.graph.api.NodeShape;
 import org.gephi.visualization.api.view.ui.UIShape;
 import org.gephi.visualization.data.graph.VizEdge2D;
 import org.gephi.visualization.data.graph.VizEdge3D;
 import org.gephi.visualization.data.graph.VizNode2D;
 import org.gephi.visualization.data.graph.VizNode3D;
+import org.gephi.visualization.rendering.apiimpl.command.node.Shape2DTechniqueGL12;
+import org.gephi.visualization.rendering.command.buffer.Buffer.Type;
+import org.gephi.visualization.rendering.command.buffer.BufferedCommandListBuilder;
 
 /**
- * Sets of command list builders used to create the rendering commands for a
+ * Set of command list builders used to create the rendering commands for a
  * graph.
  * 
  * @author Antonio Patriarca <antoniopatriarca@gmail.com>
@@ -55,8 +59,10 @@ public class CommandListBuilders {
     }
     
     public static CommandListBuilders create(GL gl) {
-        // TODO: implement method
-        return null;
+        CommandListBuilder<VizNode2D> node2d = new BufferedCommandListBuilder<VizNode2D>(new Shape2DTechniqueGL12(gl, Type.VERTEX_ARRAY, NodeShape.CIRCLE), Type.VERTEX_ARRAY);
+        return new CommandListBuilders(node2d, new NullCommandListBuilder<VizEdge2D>(),
+                new NullCommandListBuilder<VizNode3D>(), new NullCommandListBuilder<VizEdge3D>(),
+                new NullCommandListBuilder<UIShape>());
     }
     
     public void dispose(GL gl) {
@@ -65,5 +71,17 @@ public class CommandListBuilders {
         this.edge2DBuilder.dispose(gl);
         this.edge3DBuilder.dispose(gl);
         this.uiShapeBuilder.dispose(gl);
+    }
+
+    public void begin3D() {
+        this.node3DBuilder.begin();
+        this.edge3DBuilder.begin();
+        this.uiShapeBuilder.begin();
+    }
+
+    public void begin2D() {
+        this.node2DBuilder.begin();
+        this.edge2DBuilder.begin();
+        this.uiShapeBuilder.begin();
     }
 }

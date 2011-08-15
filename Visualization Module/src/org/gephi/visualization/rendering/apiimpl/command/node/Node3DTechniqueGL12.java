@@ -20,6 +20,7 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.gephi.visualization.rendering.apiimpl.command.node;
 
+import java.util.Collection;
 import javax.media.opengl.GL;
 import org.gephi.visualization.data.graph.VizNode3D;
 import org.gephi.visualization.rendering.camera.Camera;
@@ -65,8 +66,8 @@ public class Node3DTechniqueGL12 implements Technique<VizNode3D> {
     }
 
     @Override
-    public void disposeElement(VizNode3D e) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public void disposeElements(GL gl, Collection<? extends VizNode3D> e) {
+        /* EMPTY BLOCK */
     }
     
 }

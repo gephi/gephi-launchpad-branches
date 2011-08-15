@@ -67,9 +67,9 @@ public final class Node2DTextureBuilder {
         gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_LINEAR);
         gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_LINEAR_MIPMAP_LINEAR);
         
-        for (int s = size, i = 0; size > 0; size /= 2, ++i) {
-            final ByteBuffer buffer = Buffers.newDirectByteBuffer(size * size);
-            ProceduralTextureGenerator generator = generatorsMap.get(shape);
+        final ProceduralTextureGenerator generator = generatorsMap.get(shape);
+        for (int s = size, i = 0; s > 0; s /= 2, ++i) {
+            final ByteBuffer buffer = Buffers.newDirectByteBuffer(s * s);
             generator.createFillTexture(buffer, s);
             gl.glTexImage2D(GL.GL_TEXTURE_2D, i, GL2.GL_INTENSITY8, s, s, 0, GL2.GL_INTENSITY, GL.GL_UNSIGNED_BYTE, buffer);
         }
@@ -93,9 +93,9 @@ public final class Node2DTextureBuilder {
         gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_LINEAR);
         gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_LINEAR_MIPMAP_LINEAR);
         
-        for (int s = size, i = 0; size > 0; size /= 2, ++i) {
-            final ByteBuffer buffer = Buffers.newDirectByteBuffer(size * size);
-            ProceduralTextureGenerator generator = generatorsMap.get(shape);
+        final ProceduralTextureGenerator generator = generatorsMap.get(shape);
+        for (int s = size, i = 0; s > 0; s /= 2, ++i) {
+            final ByteBuffer buffer = Buffers.newDirectByteBuffer(s * s);
             generator.createBorderTexture(borderSize, buffer, s);
             gl.glTexImage2D(GL.GL_TEXTURE_2D, i, GL2.GL_INTENSITY8, s, s, 0, GL2.GL_INTENSITY, GL.GL_UNSIGNED_BYTE, buffer);
         }

@@ -20,20 +20,32 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 */
 package org.gephi.visualization.rendering.command.buffer;
 
+import javax.media.opengl.GL;
+
 /**
  * Vertex Arrays based buffer implementation.
  *
  * @author Antonio Patriarca <antoniopatriarca@gmail.com>
  */
-public class VertexArrayBuffer<E> extends BufferImpl<E> {
+class VertexArrayBuffer<E> extends BufferImpl<E> {
 
     public VertexArrayBuffer(Buffer<E> buffer) {
         super(buffer);
     }
 
     @Override
-    public void drawBuffer() {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public void drawBuffer(GL gl) {
+        Layout<E> layout = buffer.layout;
+        
+        layout.setPointers(gl, buffer.data);
+        
+        gl.glDrawElements(layout.glDrawMode(), buffer.numberOfElements, 
+                layout.glDrawType(), buffer.indexBuffer);
+    }
+
+    @Override
+    public void dispose(GL gl) {
+        /* EMPTY BLOCK */
     }
     
 }

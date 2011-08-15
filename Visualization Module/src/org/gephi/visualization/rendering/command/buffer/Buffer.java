@@ -30,48 +30,76 @@ import javax.media.opengl.GL;
  * @author Antonio Patriarca <antoniopatriarca@gmail.com>
  */
 public final class Buffer<E> {
-    private final ByteBuffer data;
-    private final Layout<E> layout;
-    private final BufferImpl<E> bufferImpl;
+    final ByteBuffer data;
+    final ByteBuffer indexBuffer;
+    final Layout<E> layout;
+    final BufferImpl<E> bufferImpl;
     
-    protected boolean isLoaded;
-    protected boolean isDrawable;
+    int numberOfElements;
+    
+    boolean isLoaded;
+    boolean isDrawable;
     
     public Buffer(Layout<E> layout, Type type) {
         this.data = Layout.newByteBuffer();
         this.layout = layout;
+        if (this.layout.useStaticBuffer()) {
+            this.indexBuffer = this.layout.getStaticIndexBuffer();
+        } else {
+            this.indexBuffer = Layout.newByteBuffer();
+        }
         this.bufferImpl = this.createBufferImpl(type);
         
+        this.numberOfElements = 0;
+        
         this.isLoaded = false;
+        this.isDrawable = false;
     }
     
     public final boolean add(E e) {
-        return this.layout.add(this.data, e);
+        if (this.layout.useStaticBuffer()) {
+           final int ret = this.layout.add(this.data, e);
+           if (ret < 0) {
+               return false;
+           } else {
+               this.numberOfElements += ret;
+               return true;
+           }           
+        } else {
+            return this.layout.add(this.data, this.indexBuffer, e);
+        }
     }
     
     public final void makeDrawable() {
         if (this.isDrawable) return;
         
         this.data.flip();
+        if (!this.layout.useStaticBuffer()) {
+            this.indexBuffer.flip();
+            this.numberOfElements = this.indexBuffer.remaining() / this.layout.glDrawTypeSize();
+        }
         this.isDrawable = true;
     }
     
     public void draw(GL gl) {
         if (!this.isDrawable) return;
         
-        this.bufferImpl.drawBuffer();
+        this.bufferImpl.drawBuffer(gl);
     }
     
     @Override
     protected void finalize() throws Throwable {
         try {
             Layout.recycle(this.data);
+            if (this.layout.useStaticBuffer()) {
+                Layout.recycle(this.indexBuffer);
+            }
         } finally {
             super.finalize();
         }
     }
 
-    private BufferImpl<E> createBufferImpl(Type type) {
+    BufferImpl<E> createBufferImpl(Type type) {
         switch (type) {
             case VERTEX_ARRAY:
                 return new VertexArrayBuffer<E>(this);
@@ -86,7 +114,7 @@ public final class Buffer<E> {
         }
     }
     
-    public static enum Type {
+    public enum Type {
         VERTEX_ARRAY,
         VBO,
         VBO_VAO,

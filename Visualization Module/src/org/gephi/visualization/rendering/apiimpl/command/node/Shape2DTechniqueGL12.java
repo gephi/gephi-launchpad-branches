@@ -30,26 +30,30 @@ import org.gephi.visualization.rendering.apiimpl.command.node.texture.Node2DText
 import org.gephi.visualization.rendering.camera.Camera;
 import org.gephi.visualization.rendering.camera.OrthoCamera;
 import org.gephi.visualization.rendering.camera.RenderArea;
-import org.gephi.visualization.rendering.command.Technique;
+import org.gephi.visualization.rendering.command.buffer.Buffer;
+import org.gephi.visualization.rendering.command.buffer.BufferedTechnique;
 
 /**
  *
  * @author Antonio Patriarca <antoniopatriarca@gmail.com>
  */
-public final class Shape2DTechniqueGL12 implements Technique<VizNode2D> {
+public final class Shape2DTechniqueGL12 extends BufferedTechnique<VizNode2D> {
     private final int fillTex;
     private final int borderTex;
-    private final float texBorderSize;
     private int currentPass;
     
-    public Shape2DTechniqueGL12(GL gl, NodeShape shape) {
+    private Buffer.Type bufferType;
+    
+    public Shape2DTechniqueGL12(GL gl, Buffer.Type type, NodeShape shape) {
+        super(new Shape2DLayoutGL2(), type);
+        
         int size;
         {
             final IntBuffer buffer = Buffers.newDirectIntBuffer(1); 
             gl.glGetIntegerv(GL.GL_MAX_TEXTURE_SIZE, buffer);
             size = buffer.get(0) > 512 ? 512 : buffer.get(0);
         }
-        this.texBorderSize = 2.0f / size;
+        ((Shape2DLayoutGL2) this.layout()).texBorderSize(2.0f / size);
         
         this.fillTex = Node2DTextureBuilder.createFillTexture(gl, shape, size);
         this.borderTex = Node2DTextureBuilder.createBolderTexture(gl, shape, size, 0.2f);
@@ -58,12 +62,9 @@ public final class Shape2DTechniqueGL12 implements Technique<VizNode2D> {
     }
 
     @Override
-    public void draw(GL gl, VizNode2D e) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
     public void end(GL gl) {
+        super.end(gl);
+        
         GL2 gl2 = gl.getGL2();
         if (gl2 == null) return;
         
@@ -112,26 +113,9 @@ public final class Shape2DTechniqueGL12 implements Technique<VizNode2D> {
 
     @Override
     public boolean begin(GL gl, Camera camera, RenderArea renderArea) {
-        GL2 gl2 = gl.getGL2();
-        if (gl2 == null || !(camera instanceof OrthoCamera)) return false;
-        
-        gl2.glMatrixMode(GL2.GL_PROJECTION);
-        gl2.glPushMatrix();
-        
-        gl2.glLoadIdentity();
-        
-        gl2.glLoadMatrixf(camera.projMatrix(renderArea).toArray(), 0);
-        
-        gl2.glMatrixMode(GL2.GL_MODELVIEW);
-        gl2.glPushMatrix();
-        
-        gl2.glLoadIdentity();
-        
-        gl2.glLoadMatrixf(camera.viewMatrix(renderArea).toArray(), 0);
-        
         this.currentPass = 0;
         
-        return true;
+        return super.begin(gl, camera, renderArea);
     }
 
     @Override
@@ -154,8 +138,24 @@ public final class Shape2DTechniqueGL12 implements Technique<VizNode2D> {
     }
 
     @Override
-    public void disposeElement(VizNode2D e) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    protected boolean setCamera(GL gl, Camera camera, RenderArea renderArea) {
+        GL2 gl2 = gl.getGL2();
+        if (gl2 == null || !(camera instanceof OrthoCamera)) return false;
+        
+        gl2.glMatrixMode(GL2.GL_PROJECTION);
+        gl2.glPushMatrix();
+        
+        gl2.glLoadIdentity();
+        
+        gl2.glLoadMatrixf(camera.projMatrix(renderArea).toArray(), 0);
+        
+        gl2.glMatrixMode(GL2.GL_MODELVIEW);
+        gl2.glPushMatrix();
+        
+        gl2.glLoadIdentity();
+        
+        gl2.glLoadMatrixf(camera.viewMatrix(renderArea).toArray(), 0);
+        
+        return true;
     }
-    
 }

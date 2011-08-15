@@ -20,12 +20,14 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 */
 package org.gephi.visualization.rendering.command.buffer;
 
+import javax.media.opengl.GL;
+
 /**
  * Abstract used to distinguish between VA, VBO and VBO+VAO.
  *
  * @author Antonio Patriarca <antoniopatriarca@gmail.com>
  */
-public abstract class BufferImpl<E> {
+abstract class BufferImpl<E> {
     protected final Buffer<E> buffer;
     
     public BufferImpl(Buffer<E> buffer) {
@@ -35,6 +37,10 @@ public abstract class BufferImpl<E> {
     /**
      * Draws a buffer.
      */
-    public abstract void drawBuffer();
+    public abstract void drawBuffer(GL gl);
     
+    /**
+     * Disposes all the OpenGL resources.
+     */
+    public abstract void dispose(GL gl);
 }

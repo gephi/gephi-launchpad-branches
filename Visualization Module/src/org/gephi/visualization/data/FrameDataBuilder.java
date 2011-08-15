@@ -24,6 +24,7 @@ package org.gephi.visualization.data;
 import java.util.List;
 import org.gephi.graph.api.Edge;
 import org.gephi.graph.api.Node;
+import org.gephi.math.qrand.VanDerCorputSequence;
 import org.gephi.visualization.api.view.ui.UIShape;
 import org.gephi.visualization.camera.Camera2d;
 import org.gephi.visualization.camera.Camera3d;
@@ -45,6 +46,8 @@ public class FrameDataBuilder {
 
     private final Camera camera;
     private final boolean is3D;
+    
+    private int counter;
     
     private float near;
     private float far;
@@ -70,13 +73,20 @@ public class FrameDataBuilder {
             this.is3D = false;
         }
         
+        this.counter = 0;
+        
         this.near = Float.POSITIVE_INFINITY;
-            this.far = 0.0f;
+        this.far = 0.0f;
 
         this.nodeStyler = nodeStyler;
         this.edgeStyler = edgeStyler;
         
         this.builders = builders;
+        if (this.is3D) {
+            this.builders.begin3D();
+        } else {
+            this.builders.begin2D();
+        }
     }
 
     public void add(Node node) {
@@ -94,6 +104,9 @@ public class FrameDataBuilder {
             }
         } else {
             final VizNode2D n = this.nodeStyler.toVisual2D(node);
+            final float r = VanDerCorputSequence.get(++this.counter);
+            final float z = (float) (n.size * (0.009 + r * 0.002));
+            final VizNode2D n2 = new VizNode2D(n.position, z, n.shape, n.color, n.borderColor);
             this.builders.node2DBuilder.add(n);
             final float distNear = n.size * 0.009f;
             if (distNear < this.near) {

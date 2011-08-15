@@ -44,7 +44,7 @@ public abstract class Layout<E> {
     /**
      * Size of the buffer used by the engine.
      */
-    private static final int BUFFER_SIZE = 1048576;
+    public static final int BUFFER_SIZE = 1048576;
     
     /**
      * Creates a new buffer or reuses an old one. 
@@ -70,20 +70,93 @@ public abstract class Layout<E> {
     }
     
     /**
+     * Queries if the technique owned by this layout use a static index buffer
+     * (an index buffer which do not depends on input).
+     * 
+     * @return <code>true</code> if the technique use a static index buffer,
+     *         <code>false</code> otherwise.
+     */
+    public abstract boolean useStaticBuffer();
+    
+    /**
+     * Gets the OpenGL drawing mode used by the technique owning this technique.
+     * 
+     * @return the OpenGL drawing mode
+     */
+    public abstract int glDrawMode();
+    
+    public abstract int glDrawType();
+    
+    public int glDrawTypeSize() {
+        switch (this.glDrawType()) {
+            case GL.GL_UNSIGNED_BYTE:
+                return 1;
+            case GL.GL_UNSIGNED_SHORT:
+                return 2;
+            case GL.GL_UNSIGNED_INT:
+                return 4;
+            default:
+                // The following code should never be reached
+                assert false;
+                return 0;
+        }
+    }
+    
+    /**
+     * Gets the static index buffer used by the technique owning this layout.
+     * This buffer SHOULD NOT be recycled!
+     * 
+     * @return the startic index buffer
+     */
+    public abstract ByteBuffer getStaticIndexBuffer();    
+    
+    /**
      * Writes the data to the buffer.
      *
      * @param b the buffer where the new data is written
      * @param e the new data to be written
-     * @return <code>true</code> if the data can be written on the buffer, 
-     *         <code>false</code> otherwise
+     * @return the number of elements written to the buffer or -1 if the
+     *         the data can not be written on the buffer
      */
-    public abstract boolean add(ByteBuffer b, E e);
+    public abstract int add(ByteBuffer b, E e);
     
     /**
-     * Sets the render states for the 
+     * Writes the data to the vertex and index buffers.
      * 
-     * @param gl
-     * @param b 
+     * @param b the vertex buffer where the data is written
+     * @param ind the index buffer
+     * @param e the new data to be written
+     * @return <code>true</code> if the data can be written on the buffer, 
+     *         <code>false</code> otherwise 
      */
-    public abstract void setRenderStates(GL gl, ByteBuffer b);
+    public abstract boolean add(ByteBuffer b, ByteBuffer ind, E e);
+    
+    /**
+     * Enables the client states for the vertex arrays.
+     * 
+     * @param gl the GL class
+     */
+    public abstract void enableClientStates(GL gl);
+    
+    /**
+     * Disables the client states for the vertex arrays.
+     * 
+     * @param gl the GL class
+     */
+    public abstract void disableClientStates(GL gl);
+    
+    /**
+     * Sets the pointers for vertex arrays.
+     * 
+     * @param gl the GL class
+     * @param b the buffer used to store the data
+     */
+    public abstract void setPointers(GL gl, ByteBuffer b);
+    
+    /**
+     * Sets the offsets when using VBOs.
+     * 
+     * @param gl the GL class
+     */
+    public abstract void setOffsets(GL gl);
 }

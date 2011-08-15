@@ -32,7 +32,7 @@ public class FPSCounter {
     /**
      * Number of samples in the circular queue.
      */
-    private final static int NUM_SAMPLES = 32;
+    private final static int NUM_SAMPLES = 8;
     
     /**
      * Time in milliseconds passed between successive writing in the queues.

@@ -20,19 +20,26 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 */
 package org.gephi.visualization.rendering.command.buffer;
 
+import javax.media.opengl.GL;
+
 /**
  * VBO based buffer implementation.
  *
  * @author Antonio Patriarca <antoniopatriarca@gmail.com>
  */
-public class VBOBuffer<E> extends BufferImpl<E> {
+class VBOBuffer<E> extends BufferImpl<E> {
 
     public VBOBuffer(Buffer<E> buffer) {
         super(buffer);
     }
     
     @Override
-    public void drawBuffer() {
+    public void drawBuffer(GL gl) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void dispose(GL gl) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
     
