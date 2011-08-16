@@ -27,7 +27,9 @@ import java.awt.Dimension;
 import java.awt.Point;
 import org.gephi.graph.api.Node;
 import org.gephi.visualization.api.camera.Camera;
+import org.gephi.visualization.api.event.VizEventManager;
 import org.gephi.visualization.api.rendering.RecordingListener;
+import org.gephi.visualization.api.selection.SelectionManager;
 import org.gephi.visualization.api.vizmodel.VizConfig;
 import org.gephi.visualization.api.vizmodel.VizModel;
 
@@ -72,6 +74,21 @@ public interface VisualizationController {
      * Returns the current active VizConfig.
      */
     public VizConfig getVizConfig();
+    
+    /**
+     * Returns the instance of SelectionManager.
+     */
+    public SelectionManager getSelectionManager();
+
+    /**
+     * Returns the instance of MotionManager.
+     */
+    public MotionManager getMotionManager();
+    
+    /**
+     * Returns the instance of MotionManager.
+     */
+    public VizEventManager getVizEventManager();
     
     /**
      * Centers camera on the graph. Whole graph will be visible.

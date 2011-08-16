@@ -107,7 +107,7 @@ public class ShortestPath implements Tool {
                     double distance;
                     if ((distance = algorithm.getDistances().get(targetNode)) != Double.POSITIVE_INFINITY) {
                         targetNode.getNodeData().setColor(colorArray[0], colorArray[1], colorArray[2]);
-                        SelectionManager selectionManager = Lookup.getDefault().lookup(SelectionManager.class);
+                        SelectionManager selectionManager = Lookup.getDefault().lookup(VisualizationController.class).getSelectionManager();
                         selectionManager.selectNode(targetNode);
                         Edge predecessorEdge = algorithm.getPredecessorIncoming(targetNode);
                         Node predecessor = algorithm.getPredecessor(targetNode);
@@ -142,7 +142,7 @@ public class ShortestPath implements Tool {
                     shortestPathPanel.setStatus(NbBundle.getMessage(ShortestPath.class, "ShortestPath.status1"));
                     sourceNode = null;
                 } else {
-                    Lookup.getDefault().lookup(SelectionManager.class).clearSelection();
+                    Lookup.getDefault().lookup(VisualizationController.class).getSelectionManager().clearSelection();
                 }
             }
         };

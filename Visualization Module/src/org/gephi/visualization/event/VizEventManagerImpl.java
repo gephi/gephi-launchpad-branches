@@ -33,18 +33,17 @@ import java.util.concurrent.TimeUnit;
 import org.gephi.graph.api.Node;
 import org.gephi.math.linalg.Vec3;
 import org.gephi.visualization.api.controller.MotionManager;
+import org.gephi.visualization.api.controller.VisualizationController;
 import org.gephi.visualization.api.event.VizEvent;
 import org.gephi.visualization.api.event.VizEventListener;
 import org.gephi.visualization.api.event.VizEventManager;
 import org.gephi.visualization.api.selection.SelectionManager;
 import org.openide.util.Lookup;
-import org.openide.util.lookup.ServiceProvider;
 
 /**
  * @author Mathieu Bastian
  * @author Vojtech Bardiovsky
  */
-@ServiceProvider(service = VizEventManager.class)
 public class VizEventManagerImpl implements VizEventManager {
 
     //Architecture
@@ -88,9 +87,9 @@ public class VizEventManagerImpl implements VizEventManager {
     public void mouseLeftClick() {
         //Node Left click
         VizEventTypeHandler nodeLeftHandler = handlers[VizEvent.Type.NODE_LEFT_CLICK.ordinal()];
-        if (nodeLeftHandler.hasListeners() && Lookup.getDefault().lookup(SelectionManager.class).isSelectionEnabled()) {
+        if (nodeLeftHandler.hasListeners() && Lookup.getDefault().lookup(VisualizationController.class).getSelectionManager().isSelectionEnabled()) {
             //Check if some node are selected
-            SelectionManager selectionManager = Lookup.getDefault().lookup(SelectionManager.class);
+            SelectionManager selectionManager = Lookup.getDefault().lookup(VisualizationController.class).getSelectionManager();
             Collection<Node> nodes = selectionManager.getSelectedNodes();
             if (!nodes.isEmpty()) {
                 nodeLeftHandler.dispatch(nodes.toArray(new Node[]{}));
@@ -100,8 +99,8 @@ public class VizEventManagerImpl implements VizEventManager {
         //Mouse left click
         VizEventTypeHandler mouseLeftHandler = handlers[VizEvent.Type.MOUSE_LEFT_CLICK.ordinal()];
         if (mouseLeftHandler.hasListeners()) {
-            SelectionManager selectionManager = Lookup.getDefault().lookup(SelectionManager.class);
-            MotionManager motionManager = Lookup.getDefault().lookup(MotionManager.class);
+            SelectionManager selectionManager = Lookup.getDefault().lookup(VisualizationController.class).getSelectionManager();
+            MotionManager motionManager = Lookup.getDefault().lookup(VisualizationController.class).getMotionManager();
             Collection<Node> nodes = selectionManager.getSelectedNodes();
             if (nodes.isEmpty() || !selectionManager.isSelectionEnabled()) {
                 int[] mousePositionViewport = motionManager.getMousePosition();
@@ -119,7 +118,7 @@ public class VizEventManagerImpl implements VizEventManager {
         VizEventTypeHandler pressHandler = handlers[VizEvent.Type.NODE_LEFT_PRESS.ordinal()];
         if (pressHandler.hasListeners()) {
             //Check if some node are selected
-            SelectionManager selectionManager = Lookup.getDefault().lookup(SelectionManager.class);
+            SelectionManager selectionManager = Lookup.getDefault().lookup(VisualizationController.class).getSelectionManager();
             Collection<Node> nodes = selectionManager.getSelectedNodes();
             if (!nodes.isEmpty()) {
                 pressHandler.dispatch(nodes.toArray(new Node[]{}));
@@ -159,7 +158,7 @@ public class VizEventManagerImpl implements VizEventManager {
             VizEventTypeHandler nodeHandler = handlers[VizEvent.Type.NODE_LEFT_PRESSING.ordinal()];
             if (nodeHandler.hasListeners()) {
                 //Check if some node are selected
-                SelectionManager selectionManager = Lookup.getDefault().lookup(SelectionManager.class);
+                SelectionManager selectionManager = Lookup.getDefault().lookup(VisualizationController.class).getSelectionManager();
                 Collection<Node> nodes = selectionManager.getSelectedNodes();
                 if (!nodes.isEmpty()) {
                     nodeHandler.dispatch(nodes.toArray(new Node[]{}));
@@ -186,7 +185,7 @@ public class VizEventManagerImpl implements VizEventManager {
             draggingTick = 0;
             VizEventTypeHandler handler = handlers[VizEvent.Type.DRAG.ordinal()];
             if (handler.hasListeners()) {
-                MotionManager motionManager = Lookup.getDefault().lookup(MotionManager.class);
+                MotionManager motionManager = Lookup.getDefault().lookup(VisualizationController.class).getMotionManager();
                 float[] mouseDrag = new float[2];
                 mouseDrag[0] = motionManager.getDrag()[0];
                 mouseDrag[1] = motionManager.getDrag()[1];

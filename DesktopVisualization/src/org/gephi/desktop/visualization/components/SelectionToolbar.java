@@ -34,6 +34,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import org.gephi.ui.utils.UIUtils;
+import org.gephi.visualization.api.controller.VisualizationController;
 import org.gephi.visualization.api.selection.SelectionManager;
 import org.gephi.visualization.api.selection.SelectionType;
 import org.openide.util.Lookup;
@@ -46,8 +47,10 @@ import org.openide.util.NbBundle;
 public class SelectionToolbar extends JToolBar {
 
     private ButtonGroup buttonGroup;
+    private SelectionManager selectionManager;
 
     public SelectionToolbar() {
+        selectionManager = Lookup.getDefault().lookup(VisualizationController.class).getSelectionManager();
         initDesign();
         buttonGroup = new ButtonGroup();
         initContent();
@@ -62,7 +65,7 @@ public class SelectionToolbar extends JToolBar {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (mouseButton.isSelected()) {
-                    Lookup.getDefault().lookup(SelectionManager.class).setDirectMouseSelection();
+                    selectionManager.setDirectMouseSelection();
                 }
             }
         });
@@ -75,7 +78,7 @@ public class SelectionToolbar extends JToolBar {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (rectangleButton.isSelected()) {
-                    Lookup.getDefault().lookup(SelectionManager.class).setSelectionType(SelectionType.RECTANGLE);
+                    selectionManager.setSelectionType(SelectionType.RECTANGLE);
                 }
             }
         });
@@ -88,7 +91,7 @@ public class SelectionToolbar extends JToolBar {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (polygonButton.isSelected()) {
-                    Lookup.getDefault().lookup(SelectionManager.class).setSelectionType(SelectionType.POLYGON);
+                    selectionManager.setSelectionType(SelectionType.POLYGON);
                 }
             }
         });
@@ -101,7 +104,7 @@ public class SelectionToolbar extends JToolBar {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (ellipseButton.isSelected()) {
-                    Lookup.getDefault().lookup(SelectionManager.class).setSelectionType(SelectionType.ELLIPSE);
+                    selectionManager.setSelectionType(SelectionType.ELLIPSE);
                 }
             }
         });
@@ -114,24 +117,23 @@ public class SelectionToolbar extends JToolBar {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (dragButton.isSelected()) {
-                    Lookup.getDefault().lookup(SelectionManager.class).setNodeDraggingEnabled();
+                    selectionManager.setNodeDraggingEnabled();
                 }
             }
         });
         add(dragButton);
         addSeparator();
 
-        buttonGroup.setSelected(rectangleButton.getModel(), Lookup.getDefault().lookup(SelectionManager.class).getSelectionType() == SelectionType.RECTANGLE);
-        buttonGroup.setSelected(polygonButton.getModel(), Lookup.getDefault().lookup(SelectionManager.class).getSelectionType() == SelectionType.POLYGON);
-        buttonGroup.setSelected(ellipseButton.getModel(), Lookup.getDefault().lookup(SelectionManager.class).getSelectionType() == SelectionType.ELLIPSE);
-        buttonGroup.setSelected(mouseButton.getModel(), Lookup.getDefault().lookup(SelectionManager.class).isDirectMouseSelection());
-        buttonGroup.setSelected(dragButton.getModel(), Lookup.getDefault().lookup(SelectionManager.class).isNodeDraggingEnabled());
+        buttonGroup.setSelected(rectangleButton.getModel(), selectionManager.getSelectionType() == SelectionType.RECTANGLE);
+        buttonGroup.setSelected(polygonButton.getModel(), selectionManager.getSelectionType() == SelectionType.POLYGON);
+        buttonGroup.setSelected(ellipseButton.getModel(), selectionManager.getSelectionType() == SelectionType.ELLIPSE);
+        buttonGroup.setSelected(mouseButton.getModel(), selectionManager.isDirectMouseSelection());
+        buttonGroup.setSelected(dragButton.getModel(), selectionManager.isNodeDraggingEnabled());
 
         //Init events
-        Lookup.getDefault().lookup(SelectionManager.class).addChangeListener(new ChangeListener() {
+        selectionManager.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
-                SelectionManager selectionManager = Lookup.getDefault().lookup(SelectionManager.class);
                 buttonGroup.clearSelection();
                 /*
                 if (selectionManager.isBlocked()) {

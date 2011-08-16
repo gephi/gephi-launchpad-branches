@@ -168,9 +168,6 @@ public class NodeDataImpl implements NodeData, GroupData {
 
     public void setSize(float radius) {
         this.radius = radius;
-        if (getSpatialData() != null) {
-            getSpatialData().sizeUpdated();
-        }
     }
 
     public float r() {

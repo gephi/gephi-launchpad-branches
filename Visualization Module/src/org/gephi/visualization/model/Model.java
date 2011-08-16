@@ -135,12 +135,12 @@ public class Model implements Runnable, WorkspaceListener {
 
             // TODO fill in graph limits for edges: min/max edge weight, min/max metaEdge weight
             
-            Shape selectionShape = Lookup.getDefault().lookup(MotionManager.class).getSelectionShape();
+            Shape selectionShape = Lookup.getDefault().lookup(VisualizationController.class).getMotionManager().getSelectionShape();
             if (selectionShape != null) {
                 this.bridge.add(selectionShape.getUIPrimitive());
             }
 
-            Shape pointerShape = Lookup.getDefault().lookup(SelectionManager.class).getNodePointerShape();
+            Shape pointerShape = Lookup.getDefault().lookup(VisualizationController.class).getSelectionManager().getNodePointerShape();
             if (pointerShape != null) {
                 this.bridge.add(pointerShape.getUIPrimitive());
             }

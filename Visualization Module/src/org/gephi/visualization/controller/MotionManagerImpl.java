@@ -29,6 +29,7 @@ import javax.swing.SwingUtilities;
 import org.gephi.graph.api.Node;
 import org.gephi.math.linalg.Vec3;
 import org.gephi.visualization.api.controller.MotionManager;
+import org.gephi.visualization.api.controller.VisualizationController;
 import org.gephi.visualization.api.vizmodel.VizConfig;
 import org.gephi.visualization.api.event.VizEventManager;
 import org.gephi.visualization.api.selection.SelectionManager;
@@ -38,7 +39,6 @@ import org.gephi.visualization.api.selection.Shape.SelectionModifier;
 import org.gephi.visualization.apiimpl.contextmenu.GraphContextMenu;
 import org.gephi.visualization.apiimpl.shape.ShapeUtils;
 import org.openide.util.Lookup;
-import org.openide.util.lookup.ServiceProvider;
 
 /**
  * Class for handling all basic user events that lead to motion. Handles graph
@@ -46,7 +46,6 @@ import org.openide.util.lookup.ServiceProvider;
  *
  * @author Vojtech Bardiovsky
  */
-@ServiceProvider(service = MotionManager.class)
 public class MotionManagerImpl implements MotionManager {
 
     private VisualizationControllerImpl controller;
@@ -67,8 +66,9 @@ public class MotionManagerImpl implements MotionManager {
     protected boolean pressing;
     protected boolean inside;
 
-    public MotionManagerImpl() {
-        this.controller = VisualizationControllerImpl.getDefault();
+    @Override
+    public void initialize(VisualizationController visualizationController) {
+        this.controller = (VisualizationControllerImpl) visualizationController;
     }
 
     @Override
@@ -112,7 +112,7 @@ public class MotionManagerImpl implements MotionManager {
         }
         
         SelectionModifier modifier = extractSelectionModifier(e);
-        SelectionManager selectionManager = Lookup.getDefault().lookup(SelectionManager.class);
+        SelectionManager selectionManager = controller.getSelectionManager();
         
         if (selectionManager.isDirectMouseSelection()) {
             if (SwingUtilities.isLeftMouseButton(e)) {
@@ -143,7 +143,7 @@ public class MotionManagerImpl implements MotionManager {
             }
         }
         if (selectionManager.getSelectionType() == SelectionType.NONE && !selectionManager.isNodeDraggingEnabled()) {
-            VizEventManager vizEventManager = Lookup.getDefault().lookup(VizEventManager.class);
+            VizEventManager vizEventManager = controller.getVizEventManager();
             if (SwingUtilities.isRightMouseButton(e)) {
                 vizEventManager.mouseRightPress();
             } else if (SwingUtilities.isMiddleMouseButton(e)) {
@@ -171,14 +171,14 @@ public class MotionManagerImpl implements MotionManager {
     @Override
     public void mouseClicked(MouseEvent e) {
         VizConfig vizConfig = controller.getVizConfig();
-        SelectionManager selectionManager = Lookup.getDefault().lookup(SelectionManager.class);
+        SelectionManager selectionManager = controller.getSelectionManager();
         
         if (selectionManager.isNodeDraggingEnabled()) {
             if (SwingUtilities.isLeftMouseButton(e)) {
                 selectionManager.clearSelection();
             }
         }
-        VizEventManager eventManager = Lookup.getDefault().lookup(VizEventManager.class);
+        VizEventManager eventManager = controller.getVizEventManager();
         if (SwingUtilities.isLeftMouseButton(e)) {
             eventManager.mouseLeftClick();
         } else if (SwingUtilities.isMiddleMouseButton(e)) {
@@ -204,7 +204,7 @@ public class MotionManagerImpl implements MotionManager {
         mouseDrag[1] = startDrag[1] - mousePosition[1];
         dragging = true;
 
-        SelectionManager selectionManager = Lookup.getDefault().lookup(SelectionManager.class);
+        SelectionManager selectionManager = controller.getSelectionManager();
 
         if (selectionManager.getSelectionType() != SelectionType.NONE && selectionShape != null) {
             if (SwingUtilities.isLeftMouseButton(e) && pressedButton == 0) {
@@ -221,7 +221,7 @@ public class MotionManagerImpl implements MotionManager {
                 }
             }
         } else {
-            Lookup.getDefault().lookup(VizEventManager.class).drag();
+            controller.getVizEventManager().drag();
         }
         // Movement
         if (SwingUtilities.isRightMouseButton(e) && pressedButton == 2) {
@@ -239,7 +239,7 @@ public class MotionManagerImpl implements MotionManager {
             return;
         }
         
-        SelectionManager selectionManager = Lookup.getDefault().lookup(SelectionManager.class);
+        SelectionManager selectionManager = controller.getSelectionManager();
 
         if (selectionManager.getSelectionType() != SelectionType.NONE && selectionShape != null) {
             selectionShape = ShapeUtils.continuousUpdate(selectionShape, e.getX(), e.getY());
@@ -257,8 +257,8 @@ public class MotionManagerImpl implements MotionManager {
             selectionShape = null;
         }
 
-        Lookup.getDefault().lookup(VizEventManager.class).stopDrag();
-        Lookup.getDefault().lookup(VizEventManager.class).mouseReleased();
+        controller.getVizEventManager().stopDrag();
+        controller.getVizEventManager().mouseReleased();
 
         // Cancel selection for tools
         if (selectionManager.isDirectMouseSelection() && dragging) {
@@ -279,7 +279,7 @@ public class MotionManagerImpl implements MotionManager {
             return;
         }
 
-        SelectionManager selectionManager = Lookup.getDefault().lookup(SelectionManager.class);
+        SelectionManager selectionManager = controller.getSelectionManager();
         SelectionModifier modifier = extractSelectionModifier(e);
 
         // Only discretely updated shapes
@@ -325,7 +325,7 @@ public class MotionManagerImpl implements MotionManager {
     @Override
     public void refresh() {
         if (pressing) {
-            Lookup.getDefault().lookup(VizEventManager.class).mouseLeftPressing();
+            controller.getVizEventManager().mouseLeftPressing();
         }
     }
 

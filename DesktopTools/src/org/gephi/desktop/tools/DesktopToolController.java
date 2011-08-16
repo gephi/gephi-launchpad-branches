@@ -43,6 +43,7 @@ import org.gephi.tools.spi.ToolEventListener;
 import org.gephi.tools.spi.ToolSelectionType;
 import org.gephi.tools.spi.ToolUI;
 import org.gephi.tools.spi.UnselectToolException;
+import org.gephi.visualization.api.controller.VisualizationController;
 import org.gephi.visualization.api.event.VizEvent;
 import org.gephi.visualization.api.event.VizEvent.Type;
 import org.gephi.visualization.api.event.VizEventListener;
@@ -102,7 +103,7 @@ public class DesktopToolController implements ToolController {
             }
         }
         currentHandlers = handlers.toArray(new ToolEventHandler[0]);
-        SelectionManager selectionManager = Lookup.getDefault().lookup(SelectionManager.class);
+        SelectionManager selectionManager = Lookup.getDefault().lookup(VisualizationController.class).getSelectionManager();
         switch (tool.getSelectionType()) {
             case NONE:
                 selectionManager.disableSelection();
@@ -194,7 +195,7 @@ public class DesktopToolController implements ToolController {
         }
 
         //SelectionManager events
-        final SelectionManager selectionManager = Lookup.getDefault().lookup(SelectionManager.class);
+        final SelectionManager selectionManager = Lookup.getDefault().lookup(VisualizationController.class).getSelectionManager();
         selectionManager.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
                 if (selectionManager.getSelectionType() != SelectionType.NONE && currentTool != null) {
@@ -247,11 +248,11 @@ public class DesktopToolController implements ToolController {
                     return VizEvent.Type.NODE_LEFT_CLICK;
                 }
             };
-            Lookup.getDefault().lookup(VizEventManager.class).addListener(currentListener);
+            Lookup.getDefault().lookup(VisualizationController.class).getVizEventManager().addListener(currentListener);
         }
 
         public void unselect() {
-            Lookup.getDefault().lookup(VizEventManager.class).removeListener(currentListener);
+            Lookup.getDefault().lookup(VisualizationController.class).getVizEventManager().removeListener(currentListener);
             currentListener = null;
             toolEventListener = null;
         }
@@ -288,11 +289,11 @@ public class DesktopToolController implements ToolController {
                     return VizEvent.Type.MOUSE_RELEASED;
                 }
             };
-            Lookup.getDefault().lookup(VizEventManager.class).addListener(currentListeners);
+            Lookup.getDefault().lookup(VisualizationController.class).getVizEventManager().addListener(currentListeners);
         }
 
         public void unselect() {
-            Lookup.getDefault().lookup(VizEventManager.class).removeListener(currentListeners);
+            Lookup.getDefault().lookup(VisualizationController.class).getVizEventManager().removeListener(currentListeners);
             toolEventListener = null;
             currentListeners = null;
         }
@@ -340,11 +341,11 @@ public class DesktopToolController implements ToolController {
                     return VizEvent.Type.MOUSE_RELEASED;
                 }
             };
-            Lookup.getDefault().lookup(VizEventManager.class).addListener(currentListeners);
+            Lookup.getDefault().lookup(VisualizationController.class).getVizEventManager().addListener(currentListeners);
         }
 
         public void unselect() {
-            Lookup.getDefault().lookup(VizEventManager.class).removeListener(currentListeners);
+            Lookup.getDefault().lookup(VisualizationController.class).getVizEventManager().removeListener(currentListeners);
             toolEventListener = null;
             currentListeners = null;
         }
@@ -373,11 +374,11 @@ public class DesktopToolController implements ToolController {
                     return VizEvent.Type.MOUSE_LEFT_CLICK;
                 }
             };
-            Lookup.getDefault().lookup(VizEventManager.class).addListener(currentListener);
+            Lookup.getDefault().lookup(VisualizationController.class).getVizEventManager().addListener(currentListener);
         }
 
         public void unselect() {
-            Lookup.getDefault().lookup(VizEventManager.class).removeListener(currentListener);
+            Lookup.getDefault().lookup(VisualizationController.class).getVizEventManager().removeListener(currentListener);
             toolEventListener = null;
             currentListener = null;
         }

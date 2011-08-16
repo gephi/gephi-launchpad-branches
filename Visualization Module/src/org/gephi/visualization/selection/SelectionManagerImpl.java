@@ -32,9 +32,6 @@ import org.gephi.graph.api.GraphController;
 import org.gephi.graph.api.GraphEvent;
 import org.gephi.graph.api.GraphListener;
 import org.gephi.graph.api.Node;
-import org.gephi.project.api.ProjectController;
-import org.gephi.project.api.Workspace;
-import org.gephi.project.api.WorkspaceListener;
 import org.gephi.visualization.api.controller.MotionManager;
 import org.gephi.visualization.api.controller.VisualizationController;
 import org.gephi.visualization.api.vizmodel.VizConfig;
@@ -44,10 +41,14 @@ import org.gephi.visualization.api.selection.SelectionType;
 import org.gephi.visualization.api.selection.Shape;
 import org.gephi.visualization.apiimpl.shape.ShapeUtils;
 import org.openide.util.Lookup;
-import org.openide.util.lookup.ServiceProvider;
 
-@ServiceProvider(service = SelectionManager.class)
-public class SelectionManagerImpl implements SelectionManager, WorkspaceListener, GraphListener {
+/**
+ * Manager for handling selection queries.
+ *
+ * @author Antonio Patriarca <antoniopatriarca@gmail.com>
+ * @author Vojtech Bardiovsky <vojtech.bardiovsky@gmail.com>
+ */
+public class SelectionManagerImpl implements SelectionManager, GraphListener {
 
     private NodeSpatialStructure nodeStructure;
 
@@ -55,7 +56,6 @@ public class SelectionManagerImpl implements SelectionManager, WorkspaceListener
 
     @Override
     public void initialize() {
-        Lookup.getDefault().lookup(ProjectController.class).addWorkspaceListener(this);
         nodeStructure = new Octree();
     }
 
@@ -104,8 +104,7 @@ public class SelectionManagerImpl implements SelectionManager, WorkspaceListener
         return nodeStructure.selectContinuousSingle(singleNodeSelectionShape, point, select, NodeSpatialStructure.SINGLE_NODE_CLOSEST);
     }
 
-    @Override
-    public void refreshDataStructure() {
+    private void refreshDataStructure() {
         boolean use3d = Lookup.getDefault().lookup(VisualizationController.class).getVizModel().isUse3d();
         GraphController graphController = Lookup.getDefault().lookup(GraphController.class);
         if (use3d) {
@@ -129,7 +128,7 @@ public class SelectionManagerImpl implements SelectionManager, WorkspaceListener
     @Override
     public Shape getNodePointerShape() {
         int mouseSelectionDiameter = Lookup.getDefault().lookup(VisualizationController.class).getVizConfig().getIntProperty(VizConfig.MOUSE_SELECTION_DIAMETER);
-        MotionManager motionManager = Lookup.getDefault().lookup(MotionManager.class);
+        MotionManager motionManager = Lookup.getDefault().lookup(VisualizationController.class).getMotionManager();
         Shape singleNodeSelectionShape = ShapeUtils.createEllipseShape(motionManager.getMousePosition()[0] - mouseSelectionDiameter, 
                                                                  motionManager.getMousePosition()[1] - mouseSelectionDiameter,
                                                                  mouseSelectionDiameter, mouseSelectionDiameter);
@@ -265,27 +264,10 @@ public class SelectionManagerImpl implements SelectionManager, WorkspaceListener
         }
     }
 
-    // Workspace event
     @Override
-    public void initialize(Workspace workspace) {
-    }
-
-    @Override
-    public void select(Workspace workspace) {
+    public void refresh() {
         Lookup.getDefault().lookup(GraphController.class).getModel().addGraphListener(this);
         refreshDataStructure();
-    }
-
-    @Override
-    public void unselect(Workspace workspace) {
-    }
-
-    @Override
-    public void close(Workspace workspace) {
-    }
-
-    @Override
-    public void disable() {
     }
 
 }

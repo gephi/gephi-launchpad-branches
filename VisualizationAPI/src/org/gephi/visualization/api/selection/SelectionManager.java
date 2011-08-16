@@ -32,7 +32,6 @@ import org.gephi.graph.api.Node;
  * @author Antonio Patriarca <antoniopatriarca@gmail.com>
  * @author Vojtech Bardiovsky <vojtech.bardiovsky@gmail.com>
  */
-
 public interface SelectionManager {
 
     void initialize();
@@ -121,7 +120,7 @@ public interface SelectionManager {
      * Called when the spatial information or graph have changed to rebuild used
      * data structure.
      */
-    void refreshDataStructure();
+    void refresh();
     
     // Events
     void addChangeListener(ChangeListener changeListener);

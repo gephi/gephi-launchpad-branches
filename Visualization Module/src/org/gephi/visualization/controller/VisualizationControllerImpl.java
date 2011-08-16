@@ -43,6 +43,7 @@ import org.gephi.project.api.WorkspaceListener;
 import org.gephi.visualization.api.controller.MotionManager;
 import org.gephi.visualization.api.camera.Camera;
 import org.gephi.visualization.api.controller.VisualizationController;
+import org.gephi.visualization.api.event.VizEventManager;
 import org.gephi.visualization.api.rendering.RecordingListener;
 import org.gephi.visualization.api.selection.SelectionManager;
 import org.gephi.visualization.api.vizmodel.VizConfig;
@@ -50,7 +51,9 @@ import org.gephi.visualization.api.vizmodel.VizModel;
 import org.gephi.visualization.camera.Camera2d;
 import org.gephi.visualization.camera.Camera3d;
 import org.gephi.visualization.data.FrameDataBridge;
+import org.gephi.visualization.event.VizEventManagerImpl;
 import org.gephi.visualization.model.Model;
+import org.gephi.visualization.selection.SelectionManagerImpl;
 import org.gephi.visualization.view.View;
 import org.gephi.visualization.vizmodel.VizModelImpl;
 import org.openide.util.Lookup;
@@ -65,12 +68,13 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = VisualizationController.class)
 public class VisualizationControllerImpl implements VisualizationController, KeyListener, MouseListener, MouseMotionListener, MouseWheelListener, WorkspaceListener {
 
-    private static VisualizationControllerImpl instance;
-    private final View view;
-    private final Model dataManager;
-    private final FrameDataBridge frameDataBridge;
+    private View view;
+    private Model dataManager;
+    private FrameDataBridge frameDataBridge;
     
-    private final SelectionManager selectionManager;
+    private SelectionManager selectionManager;
+    private MotionManager motionManager;
+    private VizEventManager vizEventManager;
 
     private Dimension viewSize;
 
@@ -88,14 +92,17 @@ public class VisualizationControllerImpl implements VisualizationController, Key
     private boolean previouslySelected;
     
     public VisualizationControllerImpl() {
-        // Random values
         this.viewSize = new Dimension();
-
+        this.vizModel = new VizModelImpl(true);
         this.frameDataBridge = new FrameDataBridge();
         this.view = new View(this, this.frameDataBridge);
         this.dataManager = new Model(this, this.frameDataBridge, 33);
-        this.vizModel = new VizModelImpl(true);
-        this.selectionManager = Lookup.getDefault().lookup(SelectionManager.class);
+        this.selectionManager = new SelectionManagerImpl();
+        this.motionManager = new MotionManagerImpl();
+        this.vizEventManager = new VizEventManagerImpl();
+        
+        motionManager.initialize(this);
+        selectionManager.initialize();
         
         ProjectController pc = Lookup.getDefault().lookup(ProjectController.class);
         pc.addWorkspaceListener(this);
@@ -112,16 +119,6 @@ public class VisualizationControllerImpl implements VisualizationController, Key
                 }
             }
         });
-        
-        // Initialize SelectionManager
-        selectionManager.initialize();
-    }
-
-    synchronized static VisualizationControllerImpl getDefault() {
-        if (instance == null) {
-            instance = (VisualizationControllerImpl) Lookup.getDefault().lookup(VisualizationController.class);
-        }
-        return instance;
     }
 
     public void resize(int width, int height) {
@@ -165,6 +162,21 @@ public class VisualizationControllerImpl implements VisualizationController, Key
         return vizModel;
     }
 
+    @Override
+    public SelectionManager getSelectionManager() {
+        return selectionManager;
+    }
+
+    @Override
+    public MotionManager getMotionManager() {
+        return motionManager;
+    }
+
+    @Override
+    public VizEventManager getVizEventManager() {
+        return vizEventManager;
+    }
+    
     @Override
     public VizConfig getVizConfig() {
         return vizModel.getConfig();
@@ -215,7 +227,7 @@ public class VisualizationControllerImpl implements VisualizationController, Key
             }
         }
         vizModel.setCamera(newCamera);
-        selectionManager.refreshDataStructure();
+        selectionManager.refresh();
     }
 
     public void beginUpdateFrame() {
@@ -267,7 +279,7 @@ public class VisualizationControllerImpl implements VisualizationController, Key
             camera.lookAt(new Vec3(centerNode[0], centerNode[1], centerNode[2]), Vec3.E2);
             centerNode = null;
         }
-        Lookup.getDefault().lookup(MotionManager.class).refresh();
+        motionManager.refresh();
     }
 
     public void beginRenderFrame() {
@@ -318,6 +330,7 @@ public class VisualizationControllerImpl implements VisualizationController, Key
             vizModel = model;
             vizModel.init();
         }
+        selectionManager.refresh();
     }
     
     // User events
@@ -333,56 +346,56 @@ public class VisualizationControllerImpl implements VisualizationController, Key
     @Override
     public void mouseClicked(MouseEvent e) {
         if (hasWorkspace) {
-            Lookup.getDefault().lookup(MotionManager.class).mouseClicked(e);
+            motionManager.mouseClicked(e);
         }
     }
 
     @Override
     public void mousePressed(MouseEvent e) {
         if (hasWorkspace) {
-            Lookup.getDefault().lookup(MotionManager.class).mousePressed(e);
+            motionManager.mousePressed(e);
         }
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
         if (hasWorkspace) {
-            Lookup.getDefault().lookup(MotionManager.class).mouseReleased(e);
+            motionManager.mouseReleased(e);
         }
     }
 
     @Override
     public void mouseEntered(MouseEvent e) {
         if (hasWorkspace) {
-            Lookup.getDefault().lookup(MotionManager.class).mouseEntered(e);
+            motionManager.mouseEntered(e);
         }
     }
 
     @Override
     public void mouseExited(MouseEvent e) {
         if (hasWorkspace) {
-            Lookup.getDefault().lookup(MotionManager.class).mouseExited(e);
+            motionManager.mouseExited(e);
         }
     }
 
     @Override
     public void mouseDragged(MouseEvent e) {
         if (hasWorkspace) {
-            Lookup.getDefault().lookup(MotionManager.class).mouseDragged(e);
+            motionManager.mouseDragged(e);
         }
     }
 
     @Override
     public void mouseMoved(MouseEvent e) {
         if (hasWorkspace) {
-            Lookup.getDefault().lookup(MotionManager.class).mouseMoved(e);
+            motionManager.mouseMoved(e);
         }
     }
 
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
         if (hasWorkspace) {
-             Lookup.getDefault().lookup(MotionManager.class).mouseWheelMoved(e);
+             motionManager.mouseWheelMoved(e);
         }
     }
 

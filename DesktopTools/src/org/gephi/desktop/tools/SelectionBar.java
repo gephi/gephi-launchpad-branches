@@ -47,7 +47,7 @@ public class SelectionBar extends javax.swing.JPanel {
     /** Creates new form SelectionBar */
     public SelectionBar() {
         initComponents();
-        Lookup.getDefault().lookup(SelectionManager.class).addChangeListener(new ChangeListener() {
+        Lookup.getDefault().lookup(VisualizationController.class).getSelectionManager().addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
                 refresh();
             }
@@ -90,7 +90,7 @@ public class SelectionBar extends javax.swing.JPanel {
     }
 
     public void refresh() {
-        SelectionManager manager = Lookup.getDefault().lookup(SelectionManager.class);
+        SelectionManager manager = Lookup.getDefault().lookup(VisualizationController.class).getSelectionManager();
         if (manager.isDirectMouseSelection()) {
             statusLabel.setText(NbBundle.getMessage(SelectionBar.class, "SelectionBar.statusLabel.mouseSelection"));
             mouseSelection = true;
