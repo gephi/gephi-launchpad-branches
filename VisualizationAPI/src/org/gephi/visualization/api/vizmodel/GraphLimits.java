@@ -25,99 +25,64 @@ package org.gephi.visualization.api.vizmodel;
  */
 public class GraphLimits {
 
-    private int minXviewport;
-    private int maxXviewport;
-    private int minYviewport;
-    private int maxYviewport;
-    private float minXoctree;
-    private float maxXoctree;
-    private float minYoctree;
-    private float maxYoctree;
-    private float minZoctree;
-    private float maxZoctree;
+    private float minX;
+    private float maxX;
+    private float minY;
+    private float maxY;
+    private float minZ;
+    private float maxZ;
     private float maxWeight;
     private float minWeight;
     private float maxMetaWeight;
     private float minMetaWeight;
+    private float maxNodeSize;
 
-    public synchronized float getMaxXoctree() {
-        return maxXoctree;
+    public float getMaxX() {
+        return maxX;
     }
 
-    public synchronized void setMaxXoctree(float maxXoctree) {
-        this.maxXoctree = maxXoctree;
+    public void setMaxX(float maxX) {
+        this.maxX = maxX;
     }
 
-    public synchronized int getMaxXviewport() {
-        return maxXviewport;
+    public float getMaxY() {
+        return maxY;
     }
 
-    public synchronized void setMaxXviewport(int maxXviewport) {
-        this.maxXviewport = maxXviewport;
+    public void setMaxY(float maxY) {
+        this.maxY = maxY;
     }
 
-    public synchronized float getMaxYoctree() {
-        return maxYoctree;
+    public float getMaxZ() {
+        return maxZ;
     }
 
-    public synchronized void setMaxYoctree(float maxYoctree) {
-        this.maxYoctree = maxYoctree;
+    public void setMaxZ(float maxZ) {
+        this.maxZ = maxZ;
     }
 
-    public synchronized int getMaxYviewport() {
-        return maxYviewport;
+    public float getMinX() {
+        return minX;
     }
 
-    public synchronized void setMaxYviewport(int maxYviewport) {
-        this.maxYviewport = maxYviewport;
+    public void setMinX(float minX) {
+        this.minX = minX;
     }
 
-    public synchronized float getMaxZoctree() {
-        return maxZoctree;
+    public float getMinY() {
+        return minY;
     }
 
-    public synchronized void setMaxZoctree(float maxZoctree) {
-        this.maxZoctree = maxZoctree;
+    public void setMinY(float minY) {
+        this.minY = minY;
     }
 
-    public synchronized float getMinXoctree() {
-        return minXoctree;
+    public float getMinZ() {
+        return minZ;
     }
 
-    public synchronized void setMinXoctree(float minXoctree) {
-        this.minXoctree = minXoctree;
-    }
-
-    public synchronized int getMinXviewport() {
-        return minXviewport;
-    }
-
-    public synchronized void setMinXviewport(int minXviewport) {
-        this.minXviewport = minXviewport;
-    }
-
-    public synchronized float getMinYoctree() {
-        return minYoctree;
-    }
-
-    public synchronized void setMinYoctree(float minYoctree) {
-        this.minYoctree = minYoctree;
-    }
-
-    public synchronized int getMinYviewport() {
-        return minYviewport;
-    }
-
-    public synchronized void setMinYviewport(int minYviewport) {
-        this.minYviewport = minYviewport;
-    }
-
-    public synchronized float getMinZoctree() {
-        return minZoctree;
-    }
-
-    public synchronized void setMinZoctree(float minZoctree) {
-        this.minZoctree = minZoctree;
+    public void setMinZ(float minZ) {
+        this.minZ = minZ;
     }
 
     public float getMaxWeight() {
@@ -151,4 +116,13 @@ public class GraphLimits {
     public void setMinMetaWeight(float minMetaWeight) {
         this.minMetaWeight = minMetaWeight;
     }
+
+    public float getMaxNodeSize() {
+        return maxNodeSize;
+    }
+
+    public void setMaxNodeSize(float maxNodeSize) {
+        this.maxNodeSize = maxNodeSize;
+    }
+    
 }

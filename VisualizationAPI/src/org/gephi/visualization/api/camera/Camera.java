@@ -24,7 +24,7 @@ package org.gephi.visualization.api.camera;
 import java.awt.Dimension;
 import org.gephi.math.linalg.Vec3;
 import org.gephi.math.linalg.Vec3Base;
-import org.gephi.visualization.api.geometry.AABB;
+import org.gephi.visualization.api.vizmodel.GraphLimits;
 
 /**
  * Class representing a camera. Enables basic camera movement.
@@ -154,12 +154,12 @@ public interface Camera {
     public void updateOrbit(float x, float y);
 
     /**
-     * Centers the box on the screen and updates the scale factor or the 
-     * position of the camera to see the entire box.
+     * Centers the graph on the screen and updates the scale factor or the 
+     * position of the camera to see the entire graph.
      * 
-     * @param box the box
+     * @param graphLimits the graph limits
      */
-    public void centerBox(AABB box);
+    public void centerGraph(GraphLimits graphLimits);
 
     /**
      * Zooms toward a point on the screen.

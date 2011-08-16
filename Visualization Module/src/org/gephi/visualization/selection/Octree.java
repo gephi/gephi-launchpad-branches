@@ -57,8 +57,6 @@ public final class Octree extends QuadrantTree {
 
     private boolean temporarySelectionMod;
 
-    private float maxNodeSize;
-
     private final Graph graph;
 
     float xmin, xmax, ymin, ymax, zmin, zmax;
@@ -108,9 +106,6 @@ public final class Octree extends QuadrantTree {
             }
             if (nd.z() > zmax) {
                 zmax = nd.z();
-            }
-            if (nd.getSize() > maxNodeSize) {
-                maxNodeSize = nd.getSize();
             }
         }
         root = new Octant(null, xmin, ymin, zmin, Math.max(Math.max(xmax - xmin, ymax - ymin), zmax - zmin), 0);
@@ -231,7 +226,8 @@ public final class Octree extends QuadrantTree {
         if (singleOnly && singleFound) {
             return;
         }
-
+        
+        final float maxNodeSize = Lookup.getDefault().lookup(VisualizationController.class).getVizModel().getGraphLimits().getMaxNodeSize();
         final Camera camera = Lookup.getDefault().lookup(VisualizationController.class).getCameraCopy();
         Intersection intersection = shape.intersectsCube(octant.getX(), octant.getY(), octant.getZ(), octant.getSize(), maxNodeSize, camera);
 
@@ -373,21 +369,6 @@ public final class Octree extends QuadrantTree {
         if (node.getNodeData().getSpatialData() instanceof OctreeData) {
             ((OctreeData) node.getNodeData().getSpatialData()).getOctant().removeNode(node);
         }
-    }
-
-    /**
-     * Update max node size if changed.
-     */
-    private void nodeSizeUpdated(float size) {
-        if (size > maxNodeSize) {
-            maxNodeSize = size;
-        }
-        // TODO implement occasional maximum checks for optimization
-    }
-
-    @Override
-    public float getMaxNodeSize() {
-        return maxNodeSize;
     }
 
     /**
@@ -659,11 +640,6 @@ public final class Octree extends QuadrantTree {
         @Override
         public void positionUpdated() {
             octant.nodeUpdated(node);
-        }
-
-        @Override
-        public void sizeUpdated() {
-            nodeSizeUpdated(node.getNodeData().getSize());
         }
 
     }

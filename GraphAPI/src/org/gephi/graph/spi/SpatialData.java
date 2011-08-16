@@ -37,9 +37,4 @@ public interface SpatialData {
      */
     public void positionUpdated();
 
-    /**
-     * Called when node size has been updated.
-     */
-    public void sizeUpdated();
-
 }

@@ -25,17 +25,16 @@ import org.gephi.graph.api.Graph;
 import org.gephi.graph.api.GraphController;
 import org.gephi.graph.api.GraphModel;
 import org.gephi.graph.api.Node;
-import org.gephi.graph.api.NodeData;
-import org.gephi.math.linalg.Vec3;
 import org.gephi.project.api.ProjectController;
 import org.gephi.project.api.Workspace;
 import org.gephi.project.api.WorkspaceListener;
 import org.gephi.visualization.api.controller.MotionManager;
+import org.gephi.visualization.api.controller.VisualizationController;
 import org.gephi.visualization.api.selection.SelectionManager;
 import org.gephi.visualization.api.selection.Shape;
 import org.gephi.visualization.controller.VisualizationControllerImpl;
 import org.gephi.visualization.data.FrameDataBridgeIn;
-import org.gephi.visualization.api.geometry.AABB;
+import org.gephi.visualization.api.vizmodel.GraphLimits;
 import org.gephi.visualization.model.styler.BasicEdgeStyler;
 import org.gephi.visualization.model.styler.BasicNodeStyler;
 import org.openide.util.Lookup;
@@ -103,28 +102,39 @@ public class Model implements Runnable, WorkspaceListener {
                 graph = this.graphModel.getGraph();
             }
 
-            // FIXME - do not build a box, but fill data inside the graphLimits -> the controller will access it itself
-            // GraphLimits graphLimits = controller.getVizModel().getGraphLimits()
-            AABB box = null;
-            if (this.controller.isCentering()) {
-                if (graph != null) {
-                    for (Node n : graph.getNodes()) {
-                        NodeData nd = n.getNodeData();
-                        Vec3 p = new Vec3(nd.x(), nd.y(), nd.z());
-                        Vec3 s = new Vec3(nd.getSize(), nd.getSize(), nd.getSize());
-                        if (box == null) {
-                            box = new AABB(p, s);
-                        } else {
-                            box.addPoint(p, s);
-                        }
-                    }
-                }
-            }
-
+            GraphLimits graphLimits = Lookup.getDefault().lookup(VisualizationController.class).getVizModel().getGraphLimits();
+            float maxSize = Float.MIN_VALUE;
+            float minX = Float.MAX_VALUE;
+            float maxX = Float.MIN_VALUE;
+            float minY = Float.MAX_VALUE;
+            float maxY = Float.MIN_VALUE;
+            float minZ = Float.MAX_VALUE;
+            float maxZ = Float.MIN_VALUE;
+            
             for (Node n : graph.getNodes()) {
+                maxSize = Math.max(maxSize, n.getNodeData().getSize());
+                // Min and max position graph limits are not used anywhere else at the moment
+                if (this.controller.isCentering()) {
+                    minX = Math.min(minX, n.getNodeData().x());
+                    maxX = Math.max(maxX, n.getNodeData().x());
+                    minY = Math.min(minY, n.getNodeData().y());
+                    maxY = Math.max(maxY, n.getNodeData().y());
+                    minZ = Math.min(minZ, n.getNodeData().z());
+                    maxZ = Math.max(maxZ, n.getNodeData().z());
+                }
                 this.bridge.add(n);
             }
+            
+            graphLimits.setMinX(minX);
+            graphLimits.setMaxX(maxX);
+            graphLimits.setMinY(minY);
+            graphLimits.setMaxY(maxY);
+            graphLimits.setMinZ(minZ);
+            graphLimits.setMaxZ(maxZ);
+            graphLimits.setMaxNodeSize(maxSize);
 
+            // TODO fill in graph limits for edges: min/max edge weight, min/max metaEdge weight
+            
             Shape selectionShape = Lookup.getDefault().lookup(MotionManager.class).getSelectionShape();
             if (selectionShape != null) {
                 this.bridge.add(selectionShape.getUIPrimitive());
@@ -135,7 +145,7 @@ public class Model implements Runnable, WorkspaceListener {
                 this.bridge.add(pointerShape.getUIPrimitive());
             }
 
-            this.controller.endUpdateFrame(box);
+            this.controller.endUpdateFrame();
             this.bridge.endFrame();
 
             long endFrameTime = System.currentTimeMillis();

@@ -28,7 +28,7 @@ import org.gephi.math.linalg.Vec2M;
 import org.gephi.math.linalg.Vec3;
 import org.gephi.math.linalg.Vec3Base;
 import org.gephi.visualization.api.camera.Camera;
-import org.gephi.visualization.api.geometry.AABB;
+import org.gephi.visualization.api.vizmodel.GraphLimits;
 
 /**
  * Camera for 2D mode. It only supports translation and zoom.
@@ -319,18 +319,15 @@ public final class Camera2d implements Camera {
     }
 
     /**
-     * Centers the box on the screen and updates the scale factor to see the
-     * entire box.
+     * Centers the graph on the screen and updates the scale factor or the 
+     * position of the camera to see the entire graph.
      * 
-     * @param box the box
+     * @param graphLimits the graph limits
      */
     @Override
-    public void centerBox(AABB box) {
-        Vec3 boxCenter = box.center();
-        this.center.set(boxCenter.x(), boxCenter.y());
-        
-        Vec3 boxScale = box.scale();
-        this.scale = Math.min(this.screenWidth / boxScale.x(), this.screenHeight / boxScale.y());
+    public void centerGraph(GraphLimits graphLimits) {
+        this.center.set((graphLimits.getMaxX() + graphLimits.getMinX()) / 2, (graphLimits.getMaxY() + graphLimits.getMinY()) / 2);
+        this.scale = Math.min(this.screenWidth / (graphLimits.getMaxX() - graphLimits.getMinX()), this.screenHeight / (graphLimits.getMaxY() - graphLimits.getMinY()));
     }
 
     /**
@@ -348,7 +345,6 @@ public final class Camera2d implements Camera {
         p.timesEq(-by * s);
         this.center.plusEq(p);
         this.scale = newScale;
-        System.out.println(scale);
     }
 
     /**

@@ -50,7 +50,6 @@ import org.gephi.visualization.api.vizmodel.VizModel;
 import org.gephi.visualization.camera.Camera2d;
 import org.gephi.visualization.camera.Camera3d;
 import org.gephi.visualization.data.FrameDataBridge;
-import org.gephi.visualization.api.geometry.AABB;
 import org.gephi.visualization.model.Model;
 import org.gephi.visualization.view.View;
 import org.gephi.visualization.vizmodel.VizModelImpl;
@@ -254,10 +253,10 @@ public class VisualizationControllerImpl implements VisualizationController, Key
         }
     }
 
-    public void endUpdateFrame(AABB box) {
+    public void endUpdateFrame() {
         Camera camera = vizModel.getCamera();
-        if (centerGraph && box != null) {
-            camera.centerBox(box);
+        if (centerGraph && vizModel.getGraphLimits().getMinX() < Float.MAX_VALUE) {
+            camera.centerGraph(vizModel.getGraphLimits());
             centerGraph = false;
         }
         if (centerZero) {

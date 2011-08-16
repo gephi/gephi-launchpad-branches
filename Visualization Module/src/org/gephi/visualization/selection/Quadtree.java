@@ -57,8 +57,6 @@ public final class Quadtree extends QuadrantTree {
 
     private boolean temporarySelectionMod;
 
-    private float maxNodeSize;
-
     private final Graph graph;
 
     float xmin, xmax, ymin, ymax;
@@ -91,9 +89,6 @@ public final class Quadtree extends QuadrantTree {
             }
             if (nd.y() > ymax) {
                 ymax = nd.y();
-            }
-            if (nd.getSize() > maxNodeSize) {
-                maxNodeSize = nd.getSize();
             }
         }
         root = new Quadrant(null, xmin, ymin, Math.max(xmax - xmin, ymax - ymin), 0);
@@ -215,7 +210,8 @@ public final class Quadtree extends QuadrantTree {
         if (singleOnly && singleFound) {
             return;
         }
-
+        
+        final float maxNodeSize = Lookup.getDefault().lookup(VisualizationController.class).getVizModel().getGraphLimits().getMaxNodeSize();
         final Camera camera = Lookup.getDefault().lookup(VisualizationController.class).getCameraCopy();
         Intersection intersection = shape.intersectsSquare(quadrant.getX(), quadrant.getY(), quadrant.getSize(), maxNodeSize, camera);
 
@@ -355,21 +351,6 @@ public final class Quadtree extends QuadrantTree {
         if (node.getNodeData().getSpatialData() instanceof QuadtreeData) {
             ((QuadtreeData) node.getNodeData().getSpatialData()).getQuadrant().removeNode(node);
         }
-    }
-
-    /**
-     * Update max node size if changed.
-     */
-    private void nodeSizeUpdated(float size) {
-        if (size > maxNodeSize) {
-            maxNodeSize = size;
-        }
-        // TODO implement occasional maximum checks for optimization
-    }
-
-    @Override
-    public float getMaxNodeSize() {
-        return maxNodeSize;
     }
 
     /**
@@ -565,11 +546,6 @@ public final class Quadtree extends QuadrantTree {
         @Override
         public void positionUpdated() {
             quadrant.nodeUpdated(node);
-        }
-
-        @Override
-        public void sizeUpdated() {
-            nodeSizeUpdated(node.getNodeData().getSize());
         }
 
     }

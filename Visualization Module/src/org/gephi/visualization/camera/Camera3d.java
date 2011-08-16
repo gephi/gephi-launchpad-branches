@@ -28,9 +28,7 @@ import org.gephi.math.linalg.Vec3Base;
 import org.gephi.math.linalg.Vec3M;
 import org.gephi.math.linalg.Vec4;
 import org.gephi.visualization.api.camera.Camera;
-import org.gephi.visualization.api.controller.VisualizationController;
-import org.gephi.visualization.api.geometry.AABB;
-import org.openide.util.Lookup;
+import org.gephi.visualization.api.vizmodel.GraphLimits;
 
 /**
  * Class representing a camera for three dimensions. Enables basic camera movement.
@@ -281,14 +279,14 @@ public final class Camera3d implements Camera {
     }
 
     @Override
-    public void centerBox(AABB box) {
-        final Vec3 center = box.center();
-        final Vec3 scale = box.scale();
-        final Vec3 maxVec = box.maxVec();
+    public void centerGraph(GraphLimits graphLimits) {
+        final float d = (graphLimits.getMaxY() - graphLimits.getMinY()) / (float) Math.tan(0.5 * this.fovy);
 
-        final float d = scale.y() / (float)Math.tan(0.5 * this.fovy);
-
-        final Vec3 origin = new Vec3(center.x(), center.y(), maxVec.z() + d*1.1f);
+        final Vec3 center = new Vec3((graphLimits.getMaxX() + graphLimits.getMinX()) / 2, 
+                                     (graphLimits.getMaxY() + graphLimits.getMinY()) / 2, 
+                                     (graphLimits.getMaxZ() + graphLimits.getMinZ()) / 2);
+        
+        final Vec3 origin = new Vec3(center.x(), center.y(), graphLimits.getMaxZ() + d * 1.1f);
         this.lookAt(origin, center, Vec3.E2);
     }
 
