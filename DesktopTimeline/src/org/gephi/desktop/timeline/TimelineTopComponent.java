@@ -22,10 +22,14 @@ package org.gephi.desktop.timeline;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.logging.Logger;
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
+import javax.swing.JRadioButtonMenuItem;
 import javax.swing.SwingUtilities;
 import org.gephi.timeline.api.TimelineAnimatorEvent;
 import org.gephi.timeline.spi.TimelineDrawer;
@@ -33,6 +37,7 @@ import org.gephi.timeline.api.TimelineAnimatorListener;
 import org.gephi.timeline.api.TimelineModel;
 import org.gephi.timeline.api.TimelineModelEvent;
 import org.gephi.timeline.api.TimelineModelListener;
+import org.gephi.timeline.api.GraphMetric;
 import org.gephi.ui.components.CloseButton;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -71,50 +76,49 @@ public final class TimelineTopComponent extends TopComponent implements Timeline
     /** path to the icon used by the component and its open action */
     static final String ICON_PATH = "org/gephi/desktop/timeline/resources/ui-status-bar.png";
     private static final String PREFERRED_ID = "TimelineTopComponent";
-
     // model+animator
     private TimelineModel model;
     private TimelineAnimatorImpl animator;
-    
     // bounds
     private double min;
     private double max;
-    
     // drawer
     private MinimalDrawer drawerPanel;
-        
     // sparkline chart
+    private final int samplepoints = 365; // another candidate: 840
     private XYDataset dataset;
     private ValueAxis timelineAxis;
     private NumberAxis metricAxis;
     private XYPlot plot;
     private JFreeChart chart;
-    private JPanel chartpanel;    
-    private GraphMetric metric = new GraphMetric(GraphMetric.SimpleMetric.NODES);
-    private final int samplepoints = 365; // another candidate: 840
-        
+    private JPanel chartpanel;
+    private GraphMetric currentMetric;
+    private HashMap<String, GraphMetric> metrics = new HashMap<String, GraphMetric>();
+    private JRadioButtonMenuItem[] mitemMetrics;
+
     public TimelineTopComponent() {
         initComponents();
-        
+
         setName(NbBundle.getMessage(TimelineTopComponent.class, "CTL_TimelineTopComponent"));
 //        setToolTipText(NbBundle.getMessage(TimelineTopComponent.class, "HINT_TimelineTopComponent"));
         setIcon(ImageUtilities.loadImage(ICON_PATH, true));
-        putClientProperty(TopComponent.PROP_MAXIMIZATION_DISABLED, Boolean.TRUE); 
+        putClientProperty(TopComponent.PROP_MAXIMIZATION_DISABLED, Boolean.TRUE);
 
         // Setup drawer
         TimelineDrawer drawer = Lookup.getDefault().lookup(TimelineDrawer.class);
         drawerPanel = (MinimalDrawer) drawer;
         drawerPanel.setOpaque(false);
         drawerPanel.setEnabled(false);
+        drawerPanel.setInheritsPopupMenu(true);
         timelinePanel.add(drawerPanel);
 
         // Animator
         animator = new TimelineAnimatorImpl();
         drawerPanel.setAnimator(animator);
-        animator.addListener(this);        
-        
+        animator.addListener(this);
+
         // Setup sparkline
-        
+
         // Defaut unit format: real numbers
         dataset = new XYSeriesCollection();
         timelineAxis = new NumberAxis();
@@ -157,11 +161,30 @@ public final class TimelineTopComponent extends TopComponent implements Timeline
         chartPanel.setBounds(0, 2, 300, 30);
         chartpanel = (JPanel) chartPanel;
         chartpanel.setVisible(false);
+        chartpanel.setInheritsPopupMenu(true);
 
         tlcontainer.add(chartpanel, JLayeredPane.DEFAULT_LAYER);
-                        
-}
-    
+
+        // sparkline currentMetric controls
+        GraphMetric[] metricslist = Lookup.getDefault().lookupAll(GraphMetric.class).toArray(new GraphMetric[0]);
+        mitemMetrics = new JRadioButtonMenuItem[metricslist.length];
+        
+        for (int i = 0; i < metricslist.length; i++) {
+            metrics.put(metricslist[i].getName(), metricslist[i]);
+            mitemMetrics[i] = new JRadioButtonMenuItem(metricslist[i].getName(), i==0);
+            mitemMetrics[i].addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    setMetric(metrics.get(e.getActionCommand()));
+                    setupSparkline();
+                }
+            });
+            bgroupMetrics.add(mitemMetrics[i]);
+            menuMetrics.add(mitemMetrics[i]);
+
+        }
+        currentMetric = metricslist[0];
+    }
+
     private void setTimeLineVisible(final boolean visible) {
         SwingUtilities.invokeLater(new Runnable() {
 
@@ -173,11 +196,11 @@ public final class TimelineTopComponent extends TopComponent implements Timeline
                     TimelineTopComponent.this.close();
                 }
                 timelinePanel.setSize(new Dimension(tlcontainer.getWidth(), tlcontainer.getHeight()));
-                chartpanel.setSize(new Dimension(tlcontainer.getWidth(), tlcontainer.getHeight()-6));
+                chartpanel.setSize(new Dimension(tlcontainer.getWidth(), tlcontainer.getHeight() - 6));
             }
         });
     }
-    
+
     private void setupSparkline() {
         // change unit formats if needed and refresh data
         if (model.getUnit() == DateTime.class && dataset instanceof XYSeriesCollection) {
@@ -195,22 +218,23 @@ public final class TimelineTopComponent extends TopComponent implements Timeline
         timelineAxis.setRange(range);
     }
 
-    
     private Range refreshModelData() {
-        int y, ymax = 0, ymin = Integer.MAX_VALUE; // default value since SimpleMetrics are natural numbers
+        double y, ymax = 0, ymin = Double.POSITIVE_INFINITY; // default positive values
         if (dataset instanceof TimeSeriesCollection) {
             TimeSeriesCollection dataSet = (TimeSeriesCollection) dataset;
-            TimeSeries data = new TimeSeries(metric.getMetricName());
+            TimeSeries data = new TimeSeries(currentMetric.getName());
 
             long Min = (long) min; // model.getMinValue();
             long Max = (long) max; // model.getMaxValue();
 
-            for (long t = Min; t <= Max; t += (Max-Min)/(samplepoints-1)) {
-                y = metric.getGraphMetric(model.getSnapshotGraph(t));
-                if (ymax < y)
+            for (long t = Min; t <= Max; t += (Max - Min) / (samplepoints - 1)) {
+                y = currentMetric.measureGraph(model.getSnapshotGraph(t)).doubleValue();
+                if (ymax < y) {
                     ymax = y;
-                if (ymin > y)
+                }
+                if (ymin > y) {
                     ymin = y;
+                }
                 data.add(new Millisecond(new Date(t)), y);
             }
             dataSet.removeAllSeries();
@@ -219,21 +243,31 @@ public final class TimelineTopComponent extends TopComponent implements Timeline
             return dataSet.getDomainBounds(false);
         } else {
             XYSeriesCollection dataSet = (XYSeriesCollection) dataset;
-            XYSeries data = new XYSeries(metric.getMetricName());
-            
-            for (double t=min; t<=max; t+=(max-min)/(samplepoints-1)) {
-                y = metric.getGraphMetric(model.getSnapshotGraph(t));
-                if (ymax < y)
+            XYSeries data = new XYSeries(currentMetric.getName());
+
+            for (double t = min; t <= max; t += (max - min) / (samplepoints - 1)) {
+                y = currentMetric.measureGraph(model.getSnapshotGraph(t)).doubleValue();
+                if (ymax < y) {
                     ymax = y;
-                if (ymin > y)
+                }
+                if (ymin > y) {
                     ymin = y;
-                data.add(t,y);
+                }
+                data.add(t, y);
             }
             dataSet.removeAllSeries();
             dataSet.addSeries(data);
             metricAxis.setTickUnit(new NumberTickUnit(ymax));
             return dataSet.getDomainBounds(false);
-        } 
+        }
+    }
+
+    public GraphMetric getMetric() {
+        return currentMetric;
+    }
+
+    public void setMetric(GraphMetric metric) {
+        this.currentMetric = metric;
     }
 
     private void setMin(double min) {
@@ -250,7 +284,7 @@ public final class TimelineTopComponent extends TopComponent implements Timeline
             setTimeLineVisible(!Double.isInfinite(max));
         }
     }
-        
+
     public void timelineModelChanged(TimelineModelEvent event) {
         setEnabled(event.getSource().isEnabled());
         TimelineDrawer drawer = (TimelineDrawer) drawerPanel;
@@ -286,11 +320,24 @@ public final class TimelineTopComponent extends TopComponent implements Timeline
     private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
 
+        menuMetrics = new javax.swing.JPopupMenu();
+        mitemTitle = new javax.swing.JMenuItem();
+        msepTitle = new javax.swing.JPopupMenu.Separator();
+        bgroupMetrics = new javax.swing.ButtonGroup();
         playButton = new javax.swing.JToggleButton();
         tlcontainer = new javax.swing.JLayeredPane();
         timelinePanel = new javax.swing.JPanel();
         closeButton = new CloseButton();
-        resetButton = new javax.swing.JButton();
+        refreshButton = new javax.swing.JButton();
+
+        org.openide.awt.Mnemonics.setLocalizedText(mitemTitle, org.openide.util.NbBundle.getMessage(TimelineTopComponent.class, "TimelineTopComponent.mitemTitle.text")); // NOI18N
+        mitemTitle.setEnabled(false);
+        mitemTitle.setOpaque(true);
+        menuMetrics.add(mitemTitle);
+
+        msepTitle.setMinimumSize(new java.awt.Dimension(3, 0));
+        msepTitle.setPreferredSize(new java.awt.Dimension(3, 0));
+        menuMetrics.add(msepTitle);
 
         setMaximumSize(new java.awt.Dimension(32767, 58));
         setMinimumSize(new java.awt.Dimension(414, 58));
@@ -318,6 +365,7 @@ public final class TimelineTopComponent extends TopComponent implements Timeline
         gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
         add(playButton, gridBagConstraints);
 
+        tlcontainer.setComponentPopupMenu(menuMetrics);
         tlcontainer.setMaximumSize(new java.awt.Dimension(2147483647, 2147483647));
         tlcontainer.setMinimumSize(new java.awt.Dimension(300, 28));
         tlcontainer.setPreferredSize(new java.awt.Dimension(300, 31));
@@ -328,6 +376,7 @@ public final class TimelineTopComponent extends TopComponent implements Timeline
         });
 
         timelinePanel.setEnabled(false);
+        timelinePanel.setInheritsPopupMenu(true);
         timelinePanel.setMinimumSize(new java.awt.Dimension(300, 28));
         timelinePanel.setOpaque(false);
         timelinePanel.setPreferredSize(new java.awt.Dimension(300, 30));
@@ -356,28 +405,28 @@ public final class TimelineTopComponent extends TopComponent implements Timeline
         gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
         add(closeButton, gridBagConstraints);
 
-        resetButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/gephi/desktop/timeline/resources/reset_icon.png"))); // NOI18N
-        org.openide.awt.Mnemonics.setLocalizedText(resetButton, org.openide.util.NbBundle.getMessage(TimelineTopComponent.class, "TimelineTopComponent.resetButton.text")); // NOI18N
-        resetButton.setToolTipText(org.openide.util.NbBundle.getMessage(TimelineTopComponent.class, "TimelineTopComponent.resetButton.toolTipText")); // NOI18N
-        resetButton.setFocusable(false);
-        resetButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        resetButton.setMaximumSize(new java.awt.Dimension(44, 44));
-        resetButton.setMinimumSize(new java.awt.Dimension(44, 44));
-        resetButton.setPreferredSize(new java.awt.Dimension(44, 44));
-        resetButton.addActionListener(new java.awt.event.ActionListener() {
+        refreshButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/gephi/desktop/timeline/resources/reset_icon.png"))); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(refreshButton, org.openide.util.NbBundle.getMessage(TimelineTopComponent.class, "TimelineTopComponent.refreshButton.text")); // NOI18N
+        refreshButton.setToolTipText(org.openide.util.NbBundle.getMessage(TimelineTopComponent.class, "TimelineTopComponent.refreshButton.toolTipText")); // NOI18N
+        refreshButton.setFocusable(false);
+        refreshButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        refreshButton.setMaximumSize(new java.awt.Dimension(44, 44));
+        refreshButton.setMinimumSize(new java.awt.Dimension(44, 44));
+        refreshButton.setPreferredSize(new java.awt.Dimension(44, 44));
+        refreshButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                resetButtonActionPerformed(evt);
+                refreshButtonActionPerformed(evt);
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
-        add(resetButton, gridBagConstraints);
+        add(refreshButton, gridBagConstraints);
     }// </editor-fold>//GEN-END:initComponents
 
     private void playButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_playButtonActionPerformed
-        if(playButton.isSelected()) {
+        if (playButton.isSelected()) {
             animator.play(model.getFromFloat(), model.getToFloat());
             playButton.setToolTipText("Pause");
         } else {
@@ -388,10 +437,10 @@ public final class TimelineTopComponent extends TopComponent implements Timeline
 
     private void tlcontainerResize(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_tlcontainerResize
         timelinePanel.setSize(new Dimension(tlcontainer.getWidth(), tlcontainer.getHeight()));
-        chartpanel.setSize(new Dimension(tlcontainer.getWidth(), tlcontainer.getHeight()-6));
+        chartpanel.setSize(new Dimension(tlcontainer.getWidth(), tlcontainer.getHeight() - 6));
     }//GEN-LAST:event_tlcontainerResize
 
-    private void resetButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetButtonActionPerformed
+    private void refreshButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_refreshButtonActionPerformed
         animator.stop();
         drawerPanel.refreshBounds();
         if (model != null) {
@@ -400,16 +449,19 @@ public final class TimelineTopComponent extends TopComponent implements Timeline
             TimelineTopComponent.this.setEnabled(true);
             setupSparkline();
         }
-    }//GEN-LAST:event_resetButtonActionPerformed
+    }//GEN-LAST:event_refreshButtonActionPerformed
 
     private void closeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_closeButtonActionPerformed
         TimelineTopComponent.this.close();
     }//GEN-LAST:event_closeButtonActionPerformed
-    
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.ButtonGroup bgroupMetrics;
     private javax.swing.JButton closeButton;
+    private javax.swing.JPopupMenu menuMetrics;
+    private javax.swing.JMenuItem mitemTitle;
+    private javax.swing.JPopupMenu.Separator msepTitle;
     private javax.swing.JToggleButton playButton;
-    private javax.swing.JButton resetButton;
+    private javax.swing.JButton refreshButton;
     private javax.swing.JPanel timelinePanel;
     private javax.swing.JLayeredPane tlcontainer;
     // End of variables declaration//GEN-END:variables
@@ -492,5 +544,4 @@ public final class TimelineTopComponent extends TopComponent implements Timeline
         timelinePanel.setEnabled(enable);
         playButton.setEnabled(enable);
     }
-    
 }

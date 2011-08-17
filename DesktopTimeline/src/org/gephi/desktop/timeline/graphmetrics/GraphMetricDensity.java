@@ -1,0 +1,44 @@
+/*
+Copyright 2008-2011 Gephi
+Authors : Daniel Bernardes <daniel.bernardes@gephi.org>
+Website : http://www.gephi.org
+
+This file is part of Gephi.
+
+Gephi is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+Gephi is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
+*/
+package org.gephi.desktop.timeline.graphmetrics;
+
+import org.gephi.graph.api.Graph;
+import org.gephi.timeline.api.GraphMetric;
+import org.openide.util.lookup.ServiceProvider;
+
+/**
+ *
+ * @author daniel
+ */
+@ServiceProvider(service = GraphMetric.class)
+public class GraphMetricDensity implements GraphMetric {
+    
+    private final String MetricName = "Graph density";
+    
+    public String getName() {
+        return MetricName;
+    }
+    
+    public Number measureGraph(Graph graph) {
+        int V = graph.getNodeCount(), E = graph.getEdgeCount();
+        return 2.0*E/(V*(V-1)); // in [0,1]
+    }
+}

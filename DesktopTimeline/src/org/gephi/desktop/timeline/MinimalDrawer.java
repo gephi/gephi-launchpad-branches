@@ -33,7 +33,6 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JPanel;
 import javax.swing.Timer;
-import javax.swing.event.ChangeEvent;
 import org.gephi.timeline.api.TimelineAnimator;
 import org.gephi.timeline.api.TimelineAnimatorEvent;
 import org.gephi.timeline.api.TimelineAnimatorListener;
@@ -127,22 +126,17 @@ public class MinimalDrawer extends JPanel
     }
     HighlightedComponent highlightedComponent = HighlightedComponent.NONE;
 
-    /** Creates new form MinimalDrawer */
     public MinimalDrawer() {
 
-        //System.out.println("width: " + getWidth());
-        //System.out.println("height: " + getHeight());
         setVisible(true);
         addMouseMotionListener(this);
         addMouseListener(this);
-        // setEnabled(true);
         viewToModelSync = new Timer(150, updateModelAction);
         viewToModelSync.setRepeats(true);
         viewToModelSync.start();
 
         // setEnabled(true);
         // modelToViewSync = new Timer(2000, updateViewAction);
-
     }
 
     public void setModel(TimelineModel model) {
@@ -491,6 +485,11 @@ public class MinimalDrawer extends JPanel
                     break;
             }
         }
+//        if(e.isPopupTrigger()) {
+//            System.out.println("popup!");
+//            MetricPopup.setLocation(e.getX(), e.getY());
+//            MetricPopup.setVisible(true);
+//        }        
     }
 
     public void mouseEntered(MouseEvent e) {
@@ -520,7 +519,6 @@ public class MinimalDrawer extends JPanel
         //highlightedComponent = HighlightedComponent.NONE;
         currentState = TimelineState.IDLE;
         this.getParent().repaint(); // so it will repaint upper and bottom panes
-
     }
 
     public void mouseMoved(MouseEvent evt) {
