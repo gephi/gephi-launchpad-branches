@@ -27,7 +27,7 @@ import org.gephi.math.linalg.Vec3;
 import org.gephi.math.linalg.Vec3Base;
 import org.gephi.math.linalg.Vec3M;
 import org.gephi.math.linalg.Vec4;
-import org.gephi.visualization.api.camera.Camera;
+import org.gephi.visualization.api.Camera;
 import org.gephi.visualization.api.vizmodel.GraphLimits;
 
 /**

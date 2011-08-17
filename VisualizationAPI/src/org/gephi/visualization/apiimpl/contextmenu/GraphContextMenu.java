@@ -35,7 +35,7 @@ import org.gephi.datalab.spi.ContextMenuItemManipulator;
 import org.gephi.graph.api.GraphController;
 import org.gephi.graph.api.HierarchicalGraph;
 import org.gephi.graph.api.Node;
-import org.gephi.visualization.api.controller.VisualizationController;
+import org.gephi.visualization.api.VisualizationController;
 import org.gephi.visualization.spi.GraphContextMenuItem;
 import org.openide.util.Lookup;
 

@@ -43,7 +43,7 @@ import org.gephi.tools.spi.ToolEventListener;
 import org.gephi.tools.spi.ToolSelectionType;
 import org.gephi.tools.spi.ToolUI;
 import org.gephi.tools.spi.UnselectToolException;
-import org.gephi.visualization.api.controller.VisualizationController;
+import org.gephi.visualization.api.VisualizationController;
 import org.gephi.visualization.api.event.VizEvent;
 import org.gephi.visualization.api.event.VizEvent.Type;
 import org.gephi.visualization.api.event.VizEventListener;

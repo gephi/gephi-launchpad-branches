@@ -51,7 +51,7 @@ import org.gephi.utils.progress.ProgressTicketProvider;
 import org.gephi.project.api.Workspace;
 import org.gephi.project.api.WorkspaceInformation;
 import org.gephi.project.api.WorkspaceListener;
-import org.gephi.visualization.api.controller.VisualizationController;
+import org.gephi.visualization.api.VisualizationController;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.ServiceProvider;
 import org.openide.util.lookup.ServiceProviders;

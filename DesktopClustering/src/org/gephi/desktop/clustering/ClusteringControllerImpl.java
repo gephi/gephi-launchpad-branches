@@ -40,7 +40,7 @@ import org.gephi.project.api.ProjectController;
 import org.gephi.utils.longtask.spi.LongTask;
 import org.gephi.utils.longtask.api.LongTaskErrorHandler;
 import org.gephi.utils.longtask.api.LongTaskExecutor;
-import org.gephi.visualization.api.controller.VisualizationController;
+import org.gephi.visualization.api.VisualizationController;
 import org.gephi.visualization.api.selection.SelectionManager;
 import org.openide.awt.StatusDisplayer;
 import org.openide.util.Lookup;

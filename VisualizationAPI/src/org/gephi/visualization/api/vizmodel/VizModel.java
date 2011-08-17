@@ -29,7 +29,7 @@ import javax.xml.stream.XMLStreamWriter;
 import org.gephi.graph.api.NodeShape;
 import org.gephi.math.linalg.Vec3;
 import org.gephi.project.api.Workspace;
-import org.gephi.visualization.api.camera.Camera;
+import org.gephi.visualization.api.Camera;
 import org.gephi.visualization.api.rendering.background.Background;
 
 /**

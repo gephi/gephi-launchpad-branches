@@ -70,7 +70,7 @@ public class FrameDataBuilder {
         this.uiBufferBuilder = new BufferBuilder<UIShape, UIShape>(uiBuffer);
     }
 
-    public void setCamera(org.gephi.visualization.api.camera.Camera camera) {
+    public void setCamera(org.gephi.visualization.api.Camera camera) {
         if (camera instanceof Camera2d) {
             this.camera = Camera.from((Camera2d)camera);
             this.is3D = false;

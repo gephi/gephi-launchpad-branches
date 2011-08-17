@@ -27,7 +27,7 @@ import javax.swing.JFileChooser;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import org.gephi.lib.validation.Multiple4NumberValidator;
-import org.gephi.visualization.api.controller.VisualizationController;
+import org.gephi.visualization.api.VisualizationController;
 import org.gephi.visualization.api.rendering.ScreenshotSettings;
 import org.gephi.visualization.api.vizmodel.VizConfig;
 import org.netbeans.validation.api.builtin.Validators;

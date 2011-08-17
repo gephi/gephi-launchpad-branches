@@ -38,7 +38,7 @@ import org.gephi.math.linalg.Vec2;
 import org.gephi.math.linalg.Vec3;
 import org.gephi.project.api.Workspace;
 import org.gephi.ui.utils.ColorUtils;
-import org.gephi.visualization.api.camera.Camera;
+import org.gephi.visualization.api.Camera;
 import org.gephi.visualization.api.rendering.background.Background;
 import org.gephi.visualization.api.vizmodel.GraphLimits;
 import org.gephi.visualization.api.vizmodel.VizConfig;

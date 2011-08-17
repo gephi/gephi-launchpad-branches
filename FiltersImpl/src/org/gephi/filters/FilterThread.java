@@ -33,7 +33,7 @@ import org.gephi.graph.api.GraphView;
 import org.gephi.utils.progress.Progress;
 import org.gephi.utils.progress.ProgressTicket;
 import org.gephi.utils.progress.ProgressTicketProvider;
-import org.gephi.visualization.api.controller.VisualizationController;
+import org.gephi.visualization.api.VisualizationController;
 import org.gephi.visualization.api.selection.SelectionManager;
 import org.openide.util.Exceptions;
 import org.openide.util.Lookup;

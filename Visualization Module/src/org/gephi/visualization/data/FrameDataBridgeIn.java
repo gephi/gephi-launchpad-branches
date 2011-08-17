@@ -23,7 +23,7 @@ package org.gephi.visualization.data;
 
 import org.gephi.graph.api.Edge;
 import org.gephi.graph.api.Node;
-import org.gephi.visualization.api.camera.Camera;
+import org.gephi.visualization.api.Camera;
 import org.gephi.visualization.api.view.ui.UIShape;
 import org.gephi.visualization.data.graph.EdgeStyler;
 import org.gephi.visualization.data.graph.NodeStyler;

@@ -27,7 +27,7 @@ import javax.media.opengl.glu.GLU;
 import javax.media.opengl.glu.GLUquadric;
 import javax.media.opengl.glu.gl2.GLUgl2;
 import org.gephi.math.linalg.Vec3;
-import org.gephi.visualization.api.color.Color;
+import org.gephi.visualization.api.Color;
 import org.gephi.visualization.data.FrameData;
 import org.gephi.visualization.data.graph.VizNode;
 import org.gephi.visualization.rendering.camera.Camera;

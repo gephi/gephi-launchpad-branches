@@ -19,7 +19,7 @@ You should have received a copy of the GNU Affero General Public License
 along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package org.gephi.visualization.api.controller;
+package org.gephi.visualization.api;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;

@@ -22,7 +22,7 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 package org.gephi.visualization.api.view.ui;
 
 import java.nio.ByteBuffer;
-import org.gephi.visualization.api.color.Color;
+import org.gephi.visualization.api.Color;
 
 /**
  * Class which defines how <code>UIShape</code>s are rendered.

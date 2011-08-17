@@ -29,7 +29,7 @@ import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import org.gephi.ui.utils.UIUtils;
-import org.gephi.visualization.api.controller.VisualizationController;
+import org.gephi.visualization.api.VisualizationController;
 import org.gephi.visualization.api.selection.SelectionManager;
 import org.gephi.visualization.api.selection.SelectionType;
 import org.gephi.visualization.api.vizmodel.VizConfig;

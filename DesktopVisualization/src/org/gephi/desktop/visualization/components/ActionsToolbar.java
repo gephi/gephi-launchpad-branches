@@ -37,7 +37,7 @@ import org.gephi.graph.api.GraphController;
 import org.gephi.graph.api.Node;
 import org.gephi.ui.components.JColorButton;
 import org.gephi.ui.utils.UIUtils;
-import org.gephi.visualization.api.controller.VisualizationController;
+import org.gephi.visualization.api.VisualizationController;
 import org.openide.util.Lookup;
 import org.openide.util.NbBundle;
 
