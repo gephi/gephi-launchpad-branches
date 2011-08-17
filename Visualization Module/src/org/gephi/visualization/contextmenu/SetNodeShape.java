@@ -39,7 +39,7 @@ public class SetNodeShape extends BasicItem {
 
     @Override
     public ContextMenuItemManipulator[] getSubItems() {
-        if (nodes.length > 0) {
+        /*if (nodes.length > 0) {
             List<GraphContextMenuItem> subItems = new ArrayList<GraphContextMenuItem>();
             int i = 1;
             for (final NodeShape shape : NodeShape.values()) {
@@ -81,7 +81,8 @@ public class SetNodeShape extends BasicItem {
             return subItems.toArray(new GraphContextMenuItem[]{});
         } else {
             return null;
-        }
+        }*/
+        return null;
     }
 
     @Override

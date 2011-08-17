@@ -39,15 +39,15 @@ import org.gephi.graph.api.NodeShape;
 public final class Node2DTextureBuilder {
     private Node2DTextureBuilder() {} // Class with only static methods
     
-    static final Map<NodeShape, ProceduralTextureGenerator> generatorsMap;
+    static final Map<NodeShape.Value, ProceduralTextureGenerator> generatorsMap;
     static {
-        Map<NodeShape, ProceduralTextureGenerator> map = new EnumMap<NodeShape, ProceduralTextureGenerator>(NodeShape.class);
-        map.put(NodeShape.CIRCLE, new CircleTextureGenerator());
-        map.put(NodeShape.DIAMOND, new RegularPolygonTextureGenerator(4));
-        map.put(NodeShape.TRIANGLE, new RegularPolygonTextureGenerator(4));
-        map.put(NodeShape.PENTAGON, new RegularPolygonTextureGenerator(4));
-        map.put(NodeShape.HEXAGON, new RegularPolygonTextureGenerator(4));
-        map.put(NodeShape.SQUARE, new SquareTextureGenerator());
+        Map<NodeShape.Value, ProceduralTextureGenerator> map = new EnumMap<NodeShape.Value, ProceduralTextureGenerator>(NodeShape.Value.class);
+        map.put(NodeShape.Value.CIRCLE, new CircleTextureGenerator());
+        map.put(NodeShape.Value.DIAMOND, new RegularPolygonTextureGenerator(4));
+        map.put(NodeShape.Value.TRIANGLE, new RegularPolygonTextureGenerator(4));
+        map.put(NodeShape.Value.PENTAGON, new RegularPolygonTextureGenerator(4));
+        map.put(NodeShape.Value.HEXAGON, new RegularPolygonTextureGenerator(4));
+        map.put(NodeShape.Value.SQUARE, new SquareTextureGenerator());
         generatorsMap = Collections.unmodifiableMap(map);        
     }
     

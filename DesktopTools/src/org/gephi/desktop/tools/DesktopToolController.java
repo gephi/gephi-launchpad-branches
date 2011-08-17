@@ -47,7 +47,6 @@ import org.gephi.visualization.api.VisualizationController;
 import org.gephi.visualization.api.event.VizEvent;
 import org.gephi.visualization.api.event.VizEvent.Type;
 import org.gephi.visualization.api.event.VizEventListener;
-import org.gephi.visualization.api.event.VizEventManager;
 import org.gephi.visualization.api.selection.SelectionManager;
 import org.gephi.visualization.api.selection.SelectionType;
 import org.openide.util.Lookup;

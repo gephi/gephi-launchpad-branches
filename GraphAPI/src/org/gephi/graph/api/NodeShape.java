@@ -1,6 +1,6 @@
 /*
 Copyright 2008-2011 Gephi
-Authors : Vojtech Bardiovsky <vojtech.bardiovsky@gmail.com>
+Authors : Vojtech Bardiovsky <vojtech.bardiovsky@gmail.com>, Antonio Patriarca <antoniopatriarca@gmail.com>
 Website : http://www.gephi.org
 
 This file is part of Gephi.
@@ -20,55 +20,89 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 */
 package org.gephi.graph.api;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
+import org.openide.util.Lookup;
+
 /**
- * Enumeration class for visual representation of a node.
+ * Class representing visualization shape of a node.
  * 
  * @author Vojtech Bardiovsky
+ * @author Antonio Patriarca
  */
-public enum NodeShape {
-    DEFAULT,
-    CIRCLE,
-    TRIANGLE,
-    SQUARE,
-    DIAMOND,
-    PENTAGON,
-    HEXAGON,
-    IMAGE1,
-    IMAGE2,
-    IMAGE3,
-    IMAGE4,
-    IMAGE5,
-    IMAGE6,
-    IMAGE7,
-    IMAGE8;
-
+public class NodeShape {
+    
+    // Predefined shapes
+    public final static NodeShape DEFAULT = new NodeShape(Value.DEFAULT);
+    public final static NodeShape CIRCLE = new NodeShape(Value.CIRCLE);
+    public final static NodeShape TRIANGLE = new NodeShape(Value.TRIANGLE);
+    public final static NodeShape SQUARE = new NodeShape(Value.SQUARE);
+    public final static NodeShape DIAMOND = new NodeShape(Value.DIAMOND);
+    public final static NodeShape PENTAGON = new NodeShape(Value.PENTAGON);
+    public final static NodeShape HEXAGON = new NodeShape(Value.HEXAGON);
+    
     /**
-     * Returns array of all non-default values.
+     * Returns a node shape representing an image given by the uri.
      */
-    public static NodeShape[] specificValues() {
-        return new NodeShape[] {CIRCLE, TRIANGLE, SQUARE, DIAMOND, PENTAGON, HEXAGON, IMAGE1, IMAGE2, IMAGE3, IMAGE4, IMAGE5, IMAGE6, IMAGE7, IMAGE8};
+    public static NodeShape imageShape(String uri) throws URISyntaxException, IOException {
+        ImageNodeShapeFactory nodeShapeFactory = Lookup.getDefault().lookup(ImageNodeShapeFactory.class);
+        return nodeShapeFactory.createNodeShape(uri);
     }
+    
+    public final Value value;
 
+    public boolean isImage() {
+        return value == Value.IMAGE;
+    }
+    
+    protected NodeShape(Value value) {
+        this.value = value;
+    }
+    
+    /**
+     * Implementations of this interface are responsible for loading the image
+     * from the given URI and providing its ID for further reference.
+     */
+    public static interface ImageNodeShapeFactory {
+        public NodeShape createNodeShape(String uri) throws URISyntaxException, IOException;
+    }  
+    
+    public enum Value {
+        DEFAULT,
+        CIRCLE,
+        TRIANGLE,
+        SQUARE,
+        DIAMOND,
+        PENTAGON,
+        HEXAGON, 
+        IMAGE;
+        
+        @Override
+        public String toString() {
+            switch (this) {
+                case CIRCLE: return "Circle";
+                case DEFAULT: return "Default";
+                case DIAMOND: return "Diamond";
+                case HEXAGON: return "Hexagon";
+                case PENTAGON: return "Pentagon";
+                case SQUARE: return "Square";
+                case TRIANGLE: return "Triangle";
+                case IMAGE: return "Image";
+            }
+            return null;
+        }
+        
+    };
+    /**
+     * Returns array of all non-default, non-image shapes.
+     */
+    public static NodeShape[] specificShapes() {
+        return new NodeShape[] {CIRCLE, TRIANGLE, SQUARE, DIAMOND, PENTAGON, HEXAGON};
+    }
+    
     @Override
     public String toString() {
-        switch (this) {
-            case CIRCLE: return "Circle";
-            case DEFAULT: return "Default";
-            case DIAMOND: return "Diamond";
-            case HEXAGON: return "Hexagon";
-            case IMAGE1: return "Image 1";
-            case IMAGE2: return "Image 2";
-            case IMAGE3: return "Image 3";
-            case IMAGE4: return "Image 4";
-            case IMAGE5: return "Image 5";
-            case IMAGE6: return "Image 6";
-            case IMAGE7: return "Image 7";
-            case IMAGE8: return "Image 8";
-            case PENTAGON: return "Pentagon";
-            case SQUARE: return "Square";
-            case TRIANGLE: return "Triangle";
-        }
-        return null;
+        return value.toString();
     }
-
+    
 }
