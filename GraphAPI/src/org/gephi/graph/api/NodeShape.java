@@ -44,7 +44,7 @@ public class NodeShape {
     /**
      * Returns a node shape representing an image given by the uri.
      */
-    public static NodeShape imageShape(String uri) throws URISyntaxException, IOException {
+    public static NodeShape imageShape(String uri) throws NodeShapeException {
         ImageNodeShapeFactory nodeShapeFactory = Lookup.getDefault().lookup(ImageNodeShapeFactory.class);
         return nodeShapeFactory.createNodeShape(uri);
     }
@@ -64,7 +64,7 @@ public class NodeShape {
      * from the given URI and providing its ID for further reference.
      */
     public static interface ImageNodeShapeFactory {
-        public NodeShape createNodeShape(String uri) throws URISyntaxException, IOException;
+        public NodeShape createNodeShape(String uri) throws NodeShapeException;
     }  
     
     public enum Value {
@@ -103,6 +103,21 @@ public class NodeShape {
     @Override
     public String toString() {
         return value.toString();
+    }
+    
+    public static class NodeShapeException extends Exception {
+        public enum Cause {IO_ERROR, BAD_URI, UNSUPPORTED_IMAGE_FORMAT}
+        private final Cause cause;
+        
+        public NodeShapeException(Cause cause, Throwable e) {
+            super(e);
+            this.cause = cause;
+        }
+
+        public Cause getExceptionCause() {
+            return cause;
+        }
+        
     }
     
 }

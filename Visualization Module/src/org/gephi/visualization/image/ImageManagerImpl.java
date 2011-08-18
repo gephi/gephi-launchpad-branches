@@ -32,6 +32,7 @@ import java.util.List;
 import javax.imageio.ImageIO;
 import org.gephi.graph.api.NodeShape;
 import org.gephi.graph.api.NodeShape.ImageNodeShapeFactory;
+import org.gephi.graph.api.NodeShape.NodeShapeException;
 import org.gephi.visualization.api.ImageManager;
 import org.openide.util.lookup.ServiceProvider;
 import org.openide.util.lookup.ServiceProviders;
@@ -58,8 +59,18 @@ public class ImageManagerImpl implements ImageManager {
     }
 
     @Override
-    public NodeShape createNodeShape(String uri) throws URISyntaxException, IOException {
-        BufferedImage image = ImageIO.read(new File(new URI(uri)));
+    public NodeShape createNodeShape(String uri) throws NodeShapeException {
+        BufferedImage image = null;
+        try {
+            image = ImageIO.read(new File(new URI(uri)));
+        } catch (IOException ex) {
+            throw new NodeShapeException(NodeShapeException.Cause.IO_ERROR, ex);
+        } catch (URISyntaxException ex) {
+            throw new NodeShapeException(NodeShapeException.Cause.BAD_URI, ex);
+        }
+        if (image == null) {
+            throw new NodeShapeException(NodeShapeException.Cause.UNSUPPORTED_IMAGE_FORMAT, null);
+        }
         NodeShape nodeShape = new ImageNodeShape(id++);
         images.add(image);
         nodeShapes.add(nodeShape);

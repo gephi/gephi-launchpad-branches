@@ -26,6 +26,8 @@ import javax.swing.Icon;
 import org.gephi.datalab.spi.ContextMenuItemManipulator;
 import org.gephi.graph.api.Node;
 import org.gephi.graph.api.NodeShape;
+import org.gephi.visualization.contextmenu.BasicItem;
+import org.gephi.visualization.contextmenu.Group;
 import org.gephi.visualization.spi.GraphContextMenuItem;
 import org.openide.util.NbBundle;
 import org.openide.util.lookup.ServiceProvider;

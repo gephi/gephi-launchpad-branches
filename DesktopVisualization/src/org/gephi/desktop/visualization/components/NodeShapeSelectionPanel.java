@@ -20,6 +20,7 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 */
 package org.gephi.desktop.visualization.components;
 
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -28,19 +29,22 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
+import java.util.Enumeration;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.AbstractButton;
+import javax.swing.Box.Filler;
 import javax.swing.ButtonGroup;
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import org.gephi.graph.api.NodeShape;
+import org.gephi.graph.api.NodeShape.NodeShapeException;
 import org.gephi.visualization.api.ImageManager;
 import org.gephi.visualization.api.ImageNodeShape;
-import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
+import org.openide.util.NbBundle;
 import org.openide.util.NbPreferences;
 import org.openide.windows.WindowManager;
 
@@ -57,6 +61,8 @@ public class NodeShapeSelectionPanel extends javax.swing.JPanel {
         
         refreshPanel();
         
+        imagesScrollPane.getVerticalScrollBar().setUnitIncrement(5);
+        
         selectImageButton.addActionListener(new ActionListener() {
             private final String LAST_PATH = "NodeShapeSelectionPanel.lastPath";
             @Override
@@ -68,17 +74,32 @@ public class NodeShapeSelectionPanel extends javax.swing.JPanel {
                     File selectedFile = fileChooser.getSelectedFile();
                     NbPreferences.forModule(BackgroundSettingsPanel.class).put(LAST_PATH, selectedFile.getAbsolutePath());
                     try {
-                        imageManager.createNodeShape(selectedFile.getAbsolutePath());
-                    } catch (Exception ex) {
-                        Logger.getLogger("").log(Level.WARNING, "", ex);
+                        imageManager.createNodeShape(selectedFile.toURI().toString());
+                    } catch (NodeShapeException ex) {
+                        switch (ex.getExceptionCause()) {
+                            case IO_ERROR: 
+                                Logger.getLogger("").log(Level.WARNING, "", ex);
+                                break;
+                            case UNSUPPORTED_IMAGE_FORMAT: 
+                                JOptionPane.showMessageDialog(NodeShapeSelectionPanel.this, NbBundle.getMessage(NodeShapeSelectionPanel.class, "NodeShapeSelectionPanel.unsupportedImage.message"), NbBundle.getMessage(NodeShapeSelectionPanel.class, "NodeShapeSelectionPanel.unsupportedImage.title"), JOptionPane.WARNING_MESSAGE);
+                                break;
+                        }
                     }
                 }
+                refreshPanel();
             }
         });
     }
 
     public NodeShape getSelectedNodeShape() {
-        return ((NodeShapeRadioButton) group.getSelection().getSelectedObjects()[0]).getNodeShape();
+        Enumeration<AbstractButton> buttons = group.getElements();
+        while (buttons.hasMoreElements()) {
+            AbstractButton button = buttons.nextElement();
+            if (button.getModel() == group.getSelection()) {
+                return ((NodeShapeRadioButton) button).getNodeShape();
+            }
+        }
+        return null;
     }
 
     private void refreshPanel() {
@@ -93,17 +114,22 @@ public class NodeShapeSelectionPanel extends javax.swing.JPanel {
            
             constraints.gridy = i;
             constraints.weightx = 0.5;
-            constraints.weighty = 1.0d / nodeShapes.length;
-            constraints.insets = new Insets(2, 2, 2, 2);
+            constraints.insets = new Insets(8, 8, 8, 8);
+            constraints.anchor = GridBagConstraints.WEST;
             constraints.gridx = 0;
-            add(new ImagePanel(image));
+            innerPanel.add(new ImagePanel(image), constraints);
             
+            constraints.anchor = GridBagConstraints.EAST;
             constraints.gridx = 1;
             JRadioButton button = new NodeShapeRadioButton(nodeShapes[i]);
             button.setSelected(i == 0);
-            add(button);
+            innerPanel.add(button, constraints);
             group.add(button);
         }
+        constraints.weighty = 1.0;
+        constraints.gridy = nodeShapes.length;
+        innerPanel.add(new Filler(new Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 32767)), constraints);
+        imagesScrollPane.setViewportView(innerPanel);
     }
     
     /** This method is called from within the constructor to
@@ -133,9 +159,9 @@ public class NodeShapeSelectionPanel extends javax.swing.JPanel {
 
         imagesScrollPane.setViewportView(innerPanel);
 
-        jLabel1.setText(org.openide.util.NbBundle.getMessage(NodeShapeSelectionPanel.class, "ImageSelectionPanel.availableImages")); // NOI18N
+        jLabel1.setText(org.openide.util.NbBundle.getMessage(NodeShapeSelectionPanel.class, "NodeShapeSelectionPanel.availableImages")); // NOI18N
 
-        selectImageButton.setText(org.openide.util.NbBundle.getMessage(NodeShapeSelectionPanel.class, "ImageSelectionPanel.newImage")); // NOI18N
+        selectImageButton.setText(org.openide.util.NbBundle.getMessage(NodeShapeSelectionPanel.class, "NodeShapeSelectionPanel.newImage")); // NOI18N
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -185,7 +211,8 @@ public class NodeShapeSelectionPanel extends javax.swing.JPanel {
         
         public ImagePanel(BufferedImage image) {
             this.image = image;
-            this.setSize(image.getWidth(), image.getHeight());
+            this.setSize(new Dimension(image.getWidth(), image.getHeight()));
+            this.setPreferredSize(new Dimension(image.getWidth(), image.getHeight()));
         }
 
         @Override

@@ -73,7 +73,7 @@ public class NodeSettingsPanel extends javax.swing.JPanel {
                     }
                 } else {
                     NodeShapeSelectionPanel panel = new NodeShapeSelectionPanel();
-                    DialogDescriptor dd = new DialogDescriptor(panel, NbBundle.getMessage(NodeShapeSelectionPanel.class, "ImageSelectionPanel.title"), true, NotifyDescriptor.OK_CANCEL_OPTION, null, null);
+                    DialogDescriptor dd = new DialogDescriptor(panel, NbBundle.getMessage(NodeShapeSelectionPanel.class, "NodeShapeSelectionPanel.title"), true, NotifyDescriptor.OK_CANCEL_OPTION, null, null);
                     if (DialogDisplayer.getDefault().notify(dd).equals(NotifyDescriptor.OK_OPTION) && panel.getSelectedNodeShape() != null) {
                         vizModel.setGlobalNodeShape(panel.getSelectedNodeShape());
                     } else {
