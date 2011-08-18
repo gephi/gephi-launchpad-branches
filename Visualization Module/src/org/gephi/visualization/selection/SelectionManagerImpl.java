@@ -60,37 +60,37 @@ public class SelectionManagerImpl implements SelectionManager, GraphListener {
     }
 
     @Override
-    public Collection<Node> getSelectedNodes() {
+    public synchronized Collection<Node> getSelectedNodes() {
         return nodeStructure.getSelectedNodes();
     }
 
     @Override
-    public boolean isNodeSelected() {
+    public synchronized boolean isNodeSelected() {
         return nodeStructure.isNodeSelected();
     }
     
     @Override
-    public void applySelection(Shape shape) {
+    public synchronized void applySelection(Shape shape) {
         nodeStructure.applySelection(shape);
     }
 
     @Override
-    public void applyContinuousSelection(Shape shape) {
+    public synchronized void applyContinuousSelection(Shape shape) {
         nodeStructure.applyContinuousSelection(shape);
     }
 
     @Override
-    public void cancelContinuousSelection() {
+    public synchronized void cancelContinuousSelection() {
         nodeStructure.clearContinuousSelection();
     }
 
     @Override
-    public void clearSelection() {
+    public synchronized void clearSelection() {
         nodeStructure.clearSelection();
     }
 
     @Override
-    public void selectSingle(Point point, boolean select) {
+    public synchronized void selectSingle(Point point, boolean select) {
         int mouseSelectionDiameter = Lookup.getDefault().lookup(VisualizationController.class).getVizConfig().getIntProperty(VizConfig.MOUSE_SELECTION_DIAMETER);
         Shape singleNodeSelectionShape = ShapeUtils.createEllipseShape(point.x - mouseSelectionDiameter, point.y - mouseSelectionDiameter, mouseSelectionDiameter, mouseSelectionDiameter);
         nodeStructure.clearContinuousSelection();
@@ -98,7 +98,7 @@ public class SelectionManagerImpl implements SelectionManager, GraphListener {
     }
 
     @Override
-    public boolean selectContinuousSingle(Point point, boolean select) {
+    public synchronized boolean selectContinuousSingle(Point point, boolean select) {
         int mouseSelectionDiameter = Lookup.getDefault().lookup(VisualizationController.class).getVizConfig().getIntProperty(VizConfig.MOUSE_SELECTION_DIAMETER);
         Shape singleNodeSelectionShape = ShapeUtils.createEllipseShape(point.x - mouseSelectionDiameter, point.y - mouseSelectionDiameter, mouseSelectionDiameter, mouseSelectionDiameter);
         return nodeStructure.selectContinuousSingle(singleNodeSelectionShape, point, select, NodeSpatialStructure.SINGLE_NODE_CLOSEST);
@@ -115,7 +115,7 @@ public class SelectionManagerImpl implements SelectionManager, GraphListener {
     }
 
     @Override
-    public void disableSelection() {
+    public synchronized void disableSelection() {
         // move to NodeSpatialStructure and clear marker
         for (Node node : nodeStructure.getSelectedNodes()) {
             node.getNodeData().setSelected(false);
@@ -166,23 +166,45 @@ public class SelectionManagerImpl implements SelectionManager, GraphListener {
     }
 
     @Override
-    public void selectEdge(Edge edge) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public synchronized void selectEdge(Edge edge) {
+        if (edge == null) {
+            return;
+        }
+        nodeStructure.clearSelection();
+        edge.getSource().getNodeData().setSelected(true);
+        edge.getTarget().getNodeData().setSelected(true);
+        nodeStructure.clearCache();
     }
 
     @Override
-    public void selectEdges(Edge[] edges) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public synchronized void selectEdges(Edge[] edges) {
+        if (edges == null) {
+            return;
+        }
+        nodeStructure.clearSelection();
+        for (Edge edge : edges) {
+            edge.getSource().getNodeData().setSelected(true);
+            edge.getTarget().getNodeData().setSelected(true);
+        }
+        nodeStructure.clearCache();
     }
 
     @Override
-    public void selectNode(Node node) {
+    public synchronized void selectNode(Node node) {
+        if (node == null) {
+            return;
+        }
+        nodeStructure.clearSelection();
         node.getNodeData().setSelected(true);
         nodeStructure.clearCache();
     }
 
     @Override
-    public void selectNodes(Node[] nodes) {
+    public synchronized void selectNodes(Node[] nodes) {
+        if (nodes == null) {
+            return;
+        }
+        nodeStructure.clearSelection();
         for (Node node : nodes) {
             node.getNodeData().setSelected(true);
         }

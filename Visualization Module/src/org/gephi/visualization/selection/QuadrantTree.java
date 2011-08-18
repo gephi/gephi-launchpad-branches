@@ -34,12 +34,12 @@ public abstract class QuadrantTree implements NodeSpatialStructure {
     protected boolean reassignNodes = true;
     
     @Override
-    public void clearCache() {
+    public synchronized void clearCache() {
         changeMarker = true;
     }
     
     @Override
-    public void clearSelection() {
+    public synchronized void clearSelection() {
         for (Node node : getSelectedNodes()) {
             node.getNodeData().setSelected(false);
         }
@@ -52,7 +52,7 @@ public abstract class QuadrantTree implements NodeSpatialStructure {
     }
     
     @Override
-    public boolean isNodeSelected() {
+    public synchronized boolean isNodeSelected() {
         return !getSelectedNodes().isEmpty();
     }
     
