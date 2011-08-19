@@ -170,7 +170,6 @@ public class SelectionManagerImpl implements SelectionManager, GraphListener {
         if (edge == null) {
             return;
         }
-        nodeStructure.clearSelection();
         edge.getSource().getNodeData().setSelected(true);
         edge.getTarget().getNodeData().setSelected(true);
         nodeStructure.clearCache();
@@ -181,7 +180,6 @@ public class SelectionManagerImpl implements SelectionManager, GraphListener {
         if (edges == null) {
             return;
         }
-        nodeStructure.clearSelection();
         for (Edge edge : edges) {
             edge.getSource().getNodeData().setSelected(true);
             edge.getTarget().getNodeData().setSelected(true);
@@ -278,9 +276,8 @@ public class SelectionManagerImpl implements SelectionManager, GraphListener {
                     nodeStructure.addNode(node);
                 }
                 break;
-            case ADD_EDGES:
-                break;
-            default:
+            case REMOVE_NODES:
+            case REMOVE_EDGES:
                 refreshDataStructure();
                 break;
         }
