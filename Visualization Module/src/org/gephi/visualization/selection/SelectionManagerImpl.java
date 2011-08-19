@@ -116,10 +116,7 @@ public class SelectionManagerImpl implements SelectionManager, GraphListener {
 
     @Override
     public synchronized void disableSelection() {
-        // move to NodeSpatialStructure and clear marker
-        for (Node node : nodeStructure.getSelectedNodes()) {
-            node.getNodeData().setSelected(false);
-        }
+        clearSelection();
         nodeStructure.clearCache();
         clearState();
         fireChangeEvent();
@@ -192,7 +189,6 @@ public class SelectionManagerImpl implements SelectionManager, GraphListener {
         if (node == null) {
             return;
         }
-        nodeStructure.clearSelection();
         node.getNodeData().setSelected(true);
         nodeStructure.clearCache();
     }
@@ -202,7 +198,6 @@ public class SelectionManagerImpl implements SelectionManager, GraphListener {
         if (nodes == null) {
             return;
         }
-        nodeStructure.clearSelection();
         for (Node node : nodes) {
             node.getNodeData().setSelected(true);
         }

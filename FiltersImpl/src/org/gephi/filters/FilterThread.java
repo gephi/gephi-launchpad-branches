@@ -150,6 +150,7 @@ public class FilterThread extends Thread {
 //        System.out.println("#Edges: " + result.getEdgeCount());
         if (running) {
             SelectionManager selectionManager = Lookup.getDefault().lookup(VisualizationController.class).getSelectionManager();
+            selectionManager.clearSelection();
             selectionManager.selectNodes(result.getNodes().toArray());
             selectionManager.selectEdges(result.getEdges().toArray());
             GraphView view = result.getView();

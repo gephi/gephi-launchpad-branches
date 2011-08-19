@@ -62,10 +62,6 @@ public interface SelectionManager {
      */
     void cancelContinuousSelection();
 
-    /**
-     * Clears all selected nodes.
-     */
-    void clearSelection();
 
     /**
      * Adds or removes single node from a permanent selection.
@@ -82,6 +78,34 @@ public interface SelectionManager {
      */
     boolean selectContinuousSingle(Point point, boolean select);
 
+    /**
+     * Select an edge.
+     */
+    void selectEdge(Edge edge);
+
+    /**
+     * Select edges.
+     */
+    void selectEdges(Edge[] edges);
+
+    /**
+     * Select a node.
+     */
+    void selectNode(Node node);
+
+    /**
+     * Select nodes.
+     */
+    void selectNodes(Node[] nodes);
+    
+    /**
+     * Deselects all selected nodes.
+     */
+    void clearSelection();
+    
+    /**
+     * Deselects all selected nodes and disables the selection.
+     */
     void disableSelection();
 
     /**
@@ -99,14 +123,6 @@ public interface SelectionManager {
     boolean isNodeDraggingEnabled();
 
     SelectionType getSelectionType();
-
-    void selectEdge(Edge edge);
-
-    void selectEdges(Edge[] edges);
-
-    void selectNode(Node node);
-
-    void selectNodes(Node[] nodes);
 
     void setDirectMouseSelection();
 

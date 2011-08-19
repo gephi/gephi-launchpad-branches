@@ -226,7 +226,7 @@ public class FilterControllerImpl implements FilterController, PropertyExecutor 
             filterThread.setRootQuery((AbstractQueryImpl) query);
             filterThread.start();
         } else {
-            Lookup.getDefault().lookup(VisualizationController.class).getSelectionManager().selectNodes(null);
+            Lookup.getDefault().lookup(VisualizationController.class).getSelectionManager().clearSelection();
         }
     }
 
