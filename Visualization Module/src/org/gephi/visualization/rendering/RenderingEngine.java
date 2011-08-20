@@ -21,6 +21,7 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 package org.gephi.visualization.rendering;
 
 import java.awt.Component;
+import javax.media.opengl.DebugGL2;
 import javax.media.opengl.GL;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLCapabilities;
@@ -56,7 +57,7 @@ public class RenderingEngine {
 
     public RenderingEngine(final VisualizationControllerImpl controller, VizModel model) {
         this.model = model;
-        
+
         final GLCapabilities caps = createGLCapabilities();
         this.drawable = new GLCanvas(caps);
         this.drawable.setAutoSwapBufferMode(true);
@@ -75,6 +76,7 @@ public class RenderingEngine {
             
             @Override
             public void init(GLAutoDrawable glad) {
+                glad.setGL(new DebugGL2(glad.getGL().getGL2()));
                 final GL gl = glad.getGL();
                 
                 gl.setSwapInterval(1);
@@ -96,9 +98,9 @@ public class RenderingEngine {
                 FrameData frameData = bridge.updateCurrent();
 
                 // frame data is not currently used by the pipeline
-                //if (frameData == null) {
-                //    return;
-                //}
+                if (frameData == null) {
+                    return;
+                }
 
                 controller.beginRenderFrame();
 
@@ -111,11 +113,9 @@ public class RenderingEngine {
             public void reshape(GLAutoDrawable glad, int x, int y, int w, int h) {
                 final GL gl = glad.getGL();
 
-                int h2 = h == 0 ? 1 : h;
+                pipeline.reshape(gl, x, y, w, h);
 
-                pipeline.reshape(gl, x, y, w, h2);
-
-                controller.resize(w, h2);
+                controller.resize(w, h);
             }
         };
         

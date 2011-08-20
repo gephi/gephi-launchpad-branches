@@ -75,7 +75,7 @@ public class BufferedCommandListBuilder<E> implements CommandListBuilder<E> {
     public List<Command> create() {
         if (!this.isBuilding) return null;
         
-        Command command = new GenericCommand(this.buffers, this.technique);
+        Command command = new GenericCommand<Buffer<E>>(this.buffers, this.technique);
         this.buffers = null;
         this.isBuilding = false;
         return Collections.singletonList(command);

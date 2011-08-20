@@ -69,10 +69,10 @@ public final class Shape2DTechniqueGL12 extends BufferedTechnique<VizNode2D> {
         if (gl2 == null) return;
         
         gl2.glMatrixMode(GL2.GL_PROJECTION);
-        gl2.glPopMatrix();
+        gl2.glLoadIdentity();
         
         gl2.glMatrixMode(GL2.GL_MODELVIEW);
-        gl2.glPopMatrix();
+        gl2.glLoadIdentity();
         
         gl2.glBindTexture(GL2.GL_TEXTURE_2D, 0);
         gl2.glDisable(GL2.GL_BLEND);
@@ -143,14 +143,12 @@ public final class Shape2DTechniqueGL12 extends BufferedTechnique<VizNode2D> {
         if (gl2 == null || !(camera instanceof OrthoCamera)) return false;
         
         gl2.glMatrixMode(GL2.GL_PROJECTION);
-        gl2.glPushMatrix();
         
         gl2.glLoadIdentity();
         
         gl2.glLoadMatrixf(camera.projMatrix(renderArea).toArray(), 0);
         
         gl2.glMatrixMode(GL2.GL_MODELVIEW);
-        gl2.glPushMatrix();
         
         gl2.glLoadIdentity();
         

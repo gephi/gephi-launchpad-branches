@@ -24,14 +24,23 @@ import com.jogamp.opengl.util.awt.TextRenderer;
 import java.awt.Font;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.nio.FloatBuffer;
 import java.util.concurrent.atomic.AtomicReference;
 import javax.media.opengl.GL;
+import javax.media.opengl.GL2;
+import javax.media.opengl.glu.GLU;
+import org.gephi.math.linalg.Vec2;
 import org.gephi.visualization.api.color.Color;
 import org.gephi.visualization.api.rendering.background.Background;
 import org.gephi.visualization.api.vizmodel.VizConfig;
 import org.gephi.visualization.api.vizmodel.VizModel;
 import org.gephi.visualization.data.FrameData;
 import org.gephi.visualization.rendering.RenderingEngine;
+import org.gephi.visualization.rendering.camera.Camera;
+import org.gephi.visualization.rendering.camera.OrthoCamera;
+import org.gephi.visualization.rendering.camera.Rectangle;
+import org.gephi.visualization.rendering.camera.RenderArea;
+import org.gephi.visualization.rendering.command.Command;
 
 /**
  *
@@ -67,7 +76,6 @@ public class Pipeline {
         this.backgroundColor = new AtomicReference<Color>(new Color(model.getBackground().getColor()));
         
         this.model.addPropertyChangeListener(new PropertyChangeListener() {
-
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
                 if (evt.getPropertyName().equals(VizConfig.BACKGROUND)) {
@@ -97,11 +105,27 @@ public class Pipeline {
         // screenshots ..
         
         // screen
-        gl.glViewport(this.screenX, this.screenY, this.screenWidth, this.screenHeight);
+        gl.glViewport(0, 0, this.screenWidth, this.screenHeight);
         
         gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
         
         // draw graph
+        //RenderArea renderArea = new RenderArea((float)this.screenWidth / (float)this.screenHeight, new Rectangle(0.0f, 0.0f, 1.0f, 1.0f), frameData.near, frameData.far);
+        RenderArea renderArea = new RenderArea((float)this.screenWidth / (float)this.screenHeight, new Rectangle(0.0f, 0.0f, 1.0f, 1.0f), -100000.0f, 100000.0f);
+        
+        test(gl.getGL2(), frameData, renderArea);
+        
+        for (Command c : frameData.edgeCommands) {
+            c.draw(gl, frameData.camera, renderArea);
+        }
+        
+        for (Command c : frameData.nodeCommands) {
+            c.draw(gl, frameData.camera, renderArea);
+        }
+        
+        for (Command c : frameData.uiCommands) {
+            c.draw(gl, frameData.camera, renderArea);
+        }
      
         if (this.model.isShowFPS()) {
             this.textRenderer.setColor(java.awt.Color.BLACK);
@@ -115,5 +139,45 @@ public class Pipeline {
     
     public void dispose(GL gl) {
         
+    }
+
+    private void test(GL2 gl2, FrameData frameData, RenderArea renderArea) {
+        Camera camera = frameData.camera;
+        
+        gl2.glMatrixMode(GL2.GL_PROJECTION);
+        
+        final float[] projMatrix = camera.projMatrix(renderArea).toArray();
+        gl2.glLoadMatrixf(projMatrix, 0);
+        
+        //gl2.glLoadIdentity();
+        final Vec2 center = ((OrthoCamera)frameData.camera).center;
+        final float height = ((OrthoCamera)frameData.camera).height;
+        final float aspect = renderArea.aspectRatio;
+        //GLU glu = GLU.createGLU(gl2);
+        //glu.gluOrtho2D(center.x() - height * aspect * 0.5f, center.x() + height * aspect * 0.5f, center.x() - height * 0.5f, center.x() + height * 0.5f);
+        
+        gl2.glMatrixMode(GL2.GL_MODELVIEW);
+        
+        //final float[] viewMatrix = camera.viewMatrix(renderArea).toArray();
+        //gl2.glLoadMatrixf(viewMatrix, 0);
+        gl2.glLoadIdentity();
+        
+        gl2.glColor3f(1.0f, 0.0f, 0.0f);
+        
+        gl2.glBegin(GL2.GL_TRIANGLES);
+        
+        gl2.glVertex2f(center.x(), center.y());
+        
+        gl2.glVertex2f(center.x() + height * aspect * 0.5f, center.y());
+        
+        gl2.glVertex2f(center.x(), center.y() + height * 0.5f);
+        
+        gl2.glEnd();
+        
+        gl2.glMatrixMode(GL2.GL_PROJECTION);
+        gl2.glLoadIdentity();
+        
+        gl2.glMatrixMode(GL2.GL_MODELVIEW);
+        gl2.glLoadIdentity();
     }
 }

@@ -64,7 +64,7 @@ public class InstancedCommandListBuilder<E> implements CommandListBuilder<E> {
     public List<Command> create() {
         if (!this.isBuilding) return null;
         
-        Command command = new GenericCommand(this.list, this.technique);
+        Command command = new GenericCommand<E>(this.list, this.technique);
         this.list = null;
         return Collections.singletonList(command);
     }
