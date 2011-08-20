@@ -20,6 +20,7 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.gephi.visualization.contextmenu;
 
+import org.gephi.visualization.spi.BasicItem;
 import java.awt.event.KeyEvent;
 import javax.swing.Icon;
 import org.gephi.datalab.api.datatables.DataTablesController;

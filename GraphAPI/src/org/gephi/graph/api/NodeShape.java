@@ -93,11 +93,19 @@ public class NodeShape {
         }
         
     };
+    
     /**
      * Returns array of all non-default, non-image shapes.
      */
     public static NodeShape[] specificShapes() {
         return new NodeShape[] {CIRCLE, TRIANGLE, SQUARE, DIAMOND, PENTAGON, HEXAGON};
+    }
+    
+    /**
+     * Returns array of all natively supported shapes (not user imported image shapes).
+     */
+    public static NodeShape[] nativeShapes() {
+        return new NodeShape[] {CIRCLE, TRIANGLE, SQUARE, DIAMOND, PENTAGON, HEXAGON, DEFAULT};
     }
     
     @Override
