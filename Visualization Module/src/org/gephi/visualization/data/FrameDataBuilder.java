@@ -57,7 +57,7 @@ public class FrameDataBuilder {
     
     private final CommandListBuilders builders;
 
-    public FrameDataBuilder(org.gephi.visualization.api.camera.Camera camera,
+    public FrameDataBuilder(org.gephi.visualization.api.Camera camera,
             NodeStyler nodeStyler, EdgeStyler edgeStyler,
             CommandListBuilders builders) {
         if (camera instanceof Camera2d) {

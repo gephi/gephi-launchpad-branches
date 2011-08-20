@@ -152,12 +152,6 @@ public interface VizModel {
     public void setReduceFPSWhenMouseOutValue(int fps);
     
     public void setNormalFPS(int fps);
-    
-    /**
-     * Sets relative distance of camera from the world.
-     * @param factor float from interval [0.0, 1.0].
-     */
-    public void setZoomFactor(float factor);
 
     public void setGlobalNodeShape(NodeShape nodeShape);
 

@@ -69,7 +69,8 @@ public final class Node2DTextureBuilder {
         
         gl.glTexParameteri(GL.GL_TEXTURE_2D, GL2.GL_GENERATE_MIPMAP, GL.GL_TRUE);
         
-        final ProceduralTextureGenerator generator = generatorsMap.get(shape);
+        //final ProceduralTextureGenerator generator = generatorsMap.get(shape);
+        final ProceduralTextureGenerator generator = new CircleTextureGenerator();
         final ByteBuffer buffer = Buffers.newDirectByteBuffer(2 * size * size);
         generator.createFillTexture(buffer, size);
         gl.glTexImage2D(GL.GL_TEXTURE_2D, 0, GL2.GL_LUMINANCE8_ALPHA8, size, size, 0, GL2.GL_LUMINANCE_ALPHA, GL.GL_UNSIGNED_BYTE, buffer);
@@ -96,7 +97,8 @@ public final class Node2DTextureBuilder {
         
         gl.glTexParameteri(GL.GL_TEXTURE_2D, GL2.GL_GENERATE_MIPMAP, GL.GL_TRUE);
         
-        final ProceduralTextureGenerator generator = generatorsMap.get(shape);
+        //final ProceduralTextureGenerator generator = generatorsMap.get(shape);
+        final ProceduralTextureGenerator generator = new CircleTextureGenerator();
         final ByteBuffer buffer = Buffers.newDirectByteBuffer(2 * size * size);
         generator.createBorderTexture(borderSize, buffer, size);
         gl.glTexImage2D(GL.GL_TEXTURE_2D, 0, GL2.GL_LUMINANCE8_ALPHA8, size, size, 0, GL2.GL_LUMINANCE_ALPHA, GL.GL_UNSIGNED_BYTE, buffer);

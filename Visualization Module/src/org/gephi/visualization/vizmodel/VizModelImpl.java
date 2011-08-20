@@ -343,12 +343,6 @@ public class VizModelImpl implements VizModel {
         config.setProperty(VizConfig.GRAPH_LIMITS, graphLimits);
         fireProperyChange(VizConfig.GRAPH_LIMITS, null, graphLimits);
     }
-
-    @Override
-    public void setZoomFactor(float distance) {
-        config.setProperty(VizConfig.ZOOM_FACTOR, distance);
-        fireProperyChange(VizConfig.ZOOM_FACTOR, null, distance);
-    }
     
     @Override
     public boolean isReduceFPSWhenMouseOut() {
