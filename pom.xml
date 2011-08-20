@@ -112,8 +112,8 @@
 <!--   <module>datalab.plugin</module>-->
     <module>tools.api</module>
     <module>validation</module>
-   <module>ui.utils</module>
-    <module>ui.components</module>
+<!--   <module>ui.utils</module>-->
+<!--    <module>ui.components</module>-->
     <module>database.drivers</module>
     <module>timeline</module>
     <module>filters.api</module>
