@@ -38,6 +38,7 @@ import org.gephi.visualization.api.rendering.background.BackgroundSize;
 import org.gephi.visualization.api.vizmodel.VizConfig;
 import org.gephi.visualization.api.selection.SelectionType;
 import org.gephi.visualization.api.vizmodel.GraphLimits;
+import org.gephi.visualization.camera.Camera2d;
 import org.openide.util.NbPreferences;
 
 /**
@@ -101,13 +102,12 @@ public class VizConfigImpl implements VizConfig {
         initDefault(SHOW_FPS, true);
         initDefault(SHOW_HULLS, true);
         initDefault(TOOLBAR, true);
-        initDefault(USE_3D, false);
+        initDefault(CAMERA_USE_3D, false);
         initDefault(VIZBAR, true);
 
         // Other configuration
         initDefault(CAMERA_CONTROL, true);
-        initDefault(CAMERA_POSITION, new float[]{0f, 0f, 5000f});
-        initDefault(CAMERA_TARGET, new float[]{0f, 0f, 0f});
+        initDefault(CAMERA, new Camera2d());
         initDefault(DIRECT_MOUSE_SELECTION, true);
         initDefault(DRAGGING, true);
         initDefault(HIGHLIGHT_NON_SELECTED, false);
@@ -124,7 +124,6 @@ public class VizConfigImpl implements VizConfig {
         initDefault(SCREENSHOT_SETTINGS, new ScreenshotSettings(1024, 876, false, null));
         initDefault(SELECTION, true);
         initDefault(SELECTION_TYPE, SelectionType.NONE);
-        initDefault(ZOOM_FACTOR, 0.8f);
     }
     
     private void initDefault(String property, Object defaultValue) {

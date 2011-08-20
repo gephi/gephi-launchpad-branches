@@ -32,7 +32,6 @@ import org.gephi.graph.api.Node;
  * @author Antonio Patriarca <antoniopatriarca@gmail.com>
  * @author Vojtech Bardiovsky <vojtech.bardiovsky@gmail.com>
  */
-
 public interface SelectionManager {
 
     void initialize();
@@ -63,10 +62,6 @@ public interface SelectionManager {
      */
     void cancelContinuousSelection();
 
-    /**
-     * Clears all selected nodes.
-     */
-    void clearSelection();
 
     /**
      * Adds or removes single node from a permanent selection.
@@ -83,6 +78,34 @@ public interface SelectionManager {
      */
     boolean selectContinuousSingle(Point point, boolean select);
 
+    /**
+     * Select an edge.
+     */
+    void selectEdge(Edge edge);
+
+    /**
+     * Select edges.
+     */
+    void selectEdges(Edge[] edges);
+
+    /**
+     * Select a node.
+     */
+    void selectNode(Node node);
+
+    /**
+     * Select nodes.
+     */
+    void selectNodes(Node[] nodes);
+    
+    /**
+     * Deselects all selected nodes.
+     */
+    void clearSelection();
+    
+    /**
+     * Deselects all selected nodes and disables the selection.
+     */
     void disableSelection();
 
     /**
@@ -101,14 +124,6 @@ public interface SelectionManager {
 
     SelectionType getSelectionType();
 
-    void selectEdge(Edge edge);
-
-    void selectEdges(Edge[] edges);
-
-    void selectNode(Node node);
-
-    void selectNodes(Node[] nodes);
-
     void setDirectMouseSelection();
 
     void setDraggingEnabled(boolean enabled);
@@ -121,7 +136,7 @@ public interface SelectionManager {
      * Called when the spatial information or graph have changed to rebuild used
      * data structure.
      */
-    void refreshDataStructure();
+    void refresh();
     
     // Events
     void addChangeListener(ChangeListener changeListener);

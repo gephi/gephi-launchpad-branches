@@ -72,9 +72,7 @@
                 </dependency>
             </module-dependencies>
             <public-packages>
-                <package>org.gephi.visualization.api.camera</package>
-                <package>org.gephi.visualization.api.color</package>
-                <package>org.gephi.visualization.api.controller</package>
+                <package>org.gephi.visualization.api</package>
                 <package>org.gephi.visualization.api.event</package>
                 <package>org.gephi.visualization.api.geometry</package>
                 <package>org.gephi.visualization.api.rendering</package>
@@ -82,7 +80,6 @@
                 <package>org.gephi.visualization.api.selection</package>
                 <package>org.gephi.visualization.api.view.ui</package>
                 <package>org.gephi.visualization.api.vizmodel</package>
-                <package>org.gephi.visualization.apiimpl</package>
                 <package>org.gephi.visualization.apiimpl.contextmenu</package>
                 <package>org.gephi.visualization.apiimpl.shape</package>
                 <package>org.gephi.visualization.spi</package>

@@ -32,7 +32,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JTextField;
 import org.gephi.math.linalg.Vec2;
 import org.gephi.ui.components.JColorButton;
-import org.gephi.visualization.api.controller.VisualizationController;
+import org.gephi.visualization.api.VisualizationController;
 import org.gephi.visualization.api.rendering.background.Background;
 import org.gephi.visualization.api.rendering.background.BackgroundAttachment;
 import org.gephi.visualization.api.rendering.background.BackgroundPosition;

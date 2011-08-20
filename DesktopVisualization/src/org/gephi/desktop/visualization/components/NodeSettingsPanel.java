@@ -28,10 +28,14 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import javax.swing.DefaultComboBoxModel;
 import org.gephi.graph.api.NodeShape;
-import org.gephi.visualization.api.controller.VisualizationController;
+import org.gephi.visualization.api.VisualizationController;
 import org.gephi.visualization.api.vizmodel.VizConfig;
 import org.gephi.visualization.api.vizmodel.VizModel;
+import org.openide.DialogDescriptor;
+import org.openide.DialogDisplayer;
+import org.openide.NotifyDescriptor;
 import org.openide.util.Lookup;
+import org.openide.util.NbBundle;
 
 /**
  *
@@ -55,16 +59,28 @@ public class NodeSettingsPanel extends javax.swing.JPanel {
             }
         });
 
-        final DefaultComboBoxModel comboModel = new DefaultComboBoxModel(NodeShape.specificValues());
+        final DefaultComboBoxModel comboModel = new DefaultComboBoxModel(NodeShape.specificShapes());
+        comboModel.addElement(NbBundle.getMessage(NodeSettingsPanel.class, "NodeSettingsPanel.browseImage"));
         comboModel.setSelectedItem(vizModel.getGlobalNodeShape());
         shapeCombo.setModel(comboModel);
         shapeCombo.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 VizModel vizModel = Lookup.getDefault().lookup(VisualizationController.class).getVizModel();
-                if (vizModel.getGlobalNodeShape() != comboModel.getSelectedItem()) {
-                    vizModel.setGlobalNodeShape((NodeShape) comboModel.getSelectedItem());
+                if (comboModel.getSelectedItem() instanceof NodeShape) {
+                    if (vizModel.getGlobalNodeShape() != comboModel.getSelectedItem()) {
+                        vizModel.setGlobalNodeShape((NodeShape) comboModel.getSelectedItem());
+                    }
+                } else {
+                    NodeShapeSelectionPanel panel = new NodeShapeSelectionPanel();
+                    DialogDescriptor dd = new DialogDescriptor(panel, NbBundle.getMessage(NodeShapeSelectionPanel.class, "NodeShapeSelectionPanel.title"), true, NotifyDescriptor.OK_CANCEL_OPTION, null, null);
+                    if (DialogDisplayer.getDefault().notify(dd).equals(NotifyDescriptor.OK_OPTION) && panel.getSelectedNodeShape() != null) {
+                        vizModel.setGlobalNodeShape(panel.getSelectedNodeShape());
+                    } else {
+                        refreshSharedConfig();
+                    }
                 }
+                
             }
         });
 
@@ -100,8 +116,13 @@ public class NodeSettingsPanel extends javax.swing.JPanel {
         if (vizModel.isDefaultModel()) {
             return;
         }
-        if (shapeCombo.getSelectedItem() != vizModel.getGlobalNodeShape()) {
-            shapeCombo.setSelectedItem(vizModel.getGlobalNodeShape());
+        if (shapeCombo.getSelectedItem() != vizModel.getGlobalNodeShape() && 
+           ((shapeCombo.getSelectedItem() instanceof NodeShape) || !vizModel.getGlobalNodeShape().isImage())) {
+            if (vizModel.getGlobalNodeShape().isImage()) {
+                shapeCombo.setSelectedIndex(shapeCombo.getItemCount() - 1);
+            } else {
+                shapeCombo.setSelectedItem(vizModel.getGlobalNodeShape());
+            }
         }
         if (adjustTextCheckbox.isSelected() != vizModel.isAdjustByText()) {
             adjustTextCheckbox.setSelected(vizModel.isAdjustByText());

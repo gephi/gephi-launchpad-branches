@@ -39,6 +39,7 @@ import net.java.dev.colorchooser.ColorChooser;
 import org.gephi.ui.components.JColorButton;
 import org.gephi.ui.components.JDropDownButton;
 import org.gephi.visualization.api.controller.VisualizationController;
+import org.gephi.visualization.api.VisualizationController;
 import org.gephi.visualization.api.vizmodel.TextModel;
 import org.gephi.visualization.api.vizmodel.VizConfig;
 import org.gephi.visualization.api.vizmodel.VizModel;

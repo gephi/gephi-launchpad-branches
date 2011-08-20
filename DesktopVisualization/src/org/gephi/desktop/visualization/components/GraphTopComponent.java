@@ -1,5 +1,6 @@
 package org.gephi.desktop.visualization.components;
 
+import org.gephi.desktop.visualization.spi.PropertiesBarAddon;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.FlowLayout;
@@ -16,9 +17,7 @@ import org.gephi.project.api.WorkspaceListener;
 import org.gephi.tools.api.ToolController;
 import org.gephi.ui.utils.UIUtils;
 import org.gephi.visualization.api.vizmodel.VizConfig;
-import org.gephi.visualization.api.controller.VisualizationController;
-import org.gephi.visualization.api.vizmodel.VizModel;
-import org.gephi.visualization.apiimpl.PropertiesBarAddon;
+import org.gephi.visualization.api.VisualizationController;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 import org.openide.windows.WindowManager;

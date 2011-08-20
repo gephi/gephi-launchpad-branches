@@ -35,7 +35,7 @@ import org.gephi.datalab.spi.ContextMenuItemManipulator;
 import org.gephi.graph.api.GraphController;
 import org.gephi.graph.api.HierarchicalGraph;
 import org.gephi.graph.api.Node;
-import org.gephi.visualization.api.selection.SelectionManager;
+import org.gephi.visualization.api.VisualizationController;
 import org.gephi.visualization.spi.GraphContextMenuItem;
 import org.openide.util.Lookup;
 
@@ -47,7 +47,7 @@ public class GraphContextMenu {
 
     public JPopupMenu getMenu() {
         GraphContextMenuItem[] items = getGraphContextMenuItems();
-        final Node[] selectedNodes = Lookup.getDefault().lookup(SelectionManager.class).getSelectedNodes().toArray(new Node[]{});
+        final Node[] selectedNodes = Lookup.getDefault().lookup(VisualizationController.class).getSelectionManager().getSelectedNodes().toArray(new Node[]{});
         final HierarchicalGraph graph = Lookup.getDefault().lookup(GraphController.class).getModel().getHierarchicalGraph();
         JPopupMenu contextMenu = new JPopupMenu();
 

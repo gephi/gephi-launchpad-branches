@@ -26,6 +26,8 @@ import javax.swing.Icon;
 import org.gephi.datalab.spi.ContextMenuItemManipulator;
 import org.gephi.graph.api.Node;
 import org.gephi.graph.api.NodeShape;
+import org.gephi.visualization.contextmenu.BasicItem;
+import org.gephi.visualization.contextmenu.Group;
 import org.gephi.visualization.spi.GraphContextMenuItem;
 import org.openide.util.NbBundle;
 import org.openide.util.lookup.ServiceProvider;
@@ -39,7 +41,7 @@ public class SetNodeShape extends BasicItem {
 
     @Override
     public ContextMenuItemManipulator[] getSubItems() {
-        if (nodes.length > 0) {
+        /*if (nodes.length > 0) {
             List<GraphContextMenuItem> subItems = new ArrayList<GraphContextMenuItem>();
             int i = 1;
             for (final NodeShape shape : NodeShape.values()) {
@@ -81,7 +83,8 @@ public class SetNodeShape extends BasicItem {
             return subItems.toArray(new GraphContextMenuItem[]{});
         } else {
             return null;
-        }
+        }*/
+        return null;
     }
 
     @Override

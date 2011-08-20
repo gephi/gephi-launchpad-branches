@@ -1,6 +1,6 @@
 /*
 Copyright 2008-2011 Gephi
-Authors : Antonio Patriarca <antoniopatriarca@gmail.com>
+Authors : Mathieu Bastian <mathieu.bastian@gephi.org>
 Website : http://www.gephi.org
 
 This file is part of Gephi.
@@ -18,28 +18,15 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 */
+package org.gephi.desktop.visualization.spi;
 
-package org.gephi.visualization.data.graph;
-
-import org.gephi.math.linalg.Vec3;
-import org.gephi.visualization.api.Color;
+import javax.swing.JComponent;
 
 /**
- * Immutable 3D node representation used by the rendering engine.
  *
- * @author Antonio Patriarca <antoniopatriarca@gmail.com>
+ * @author Mathieu Bastian
  */
-public final class VizNode3D {
+public interface PropertiesBarAddon {
 
-    public final Vec3 position;
-    
-    public final float size;
-    
-    public final Color color;
-    
-    public VizNode3D(Vec3 position, float size, Color color) {
-        this.position = position;
-        this.size = size;
-        this.color = color;
-    }
+    public JComponent getComponent();
 }

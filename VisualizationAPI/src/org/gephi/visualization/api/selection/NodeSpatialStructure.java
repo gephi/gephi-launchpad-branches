@@ -112,11 +112,6 @@ public interface NodeSpatialStructure {
     public void clearCache();
 
     /**
-     * Returns the size of a node with maximum size.
-     */
-    public float getMaxNodeSize();
-    
-    /**
      * Informs the data structure about a running layout for optimization.
      */
     public void setLayoutRunning(boolean running);

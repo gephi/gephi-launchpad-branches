@@ -19,15 +19,16 @@ You should have received a copy of the GNU Affero General Public License
 along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package org.gephi.visualization.api.controller;
+package org.gephi.visualization.api;
 
 
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Point;
 import org.gephi.graph.api.Node;
-import org.gephi.visualization.api.camera.Camera;
+import org.gephi.visualization.api.event.VizEventManager;
 import org.gephi.visualization.api.rendering.RecordingListener;
+import org.gephi.visualization.api.selection.SelectionManager;
 import org.gephi.visualization.api.vizmodel.VizConfig;
 import org.gephi.visualization.api.vizmodel.VizModel;
 
@@ -74,6 +75,21 @@ public interface VisualizationController {
     public VizConfig getVizConfig();
     
     /**
+     * Returns the instance of SelectionManager.
+     */
+    public SelectionManager getSelectionManager();
+
+    /**
+     * Returns the instance of MotionManager.
+     */
+    public MotionManager getMotionManager();
+    
+    /**
+     * Returns the instance of MotionManager.
+     */
+    public VizEventManager getVizEventManager();
+    
+    /**
      * Centers camera on the graph. Whole graph will be visible.
      */
     public void centerOnGraph();
@@ -92,12 +108,6 @@ public interface VisualizationController {
      * Returns <code>true</code> if a centering request for camera is pending.
      */
     public boolean isCentering();
-
-    /**
-     * Called when the mode of scene display and navigation has been changed to
-     * 3D or 2D.
-     */
-    public void modeChanged();
     
     /**
      * Starts the main loop.

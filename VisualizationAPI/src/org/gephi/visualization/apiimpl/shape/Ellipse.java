@@ -54,7 +54,7 @@ class Ellipse extends AbstractShape {
         }
         float x1 = Math.abs(origin.x() + a - x) > radius ? Math.abs(origin.x() + a - x) - radius : 0;
         float y1 = Math.abs(origin.y() + b - y) > radius ? Math.abs(origin.y() + b - y) - radius : 0;
-        return x1 * x1 + y1 * y1 <= a*a*b*b;
+        return x1 * x1 / (a * a) + y1 * y1 / (b * b) <= 1;
     }
 
     public Shape singleUpdate(float x, float y) {

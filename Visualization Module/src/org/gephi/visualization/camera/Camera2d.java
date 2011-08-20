@@ -27,8 +27,8 @@ import org.gephi.math.linalg.Vec2Base;
 import org.gephi.math.linalg.Vec2M;
 import org.gephi.math.linalg.Vec3;
 import org.gephi.math.linalg.Vec3Base;
-import org.gephi.visualization.api.camera.Camera;
-import org.gephi.visualization.api.geometry.AABB;
+import org.gephi.visualization.api.Camera;
+import org.gephi.visualization.api.vizmodel.GraphLimits;
 
 /**
  * Camera for 2D mode. It only supports translation and zoom.
@@ -37,6 +37,10 @@ import org.gephi.visualization.api.geometry.AABB;
  * @author Vojtech Bardiovsky <vojtech.bardiovsky@gmail.com>
  */
 public final class Camera2d implements Camera {
+    
+    protected final static float MAX_SCALE = 5.0f;
+    protected final static float SCALE_FACTOR = 1.01f;
+    
     /**
      * Camera position in 2D. It corresponds to the center of the screen.
      */
@@ -176,7 +180,28 @@ public final class Camera2d implements Camera {
     public void lookAt(Vec3Base center, Vec3Base up) {
         this.center.set(center.x(), center.y());        
     }
+    
+    /**
+     * Returns the position of the camera.
+     */
+    @Override
+    public float[] getPosition() {
+        return new float[] {center.x(), center.y(), 0};
+    }
 
+    /**
+     * NOT SUPPORTED
+     * 
+     * Returns a point from the camera look-at line at a normalized distance 
+     * from camera position.
+     * 
+     * @return zero vector as the look at vector is defined from camera position.
+     */
+    @Override
+    public float[] getLookAt() {
+        return new float[] {0f, 0f, 0f};
+    }
+    
     /**
      * Returns the given point as it will appear on the screen together with its
      * size on screen after transformation have been applied.
@@ -294,18 +319,15 @@ public final class Camera2d implements Camera {
     }
 
     /**
-     * Centers the box on the screen and updates the scale factor to see the
-     * entire box.
+     * Centers the graph on the screen and updates the scale factor or the 
+     * position of the camera to see the entire graph.
      * 
-     * @param box the box
+     * @param graphLimits the graph limits
      */
     @Override
-    public void centerBox(AABB box) {
-        Vec3 boxCenter = box.center();
-        this.center.set(boxCenter.x(), boxCenter.y());
-        
-        Vec3 boxScale = box.scale();
-        this.scale = Math.min(this.screenWidth / boxScale.x(), this.screenHeight / boxScale.y());
+    public void centerGraph(GraphLimits graphLimits) {
+        this.center.set((graphLimits.getMaxX() + graphLimits.getMinX()) / 2, (graphLimits.getMaxY() + graphLimits.getMinY()) / 2);
+        this.scale = Math.min(this.screenWidth / (graphLimits.getMaxX() - graphLimits.getMinX()), this.screenHeight / (graphLimits.getMaxY() - graphLimits.getMinY()));
     }
 
     /**
@@ -317,32 +339,21 @@ public final class Camera2d implements Camera {
      */
     @Override
     public void zoom(float x, float y, float by) {
-        final float newScale = this.scale - by;
+        final float newScale = Math.min(MAX_SCALE, this.scale / (float) Math.pow(SCALE_FACTOR, by));
         final Vec2M p = new Vec2M(x - this.screenWidth * 0.5f, this.screenHeight * 0.5f - y);
-        final float s = 1.0f / (this.scale * newScale);
-        p.timesEq(- by * s);
+        final float s = 0.008f / scale * newScale;
+        p.timesEq(-by * s);
         this.center.plusEq(p);
         this.scale = newScale;
     }
 
     /**
-     * Gets the current scale factor.
-     * 
-     * @return the scale factor
+     * Zooms toward the center of screen.
+     * @param by the zoom amount
      */
     @Override
-    public float getZoom() {
-        return scale;
+    public void zoom(float by) {
+        zoom(screenWidth * 0.5f, screenHeight * 0.5f, by);
     }
-
-    /**
-     * Sets the current scale factor.
-     * 
-     * @param relativeZoom the scale factor
-     */
-    // TODO: verifies if this is the correct interpretation of the API
-    @Override
-    public void setZoom(float relativeZoom) {
-        scale = relativeZoom;
-    }
+    
 }

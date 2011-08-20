@@ -19,7 +19,7 @@ You should have received a copy of the GNU Affero General Public License
 along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package org.gephi.visualization.api.controller;
+package org.gephi.visualization.api;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
@@ -34,20 +34,46 @@ import org.gephi.visualization.api.selection.Shape;
  */
 public interface MotionManager {
 
+    public void initialize(VisualizationController visualizationController);
+    
+    /**
+     * Returns the current selection shape if a selection is being done by user,
+     * returns <code>null</code> otherwise.
+     */
     public Shape getSelectionShape();
 
+    /**
+     * Returns the drag vector in absolute value.
+     */
     public int[] getDrag();
 
-    public float[] getDrag3d();
-
+    /**
+     * Returns the current mouse position relative to visualization canvas.
+     */
     public int[] getMousePosition();
 
+    /**
+     * Returns the current mouse position in world coordinates. In 3D this is a
+     * best estimate.
+     */
     public Vec3 getMousePosition3d();
 
+    /**
+     * Returns <code>true</code> if mouse button is pressed.
+     */
     public boolean isPressing();
 
+    /**
+     * Returns <code>true</code> if mouse pointer is inside the visualization
+     * canvas.
+     */
     public boolean isInside();
 
+    /**
+     * Call repeatedly after or before display.
+     */
+    public void refresh();
+    
     public void mousePressed(MouseEvent e);
 
     public void mouseClicked(MouseEvent e);
@@ -63,10 +89,5 @@ public interface MotionManager {
     public void mouseExited(MouseEvent e);
 
     public void mouseWheelMoved(MouseWheelEvent e);
-
-    /**
-     * Call repeatedly after or before display.
-     */
-    public void refresh();
 
 }

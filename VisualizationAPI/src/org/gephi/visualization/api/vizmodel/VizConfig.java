@@ -52,6 +52,7 @@ public interface VizConfig {
     String ANTIALIASING = "VizConfig.antialiasing";
     String AUTO_SELECT_NEIGHBOUR = "VizConfig.autoSelectNeighbor";
     String BACKGROUND = "VizConfig.background";
+    String CAMERA = "VizConfig.camera";
     String CLEAN_DELETED_MODELS = "VizConfig.cleanDeletedModels";
     String CONTEXT_MENU = "VizConfig.contextMenu";
     String EDGE_HAS_UNIQUE_COLOR = "VizConfig.edgeHasUniColor";
@@ -93,13 +94,11 @@ public interface VizConfig {
     String SHOW_FPS = "VizConfig.showFPS";
     String SHOW_HULLS = "VizConfig.showHulls";
     String TOOLBAR = "VizConfig.toolbar";
-    String USE_3D = "VizConfig.use3d";
+    String CAMERA_USE_3D = "VizConfig.use3d";
     String VIZBAR = "VizConfig.showVizVar";
 
     // Other configuration
     String CAMERA_CONTROL = "VizConfig.cameraControlEnable";
-    String CAMERA_POSITION = "VizConfig.cameraPosition";
-    String CAMERA_TARGET = "VizConfig.cameraTarget";
     String DIRECT_MOUSE_SELECTION = "VizConfig.directMouseSelection";
     String DRAGGING = "VizConfig.draggingEnable";
     String HIGHLIGHT_NON_SELECTED = "VizConfig.highlightNonSelected";
@@ -116,7 +115,6 @@ public interface VizConfig {
     String SCREENSHOT_SETTINGS = "VizConfig.screenshotSettings";
     String SELECTION = "VizConfig.selectionEnable";
     String SELECTION_TYPE = "VizConfig.selectionType";
-    String ZOOM_FACTOR = "VizConfig.zoomFactor";
     
     public void setProperty(String key, Object value);
     

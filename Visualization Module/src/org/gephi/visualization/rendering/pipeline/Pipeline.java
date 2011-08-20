@@ -34,6 +34,7 @@ import org.gephi.visualization.api.color.Color;
 import org.gephi.visualization.api.rendering.background.Background;
 import org.gephi.visualization.api.vizmodel.VizConfig;
 import org.gephi.visualization.api.vizmodel.VizModel;
+import org.gephi.visualization.api.rendering.ScreenshotSettings;
 import org.gephi.visualization.data.FrameData;
 import org.gephi.visualization.rendering.RenderingEngine;
 import org.gephi.visualization.rendering.camera.Camera;

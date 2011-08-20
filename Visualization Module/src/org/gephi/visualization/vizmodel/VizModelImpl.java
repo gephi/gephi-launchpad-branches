@@ -38,11 +38,14 @@ import org.gephi.math.linalg.Vec2;
 import org.gephi.math.linalg.Vec3;
 import org.gephi.project.api.Workspace;
 import org.gephi.ui.utils.ColorUtils;
+import org.gephi.visualization.api.Camera;
 import org.gephi.visualization.api.rendering.background.Background;
 import org.gephi.visualization.api.vizmodel.GraphLimits;
 import org.gephi.visualization.api.vizmodel.VizConfig;
 import org.gephi.visualization.api.vizmodel.TextModel;
 import org.gephi.visualization.api.vizmodel.VizModel;
+import org.gephi.visualization.camera.Camera2d;
+import org.gephi.visualization.camera.Camera3d;
 
 /**
  * Model class for visualization. Contains most visualization related settings.
@@ -120,13 +123,8 @@ public class VizModelImpl implements VizModel {
     }
 
     @Override
-    public Vec3 getCameraPosition() {
-        return config.getVec3Property(VizConfig.CAMERA_POSITION);
-    }
-
-    @Override
-    public Vec3 getCameraTarget() {
-        return config.getVec3Property(VizConfig.CAMERA_TARGET);
+    public Camera getCamera() {
+        return config.getProperty(Camera.class, VizConfig.CAMERA);
     }
 
     @Override
@@ -171,7 +169,7 @@ public class VizModelImpl implements VizModel {
 
     @Override
     public boolean isUse3d() {
-        return config.getBooleanProperty(VizConfig.USE_3D);
+        return config.getBooleanProperty(VizConfig.CAMERA_USE_3D);
     }
 
     @Override
@@ -219,11 +217,6 @@ public class VizModelImpl implements VizModel {
         return config.getProperty(NodeShape.class, VizConfig.NODE_GLOBAL_SHAPE);
     }
 
-    @Override
-    public float getZoomFactor() {
-        return config.getFloatProperty(VizConfig.ZOOM_FACTOR);
-    }
-
     //SETTERS
     @Override
     public void setAntiAliasing(int antiAliasing) {
@@ -247,6 +240,12 @@ public class VizModelImpl implements VizModel {
     public void setBackground(Background background) {
         config.setProperty(VizConfig.BACKGROUND, background);
         fireProperyChange(VizConfig.BACKGROUND, null, background);
+    }
+
+    @Override
+    public void setCamera(Camera camera) {
+        config.setProperty(VizConfig.CAMERA, camera);
+        fireProperyChange(VizConfig.CAMERA, null, camera);
     }
 
     @Override
@@ -287,8 +286,8 @@ public class VizModelImpl implements VizModel {
 
     @Override
     public void setUse3d(boolean use3d) {
-        config.setProperty(VizConfig.USE_3D, use3d);
-        fireProperyChange(VizConfig.USE_3D, null, use3d);
+        config.setProperty(VizConfig.CAMERA_USE_3D, use3d);
+        fireProperyChange(VizConfig.CAMERA_USE_3D, null, use3d);
     }
 
     @Override
@@ -344,7 +343,7 @@ public class VizModelImpl implements VizModel {
         config.setProperty(VizConfig.GRAPH_LIMITS, graphLimits);
         fireProperyChange(VizConfig.GRAPH_LIMITS, null, graphLimits);
     }
-    
+
     @Override
     public void setZoomFactor(float distance) {
         config.setProperty(VizConfig.ZOOM_FACTOR, distance);
@@ -459,6 +458,8 @@ public class VizModelImpl implements VizModel {
         writeXmlAttribute(config, writer, VizConfig.ADJUST_BY_TEXT);
         writeXmlAttribute(config, writer, VizConfig.ANTIALIASING);
         writeXmlAttribute(config, writer, VizConfig.AUTO_SELECT_NEIGHBOUR);
+        writeXmlAttribute(config, writer, VizConfig.CAMERA_USE_3D);
+        writeXmlAttribute(config, writer, VizConfig.CAMERA);
         writeXmlAttribute(config, writer, VizConfig.CLEAN_DELETED_MODELS);
         writeXmlAttribute(config, writer, VizConfig.CONTEXT_MENU);
         writeXmlAttribute(config, writer, VizConfig.EDGE_HAS_UNIQUE_COLOR);
@@ -488,7 +489,6 @@ public class VizModelImpl implements VizModel {
         writeXmlAttribute(config, writer, VizConfig.SHOW_FPS);
         writeXmlAttribute(config, writer, VizConfig.SHOW_HULLS);
         writeXmlAttribute(config, writer, VizConfig.TOOLBAR);
-        writeXmlAttribute(config, writer, VizConfig.USE_3D);
         writeXmlAttribute(config, writer, VizConfig.VIZBAR);
 
         writer.writeEndElement();
@@ -530,6 +530,26 @@ public class VizModelImpl implements VizModel {
         } else if (type.isAssignableFrom(Enum.class)) {
             Enum value = config.getProperty(Enum.class, attribute);
             config.setProperty(attribute, Enum.valueOf(((Enum<?>) value).getDeclaringClass(), reader.getAttributeValue(null, "value")));
+        } else if (type.isAssignableFrom(Camera.class)) {
+            // TODO make a nicer XML
+            Camera camera = null;
+            float[] position = new float[] {
+                Float.parseFloat(reader.getAttributeValue(null, "position_x")), 
+                Float.parseFloat(reader.getAttributeValue(null, "position_y")), 
+                Float.parseFloat(reader.getAttributeValue(null, "position_z"))
+            };
+            float[] lookat = new float[] {
+                Float.parseFloat(reader.getAttributeValue(null, "lookat_x")), 
+                Float.parseFloat(reader.getAttributeValue(null, "lookat_y")), 
+                Float.parseFloat(reader.getAttributeValue(null, "lookat_z"))
+            };
+            if (config.getBooleanProperty(VizConfig.CAMERA_USE_3D)) {
+                camera = new Camera3d();
+                ((Camera3d) camera).lookAt(new Vec3(position[0], position[1], position[2]), new Vec3(lookat[0], lookat[1], lookat[2]), Vec3.E2);
+            } else {
+                camera = new Camera2d();
+                camera.lookAt(new Vec3(position[0], position[1], position[2]), Vec3.E2);
+            }
         }
     }
     
@@ -560,6 +580,15 @@ public class VizModelImpl implements VizModel {
                 writer.writeAttribute("id", c.getId());
                 writer.writeEndElement();
             }
+        } else if (type.isAssignableFrom(Camera.class)) {
+            // TODO make a nicer XML
+            Camera camera = config.getProperty(Camera.class, VizConfig.CAMERA);
+            writer.writeAttribute("position_x", Float.toString(camera.getPosition()[0]));
+            writer.writeAttribute("position_y", Float.toString(camera.getPosition()[1]));
+            writer.writeAttribute("position_z", Float.toString(camera.getPosition()[2]));
+            writer.writeAttribute("lookat_x", Float.toString(camera.getLookAt()[0]));
+            writer.writeAttribute("lookat_y", Float.toString(camera.getLookAt()[1]));
+            writer.writeAttribute("lookat_z", Float.toString(camera.getLookAt()[2]));
         }
         writer.writeEndElement();
     }

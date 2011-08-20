@@ -19,12 +19,12 @@ You should have received a copy of the GNU Affero General Public License
 along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package org.gephi.visualization.api.camera;
+package org.gephi.visualization.api;
 
 import java.awt.Dimension;
 import org.gephi.math.linalg.Vec3;
 import org.gephi.math.linalg.Vec3Base;
-import org.gephi.visualization.api.geometry.AABB;
+import org.gephi.visualization.api.vizmodel.GraphLimits;
 
 /**
  * Class representing a camera. Enables basic camera movement.
@@ -73,6 +73,17 @@ public interface Camera {
      */
     public void lookAt(Vec3Base center, Vec3Base up);
 
+    /**
+     * Returns the position of the camera.
+     */
+    public float[] getPosition();
+    
+    /**
+     * Returns a point from the camera look-at line at a normalized distance 
+     * from camera position.
+     */
+    public float[] getLookAt();
+    
     /**
      * Returns the given point as it will appear on the screen together with its
      * size on screen after transformation have been applied.
@@ -143,12 +154,12 @@ public interface Camera {
     public void updateOrbit(float x, float y);
 
     /**
-     * Centers the box on the screen and updates the scale factor or the 
-     * position of the camera to see the entire box.
+     * Centers the graph on the screen and updates the scale factor or the 
+     * position of the camera to see the entire graph.
      * 
-     * @param box the box
+     * @param graphLimits the graph limits
      */
-    public void centerBox(AABB box);
+    public void centerGraph(GraphLimits graphLimits);
 
     /**
      * Zooms toward a point on the screen.
@@ -160,17 +171,9 @@ public interface Camera {
     public void zoom(float x, float y, float by);
 
     /**
-     * Gets the current zoom factor.
-     * 
-     * @return the zoom factor
+     * Zooms toward the center of screen.
+     * @param by the zoom amount
      */
-    public float getZoom();
-
-    /**
-     * Sets the current zoom factor.
-     * 
-     * @param relativeZoom the zoom factor
-     */
-    public void setZoom(float relativeZoom);
+    public void zoom(float by);
             
 }

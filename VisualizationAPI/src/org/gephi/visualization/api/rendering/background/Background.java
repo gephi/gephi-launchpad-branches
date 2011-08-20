@@ -20,7 +20,7 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.gephi.visualization.api.rendering.background;
 
-import org.gephi.visualization.api.color.Color;
+import org.gephi.visualization.api.Color;
 
 /**
  * Simple immutable class representing the current background. Inspired by CSS

@@ -32,11 +32,8 @@ import org.gephi.graph.api.GraphController;
 import org.gephi.graph.api.GraphEvent;
 import org.gephi.graph.api.GraphListener;
 import org.gephi.graph.api.Node;
-import org.gephi.project.api.ProjectController;
-import org.gephi.project.api.Workspace;
-import org.gephi.project.api.WorkspaceListener;
-import org.gephi.visualization.api.controller.MotionManager;
-import org.gephi.visualization.api.controller.VisualizationController;
+import org.gephi.visualization.api.MotionManager;
+import org.gephi.visualization.api.VisualizationController;
 import org.gephi.visualization.api.vizmodel.VizConfig;
 import org.gephi.visualization.api.selection.NodeSpatialStructure;
 import org.gephi.visualization.api.selection.SelectionManager;
@@ -44,10 +41,14 @@ import org.gephi.visualization.api.selection.SelectionType;
 import org.gephi.visualization.api.selection.Shape;
 import org.gephi.visualization.apiimpl.shape.ShapeUtils;
 import org.openide.util.Lookup;
-import org.openide.util.lookup.ServiceProvider;
 
-@ServiceProvider(service = SelectionManager.class)
-public class SelectionManagerImpl implements SelectionManager, WorkspaceListener, GraphListener {
+/**
+ * Manager for handling selection queries.
+ *
+ * @author Antonio Patriarca <antoniopatriarca@gmail.com>
+ * @author Vojtech Bardiovsky <vojtech.bardiovsky@gmail.com>
+ */
+public class SelectionManagerImpl implements SelectionManager, GraphListener {
 
     private NodeSpatialStructure nodeStructure;
 
@@ -55,42 +56,41 @@ public class SelectionManagerImpl implements SelectionManager, WorkspaceListener
 
     @Override
     public void initialize() {
-        Lookup.getDefault().lookup(ProjectController.class).addWorkspaceListener(this);
         nodeStructure = new Octree();
     }
 
     @Override
-    public Collection<Node> getSelectedNodes() {
+    public synchronized Collection<Node> getSelectedNodes() {
         return nodeStructure.getSelectedNodes();
     }
 
     @Override
-    public boolean isNodeSelected() {
+    public synchronized boolean isNodeSelected() {
         return nodeStructure.isNodeSelected();
     }
     
     @Override
-    public void applySelection(Shape shape) {
+    public synchronized void applySelection(Shape shape) {
         nodeStructure.applySelection(shape);
     }
 
     @Override
-    public void applyContinuousSelection(Shape shape) {
+    public synchronized void applyContinuousSelection(Shape shape) {
         nodeStructure.applyContinuousSelection(shape);
     }
 
     @Override
-    public void cancelContinuousSelection() {
+    public synchronized void cancelContinuousSelection() {
         nodeStructure.clearContinuousSelection();
     }
 
     @Override
-    public void clearSelection() {
+    public synchronized void clearSelection() {
         nodeStructure.clearSelection();
     }
 
     @Override
-    public void selectSingle(Point point, boolean select) {
+    public synchronized void selectSingle(Point point, boolean select) {
         int mouseSelectionDiameter = Lookup.getDefault().lookup(VisualizationController.class).getVizConfig().getIntProperty(VizConfig.MOUSE_SELECTION_DIAMETER);
         Shape singleNodeSelectionShape = ShapeUtils.createEllipseShape(point.x - mouseSelectionDiameter, point.y - mouseSelectionDiameter, mouseSelectionDiameter, mouseSelectionDiameter);
         nodeStructure.clearContinuousSelection();
@@ -98,14 +98,13 @@ public class SelectionManagerImpl implements SelectionManager, WorkspaceListener
     }
 
     @Override
-    public boolean selectContinuousSingle(Point point, boolean select) {
+    public synchronized boolean selectContinuousSingle(Point point, boolean select) {
         int mouseSelectionDiameter = Lookup.getDefault().lookup(VisualizationController.class).getVizConfig().getIntProperty(VizConfig.MOUSE_SELECTION_DIAMETER);
         Shape singleNodeSelectionShape = ShapeUtils.createEllipseShape(point.x - mouseSelectionDiameter, point.y - mouseSelectionDiameter, mouseSelectionDiameter, mouseSelectionDiameter);
         return nodeStructure.selectContinuousSingle(singleNodeSelectionShape, point, select, NodeSpatialStructure.SINGLE_NODE_CLOSEST);
     }
 
-    @Override
-    public void refreshDataStructure() {
+    private void refreshDataStructure() {
         boolean use3d = Lookup.getDefault().lookup(VisualizationController.class).getVizModel().isUse3d();
         GraphController graphController = Lookup.getDefault().lookup(GraphController.class);
         if (use3d) {
@@ -116,11 +115,8 @@ public class SelectionManagerImpl implements SelectionManager, WorkspaceListener
     }
 
     @Override
-    public void disableSelection() {
-        // move to NodeSpatialStructure and clear marker
-        for (Node node : nodeStructure.getSelectedNodes()) {
-            node.getNodeData().setSelected(false);
-        }
+    public synchronized void disableSelection() {
+        clearSelection();
         nodeStructure.clearCache();
         clearState();
         fireChangeEvent();
@@ -129,7 +125,7 @@ public class SelectionManagerImpl implements SelectionManager, WorkspaceListener
     @Override
     public Shape getNodePointerShape() {
         int mouseSelectionDiameter = Lookup.getDefault().lookup(VisualizationController.class).getVizConfig().getIntProperty(VizConfig.MOUSE_SELECTION_DIAMETER);
-        MotionManager motionManager = Lookup.getDefault().lookup(MotionManager.class);
+        MotionManager motionManager = Lookup.getDefault().lookup(VisualizationController.class).getMotionManager();
         Shape singleNodeSelectionShape = ShapeUtils.createEllipseShape(motionManager.getMousePosition()[0] - mouseSelectionDiameter, 
                                                                  motionManager.getMousePosition()[1] - mouseSelectionDiameter,
                                                                  mouseSelectionDiameter, mouseSelectionDiameter);
@@ -167,23 +163,41 @@ public class SelectionManagerImpl implements SelectionManager, WorkspaceListener
     }
 
     @Override
-    public void selectEdge(Edge edge) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public synchronized void selectEdge(Edge edge) {
+        if (edge == null) {
+            return;
+        }
+        edge.getSource().getNodeData().setSelected(true);
+        edge.getTarget().getNodeData().setSelected(true);
+        nodeStructure.clearCache();
     }
 
     @Override
-    public void selectEdges(Edge[] edges) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public synchronized void selectEdges(Edge[] edges) {
+        if (edges == null) {
+            return;
+        }
+        for (Edge edge : edges) {
+            edge.getSource().getNodeData().setSelected(true);
+            edge.getTarget().getNodeData().setSelected(true);
+        }
+        nodeStructure.clearCache();
     }
 
     @Override
-    public void selectNode(Node node) {
+    public synchronized void selectNode(Node node) {
+        if (node == null) {
+            return;
+        }
         node.getNodeData().setSelected(true);
         nodeStructure.clearCache();
     }
 
     @Override
-    public void selectNodes(Node[] nodes) {
+    public synchronized void selectNodes(Node[] nodes) {
+        if (nodes == null) {
+            return;
+        }
         for (Node node : nodes) {
             node.getNodeData().setSelected(true);
         }
@@ -257,35 +271,17 @@ public class SelectionManagerImpl implements SelectionManager, WorkspaceListener
                     nodeStructure.addNode(node);
                 }
                 break;
-            case ADD_EDGES:
-                break;
-            default:
+            case REMOVE_NODES:
+            case REMOVE_EDGES:
                 refreshDataStructure();
                 break;
         }
     }
 
-    // Workspace event
     @Override
-    public void initialize(Workspace workspace) {
-    }
-
-    @Override
-    public void select(Workspace workspace) {
+    public void refresh() {
         Lookup.getDefault().lookup(GraphController.class).getModel().addGraphListener(this);
         refreshDataStructure();
-    }
-
-    @Override
-    public void unselect(Workspace workspace) {
-    }
-
-    @Override
-    public void close(Workspace workspace) {
-    }
-
-    @Override
-    public void disable() {
     }
 
 }

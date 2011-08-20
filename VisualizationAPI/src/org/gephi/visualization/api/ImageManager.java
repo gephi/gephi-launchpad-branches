@@ -1,6 +1,6 @@
 /*
 Copyright 2008-2011 Gephi
-Authors : Mathieu Bastian <mathieu.bastian@gephi.org>
+Authors : Vojtech Bardiovsky <vojtech.bardiovsky@gmail.com>
 Website : http://www.gephi.org
 
 This file is part of Gephi.
@@ -18,15 +18,21 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 */
-package org.gephi.visualization.apiimpl;
 
-import javax.swing.JComponent;
+package org.gephi.visualization.api;
+
+import java.awt.image.BufferedImage;
+import org.gephi.graph.api.NodeShape.ImageNodeShapeFactory;
 
 /**
- *
- * @author Mathieu Bastian
+ * Interface for loading images and providing access to them by their ID. 
+ * 
+ * @author Vojtech Bardiovsky
  */
-public interface PropertiesBarAddon {
-
-    public JComponent getComponent();
+public interface ImageManager extends ImageNodeShapeFactory {
+    
+    public BufferedImage getImage(int id);
+    
+    public ImageNodeShape[] getCreatedShapes();
+    
 }

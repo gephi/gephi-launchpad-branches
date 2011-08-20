@@ -27,10 +27,8 @@ import org.gephi.math.linalg.Vec3;
 import org.gephi.math.linalg.Vec3Base;
 import org.gephi.math.linalg.Vec3M;
 import org.gephi.math.linalg.Vec4;
-import org.gephi.visualization.api.camera.Camera;
-import org.gephi.visualization.api.controller.VisualizationController;
-import org.gephi.visualization.api.geometry.AABB;
-import org.openide.util.Lookup;
+import org.gephi.visualization.api.Camera;
+import org.gephi.visualization.api.vizmodel.GraphLimits;
 
 /**
  * Class representing a camera for three dimensions. Enables basic camera movement.
@@ -84,7 +82,7 @@ public final class Camera3d implements Camera {
         this.front = camera.front.copyM();
         this.up = camera.up.copyM();
         this.right = camera.right.copyM();
-        this.orbitCenter = camera.orbitCenter.copyM();
+        this.orbitCenter = new Vec3M();
         
         this.fovy = camera.fovy;
         this.relativeZoom = camera.relativeZoom;
@@ -121,6 +119,24 @@ public final class Camera3d implements Camera {
         lookAt(center, up);
     }
 
+    /**
+     * Returns the position of the camera.
+     */
+    @Override
+    public float[] getPosition() {
+        return position.toArray();
+    }
+
+    /**
+     * Returns a point from the camera look-at line at a normalized distance 
+     * from camera position.
+     */
+    @Override
+    public float[] getLookAt() {
+        Vec3 point = position.plus(front);
+        return point.toArray();
+    }
+    
     @Override
     public float screenWidth() {
         return this.screenWidth;
@@ -263,14 +279,14 @@ public final class Camera3d implements Camera {
     }
 
     @Override
-    public void centerBox(AABB box) {
-        final Vec3 center = box.center();
-        final Vec3 scale = box.scale();
-        final Vec3 maxVec = box.maxVec();
+    public void centerGraph(GraphLimits graphLimits) {
+        final float d = (graphLimits.getMaxY() - graphLimits.getMinY()) / (float) Math.tan(0.5 * this.fovy);
 
-        final float d = scale.y() / (float)Math.tan(0.5 * this.fovy);
-
-        final Vec3 origin = new Vec3(center.x(), center.y(), maxVec.z() + d*1.1f);
+        final Vec3 center = new Vec3((graphLimits.getMaxX() + graphLimits.getMinX()) / 2, 
+                                     (graphLimits.getMaxY() + graphLimits.getMinY()) / 2, 
+                                     (graphLimits.getMaxZ() + graphLimits.getMinZ()) / 2);
+        
+        final Vec3 origin = new Vec3(center.x(), center.y(), graphLimits.getMaxZ() + d * 1.1f);
         this.lookAt(origin, center, Vec3.E2);
     }
 
@@ -285,18 +301,15 @@ public final class Camera3d implements Camera {
     @Override
     public void zoom(float x, float y, float by) {
         setFov((float) Math.max(Math.min(fovy * Math.exp(by), Math.exp(MAX_ZOOM)), Math.exp(MIN_ZOOM)));
-        Lookup.getDefault().lookup(VisualizationController.class).getVizModel().setZoomFactor(getZoom());
     }
 
+    /**
+     * Zooms toward the center of screen.
+     * @param by the zoom amount
+     */
     @Override
-    public void setZoom(float relativeZoom) {
-        setFov((float) Math.exp(MIN_ZOOM + relativeZoom * (MAX_ZOOM - MIN_ZOOM)));
-        Lookup.getDefault().lookup(VisualizationController.class).getVizModel().setZoomFactor(relativeZoom);
-    }
-
-    @Override
-    public float getZoom() {
-        return (float) ((Math.log(fovy) - MIN_ZOOM) / (MAX_ZOOM - MIN_ZOOM));
+    public void zoom(float by) {
+        zoom(screenWidth * 0.5f, screenHeight * 0.5f, by);
     }
     
 }

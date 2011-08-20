@@ -33,14 +33,17 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import org.gephi.graph.api.Node;
 import org.gephi.math.linalg.Vec3;
 import org.gephi.project.api.ProjectController;
 import org.gephi.project.api.Workspace;
 import org.gephi.project.api.WorkspaceListener;
-import org.gephi.visualization.api.controller.MotionManager;
-import org.gephi.visualization.api.camera.Camera;
-import org.gephi.visualization.api.controller.VisualizationController;
+import org.gephi.visualization.api.MotionManager;
+import org.gephi.visualization.api.Camera;
+import org.gephi.visualization.api.VisualizationController;
+import org.gephi.visualization.api.event.VizEventManager;
 import org.gephi.visualization.api.rendering.RecordingListener;
 import org.gephi.visualization.api.selection.SelectionManager;
 import org.gephi.visualization.api.vizmodel.VizConfig;
@@ -48,8 +51,10 @@ import org.gephi.visualization.api.vizmodel.VizModel;
 import org.gephi.visualization.camera.Camera2d;
 import org.gephi.visualization.camera.Camera3d;
 import org.gephi.visualization.api.geometry.AABB;
+import org.gephi.visualization.event.VizEventManagerImpl;
 import org.gephi.visualization.model.Model;
 import org.gephi.visualization.rendering.RenderingEngine;
+import org.gephi.visualization.selection.SelectionManagerImpl;
 import org.gephi.visualization.vizmodel.VizModelImpl;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.ServiceProvider;
@@ -69,7 +74,9 @@ public class VisualizationControllerImpl implements VisualizationController, Key
     private final RenderingEngine renderingEngine;
     private final Model dataManager;
     
-    private final SelectionManager selectionManager;
+    private SelectionManager selectionManager;
+    private MotionManager motionManager;
+    private VizEventManager vizEventManager;
 
     private Dimension viewSize;
 
@@ -86,15 +93,16 @@ public class VisualizationControllerImpl implements VisualizationController, Key
     private float lightenAnimationDelta;
     private boolean previouslySelected;
     
-    // TODO remove when architecture bugs fixed
-    private static final Camera DEFAULT_CAMERA = new Camera2d();
-
     public VisualizationControllerImpl() {
-        // Random values
         this.viewSize = new Dimension();
-
+        
         this.vizModel = new VizModelImpl(true);
-        this.selectionManager = Lookup.getDefault().lookup(SelectionManager.class);
+        this.selectionManager = new SelectionManagerImpl();
+        this.motionManager = new MotionManagerImpl();
+        this.vizEventManager = new VizEventManagerImpl();
+        
+        motionManager.initialize(this);
+        selectionManager.initialize();
         
         this.renderingEngine = new RenderingEngine(this, this.vizModel);
         this.dataManager = new Model(this, this.renderingEngine.bridge(), 33);
@@ -106,22 +114,21 @@ public class VisualizationControllerImpl implements VisualizationController, Key
             reinit = true;
         }
         
-        // Initialize SelectionManager
-        selectionManager.initialize();
-    }
-
-    synchronized static VisualizationControllerImpl getDefault() {
-        if (instance == null) {
-            instance = (VisualizationControllerImpl) Lookup.getDefault().lookup(VisualizationController.class);
-        }
-        return instance;
+        vizModel.addPropertyChangeListener(new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                if (VizConfig.CAMERA_USE_3D.equals(evt.getPropertyName())) {
+                    modeChanged();
+                }
+            }
+        });
     }
 
     public void resize(int width, int height) {
         this.viewSize = new Dimension(width, height);
-        if (camera != null) {
-            this.camera.screenSize(viewSize);
-        }
+        Camera camera = vizModel.getCamera();
+        camera.screenSize(viewSize);
+        vizModel.setCamera(camera);
     }
 
     @Override
@@ -145,16 +152,12 @@ public class VisualizationControllerImpl implements VisualizationController, Key
 
     @Override
     public Camera getCamera() {
-        return this.camera;
+        return vizModel.getCamera();
     }
 
     @Override
     public Camera getCameraCopy() {
-        // TODO remove when architecture bugs fixed
-        if (camera == null) {
-            return DEFAULT_CAMERA.copy();
-        }
-        return this.camera.copy();
+        return vizModel.getCamera().copy();
     }
 
     @Override
@@ -162,6 +165,21 @@ public class VisualizationControllerImpl implements VisualizationController, Key
         return vizModel;
     }
 
+    @Override
+    public SelectionManager getSelectionManager() {
+        return selectionManager;
+    }
+
+    @Override
+    public MotionManager getMotionManager() {
+        return motionManager;
+    }
+
+    @Override
+    public VizEventManager getVizEventManager() {
+        return vizEventManager;
+    }
+    
     @Override
     public VizConfig getVizConfig() {
         return vizModel.getConfig();
@@ -187,19 +205,17 @@ public class VisualizationControllerImpl implements VisualizationController, Key
         return centerGraph || centerZero || centerNode != null;
     }
 
-    @Override
     public void modeChanged() {
         boolean modelUse3d = vizModel.isUse3d();
         if (modelUse3d == this.use3d) {
             return;
         }
-        Workspace workspace = Lookup.getDefault().lookup(ProjectController.class).getCurrentWorkspace();
-        Camera cam = workspace.getLookup().lookup(Camera.class);
-        workspace.remove(cam);
+        Camera newCamera = null;
+        Camera cam = vizModel.getCamera();
         if (modelUse3d) {
         // Set 2D mode
             if (cam instanceof Camera2d) {
-                camera = new Camera3d((Camera2d) cam);
+                newCamera = new Camera3d((Camera2d) cam);
                 
                 // TODO add other engine code
                 //
@@ -207,14 +223,14 @@ public class VisualizationControllerImpl implements VisualizationController, Key
         } else {
         // Set 3D mode
             if (cam instanceof Camera3d) {
-                camera = new Camera2d((Camera3d) cam);
+                newCamera = new Camera2d((Camera3d) cam);
 
                 // TODO add other engine code
                 //
             }
         }
-        workspace.add(camera);
-        selectionManager.refreshDataStructure();
+        vizModel.setCamera(newCamera);
+        selectionManager.refresh();
     }
 
     public void beginUpdateFrame() {
@@ -252,10 +268,10 @@ public class VisualizationControllerImpl implements VisualizationController, Key
         }
     }
 
-    public void endUpdateFrame(AABB box) {
-        if (centerGraph && box != null) {
-            camera.centerBox(box);
-            
+    public void endUpdateFrame() {
+        Camera camera = vizModel.getCamera();
+        if (centerGraph && vizModel.getGraphLimits().getMinX() < Float.MAX_VALUE) {
+            camera.centerGraph(vizModel.getGraphLimits());
             centerGraph = false;
         }
         if (centerZero) {
@@ -266,7 +282,7 @@ public class VisualizationControllerImpl implements VisualizationController, Key
             camera.lookAt(new Vec3(centerNode[0], centerNode[1], centerNode[2]), Vec3.E2);
             centerNode = null;
         }
-        Lookup.getDefault().lookup(MotionManager.class).refresh();
+        motionManager.refresh();
     }
 
     public void beginRenderFrame() {
@@ -317,39 +333,37 @@ public class VisualizationControllerImpl implements VisualizationController, Key
             vizModel = model;
             vizModel.init();
         }
+        selectionManager.refresh();
     }
     
     // User events
     @Override
-    public void keyTyped(KeyEvent e) {
-    }
+    public void keyTyped(KeyEvent e) {}
 
     @Override
-    public void keyPressed(KeyEvent e) {
-    }
+    public void keyPressed(KeyEvent e) {}
 
     @Override
-    public void keyReleased(KeyEvent e) {
-    }
+    public void keyReleased(KeyEvent e) {}
 
     @Override
     public void mouseClicked(MouseEvent e) {
         if (hasWorkspace) {
-            Lookup.getDefault().lookup(MotionManager.class).mouseClicked(e);
+            motionManager.mouseClicked(e);
         }
     }
 
     @Override
     public void mousePressed(MouseEvent e) {
         if (hasWorkspace) {
-            Lookup.getDefault().lookup(MotionManager.class).mousePressed(e);
+            motionManager.mousePressed(e);
         }
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
         if (hasWorkspace) {
-            Lookup.getDefault().lookup(MotionManager.class).mouseReleased(e);
+            motionManager.mouseReleased(e);
         }
     }
 
@@ -358,7 +372,7 @@ public class VisualizationControllerImpl implements VisualizationController, Key
         this.renderingEngine.setFPS(this.vizModel.getNormalFPS());
         
         if (hasWorkspace) {
-            Lookup.getDefault().lookup(MotionManager.class).mouseEntered(e);
+            motionManager.mouseEntered(e);
         }
     }
 
@@ -369,28 +383,28 @@ public class VisualizationControllerImpl implements VisualizationController, Key
         }
         
         if (hasWorkspace) {
-            Lookup.getDefault().lookup(MotionManager.class).mouseExited(e);
+            motionManager.mouseExited(e);
         }
     }
 
     @Override
     public void mouseDragged(MouseEvent e) {
         if (hasWorkspace) {
-            Lookup.getDefault().lookup(MotionManager.class).mouseDragged(e);
+            motionManager.mouseDragged(e);
         }
     }
 
     @Override
     public void mouseMoved(MouseEvent e) {
         if (hasWorkspace) {
-            Lookup.getDefault().lookup(MotionManager.class).mouseMoved(e);
+            motionManager.mouseMoved(e);
         }
     }
 
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
         if (hasWorkspace) {
-             Lookup.getDefault().lookup(MotionManager.class).mouseWheelMoved(e);
+             motionManager.mouseWheelMoved(e);
         }
     }
 
@@ -402,22 +416,15 @@ public class VisualizationControllerImpl implements VisualizationController, Key
 
     @Override
     public void select(Workspace workspace) {
-        camera = workspace.getLookup().lookup(Camera.class);
-        if (camera == null) {
-            camera = new Camera2d(viewSize.width, viewSize.height);
-            workspace.add(camera);
-        }
         hasWorkspace = true;
         reinit = true;
     }
 
     @Override
-    public void unselect(Workspace workspace) {
-    }
+    public void unselect(Workspace workspace) {}
 
     @Override
-    public void close(Workspace workspace) {
-    }
+    public void close(Workspace workspace) {}
 
     @Override
     public void disable() {
