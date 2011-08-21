@@ -25,10 +25,15 @@ import java.util.Collection;
 import javax.swing.event.ChangeListener;
 import org.gephi.graph.api.Edge;
 import org.gephi.graph.api.Node;
+import org.gephi.visualization.api.VisualizationController;
 
 /**
  * Manager for handling selection queries.
  *
+ * This is a singleton class and is provided by the {@link VisualizationController}.
+ * 
+ * @see VisualizationController#getSelectionManager()
+ * 
  * @author Antonio Patriarca <antoniopatriarca@gmail.com>
  * @author Vojtech Bardiovsky <vojtech.bardiovsky@gmail.com>
  */
@@ -48,11 +53,13 @@ public interface SelectionManager {
     
     /**
      * Adds or removes nodes from inside the shape to a permanent selection.
+     * @param shape     the shape for applying the selection.
      */
     void applySelection(Shape shape);
 
     /**
      * Adds nodes from inside the shape to a temporary selection.
+     * @param shape     the shape for applying the temporary selection.
      * @see #cancelContinuousSelection()
      */
     void applyContinuousSelection(Shape shape);
@@ -61,7 +68,6 @@ public interface SelectionManager {
      * Cancels temporary selection.
      */
     void cancelContinuousSelection();
-
 
     /**
      * Adds or removes single node from a permanent selection.
@@ -122,14 +128,14 @@ public interface SelectionManager {
 
     boolean isNodeDraggingEnabled();
 
-    SelectionType getSelectionType();
-
     void setDirectMouseSelection();
 
     void setDraggingEnabled(boolean enabled);
 
     void setNodeDraggingEnabled();
 
+    SelectionType getSelectionType();
+    
     void setSelectionType(SelectionType selectionType);
 
     /**

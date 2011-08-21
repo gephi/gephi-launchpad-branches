@@ -29,6 +29,11 @@ import org.gephi.visualization.api.vizmodel.GraphLimits;
 /**
  * Class representing a camera. Enables basic camera movement.
  *
+ * The current camera instance can be retrieve from {@link VisualizationController}.
+ * 
+ * @see VisualizationController#getCamera()
+ * @see VisualizationController#getCameraCopy()
+ * 
  * @author Antonio Patriarca <antoniopatriarca@gmail.com>
  */
 public interface Camera {

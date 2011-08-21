@@ -19,7 +19,7 @@ You should have received a copy of the GNU Affero General Public License
 along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package org.gephi.visualization.api.geometry;
+package org.gephi.visualization.api;
 
 import org.gephi.math.linalg.Vec3;
 import org.gephi.math.linalg.Vec3Base;
