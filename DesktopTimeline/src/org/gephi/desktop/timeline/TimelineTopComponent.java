@@ -24,6 +24,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.geom.Rectangle2D;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.logging.Logger;
@@ -31,6 +32,7 @@ import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.SwingUtilities;
+import org.gephi.desktop.timeline.graphmetrics.GraphMetricNodes;
 import org.gephi.timeline.api.TimelineAnimatorEvent;
 import org.gephi.timeline.spi.TimelineDrawer;
 import org.gephi.timeline.api.TimelineAnimatorListener;
@@ -76,14 +78,18 @@ public final class TimelineTopComponent extends TopComponent implements Timeline
     /** path to the icon used by the component and its open action */
     static final String ICON_PATH = "org/gephi/desktop/timeline/resources/ui-status-bar.png";
     private static final String PREFERRED_ID = "TimelineTopComponent";
+    
     // model+animator
     private TimelineModel model;
     private TimelineAnimatorImpl animator;
+    
     // bounds
     private double min;
     private double max;
+    
     // drawer
     private MinimalDrawer drawerPanel;
+    
     // sparkline chart
     private final int samplepoints = 365; // another candidate: 840
     private XYDataset dataset;
@@ -91,7 +97,7 @@ public final class TimelineTopComponent extends TopComponent implements Timeline
     private NumberAxis metricAxis;
     private XYPlot plot;
     private JFreeChart chart;
-    private JPanel chartpanel;
+    private ChartPanel chartPanel;
     private GraphMetric currentMetric;
     private HashMap<String, GraphMetric> metrics = new HashMap<String, GraphMetric>();
     private JRadioButtonMenuItem[] mitemMetrics;
@@ -100,13 +106,11 @@ public final class TimelineTopComponent extends TopComponent implements Timeline
         initComponents();
 
         setName(NbBundle.getMessage(TimelineTopComponent.class, "CTL_TimelineTopComponent"));
-//        setToolTipText(NbBundle.getMessage(TimelineTopComponent.class, "HINT_TimelineTopComponent"));
         setIcon(ImageUtilities.loadImage(ICON_PATH, true));
         putClientProperty(TopComponent.PROP_MAXIMIZATION_DISABLED, Boolean.TRUE);
 
         // Setup drawer
-        TimelineDrawer drawer = Lookup.getDefault().lookup(TimelineDrawer.class);
-        drawerPanel = (MinimalDrawer) drawer;
+        drawerPanel = Lookup.getDefault().lookup(MinimalDrawer.class);
         drawerPanel.setOpaque(false);
         drawerPanel.setEnabled(false);
         drawerPanel.setInheritsPopupMenu(true);
@@ -131,13 +135,14 @@ public final class TimelineTopComponent extends TopComponent implements Timeline
         timelineAxis.setVisible(true);
 
         metricAxis = new NumberAxis();
-        metricAxis.setTickLabelsVisible(false);
-        metricAxis.setTickMarksVisible(false);
-        metricAxis.setAxisLineVisible(false);
+        metricAxis.setTickLabelsVisible(true);
+        metricAxis.setTickMarksVisible(true);
+        metricAxis.setAxisLineVisible(true);
         metricAxis.setNegativeArrowVisible(false);
         metricAxis.setPositiveArrowVisible(false);
         metricAxis.setVerticalTickLabels(false);
         metricAxis.setAutoRangeIncludesZero(true);
+        metricAxis.setUpperMargin(0.25);
         metricAxis.setVisible(true);
 
         plot = new XYPlot();
@@ -155,34 +160,43 @@ public final class TimelineTopComponent extends TopComponent implements Timeline
         chart.setBorderVisible(false);
         chart.setBackgroundPaint(Color.WHITE);
 
-        ChartPanel chartPanel = new ChartPanel(chart);
+        chartPanel = new ChartPanel(chart);
         chartPanel.setMinimumDrawHeight(50);
         chartPanel.setLayout(new java.awt.BorderLayout());
-        chartPanel.setBounds(0, 2, 300, 30);
-        chartpanel = (JPanel) chartPanel;
-        chartpanel.setVisible(false);
-        chartpanel.setInheritsPopupMenu(true);
+        chartPanel.setInheritsPopupMenu(true);
+        chartPanel.setVisible(false);
 
-        tlcontainer.add(chartpanel, JLayeredPane.DEFAULT_LAYER);
+        tlcontainer.add(chartPanel, JLayeredPane.DEFAULT_LAYER);
+        SwingUtilities.invokeLater(new Runnable(){
+            public void run() {
+                timelinePanel.setSize(tlcontainer.getWidth(), tlcontainer.getHeight());
+                drawerPanel.setBounds(0,0,tlcontainer.getWidth(), tlcontainer.getHeight());
+                resizeTimeline(tlcontainer.getWidth(), tlcontainer.getHeight());
+            }
+            
+        });
 
         // sparkline currentMetric controls
+        currentMetric = Lookup.getDefault().lookup(GraphMetricNodes.class);
         GraphMetric[] metricslist = Lookup.getDefault().lookupAll(GraphMetric.class).toArray(new GraphMetric[0]);
         mitemMetrics = new JRadioButtonMenuItem[metricslist.length];
-        
         for (int i = 0; i < metricslist.length; i++) {
             metrics.put(metricslist[i].getName(), metricslist[i]);
-            mitemMetrics[i] = new JRadioButtonMenuItem(metricslist[i].getName(), i==0);
+            mitemMetrics[i] = new JRadioButtonMenuItem(metricslist[i].getName(), metricslist[i]==currentMetric);
             mitemMetrics[i].addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     setMetric(metrics.get(e.getActionCommand()));
                     setupSparkline();
+                    SwingUtilities.invokeLater(new Runnable(){
+                        public void run() {
+                            resizeTimeline(tlcontainer.getWidth(), tlcontainer.getHeight());
+                        }
+                    });
                 }
             });
             bgroupMetrics.add(mitemMetrics[i]);
             menuMetrics.add(mitemMetrics[i]);
-
         }
-        currentMetric = metricslist[0];
     }
 
     private void setTimeLineVisible(final boolean visible) {
@@ -195,8 +209,6 @@ public final class TimelineTopComponent extends TopComponent implements Timeline
                 } else if (!visible && TimelineTopComponent.this.isOpened()) {
                     TimelineTopComponent.this.close();
                 }
-                timelinePanel.setSize(new Dimension(tlcontainer.getWidth(), tlcontainer.getHeight()));
-                chartpanel.setSize(new Dimension(tlcontainer.getWidth(), tlcontainer.getHeight() - 6));
             }
         });
     }
@@ -275,7 +287,6 @@ public final class TimelineTopComponent extends TopComponent implements Timeline
             this.min = min;
             setTimeLineVisible(!Double.isInfinite(min));
         }
-
     }
 
     private void setMax(double max) {
@@ -310,7 +321,16 @@ public final class TimelineTopComponent extends TopComponent implements Timeline
         // check animator value, to update the buttons etc..
         playButton.setSelected(!event.getStopped());
     }
-
+    
+    private void resizeTimeline(int width, int height) {
+        chartPanel.setBounds(0, 2, width-2, height-6);
+        int datawidth = (int) chartPanel.getChartRenderingInfo().getPlotInfo().getDataArea().getWidth();
+        timelinePanel.setBounds(width-datawidth-2  , 0, datawidth+2,   height); 
+        drawerPanel.setBounds(0, 0, datawidth+2, height);
+        // timelinePanel.setSize(new Dimension(width, height));
+        // drawerPanel.setBounds(2,0,width-4, height);
+    }
+    
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
@@ -341,6 +361,7 @@ public final class TimelineTopComponent extends TopComponent implements Timeline
 
         setMaximumSize(new java.awt.Dimension(32767, 58));
         setMinimumSize(new java.awt.Dimension(414, 58));
+        setPreferredSize(new java.awt.Dimension(424, 50));
         setLayout(new java.awt.GridBagLayout());
 
         playButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/gephi/desktop/timeline/resources/enabled.png"))); // NOI18N
@@ -421,7 +442,7 @@ public final class TimelineTopComponent extends TopComponent implements Timeline
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
-        gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
+        gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 3);
         add(refreshButton, gridBagConstraints);
     }// </editor-fold>//GEN-END:initComponents
 
@@ -436,19 +457,24 @@ public final class TimelineTopComponent extends TopComponent implements Timeline
     }//GEN-LAST:event_playButtonActionPerformed
 
     private void tlcontainerResize(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_tlcontainerResize
-        timelinePanel.setSize(new Dimension(tlcontainer.getWidth(), tlcontainer.getHeight()));
-        chartpanel.setSize(new Dimension(tlcontainer.getWidth(), tlcontainer.getHeight() - 6));
+        resizeTimeline(evt.getComponent().getWidth(), evt.getComponent().getHeight());
     }//GEN-LAST:event_tlcontainerResize
 
     private void refreshButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_refreshButtonActionPerformed
         animator.stop();
-        drawerPanel.refreshBounds();
         if (model != null) {
             model.setEnabled(true);
             model.setRangeFromFloat(0.0, 1.0);
             TimelineTopComponent.this.setEnabled(true);
             setupSparkline();
+            SwingUtilities.invokeLater(new Runnable(){
+                public void run() {
+                    resizeTimeline(tlcontainer.getWidth(), tlcontainer.getHeight());
+
+                }
+            });
         }
+        drawerPanel.refreshBounds();
     }//GEN-LAST:event_refreshButtonActionPerformed
 
     private void closeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_closeButtonActionPerformed
@@ -539,7 +565,7 @@ public final class TimelineTopComponent extends TopComponent implements Timeline
 
     @Override
     public void setEnabled(boolean enable) {
-        chartpanel.setVisible(enable);
+        chartPanel.setVisible(enable);
         drawerPanel.setEnabled(enable);
         timelinePanel.setEnabled(enable);
         playButton.setEnabled(enable);

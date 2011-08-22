@@ -23,12 +23,16 @@ package org.gephi.desktop.timeline.graphmetrics;
 import org.gephi.graph.api.Graph;
 import org.gephi.timeline.api.GraphMetric;
 import org.openide.util.lookup.ServiceProvider;
+import org.openide.util.lookup.ServiceProviders;
 
 /**
  *
  * @author daniel
  */
-@ServiceProvider(service = GraphMetric.class)
+@ServiceProviders(value={
+    @ServiceProvider(service = GraphMetric.class),
+    @ServiceProvider(service = GraphMetricNodes.class)}
+)
 public class GraphMetricNodes implements GraphMetric {
     
     private final String MetricName = "Number of nodes";

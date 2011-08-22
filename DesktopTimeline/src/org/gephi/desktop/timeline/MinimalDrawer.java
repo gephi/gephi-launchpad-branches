@@ -43,12 +43,17 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.openide.util.lookup.ServiceProvider;
+import org.openide.util.lookup.ServiceProviders;
 
 /**
  *
  * @author jbilcke, Daniel Bernardes
  */
-@ServiceProvider(service = TimelineDrawer.class)
+
+@ServiceProviders(value={
+    @ServiceProvider(service = TimelineDrawer.class),
+    @ServiceProvider(service = MinimalDrawer.class)}
+)
 public class MinimalDrawer extends JPanel
         implements TimelineDrawer,
         MouseListener,
