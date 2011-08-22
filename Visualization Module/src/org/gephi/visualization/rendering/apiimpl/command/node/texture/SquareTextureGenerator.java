@@ -27,8 +27,8 @@ package org.gephi.visualization.rendering.apiimpl.command.node.texture;
 public class SquareTextureGenerator extends ProceduralTextureGenerator {
 
     @Override
-    protected float calculateDistance(float x, float y, float radius, float step) {
-        return (Math.max(x, y) - 1.0f) / step;
+    protected float calculateDistance(float x, float y, float radius) {
+        return Math.max(x, y) - radius;
     }
     
 }

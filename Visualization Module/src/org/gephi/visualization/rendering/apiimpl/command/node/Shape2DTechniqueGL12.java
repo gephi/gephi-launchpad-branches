@@ -75,6 +75,8 @@ public final class Shape2DTechniqueGL12 extends BufferedTechnique<VizNode2D> {
         gl2.glBindTexture(GL2.GL_TEXTURE_2D, 0);
         gl2.glDisable(GL2.GL_BLEND);
         
+        gl.glDisable(GL.GL_TEXTURE_2D);
+        
         this.currentPass = -1;
     }
 
@@ -90,7 +92,7 @@ public final class Shape2DTechniqueGL12 extends BufferedTechnique<VizNode2D> {
     private void setPass0(GL2 gl) {
         gl.glBindTexture(GL2.GL_TEXTURE_2D, this.fillTex);
         
-        gl.glTexEnvi(GL2.GL_TEXTURE_ENV, GL2.GL_TEXTURE_ENV_MODE, GL2.GL_REPLACE);
+        gl.glTexEnvi(GL2.GL_TEXTURE_ENV, GL2.GL_TEXTURE_ENV_MODE, GL2.GL_MODULATE);
         
         gl.glEnable(GL2.GL_ALPHA_TEST);
         
@@ -100,18 +102,20 @@ public final class Shape2DTechniqueGL12 extends BufferedTechnique<VizNode2D> {
     private void setPass1(GL2 gl) {
         gl.glBindTexture(GL2.GL_TEXTURE_2D, this.borderTex);
         
-        gl.glTexEnvi(GL2.GL_TEXTURE_ENV, GL2.GL_TEXTURE_ENV_MODE, GL2.GL_REPLACE);
+        gl.glTexEnvi(GL2.GL_TEXTURE_ENV, GL2.GL_TEXTURE_ENV_MODE, GL2.GL_MODULATE);
         
         gl.glDisable(GL2.GL_ALPHA_TEST);
         gl.glEnable(GL2.GL_BLEND);
         
-        //gl.glBlendFunc(GL2.GL_ONE, GL2.GL_ONE_MINUS_SRC_ALPHA);
-        //gl.glBlendEquation(GL2.GL_FUNC_ADD);
+        gl.glBlendFunc(GL2.GL_ONE, GL2.GL_ONE_MINUS_SRC_ALPHA);
+        gl.glBlendEquation(GL2.GL_FUNC_ADD);
     }
 
     @Override
     public boolean begin(GL gl, Camera camera, RenderArea renderArea) {
         this.currentPass = 0;
+        
+        gl.glEnable(GL.GL_TEXTURE_2D);
         
         return super.begin(gl, camera, renderArea);
     }

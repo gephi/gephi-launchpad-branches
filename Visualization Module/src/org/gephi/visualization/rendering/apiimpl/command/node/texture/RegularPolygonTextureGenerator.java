@@ -56,13 +56,13 @@ public class RegularPolygonTextureGenerator extends ProceduralTextureGenerator {
     }
     
     @Override
-    protected float calculateDistance(float x, float y, float radius, float step) {
+    protected float calculateDistance(float x, float y, float radius) {
         float min = Float.POSITIVE_INFINITY;
         final Vec3 p = new Vec3(x / radius, y / radius, 1.0f);
         for (int i = 0; i < this.n; ++i) {
             final float distance = this.lines[i].dot(p);
             min = distance < min ? distance : min;
         }
-        return (min * radius) / step;
+        return min * radius;
     }
 }

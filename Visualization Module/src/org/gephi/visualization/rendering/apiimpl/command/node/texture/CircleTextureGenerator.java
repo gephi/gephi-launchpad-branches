@@ -28,7 +28,7 @@ package org.gephi.visualization.rendering.apiimpl.command.node.texture;
 public class CircleTextureGenerator extends ProceduralTextureGenerator {
 
     @Override
-    protected float calculateDistance(float x, float y, float radius, float step) {
-        return (x*x + y*y - radius) / step;   
+    protected float calculateDistance(float x, float y, float radius) {
+        return x*x + y*y - radius*radius;
     }
 }
