@@ -42,7 +42,7 @@ public class Shape2DLayoutGL2 extends Layout<VizNode2D> {
     private static ByteBuffer createIndexBuffer() {
         ByteBuffer buffer = Buffers.newDirectByteBuffer(196608);
         short i = 0;
-        while(buffer.remaining() < 12) {
+        while(buffer.remaining() > 12) {
             buffer.putShort(i);
             buffer.putShort((short)(i+1));
             buffer.putShort((short)(i+2));

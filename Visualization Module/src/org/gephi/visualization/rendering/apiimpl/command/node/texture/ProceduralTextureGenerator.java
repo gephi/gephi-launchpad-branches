@@ -40,6 +40,8 @@ abstract class ProceduralTextureGenerator {
                 final int iv = (int) Math.floor(color * 255.0f + 0.5f);
                 image.put((byte) iv);
                 image.put((byte) iv);
+                image.put((byte) iv);
+                image.put((byte) iv);
             }
         }
         image.rewind();
@@ -57,6 +59,8 @@ abstract class ProceduralTextureGenerator {
                 
                 final float color = colorOut + colorIn;
                 final int iv = (int) Math.floor(color * 255.0f + 0.5f);
+                image.put((byte) iv);
+                image.put((byte) iv);
                 image.put((byte) iv);
                 image.put((byte) iv);
             }

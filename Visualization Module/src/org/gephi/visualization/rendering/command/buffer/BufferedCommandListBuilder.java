@@ -65,6 +65,7 @@ public class BufferedCommandListBuilder<E> implements CommandListBuilder<E> {
         final Buffer<E> current = this.buffers.get(this.buffers.size() - 1);
         
         if (!current.add(e)) {
+            current.makeDrawable();
             final Buffer<E> newBuffer = new Buffer<E>(this.technique.layout(), this.bufferType);
             newBuffer.add(e);
             this.buffers.add(newBuffer);            
@@ -74,6 +75,11 @@ public class BufferedCommandListBuilder<E> implements CommandListBuilder<E> {
     @Override
     public List<Command> create() {
         if (!this.isBuilding) return null;
+        
+        /* makes the last buffer drawable */
+        if (!this.buffers.isEmpty()) {
+            this.buffers.get(this.buffers.size() - 1).makeDrawable();
+        }
         
         Command command = new GenericCommand<Buffer<E>>(this.buffers, this.technique);
         this.buffers = null;

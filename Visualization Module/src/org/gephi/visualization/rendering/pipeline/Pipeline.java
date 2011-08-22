@@ -41,7 +41,8 @@ import org.gephi.visualization.rendering.camera.RenderArea;
 import org.gephi.visualization.rendering.command.Command;
 
 /**
- *
+ * 
+ * 
  * @author Antonio Patriarca <antoniopatriarca@gmail.com>
  */
 public class Pipeline {
@@ -108,8 +109,7 @@ public class Pipeline {
         gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
         
         // draw graph
-        //RenderArea renderArea = new RenderArea((float)this.screenWidth / (float)this.screenHeight, new Rectangle(0.0f, 0.0f, 1.0f, 1.0f), frameData.near, frameData.far);
-        RenderArea renderArea = new RenderArea((float)this.screenWidth / (float)this.screenHeight, new Rectangle(0.0f, 0.0f, 1.0f, 1.0f), -100000.0f, 100000.0f);
+        RenderArea renderArea = new RenderArea((float)this.screenWidth / (float)this.screenHeight, new Rectangle(0.0f, 0.0f, 1.0f, 1.0f), frameData.near, frameData.far);
         
         test(gl.getGL2(), frameData, renderArea);
         
@@ -147,18 +147,14 @@ public class Pipeline {
         final float[] projMatrix = camera.projMatrix(renderArea).toArray();
         gl2.glLoadMatrixf(projMatrix, 0);
         
-        //gl2.glLoadIdentity();
         final Vec2 center = ((OrthoCamera)frameData.camera).center;
         final float height = ((OrthoCamera)frameData.camera).height;
         final float aspect = renderArea.aspectRatio;
-        //GLU glu = GLU.createGLU(gl2);
-        //glu.gluOrtho2D(center.x() - height * aspect * 0.5f, center.x() + height * aspect * 0.5f, center.x() - height * 0.5f, center.x() + height * 0.5f);
         
         gl2.glMatrixMode(GL2.GL_MODELVIEW);
         
-        //final float[] viewMatrix = camera.viewMatrix(renderArea).toArray();
-        //gl2.glLoadMatrixf(viewMatrix, 0);
-        gl2.glLoadIdentity();
+        final float[] viewMatrix = camera.viewMatrix(renderArea).toArray();
+        gl2.glLoadMatrixf(viewMatrix, 0);
         
         gl2.glColor3f(1.0f, 0.0f, 0.0f);
         
@@ -171,11 +167,5 @@ public class Pipeline {
         gl2.glVertex2f(center.x(), center.y() + height * 0.5f);
         
         gl2.glEnd();
-        
-        gl2.glMatrixMode(GL2.GL_PROJECTION);
-        gl2.glLoadIdentity();
-        
-        gl2.glMatrixMode(GL2.GL_MODELVIEW);
-        gl2.glLoadIdentity();
     }
 }

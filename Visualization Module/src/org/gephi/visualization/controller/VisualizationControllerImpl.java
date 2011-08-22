@@ -50,7 +50,6 @@ import org.gephi.visualization.api.vizmodel.VizConfig;
 import org.gephi.visualization.api.vizmodel.VizModel;
 import org.gephi.visualization.camera.Camera2d;
 import org.gephi.visualization.camera.Camera3d;
-import org.gephi.visualization.api.geometry.AABB;
 import org.gephi.visualization.event.VizEventManagerImpl;
 import org.gephi.visualization.model.Model;
 import org.gephi.visualization.rendering.RenderingEngine;

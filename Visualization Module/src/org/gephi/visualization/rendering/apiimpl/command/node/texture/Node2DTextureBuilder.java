@@ -44,9 +44,9 @@ public final class Node2DTextureBuilder {
         Map<NodeShape.Value, ProceduralTextureGenerator> map = new EnumMap<NodeShape.Value, ProceduralTextureGenerator>(NodeShape.Value.class);
         map.put(NodeShape.Value.CIRCLE, new CircleTextureGenerator());
         map.put(NodeShape.Value.DIAMOND, new RegularPolygonTextureGenerator(4));
-        map.put(NodeShape.Value.TRIANGLE, new RegularPolygonTextureGenerator(4));
-        map.put(NodeShape.Value.PENTAGON, new RegularPolygonTextureGenerator(4));
-        map.put(NodeShape.Value.HEXAGON, new RegularPolygonTextureGenerator(4));
+        map.put(NodeShape.Value.TRIANGLE, new RegularPolygonTextureGenerator(3));
+        map.put(NodeShape.Value.PENTAGON, new RegularPolygonTextureGenerator(5));
+        map.put(NodeShape.Value.HEXAGON, new RegularPolygonTextureGenerator(6));
         map.put(NodeShape.Value.SQUARE, new SquareTextureGenerator());
         generatorsMap = Collections.unmodifiableMap(map);        
     }
@@ -71,9 +71,9 @@ public final class Node2DTextureBuilder {
         
         //final ProceduralTextureGenerator generator = generatorsMap.get(shape);
         final ProceduralTextureGenerator generator = new CircleTextureGenerator();
-        final ByteBuffer buffer = Buffers.newDirectByteBuffer(2 * size * size);
+        final ByteBuffer buffer = Buffers.newDirectByteBuffer(4 * size * size);
         generator.createFillTexture(buffer, size);
-        gl.glTexImage2D(GL.GL_TEXTURE_2D, 0, GL2.GL_LUMINANCE8_ALPHA8, size, size, 0, GL2.GL_LUMINANCE_ALPHA, GL.GL_UNSIGNED_BYTE, buffer);
+        gl.glTexImage2D(GL.GL_TEXTURE_2D, 0, GL2.GL_RGBA8, size, size, 0, GL2.GL_RGBA, GL.GL_UNSIGNED_BYTE, buffer);
         gl.glGenerateMipmap(GL.GL_TEXTURE_2D);
         
         return result;
@@ -99,9 +99,9 @@ public final class Node2DTextureBuilder {
         
         //final ProceduralTextureGenerator generator = generatorsMap.get(shape);
         final ProceduralTextureGenerator generator = new CircleTextureGenerator();
-        final ByteBuffer buffer = Buffers.newDirectByteBuffer(2 * size * size);
+        final ByteBuffer buffer = Buffers.newDirectByteBuffer(4 * size * size);
         generator.createBorderTexture(borderSize, buffer, size);
-        gl.glTexImage2D(GL.GL_TEXTURE_2D, 0, GL2.GL_LUMINANCE8_ALPHA8, size, size, 0, GL2.GL_LUMINANCE_ALPHA, GL.GL_UNSIGNED_BYTE, buffer);
+        gl.glTexImage2D(GL.GL_TEXTURE_2D, 0, GL2.GL_RGBA8, size, size, 0, GL2.GL_RGBA, GL.GL_UNSIGNED_BYTE, buffer);
         gl.glGenerateMipmap(GL.GL_TEXTURE_2D);
         
         return result;
