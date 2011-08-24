@@ -28,7 +28,7 @@ public class SquareTextureGenerator extends ProceduralTextureGenerator {
 
     @Override
     protected float calculateDistance(float x, float y, float radius) {
-        return Math.max(x, y) - radius;
+        return Math.max(Math.abs(x), Math.abs(y)) - radius;
     }
     
 }

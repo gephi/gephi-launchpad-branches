@@ -22,6 +22,7 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 package org.gephi.visualization.model.styler;
 
 import org.gephi.graph.api.Node;
+import org.gephi.graph.api.NodeShape;
 import org.gephi.math.linalg.Vec2;
 import org.gephi.math.linalg.Vec3;
 import org.gephi.visualization.api.Color;
@@ -99,7 +100,9 @@ public class BasicNodeStyler implements NodeStyler {
             color = new Color(c[0], c[1], c[2]);
             borderColor = new Color(rborder, gborder, bborder);
         }
-        return new VizNode2D(new Vec2(node.getNodeData().x(), node.getNodeData().y()), node.getNodeData().getSize(), node.getNodeData().getNodeShape(), color, borderColor);
+        NodeShape shape = node.getNodeData().getNodeShape();
+        shape = shape == null || shape.value == NodeShape.Value.DEFAULT ? vizModel.getGlobalNodeShape() : shape;
+        return new VizNode2D(new Vec2(node.getNodeData().x(), node.getNodeData().y()), node.getNodeData().getSize(), shape, color, borderColor);
     }
 
     @Override

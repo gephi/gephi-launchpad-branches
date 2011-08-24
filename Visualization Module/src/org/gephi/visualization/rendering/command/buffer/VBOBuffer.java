@@ -34,7 +34,7 @@ class VBOBuffer<E> extends BufferImpl<E> {
     }
     
     @Override
-    public void drawBuffer(GL gl) {
+    public void drawBuffer(GL gl, int i) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

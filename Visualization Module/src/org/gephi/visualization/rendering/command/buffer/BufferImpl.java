@@ -37,7 +37,7 @@ abstract class BufferImpl<E> {
     /**
      * Draws a buffer.
      */
-    public abstract void drawBuffer(GL gl);
+    public abstract void drawBuffer(GL gl, int i);
     
     /**
      * Disposes all the OpenGL resources.

@@ -68,14 +68,24 @@ public class NodeShape {
     }  
     
     public enum Value {
-        DEFAULT,
-        CIRCLE,
-        TRIANGLE,
-        SQUARE,
-        DIAMOND,
-        PENTAGON,
-        HEXAGON, 
-        IMAGE;
+        DEFAULT(1.0f),
+        CIRCLE(2.0f / (float)Math.sqrt(Math.PI)),
+        TRIANGLE(2.0f / (float)Math.pow(3.0f, 0.25f)),
+        SQUARE(1.0f),
+        DIAMOND((float)Math.sqrt(2.0f)),
+        PENTAGON(1.0f),
+        HEXAGON(1.0f), 
+        IMAGE(1.0f);
+        
+        private final float scaleFactor;
+
+        private Value(float scaleFactor) {
+            this.scaleFactor = scaleFactor;
+        }
+        
+        public float scaleFactor() {
+            return this.scaleFactor;
+        }
         
         @Override
         public String toString() {

@@ -34,10 +34,10 @@ class VertexArrayBuffer<E> extends BufferImpl<E> {
     }
 
     @Override
-    public void drawBuffer(GL gl) {
+    public void drawBuffer(GL gl, int i) {
         Layout<E> layout = buffer.layout;
         
-        layout.setPointers(gl, buffer.data);
+        layout.setPointers(gl, buffer.data, i);
         
         gl.glDrawElements(layout.glDrawMode(), buffer.numberOfElements, 
                 layout.glDrawType(), buffer.indexBuffer);

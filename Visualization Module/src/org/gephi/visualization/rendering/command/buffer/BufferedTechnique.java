@@ -34,10 +34,12 @@ import org.gephi.visualization.rendering.command.Technique;
 public abstract class BufferedTechnique<E> implements Technique<Buffer<E>> {
     private final Layout<E> layout;
     private final Buffer.Type bufferType;
+    protected int currentPass;
     
     public BufferedTechnique(Layout<E> layout, Buffer.Type bufferType) {
         this.layout = layout;
         this.bufferType = bufferType;
+        this.currentPass = -1;
     }
     
     public final Layout<E> layout() {
@@ -50,12 +52,19 @@ public abstract class BufferedTechnique<E> implements Technique<Buffer<E>> {
 
     @Override
     public void draw(GL gl, Buffer<E> e) {
-        e.draw(gl);
+        e.draw(gl, this.currentPass);
     }
 
     @Override
     public void end(GL gl) {
         this.layout.disableClientStates(gl);
+        this.currentPass = -1;
+    }
+
+    @Override
+    public boolean advanceToNextPass(GL gl) {
+        ++this.currentPass;
+        return true;
     }
 
     @Override

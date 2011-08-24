@@ -81,10 +81,10 @@ public final class Buffer<E> {
         this.isDrawable = true;
     }
     
-    public void draw(GL gl) {
+    public void draw(GL gl, int i) {
         if (!this.isDrawable) return;
         
-        this.bufferImpl.drawBuffer(gl);
+        this.bufferImpl.drawBuffer(gl, i);
     }
     
     @Override

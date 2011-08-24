@@ -86,6 +86,11 @@ public class Pipeline {
     }
     
     public boolean init(GL gl) {
+        if (this.model.getAntiAliasing() > 0) {
+            gl.glEnable(GL.GL_MULTISAMPLE);
+            gl.glEnable(GL.GL_SAMPLE_ALPHA_TO_COVERAGE);
+        }
+        
         return true;
     }
     
@@ -100,6 +105,7 @@ public class Pipeline {
         // sets general states like background color
         Color bc = this.backgroundColor.get();
         gl.glClearColor(bc.r, bc.g, bc.b, 1.0f);
+        gl.glClearDepthf(1.0f);
         
         // screenshots ..
         

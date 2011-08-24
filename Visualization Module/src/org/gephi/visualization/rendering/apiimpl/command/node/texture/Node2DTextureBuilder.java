@@ -21,15 +21,11 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 package org.gephi.visualization.rendering.apiimpl.command.node.texture;
 
 import com.jogamp.common.nio.Buffers;
-import com.jogamp.opengl.util.awt.ImageUtil;
-import java.awt.image.BufferedImage;
-import java.awt.image.Raster;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Map;
-import javax.imageio.ImageIO;
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 import org.gephi.graph.api.NodeShape;
@@ -73,8 +69,8 @@ public final class Node2DTextureBuilder {
         
         gl.glTexParameteri(GL.GL_TEXTURE_2D, GL2.GL_TEXTURE_MAX_LEVEL, 0);
         
-        //final ProceduralTextureGenerator generator = generatorsMap.get(shape);
-        final ProceduralTextureGenerator generator = new CircleTextureGenerator();
+        ProceduralTextureGenerator generator = generatorsMap.get(shape.value);
+        if (generator == null) generator = new CircleTextureGenerator();
         final ByteBuffer buffer = Buffers.newDirectByteBuffer(4 * size * size);
         generator.createFillTexture(buffer, size);
         gl.glTexImage2D(GL.GL_TEXTURE_2D, 0, GL2.GL_RGBA8, size, size, 0, GL2.GL_RGBA, GL.GL_UNSIGNED_BYTE, buffer);
@@ -102,8 +98,7 @@ public final class Node2DTextureBuilder {
         
         gl.glTexParameteri(GL.GL_TEXTURE_2D, GL2.GL_TEXTURE_MAX_LEVEL, 0);
         
-        //final ProceduralTextureGenerator generator = generatorsMap.get(shape);
-        final ProceduralTextureGenerator generator = new CircleTextureGenerator();
+        final ProceduralTextureGenerator generator = generatorsMap.get(shape.value);
         final ByteBuffer buffer = Buffers.newDirectByteBuffer(4 * size * size);
         generator.createBorderTexture(borderSize, buffer, size);
         gl.glTexImage2D(GL.GL_TEXTURE_2D, 0, GL2.GL_RGBA8, size, size, 0, GL2.GL_RGBA, GL.GL_UNSIGNED_BYTE, buffer);

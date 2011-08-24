@@ -40,7 +40,6 @@ import org.gephi.visualization.rendering.command.buffer.BufferedTechnique;
 public final class Shape2DTechniqueGL12 extends BufferedTechnique<VizNode2D> {
     private final int fillTex;
     private final int borderTex;
-    private int currentPass;
     
     public Shape2DTechniqueGL12(GL gl, Buffer.Type type, NodeShape shape) {
         super(new Shape2DLayoutGL2(), type);
@@ -55,8 +54,6 @@ public final class Shape2DTechniqueGL12 extends BufferedTechnique<VizNode2D> {
         
         this.fillTex = Node2DTextureBuilder.createFillTexture(gl, shape, size);
         this.borderTex = Node2DTextureBuilder.createBolderTexture(gl, shape, size, 0.2f);
-        
-        this.currentPass = -1;
     }
 
     @Override
@@ -77,7 +74,7 @@ public final class Shape2DTechniqueGL12 extends BufferedTechnique<VizNode2D> {
         
         gl.glDisable(GL.GL_TEXTURE_2D);
         
-        this.currentPass = -1;
+        gl.glDisable(GL.GL_DEPTH_TEST);
     }
 
     @Override
@@ -112,10 +109,11 @@ public final class Shape2DTechniqueGL12 extends BufferedTechnique<VizNode2D> {
     }
 
     @Override
-    public boolean begin(GL gl, Camera camera, RenderArea renderArea) {
-        this.currentPass = 0;
-        
+    public boolean begin(GL gl, Camera camera, RenderArea renderArea) {        
         gl.glEnable(GL.GL_TEXTURE_2D);
+        
+        gl.glEnable(GL.GL_DEPTH_TEST);
+        gl.glDepthFunc(GL.GL_LEQUAL);
         
         return super.begin(gl, camera, renderArea);
     }
@@ -125,15 +123,15 @@ public final class Shape2DTechniqueGL12 extends BufferedTechnique<VizNode2D> {
         GL2 gl2 = gl.getGL2();
         if (gl2 == null) return false;
         
+        boolean result = super.advanceToNextPass(gl);
+        
         switch (this.currentPass) {
             case 0:
                 setPass0(gl2);
-                ++this.currentPass;
-                return true;
+                return result;
             case 1:
                 setPass1(gl2);
-                ++this.currentPass;
-                return true;
+                return result;
             default:
                 return false;
         }

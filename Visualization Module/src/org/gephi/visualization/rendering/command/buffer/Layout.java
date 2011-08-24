@@ -146,17 +146,19 @@ public abstract class Layout<E> {
     public abstract void disableClientStates(GL gl);
     
     /**
-     * Sets the pointers for vertex arrays.
+     * Sets the pointers for vertex arrays for the i<sup>th</sup> pass.
      * 
      * @param gl the GL class
      * @param b the buffer used to store the data
+     * @param i the current rendering pass
      */
-    public abstract void setPointers(GL gl, ByteBuffer b);
+    public abstract void setPointers(GL gl, ByteBuffer b, int i);
     
     /**
-     * Sets the offsets when using VBOs.
+     * Sets the offsets when using VBOs for the i<sup>th</sup> pass.
      * 
      * @param gl the GL class
+     * @param i the current rendering pass
      */
-    public abstract void setOffsets(GL gl);
+    public abstract void setOffsets(GL gl, int i);
 }
