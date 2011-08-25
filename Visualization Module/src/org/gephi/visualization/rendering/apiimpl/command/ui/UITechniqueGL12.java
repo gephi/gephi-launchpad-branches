@@ -138,17 +138,13 @@ public class UITechniqueGL12 implements Technique<UIShape> {
 
         gl2.glLineWidth(style.borderWidth());
 
-        gl2.glPolygonMode(GL2.GL_FRONT_AND_BACK, GL2.GL_LINE);
-
-        gl2.glBegin(GL2.GL_POLYGON);
+        gl2.glBegin(GL2.GL_LINE_LOOP);
 
         for (int i = 0; i < poly.numPoints(); ++i) {
             gl2.glVertex2f(poly.point(i).x(), poly.point(i).y());
         }
 
         gl2.glEnd();
-
-        gl2.glPolygonMode(GL2.GL_FRONT_AND_BACK, GL2.GL_FILL);
     }
 
     private void drawEllipse(GL gl, UIEllipse ellipse) {
@@ -187,9 +183,7 @@ public class UITechniqueGL12 implements Technique<UIShape> {
 
         gl2.glLineWidth(style.borderWidth());
 
-        gl2.glPolygonMode(GL2.GL_FRONT_AND_BACK, GL2.GL_LINE);
-
-        gl2.glBegin(GL2.GL_POLYGON);
+        gl2.glBegin(GL2.GL_LINE_LOOP);
 
         for (int i = 0; i < len; ++i) {
             gl2.glVertex2f(pnts[i].x(), pnts[i].y());
