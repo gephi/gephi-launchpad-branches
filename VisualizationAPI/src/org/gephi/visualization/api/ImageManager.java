@@ -27,12 +27,22 @@ import org.gephi.graph.api.NodeShape.ImageNodeShapeFactory;
 /**
  * Interface for loading images and providing access to them by their ID. 
  * 
+ * This is a singleton class and can be found in Lookup:
+ * 
+ * <pre>ImageManager im = Lookup.getDefault().lookup(ImageManager.class)</pre>
+ * 
  * @author Vojtech Bardiovsky
  */
 public interface ImageManager extends ImageNodeShapeFactory {
     
+    /**
+     * Returns image corresponding to the given id.
+     */
     public BufferedImage getImage(int id);
-    
+
+    /**
+     * Returns all image nodes shapes created until now.
+     */
     public ImageNodeShape[] getCreatedShapes();
     
 }

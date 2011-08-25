@@ -33,7 +33,11 @@ import org.gephi.visualization.api.vizmodel.VizConfig;
 import org.gephi.visualization.api.vizmodel.VizModel;
 
 /**
- * Controller for visualization.
+ * Controller for managing visualization states and configuration.
+ * 
+ * This is a singleton class and can be found in Lookup:
+ * 
+ * <pre>VisualizationController vc = Lookup.getDefault().lookup(VisualizationController.class)</pre>
  * 
  * @author Vojtech Bardiovsky <vojtech.bardiovsky@gmail.com>
  */
@@ -121,13 +125,14 @@ public interface VisualizationController {
 
     /**
      * Starts the recording of the visualization output.
-     * @param listener the listener that will be informed about recorded images.
+     * @param listener          the listener that will be informed about recorded images.
+     * @param imageDimensions   dimensions of the image output.
      */
     public void startRecording(RecordingListener listener, Dimension imageDimensions);
     
     /**
      * Stops the recording of the visualization output.
-     * @param listener the listener related to the recording that should be stopped.
+     * @param listener          the listener related to the recording that should be stopped.
      */
     public void stopRecording(RecordingListener listener);
     

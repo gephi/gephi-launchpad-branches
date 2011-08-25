@@ -20,9 +20,18 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 */
 package org.gephi.visualization.api.event;
 
+import org.gephi.visualization.api.VisualizationController;
+
 /**
+ * Manager for handling all basic user events that lead to motion. Handles graph
+ * dragging, selection shape creation, camera rotation etc.
  *
- * @author Mathieu Bastian
+ * This is a singleton class and is provided by the {@link VisualizationController}.
+ * 
+ * @see VisualizationController#getVizEventManager() 
+ * 
+ * @author Mathieu Bastian <mathieu.bastian@gephi.org>
+ * @author Vojtech Bardiovsky <vojtech.bardiovsky@gmail.com>
  */
 public interface VizEventManager {
 

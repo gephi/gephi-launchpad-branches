@@ -27,10 +27,15 @@ import org.gephi.math.linalg.Vec3;
 import org.gephi.visualization.api.selection.Shape;
 
 /**
- * Class for handling all basic user events that lead to motion. Handles graph
+ * Manager for handling all basic user events that lead to motion. Handles graph
  * dragging, selection shape creation, camera rotation etc.
  *
- * @author Vojtech Bardiovsky
+ * This is a singleton class and is provided by the {@link VisualizationController}.
+ * 
+ * @see VisualizationController#getMotionManager()
+ * 
+ * @author Antonio Patriarca <antoniopatriarca@gmail.com>
+ * @author Vojtech Bardiovsky <vojtech.bardiovsky@gmail.com>
  */
 public interface MotionManager {
 

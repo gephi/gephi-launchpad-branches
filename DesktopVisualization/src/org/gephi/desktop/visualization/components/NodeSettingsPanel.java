@@ -80,7 +80,6 @@ public class NodeSettingsPanel extends javax.swing.JPanel {
                         refreshSharedConfig();
                     }
                 }
-                
             }
         });
 
