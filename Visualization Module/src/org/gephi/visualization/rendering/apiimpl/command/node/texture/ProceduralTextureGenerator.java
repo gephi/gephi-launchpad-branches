@@ -71,12 +71,12 @@ abstract class ProceduralTextureGenerator {
     protected float calculateValue(float x, float y, float radius) {
         float d = calculateDistance(x, y, radius);
         
-        if (d < -1.0f) {
+        if (d < -2.0f) {
             return 1.0f;
-        } else if (d > 1.0f) {
+        } else if (d > 2.0f) {
             return 0.0f;
         } else {
-            final float t = (d + 1.0f)*0.5f;
+            final float t = (d + 2.0f)*0.25f;
             return t*t*t*(10.0f + t*(6.0f*t - 15.0f));
         }
     }

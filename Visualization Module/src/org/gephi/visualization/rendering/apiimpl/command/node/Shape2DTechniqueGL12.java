@@ -70,7 +70,7 @@ public final class Shape2DTechniqueGL12 extends BufferedTechnique<VizNode2D> {
         gl2.glLoadIdentity();
         
         gl2.glBindTexture(GL2.GL_TEXTURE_2D, 0);
-        gl2.glDisable(GL2.GL_BLEND);
+        gl2.glDisablei(GL2.GL_BLEND, 0);
         
         gl.glDisable(GL.GL_TEXTURE_2D);
         
@@ -93,7 +93,7 @@ public final class Shape2DTechniqueGL12 extends BufferedTechnique<VizNode2D> {
         
         gl.glEnable(GL2.GL_ALPHA_TEST);
         
-        gl.glAlphaFunc(GL2.GL_GREATER, 0.5f);
+        gl.glAlphaFunc(GL2.GL_GREATER, 0.4f);
     }
 
     private void setPass1(GL2 gl) {
@@ -102,10 +102,11 @@ public final class Shape2DTechniqueGL12 extends BufferedTechnique<VizNode2D> {
         gl.glTexEnvi(GL2.GL_TEXTURE_ENV, GL2.GL_TEXTURE_ENV_MODE, GL2.GL_MODULATE);
         
         gl.glDisable(GL2.GL_ALPHA_TEST);
-        gl.glEnable(GL2.GL_BLEND);
+        gl.glEnablei(GL2.GL_BLEND, 0);
         
-        gl.glBlendFunc(GL2.GL_ONE, GL2.GL_ONE_MINUS_SRC_ALPHA);
-        gl.glBlendEquation(GL2.GL_FUNC_ADD);
+        gl.glBlendEquationSeparate(GL2.GL_FUNC_ADD, GL2.GL_FUNC_ADD);
+        gl.glBlendFuncSeparate(GL2.GL_ONE, GL2.GL_ONE_MINUS_SRC_ALPHA, GL.GL_ONE, GL.GL_ZERO);
+        
     }
 
     @Override

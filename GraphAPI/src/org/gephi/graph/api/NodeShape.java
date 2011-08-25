@@ -20,8 +20,6 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 */
 package org.gephi.graph.api;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
 import org.openide.util.Lookup;
 
 /**
@@ -70,11 +68,11 @@ public class NodeShape {
     public enum Value {
         DEFAULT(1.0f),
         CIRCLE(2.0f / (float)Math.sqrt(Math.PI)),
-        TRIANGLE(2.0f / (float)Math.pow(3.0f, 0.25f)),
+        TRIANGLE(4.0f / (float)Math.pow(3.0f, 0.75f)),
         SQUARE(1.0f),
         DIAMOND((float)Math.sqrt(2.0f)),
-        PENTAGON(1.0f),
-        HEXAGON(1.0f), 
+        PENTAGON((float)Math.sqrt(8.0 / (5.0 * Math.sin(0.4 * Math.PI)))),
+        HEXAGON(2.0f / (float)Math.sqrt(1.5 * Math.sqrt(3.0))),
         IMAGE(1.0f);
         
         private final float scaleFactor;
