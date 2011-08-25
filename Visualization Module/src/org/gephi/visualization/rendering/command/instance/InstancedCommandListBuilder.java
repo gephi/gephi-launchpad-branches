@@ -35,12 +35,10 @@ import org.gephi.visualization.rendering.command.Technique;
  * @author Antonio Patriarca <antoniopatriarca@gmail.com>
  */
 public class InstancedCommandListBuilder<E> implements CommandListBuilder<E> {
-    private boolean isBuilding;
     private final Technique<E> technique;
     private List<E> list;
 
     public InstancedCommandListBuilder(Technique<E> technique) {
-        this.isBuilding = false;
         this.technique = technique;
         this.list = null;
     }
@@ -52,17 +50,17 @@ public class InstancedCommandListBuilder<E> implements CommandListBuilder<E> {
 
     @Override
     public void begin() {
-        if (!this.isBuilding) this.list = new ArrayList<E>();
+        if (this.list == null) this.list = new ArrayList<E>();
     }
 
     @Override
     public void add(E e) {
-        if (this.isBuilding) this.list.add(e);
+        if (this.list != null) this.list.add(e);
     }
 
     @Override
     public List<Command> create() {
-        if (!this.isBuilding) return null;
+        if (this.list == null) return null;
         
         Command command = new GenericCommand<E>(this.list, this.technique);
         this.list = null;

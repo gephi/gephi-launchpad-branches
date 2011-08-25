@@ -115,7 +115,7 @@ public class Pipeline {
         gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
         
         // draw graph
-        RenderArea renderArea = new RenderArea((float)this.screenWidth / (float)this.screenHeight, new Rectangle(0.0f, 0.0f, 1.0f, 1.0f), frameData.near, frameData.far);
+        RenderArea renderArea = new RenderArea((float)this.screenWidth / (float)this.screenHeight, new Rectangle(0.0f, 0.0f, 1.0f, 1.0f), this.screenWidth, this.screenHeight, frameData.near, frameData.far);
         
         test(gl.getGL2(), frameData, renderArea);
         

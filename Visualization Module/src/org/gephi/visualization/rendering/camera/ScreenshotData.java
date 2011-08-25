@@ -61,6 +61,6 @@ public class ScreenshotData {
         
         final Rectangle rect = new Rectangle(i * this.tilesWidth, j * this.tilesHeight, 
                 this.tilesWidth, this.tilesHeight);
-        return new RenderArea(this.screenshotSize.aspectRatio(), rect, 0, 10000);
+        return new RenderArea(this.screenshotSize.aspectRatio(), rect, this.frameBufferSize.width, this.frameBufferSize.height, 0, 10000);
     }
 }

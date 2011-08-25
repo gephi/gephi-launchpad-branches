@@ -21,16 +21,15 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 package org.gephi.visualization.rendering.command;
 
 import javax.media.opengl.GL;
-import org.gephi.graph.api.NodeShape;
 import org.gephi.visualization.api.view.ui.UIShape;
 import org.gephi.visualization.data.graph.VizEdge2D;
 import org.gephi.visualization.data.graph.VizEdge3D;
 import org.gephi.visualization.data.graph.VizNode2D;
 import org.gephi.visualization.data.graph.VizNode3D;
 import org.gephi.visualization.rendering.apiimpl.command.node.Node2DCommandListBuilderGL12;
-import org.gephi.visualization.rendering.apiimpl.command.node.Shape2DTechniqueGL12;
+import org.gephi.visualization.rendering.apiimpl.command.ui.UITechniqueGL12;
 import org.gephi.visualization.rendering.command.buffer.Buffer.Type;
-import org.gephi.visualization.rendering.command.buffer.BufferedCommandListBuilder;
+import org.gephi.visualization.rendering.command.instance.InstancedCommandListBuilder;
 
 /**
  * Set of command list builders used to create the rendering commands for a
@@ -63,7 +62,7 @@ public class CommandListBuilders {
         CommandListBuilder<VizNode2D> node2d = new Node2DCommandListBuilderGL12(gl, Type.VERTEX_ARRAY);
         return new CommandListBuilders(node2d, new NullCommandListBuilder<VizEdge2D>(),
                 new NullCommandListBuilder<VizNode3D>(), new NullCommandListBuilder<VizEdge3D>(),
-                new NullCommandListBuilder<UIShape>());
+                new InstancedCommandListBuilder<UIShape>(new UITechniqueGL12()));
     }
     
     public void dispose(GL gl) {

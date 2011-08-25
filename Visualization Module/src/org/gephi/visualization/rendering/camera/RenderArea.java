@@ -28,13 +28,17 @@ public final class RenderArea {
     public final float aspectRatio;
     
     public final Rectangle renderRect;
+    
+    public final float screenX, screenY;
  
     public final float near;
     public final float far;
 
-    public RenderArea(float aspectRatio, Rectangle renderRect, float near, float far) {
+    public RenderArea(float aspectRatio, Rectangle renderRect, float screenX, float screenY, float near, float far) {
         this.aspectRatio = aspectRatio;
         this.renderRect = renderRect;
+        this.screenX = screenX;
+        this.screenY = screenY;
         this.near = near;
         this.far = far;
     }

@@ -47,9 +47,9 @@ public class PipelineGL12 implements PipelineImpl {
     public void draw(GL gl, FrameData frameData) {
         gl.glViewport((int)this.viewport.x, (int)this.viewport.y, (int)this.viewport.width, (int)this.viewport.height);
         
-        RenderArea renderArea = new RenderArea(this.viewport.width / this.viewport.height, new Rectangle(0.0f, 0.0f, 1.0f, 1.0f), frameData.near, frameData.far);
+        //RenderArea renderArea = new RenderArea(this.viewport.width / this.viewport.height, new Rectangle(0.0f, 0.0f, 1.0f, 1.0f), frameData.near, frameData.far);
         
-        drawGraph(gl, frameData, renderArea);
+        //drawGraph(gl, frameData, renderArea);
     }
     
     private void drawGraph(GL gl, FrameData frameData, RenderArea renderArea) {

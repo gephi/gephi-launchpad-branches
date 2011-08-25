@@ -108,12 +108,12 @@ public class Shape2DLayoutGL2 extends Layout<VizNode2D> {
         GL2 gl2 = gl.getGL2();
         if (gl2 == null) return;
         
-        if (b.remaining() > 44 && b.position() == 0) {
-            gl2.glTexCoordPointer(2, GL.GL_FLOAT, 44, b);
-            b.position(i == 0 ? 8 : 20);
-            gl2.glColorPointer(3, GL.GL_FLOAT, 44, b);
-            b.position(32);
-            gl2.glVertexPointer(3, GL.GL_FLOAT, 44, b);
+        if (b.remaining() > 52 && b.position() == 0) {
+            gl2.glTexCoordPointer(2, GL.GL_FLOAT, 52, b);
+            b.position(i == 0 ? 8 : 24);
+            gl2.glColorPointer(4, GL.GL_FLOAT, 52, b);
+            b.position(40);
+            gl2.glVertexPointer(3, GL.GL_FLOAT, 52, b);
             b.position(0);
         }
         
@@ -124,9 +124,9 @@ public class Shape2DLayoutGL2 extends Layout<VizNode2D> {
         GL2 gl2 = gl.getGL2();
         if (gl2 == null) return;
         
-        gl2.glTexCoordPointer(2, GL.GL_FLOAT, 44, 0);
-        gl2.glColorPointer(3, GL.GL_FLOAT, 44, i == 0 ? 8 : 20);
-        gl2.glVertexPointer(3, GL.GL_FLOAT, 44, 32);
+        gl2.glTexCoordPointer(2, GL.GL_FLOAT, 52, 0);
+        gl2.glColorPointer(4, GL.GL_FLOAT, 52, i == 0 ? 8 : 24);
+        gl2.glVertexPointer(3, GL.GL_FLOAT, 52, 40);
     }
 
     @Override
@@ -138,12 +138,14 @@ public class Shape2DLayoutGL2 extends Layout<VizNode2D> {
         // BOTTOM LEFT
         b.putFloat(texBorderSize);
         b.putFloat(texBorderSize);
-        b.putFloat(e.color.r);
-        b.putFloat(e.color.g);
-        b.putFloat(e.color.b);
-        b.putFloat(e.borderColor.r);
-        b.putFloat(e.borderColor.g);
-        b.putFloat(e.borderColor.b);
+        b.putFloat(e.color.ra());
+        b.putFloat(e.color.ga());
+        b.putFloat(e.color.ba());
+        b.putFloat(e.color.a);
+        b.putFloat(e.borderColor.ra());
+        b.putFloat(e.borderColor.ga());
+        b.putFloat(e.borderColor.ba());
+        b.putFloat(e.borderColor.a);
         b.putFloat(e.position.x() - e.size*s);
         b.putFloat(e.position.y() - e.size*s);
         b.putFloat(-e.size);
@@ -151,12 +153,14 @@ public class Shape2DLayoutGL2 extends Layout<VizNode2D> {
         // BOTTOM RIGHT
         b.putFloat(1.0f - texBorderSize);
         b.putFloat(texBorderSize);
-        b.putFloat(e.color.r);
-        b.putFloat(e.color.g);
-        b.putFloat(e.color.b);
-        b.putFloat(e.borderColor.r);
-        b.putFloat(e.borderColor.g);
-        b.putFloat(e.borderColor.b);
+        b.putFloat(e.color.ra());
+        b.putFloat(e.color.ga());
+        b.putFloat(e.color.ba());
+        b.putFloat(e.color.a);
+        b.putFloat(e.borderColor.ra());
+        b.putFloat(e.borderColor.ga());
+        b.putFloat(e.borderColor.ba());
+        b.putFloat(e.borderColor.a);
         b.putFloat(e.position.x() + e.size*s);
         b.putFloat(e.position.y() - e.size*s);
         b.putFloat(-e.size);
@@ -164,12 +168,14 @@ public class Shape2DLayoutGL2 extends Layout<VizNode2D> {
         // TOP RIGHT
         b.putFloat(1.0f - texBorderSize);
         b.putFloat(1.0f - texBorderSize);
-        b.putFloat(e.color.r);
-        b.putFloat(e.color.g);
-        b.putFloat(e.color.b);
-        b.putFloat(e.borderColor.r);
-        b.putFloat(e.borderColor.g);
-        b.putFloat(e.borderColor.b);
+        b.putFloat(e.color.ra());
+        b.putFloat(e.color.ga());
+        b.putFloat(e.color.ba());
+        b.putFloat(e.color.a);
+        b.putFloat(e.borderColor.ra());
+        b.putFloat(e.borderColor.ga());
+        b.putFloat(e.borderColor.ba());
+        b.putFloat(e.borderColor.a);
         b.putFloat(e.position.x() + e.size * s);
         b.putFloat(e.position.y() + e.size * s);
         b.putFloat(-e.size);
@@ -177,12 +183,14 @@ public class Shape2DLayoutGL2 extends Layout<VizNode2D> {
         // TOP LEFT
         b.putFloat(texBorderSize);
         b.putFloat(1.0f - texBorderSize);
-        b.putFloat(e.color.r);
-        b.putFloat(e.color.g);
-        b.putFloat(e.color.b);
-        b.putFloat(e.borderColor.r);
-        b.putFloat(e.borderColor.g);
-        b.putFloat(e.borderColor.b);
+        b.putFloat(e.color.ra());
+        b.putFloat(e.color.ga());
+        b.putFloat(e.color.ba());
+        b.putFloat(e.color.a);
+        b.putFloat(e.borderColor.ra());
+        b.putFloat(e.borderColor.ga());
+        b.putFloat(e.borderColor.ba());
+        b.putFloat(e.borderColor.a);
         b.putFloat(e.position.x() - e.size * s);
         b.putFloat(e.position.y() + e.size * s);
         b.putFloat(-e.size);
