@@ -162,7 +162,7 @@ public class UITechniqueGL12 implements Technique<UIShape> {
             float c = (float) Math.cos(angle);
             float s = (float) Math.sin(angle);
 
-            pnts[i] = ellipse.center.copyM().add(c, ellipse.axis1, s, ellipse.axis2);
+            pnts[i] = ellipse.center.plusM(c, ellipse.axis1).plusEq(s, ellipse.axis2);
         }
 
         // fill
