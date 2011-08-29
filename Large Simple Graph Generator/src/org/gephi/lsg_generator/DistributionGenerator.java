@@ -36,9 +36,13 @@ public class DistributionGenerator extends java.util.Random {
         double rand = nextDouble();
         int res = (int) Math.round(Math.pow((Math.pow(max, power + 1) - Math.pow(min, power + 1)) * rand + Math.pow(min, power + 1), 1.0 / (power + 1)));
         res = (max - res) + min;
-        if (res > max || res < min)//bad hack for overflow
+        if (res > max || res < min) //in case of overflow
         {
-            res = min;
+            if (power > 0) {
+                res = min;
+            } else {
+                res = max;
+            }
         }
         return res;
     }

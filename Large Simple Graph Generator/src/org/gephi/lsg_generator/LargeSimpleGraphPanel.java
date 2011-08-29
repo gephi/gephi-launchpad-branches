@@ -20,24 +20,21 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.gephi.lsg_generator;
 
-import java.awt.LayoutManager;
 import java.lang.Integer;
 import java.util.HashMap;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import org.gephi.io.generator.spi.Generator;
 import org.gephi.lib.validation.ValidationClient;
 import org.gephi.statistics.plugin.ChartUtils;
 import org.gephi.ui.components.SimpleHTMLReport;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.plot.Plot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.netbeans.validation.api.builtin.Validators;
 import org.netbeans.validation.api.ui.ValidationGroup;
 import org.netbeans.validation.api.ui.ValidationPanel;
+import org.openide.windows.TopComponent;
+import org.openide.windows.WindowManager;
 
 /**
  *
@@ -77,11 +74,16 @@ public class LargeSimpleGraphPanel extends javax.swing.JPanel implements Validat
         int maxDegree = Math.min(Integer.parseInt(nodesTextField.getText()) - 1, Integer.parseInt(maxDegreeTextField.getText()));
         int[] count = new int[maxDegree + 1];
         DistributionGenerator random = new DistributionGenerator();
-        for (int i = 0; i < Integer.parseInt(nodesTextField.getText()); i++) {
+        int n = Integer.parseInt(nodesTextField.getText());
+        for (int i = 0; i < n; i++) {
             count[random.nextPowerLaw(minDegree, maxDegree, Double.parseDouble(exponentTextField.getText()))]++;
         }
-        for (int i = 0; i < maxDegree; i++) {
-            degreeDist.put(i, count[i]);
+        long sum = 0;
+        for (int i = 0; i <= maxDegree; i++) {
+            if (count[i] > 0) {
+                degreeDist.put(i, count[i]);
+                sum += i * count[i]; 
+            }
         }
 
         String report = "";
@@ -98,8 +100,8 @@ public class LargeSimpleGraphPanel extends javax.swing.JPanel implements Validat
                 dataset1,
                 PlotOrientation.VERTICAL,
                 true,
-                false,
-                false);
+                true,
+                true);
         ChartUtils.decorateChart(chart1);
         ChartUtils.scaleChart(chart1, dSeries, false);
         String degreeImageFile = ChartUtils.renderChart(chart1, "w-degree-distribution.png");
@@ -107,6 +109,8 @@ public class LargeSimpleGraphPanel extends javax.swing.JPanel implements Validat
         report = "<HTML> <BODY> <h1>Degree Distribution Report </h1> "
                 + "<hr>"
                 + "<br> <h2> Results: </h2>"
+                + "<br> Average degree: " + (((double) sum) / n) + ""
+                + "<br> Undirected edges: " + sum / 2 + ""
                 + "<br /><br />" + degreeImageFile
                 + "</BODY></HTML>";
         return report;
@@ -192,7 +196,8 @@ public class LargeSimpleGraphPanel extends javax.swing.JPanel implements Validat
     }// </editor-fold>//GEN-END:initComponents
 
 private void exampleButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exampleButtonActionPerformed
-    htmlReport = new SimpleHTMLReport(null, generateReport());
+    //FIXME Somehow make this window "higher" than this form :(
+    htmlReport = new SimpleHTMLReport(WindowManager.getDefault().getMainWindow(), generateReport());
 }//GEN-LAST:event_exampleButtonActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton exampleButton;

@@ -91,7 +91,7 @@ public class LargeSimpleGraph implements Generator {
         do {
             failure++;
             if (failure > 10) {
-                return;
+                throw new IllegalArgumentException("Impossible to make graph with such parameters connected and simple.");
             }
             generateDegree();
         } while (!possibleToMakeSimpleGraph());
@@ -161,10 +161,11 @@ public class LargeSimpleGraph implements Generator {
         }
     }
 
-    /*visit all components, put edges that can be deleted without disconnecting to nontreeEdge and one edge from 
-     *every tree to treeEdge, then merge
-     *mainEdge is removable edge to connect components with deletable edges between each other
-     *with complexity O(M)
+    /*
+     * Visit all components, put edges that can be deleted without disconnecting to nontreeEdge and one edge from 
+     * every tree to treeEdge, then merge
+     * mainEdge is removable edge to connect components with deletable edges between each other
+     * with complexity O(M)
      */
     private void makeGraphConnected() {
         Queue<Pair> treeEdge = new LinkedList<Pair>();
