@@ -91,7 +91,7 @@ public final class Buffer<E> {
     protected void finalize() throws Throwable {
         try {
             Layout.recycle(this.data);
-            if (this.layout.useStaticBuffer()) {
+            if (!this.layout.useStaticBuffer()) {
                 Layout.recycle(this.indexBuffer);
             }
         } finally {

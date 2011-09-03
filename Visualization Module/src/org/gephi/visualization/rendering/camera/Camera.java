@@ -21,8 +21,6 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 package org.gephi.visualization.rendering.camera;
 
 import org.gephi.math.linalg.Mat4;
-import org.gephi.visualization.camera.Camera2d;
-import org.gephi.visualization.camera.Camera3d;
 
 /**
  * 
@@ -30,11 +28,17 @@ import org.gephi.visualization.camera.Camera3d;
  * @author Antonio Patriarca <antoniopatriarca@gmail.com>
  */
 public abstract class Camera {
+    public final float near;
+    public final float far;
+    
     protected RenderArea area;
     protected Mat4 viewMatrix;
     protected Mat4 projMatrix;
 
-    public Camera() {
+    public Camera(float near, float far) {
+        this.near = near;
+        this.far = far;
+        
         this.area = null;
         this.viewMatrix = Mat4.IDENTITY;
         this.projMatrix = Mat4.IDENTITY;
@@ -62,14 +66,6 @@ public abstract class Camera {
             recomputeMatrices();
         }
         return this.projMatrix.times(this.viewMatrix);
-    }
-    
-    public static Camera from(Camera2d camera) {
-        return new OrthoCamera(camera.center(), camera.height());
-    }
-    
-    public static Camera from(Camera3d camera) {
-        return new PerspCamera(camera.position(), camera.front(), camera.up(), camera.right(), (float)Math.tan(camera.fov()*0.5f));
     }
 
     protected abstract void recomputeMatrices();

@@ -34,7 +34,9 @@ public final class PerspCamera extends Camera {
     public final Vec3 right;
     public final float tanHalfFov;
 
-    public PerspCamera(Vec3 position, Vec3 front, Vec3 up, Vec3 right, float tanHalfFov) {
+    public PerspCamera(Vec3 position, Vec3 front, Vec3 up, Vec3 right, float tanHalfFov, float near, float far) {
+        super(near, far);
+        
         this.position = position;
         this.frontNeg = front.negated();
         this.up = up;
@@ -47,13 +49,13 @@ public final class PerspCamera extends Camera {
         this.viewMatrix = Mat4.toReferenceFrame(this.position, this.right, this.up, this.frontNeg);
         
         Rectangle rect = this.area.renderRect;
-        final float h = 2.0f * this.tanHalfFov * this.area.near;
+        final float h = 2.0f * this.tanHalfFov * this.near;
         final float w = h * this.area.aspectRatio;
         final float l = (rect.x - 0.5f)*w;
         final float r = l + rect.width * w;
         final float b = (rect.y - 0.5f)*h;
         final float t = b + rect.height * h;
-        this.projMatrix = Mat4.frustum(l, r, b, t, this.area.near, this.area.far);
+        this.projMatrix = Mat4.frustum(l, r, b, t, this.near, this.far);
     }
     
 }

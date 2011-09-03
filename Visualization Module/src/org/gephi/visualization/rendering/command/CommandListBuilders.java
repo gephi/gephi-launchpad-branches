@@ -26,6 +26,7 @@ import org.gephi.visualization.data.graph.VizEdge2D;
 import org.gephi.visualization.data.graph.VizEdge3D;
 import org.gephi.visualization.data.graph.VizNode2D;
 import org.gephi.visualization.data.graph.VizNode3D;
+import org.gephi.visualization.rendering.apiimpl.command.edge.EdgeCommandListBuilderGL12;
 import org.gephi.visualization.rendering.apiimpl.command.node.Node2DCommandListBuilderGL12;
 import org.gephi.visualization.rendering.apiimpl.command.ui.UITechniqueGL12;
 import org.gephi.visualization.rendering.command.buffer.Buffer.Type;
@@ -60,7 +61,8 @@ public class CommandListBuilders {
     
     public static CommandListBuilders create(GL gl) {
         CommandListBuilder<VizNode2D> node2d = new Node2DCommandListBuilderGL12(gl, Type.VERTEX_ARRAY);
-        return new CommandListBuilders(node2d, new NullCommandListBuilder<VizEdge2D>(),
+        CommandListBuilder<VizEdge2D> edge2d = new EdgeCommandListBuilderGL12(Type.VERTEX_ARRAY);
+        return new CommandListBuilders(node2d, edge2d,
                 new NullCommandListBuilder<VizNode3D>(), new NullCommandListBuilder<VizEdge3D>(),
                 new InstancedCommandListBuilder<UIShape>(new UITechniqueGL12()));
     }

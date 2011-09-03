@@ -71,7 +71,8 @@ public class BasicEdgeStyler implements EdgeStyler {
             }
             float edgeScale = vizModel.getEdgeScale() * vizModel.getMetaEdgeScale();
             w = weight;
-            w = ((w - limits.getMinMetaWeight()) * weightRatio + WEIGHT_MINIMUM) * edgeScale;
+            //test..
+            //w = ((w - limits.getMinMetaWeight()) * weightRatio + WEIGHT_MINIMUM) * edgeScale;
         } else {
             float weightRatio;
             if (limits.getMinWeight() == limits.getMaxWeight()) {
@@ -81,7 +82,8 @@ public class BasicEdgeStyler implements EdgeStyler {
             }
             float edgeScale = vizModel.getEdgeScale();
             w = weight;
-            w = ((w - limits.getMinWeight()) * weightRatio + WEIGHT_MINIMUM) * edgeScale;
+            // test..
+            //w = ((w - limits.getMinWeight()) * weightRatio + WEIGHT_MINIMUM) * edgeScale;
         }
 
         if (!selected) {

@@ -21,6 +21,7 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 
 package org.gephi.visualization.model;
 
+import org.gephi.graph.api.Edge;
 import org.gephi.graph.api.Graph;
 import org.gephi.graph.api.GraphController;
 import org.gephi.graph.api.GraphModel;
@@ -28,9 +29,7 @@ import org.gephi.graph.api.Node;
 import org.gephi.project.api.ProjectController;
 import org.gephi.project.api.Workspace;
 import org.gephi.project.api.WorkspaceListener;
-import org.gephi.visualization.api.MotionManager;
 import org.gephi.visualization.api.VisualizationController;
-import org.gephi.visualization.api.selection.SelectionManager;
 import org.gephi.visualization.api.selection.Shape;
 import org.gephi.visualization.controller.VisualizationControllerImpl;
 import org.gephi.visualization.data.FrameDataBridgeIn;
@@ -125,6 +124,17 @@ public class Model implements Runnable, WorkspaceListener {
                 this.bridge.add(n);
             }
             
+            float minW = Float.MAX_VALUE;
+            float maxW = Float.MIN_VALUE;
+            for (Edge e : graph.getEdges()) {
+                minW = Math.min(minW, e.getWeight());
+                maxW = Math.max(maxW, e.getWeight());
+                
+                this.bridge.add(e);
+            }
+            
+            graphLimits.setMinWeight(minW);
+            graphLimits.setMaxWeight(maxW);
             graphLimits.setMinX(minX);
             graphLimits.setMaxX(maxX);
             graphLimits.setMinY(minY);

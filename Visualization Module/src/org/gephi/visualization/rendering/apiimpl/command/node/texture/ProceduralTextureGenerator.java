@@ -56,7 +56,7 @@ abstract class ProceduralTextureGenerator {
                 final float colorOut = calculateValue(x, y, 0.5f*(size - 2.0f));
                 final float colorIn = 1.0f - calculateValue(x, y, 0.5f*(size - 2.0f)*(1.0f - borderSize));
                 
-                final float color = colorOut - colorIn;
+                final float color = clamp(0.0f, 1.0f, colorOut - colorIn);
                 final int iv = (int) Math.floor(color * 255.0f + 0.5f);
                 image.put((byte) iv);
                 image.put((byte) iv);
@@ -82,4 +82,12 @@ abstract class ProceduralTextureGenerator {
     }
     
     protected abstract float calculateDistance(float x, float y, float radius);
+
+    private float clamp(float m, float M, float t) {
+        assert m <= M;
+        
+        if (t < m) return m;
+        else if (t > M) return M;
+        else return t;
+    }
 }

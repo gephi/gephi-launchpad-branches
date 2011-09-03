@@ -131,7 +131,7 @@ public class Shape2DLayoutGL2 extends Layout<VizNode2D> {
 
     @Override
     public int add(ByteBuffer b, VizNode2D e) {
-        if (b.remaining() < 128) return -1;
+        if (b.remaining() < 208) return -1;
 
         float s = e.shape.value.scaleFactor();
         

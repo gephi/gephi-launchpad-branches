@@ -34,4 +34,6 @@ public interface Command {
     public void draw(GL gl, Camera camera, RenderArea renderArea);
     
     public void dispose(GL gl);
+
+    public void recycle();
 }

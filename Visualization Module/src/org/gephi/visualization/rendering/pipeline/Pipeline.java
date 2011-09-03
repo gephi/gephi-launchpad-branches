@@ -26,19 +26,14 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.concurrent.atomic.AtomicReference;
 import javax.media.opengl.GL;
-import javax.media.opengl.GL2;
-import org.gephi.math.linalg.Vec2;
 import org.gephi.visualization.api.Color;
 import org.gephi.visualization.api.rendering.background.Background;
 import org.gephi.visualization.api.vizmodel.VizConfig;
 import org.gephi.visualization.api.vizmodel.VizModel;
 import org.gephi.visualization.data.FrameData;
 import org.gephi.visualization.rendering.RenderingEngine;
-import org.gephi.visualization.rendering.camera.Camera;
-import org.gephi.visualization.rendering.camera.OrthoCamera;
 import org.gephi.visualization.rendering.camera.Rectangle;
 import org.gephi.visualization.rendering.camera.RenderArea;
-import org.gephi.visualization.rendering.command.Command;
 
 /**
  * 
@@ -115,21 +110,9 @@ public class Pipeline {
         gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
         
         // draw graph
-        RenderArea renderArea = new RenderArea((float)this.screenWidth / (float)this.screenHeight, new Rectangle(0.0f, 0.0f, 1.0f, 1.0f), this.screenWidth, this.screenHeight, frameData.near, frameData.far);
+        RenderArea renderArea = new RenderArea((float)this.screenWidth / (float)this.screenHeight, new Rectangle(0.0f, 0.0f, 1.0f, 1.0f), this.screenWidth, this.screenHeight);
         
-        test(gl.getGL2(), frameData, renderArea);
-        
-        for (Command c : frameData.edgeCommands) {
-            c.draw(gl, frameData.camera, renderArea);
-        }
-        
-        for (Command c : frameData.nodeCommands) {
-            c.draw(gl, frameData.camera, renderArea);
-        }
-        
-        for (Command c : frameData.uiCommands) {
-            c.draw(gl, frameData.camera, renderArea);
-        }
+        frameData.commandList.draw(gl, frameData.camera, renderArea);
      
         if (this.model.isShowFPS()) {
             this.textRenderer.setColor(java.awt.Color.BLACK);
@@ -143,35 +126,5 @@ public class Pipeline {
     
     public void dispose(GL gl) {
         
-    }
-
-    private void test(GL2 gl2, FrameData frameData, RenderArea renderArea) {
-        Camera camera = frameData.camera;
-        
-        gl2.glMatrixMode(GL2.GL_PROJECTION);
-        
-        final float[] projMatrix = camera.projMatrix(renderArea).toArray();
-        gl2.glLoadMatrixf(projMatrix, 0);
-        
-        final Vec2 center = ((OrthoCamera)frameData.camera).center;
-        final float height = ((OrthoCamera)frameData.camera).height;
-        final float aspect = renderArea.aspectRatio;
-        
-        gl2.glMatrixMode(GL2.GL_MODELVIEW);
-        
-        final float[] viewMatrix = camera.viewMatrix(renderArea).toArray();
-        gl2.glLoadMatrixf(viewMatrix, 0);
-        
-        gl2.glColor3f(1.0f, 0.0f, 0.0f);
-        
-        gl2.glBegin(GL2.GL_TRIANGLES);
-        
-        gl2.glVertex2f(center.x(), center.y());
-        
-        gl2.glVertex2f(center.x() + height * aspect * 0.5f, center.y());
-        
-        gl2.glVertex2f(center.x(), center.y() + height * 0.5f);
-        
-        gl2.glEnd();
     }
 }

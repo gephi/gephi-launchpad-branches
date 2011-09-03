@@ -32,7 +32,9 @@ public final class OrthoCamera extends Camera {
     public final Vec2 center;
     public final float height;
 
-    public OrthoCamera(Vec2 center, float height) {
+    public OrthoCamera(Vec2 center, float height, float near, float far) {
+        super(near, far);
+        
         this.center = center;
         this.height = height;
     }
@@ -47,7 +49,7 @@ public final class OrthoCamera extends Camera {
         final float right = left + rect.width * width;
         final float bottom = this.center.y() + (rect.y - 0.5f) * this.height;
         final float top = bottom + rect.height * this.height;
-        this.projMatrix = Mat4.ortho(left, right, bottom, top, this.area.near, this.area.far);
+        this.projMatrix = Mat4.ortho(left, right, bottom, top, this.near, this.far);
     }
         
 }

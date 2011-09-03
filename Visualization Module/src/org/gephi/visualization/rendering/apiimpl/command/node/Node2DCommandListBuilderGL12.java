@@ -89,7 +89,9 @@ public class Node2DCommandListBuilderGL12 implements CommandListBuilder<VizNode2
 
     @Override
     public void dispose(GL gl) {
-        throw new UnsupportedOperationException("Not supported yet.");
+       for (CommandListBuilder<VizNode2D> c : builders.values()) {
+           c.dispose(gl);
+       }
     }
     
 }

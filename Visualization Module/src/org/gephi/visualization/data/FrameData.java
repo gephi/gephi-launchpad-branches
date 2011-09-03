@@ -21,10 +21,8 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 
 package org.gephi.visualization.data;
 
-import java.util.Collections;
-import java.util.List;
 import org.gephi.visualization.rendering.camera.Camera;
-import org.gephi.visualization.rendering.command.Command;
+import org.gephi.visualization.rendering.command.CommandList;
 
 /**
  * Class used to get the current graph data in View.
@@ -34,20 +32,11 @@ import org.gephi.visualization.rendering.command.Command;
 public class FrameData {
 
     public final Camera camera;
-    public final float near;
-    public final float far;
+    public final CommandList commandList;
 
-    public final List<Command> nodeCommands;
-    public final List<Command> edgeCommands;
-    public final List<Command> uiCommands;
-
-    public FrameData(Camera camera, float near, float far, List<Command> nodeCommands, List<Command> edgeCommands, List<Command> uiCommands) {
+    public FrameData(Camera camera, CommandList commandList) {
         this.camera = camera;
-        this.near = near;
-        this.far = far;
-        this.nodeCommands = Collections.unmodifiableList(nodeCommands);
-        this.edgeCommands = Collections.unmodifiableList(edgeCommands);
-        this.uiCommands = Collections.unmodifiableList(uiCommands);
+        this.commandList = commandList;
     }
     
 }

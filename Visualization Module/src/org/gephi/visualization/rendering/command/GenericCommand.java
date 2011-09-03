@@ -56,6 +56,11 @@ public final class GenericCommand<E> implements Command {
 
     @Override
     public void dispose(GL gl) {
-            this.technique.disposeElements(gl, this.objects);
+        this.technique.disposeElements(gl, this.objects);
+    }
+
+    @Override
+    public void recycle() {
+        // do nothing
     }
 }

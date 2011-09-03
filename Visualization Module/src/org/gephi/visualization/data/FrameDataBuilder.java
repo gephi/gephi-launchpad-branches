@@ -28,13 +28,17 @@ import org.gephi.math.qrand.VanDerCorputSequence;
 import org.gephi.visualization.api.view.ui.UIShape;
 import org.gephi.visualization.camera.Camera2d;
 import org.gephi.visualization.camera.Camera3d;
+import org.gephi.visualization.data.graph.VizEdge2D;
+import org.gephi.visualization.data.graph.VizEdge3D;
 import org.gephi.visualization.data.graph.styler.EdgeStyler;
 import org.gephi.visualization.data.graph.styler.NodeStyler;
 import org.gephi.visualization.data.graph.VizNode2D;
 import org.gephi.visualization.data.graph.VizNode3D;
 import org.gephi.visualization.rendering.camera.Camera;
-import org.gephi.visualization.rendering.camera.PerspCamera;
+import org.gephi.visualization.rendering.camera.OrthoCameraBuilder;
+import org.gephi.visualization.rendering.camera.PerspCameraBuilder;
 import org.gephi.visualization.rendering.command.Command;
+import org.gephi.visualization.rendering.command.CommandList;
 import org.gephi.visualization.rendering.command.CommandListBuilders;
 
 /**
@@ -42,106 +46,164 @@ import org.gephi.visualization.rendering.command.CommandListBuilders;
  *
  * Antonio Patriarca <antoniopatriarca@gmail.com>
  */
-public class FrameDataBuilder {
-
-    private final Camera camera;
-    private final boolean is3D;
-    
-    private int counter;
-    
-    private float near;
-    private float far;
-    
-    private final NodeStyler nodeStyler;
-    private final EdgeStyler edgeStyler;
-    
-    private final CommandListBuilders builders;
+final class FrameDataBuilder {   
+    private final Impl impl;
 
     public FrameDataBuilder(org.gephi.visualization.api.Camera camera,
             NodeStyler nodeStyler, EdgeStyler edgeStyler,
             CommandListBuilders builders) {
+        
         if (camera instanceof Camera2d) {
-            this.camera = Camera.from((Camera2d)camera);
-            this.is3D = false;
+            this.impl = new Impl2D((Camera2d)camera, nodeStyler, edgeStyler, builders);
         } else if (camera instanceof Camera3d) {
-            this.camera = Camera.from((Camera3d)camera);
-            this.is3D = true;
+            this.impl = new Impl3D((Camera3d)camera, nodeStyler, edgeStyler, builders);
         } else {
             // It should never execute the following code
             assert false;
-            this.camera = null;
-            this.is3D = false;
-        }
-        
-        this.counter = 0;
-        
-        this.near = Float.POSITIVE_INFINITY;
-        this.far = 0.0f;
-
-        this.nodeStyler = nodeStyler;
-        this.edgeStyler = edgeStyler;
-        
-        this.builders = builders;
-        if (this.is3D) {
-            this.builders.begin3D();
-        } else {
-            this.builders.begin2D();
+            this.impl = null;
         }
     }
 
     public void add(Node node) {
-        if (this.is3D) {
-            final VizNode3D n = this.nodeStyler.toVisual3D(node);
-            this.builders.node3DBuilder.add(n);
-            final PerspCamera camera3d = (PerspCamera) this.camera;
-            final float distNear = camera3d.frontNeg.dot(n.position.minus(camera3d.position)) - n.size;
-            if (distNear >= 0.1f && distNear < this.near) {
-                this.near = distNear;
-            }
-            final float distFar = distNear + 2.0f * n.size;
-            if (distFar > this.far) {
-                this.far = distFar;
-            }
-        } else {
-            final VizNode2D n = this.nodeStyler.toVisual2D(node);
-            final float r = VanDerCorputSequence.get(++this.counter);
-            final float z = (float) (n.size * (0.009 + r * 0.002));
-            final VizNode2D n2 = new VizNode2D(n.position, z, n.shape, n.color, n.borderColor);
-            this.builders.node2DBuilder.add(n);
-            final float distNear = n.size * 0.009f;
-            if (distNear < this.near) {
-                this.near = distNear;
-            }
-            final float distFar = n.size * 1.001f;
-            if (distFar > this.far) {
-                this.far = distFar;
-            }
-        }
+        this.impl.add(node);
     }
 
     public void add(Edge edge) {
-        if (this.is3D) {
-            this.builders.edge3DBuilder.add(this.edgeStyler.toVisual3D(edge));
-        } else {
-            this.builders.edge2DBuilder.add(this.edgeStyler.toVisual2D(edge));
-        }
+        this.impl.add(edge);
     }
 
     public void add(UIShape shape) {
-        this.builders.uiShapeBuilder.add(shape);
+        this.impl.add(shape);        
     }
 
     public FrameData createFrameData() {
-        List<Command> nodeCommands, edgeCommands;
-        if (this.is3D) {
-            nodeCommands = this.builders.node3DBuilder.create();
-            edgeCommands = this.builders.edge3DBuilder.create();
-        } else {
-            nodeCommands = this.builders.node2DBuilder.create();
-            edgeCommands = this.builders.edge2DBuilder.create();
-        }
-        final List<Command> uiCommands = this.builders.uiShapeBuilder.create();
+        return this.impl.create();
+    }
+    
+    private abstract class Impl {
+        protected final NodeStyler nodeStyler;
+        protected final EdgeStyler edgeStyler;
+    
+        protected final CommandListBuilders builders;
 
-        return new FrameData(this.camera, this.near, this.far, nodeCommands, edgeCommands, uiCommands);
+        public Impl(NodeStyler nodeStyler, EdgeStyler edgeStyler, CommandListBuilders builders) {
+            this.nodeStyler = nodeStyler;
+            this.edgeStyler = edgeStyler;
+            this.builders = builders;
+        }
+        
+        public abstract void add(Node node);
+        public abstract void add(Edge edge);
+        
+        public final void add(UIShape shape) {
+            this.builders.uiShapeBuilder.add(shape);
+        }
+        
+        public final FrameData create() {
+            final List<Command> edgeCommands = this.getEdgeCommands();
+            final List<Command> nodeCommands = this.getNodeCommands();
+            final List<Command> uiCommands = this.builders.uiShapeBuilder.create();
+            final CommandList commandList = new CommandList(edgeCommands, nodeCommands, uiCommands);
+            
+            final Camera camera = this.getCamera();
+            
+            return new FrameData(camera, commandList);
+        }
+
+        protected abstract List<Command> getEdgeCommands();
+        protected abstract List<Command> getNodeCommands();
+        protected abstract Camera getCamera();
+        
+    }
+    
+    private final class Impl2D extends Impl {
+        private final OrthoCameraBuilder cameraBuilder;
+        
+        private int counter;
+
+        public Impl2D(Camera2d camera, NodeStyler nodeStyler, EdgeStyler edgeStyler, CommandListBuilders builders) {
+            super(nodeStyler, edgeStyler, builders);
+            
+            this.cameraBuilder = new OrthoCameraBuilder(camera);
+            
+            this.builders.begin2D();
+            
+            this.counter = 0;
+        }
+        
+        @Override
+        public void add(Node node) {
+            final VizNode2D n = this.nodeStyler.toVisual2D(node);
+            
+            this.cameraBuilder.add(n);
+            
+            final float r = VanDerCorputSequence.get(++this.counter);
+            final float z = n.size * (0.999f + r * 0.002f);
+            final VizNode2D n2 = new VizNode2D(n.position, z, n.shape, n.color, n.borderColor);
+            this.builders.node2DBuilder.add(n2);            
+        }
+
+        @Override
+        public void add(Edge edge) {
+            final VizEdge2D e = this.edgeStyler.toVisual2D(edge);
+            this.builders.edge2DBuilder.add(e);
+        }
+
+        @Override
+        protected List<Command> getEdgeCommands() {
+            return this.builders.edge2DBuilder.create();
+        }
+
+        @Override
+        protected List<Command> getNodeCommands() {
+            return this.builders.node2DBuilder.create();
+        }
+
+        @Override
+        protected Camera getCamera() {
+            return this.cameraBuilder.create();
+        }
+    }
+    
+    private final class Impl3D extends Impl {
+        private final PerspCameraBuilder cameraBuilder;
+
+        public Impl3D(Camera3d camera, NodeStyler nodeStyler, EdgeStyler edgeStyler, CommandListBuilders builders) {
+            super(nodeStyler, edgeStyler, builders);
+            
+            this.cameraBuilder = new PerspCameraBuilder(camera);
+            
+            this.builders.begin3D();
+        }
+
+        @Override
+        public void add(Node node) {
+            final VizNode3D n = this.nodeStyler.toVisual3D(node);
+            
+            this.cameraBuilder.add(n);
+
+            this.builders.node3DBuilder.add(n); 
+        }
+
+        @Override
+        public void add(Edge edge) {
+            final VizEdge3D e = this.edgeStyler.toVisual3D(edge);
+            this.builders.edge3DBuilder.add(e);
+        }
+
+        @Override
+        protected List<Command> getEdgeCommands() {
+            return this.builders.edge3DBuilder.create();
+        }
+
+        @Override
+        protected List<Command> getNodeCommands() {
+            return this.builders.node3DBuilder.create();
+        }
+
+        @Override
+        protected Camera getCamera() {
+            return this.cameraBuilder.create();
+        }
     }
 }
