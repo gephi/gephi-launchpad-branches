@@ -20,16 +20,18 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.gephi.desktop.timeline;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.GridBagConstraints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.geom.Rectangle2D;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.logging.Logger;
+import javax.swing.BorderFactory;
 import javax.swing.JLayeredPane;
-import javax.swing.JPanel;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.SwingUtilities;
 import org.gephi.desktop.timeline.graphmetrics.GraphMetricNodes;
@@ -41,15 +43,18 @@ import org.gephi.timeline.api.TimelineModelEvent;
 import org.gephi.timeline.api.TimelineModelListener;
 import org.gephi.timeline.api.GraphMetric;
 import org.gephi.ui.components.CloseButton;
+import org.gephi.utils.longtask.spi.LongTask;
+import org.gephi.utils.progress.Progress;
+import org.gephi.utils.progress.ProgressTicket;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.NumberTickUnit;
 import org.jfree.chart.axis.ValueAxis;
+import org.jfree.chart.event.ChartChangeListener;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.StandardXYItemRenderer;
-import org.jfree.data.Range;
 import org.jfree.data.time.Millisecond;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
@@ -72,7 +77,7 @@ import org.openide.util.Lookup;
  */
 @ConvertAsProperties(dtd = "-//org.gephi.desktop.timeline//Timeline//EN",
 autostore = false)
-public final class TimelineTopComponent extends TopComponent implements TimelineAnimatorListener, TimelineModelListener {
+public final class TimelineTopComponent extends TopComponent implements TimelineAnimatorListener, TimelineModelListener, LongTask {
 
     private static TimelineTopComponent instance;
     /** path to the icon used by the component and its open action */
@@ -101,7 +106,11 @@ public final class TimelineTopComponent extends TopComponent implements Timeline
     private GraphMetric currentMetric;
     private HashMap<String, GraphMetric> metrics = new HashMap<String, GraphMetric>();
     private JRadioButtonMenuItem[] mitemMetrics;
+    private boolean cancel = false;
+    private ProgressTicket progressTicket;
 
+    private int axisoffset = 2;
+    
     public TimelineTopComponent() {
         initComponents();
 
@@ -114,7 +123,14 @@ public final class TimelineTopComponent extends TopComponent implements Timeline
         drawerPanel.setOpaque(false);
         drawerPanel.setEnabled(false);
         drawerPanel.setInheritsPopupMenu(true);
-        timelinePanel.add(drawerPanel);
+        drawerPanel.setBorder(BorderFactory.createLineBorder(Color.black));
+        GridBagConstraints gridc = new GridBagConstraints();
+        gridc.fill = GridBagConstraints.BOTH;
+        gridc.weightx = 1;
+        gridc.weighty = 1;
+        gridc.gridx = 0;
+        gridc.gridy = 0;
+        timelinePanel.add(drawerPanel, gridc);
 
         // Animator
         animator = new TimelineAnimatorImpl();
@@ -161,11 +177,13 @@ public final class TimelineTopComponent extends TopComponent implements Timeline
         chart.setBackgroundPaint(Color.WHITE);
 
         chartPanel = new ChartPanel(chart);
+        chartPanel.setMouseZoomable(false);
         chartPanel.setMinimumDrawHeight(50);
+        chartPanel.setMinimumDrawWidth(100);
         chartPanel.setLayout(new java.awt.BorderLayout());
         chartPanel.setInheritsPopupMenu(true);
         chartPanel.setVisible(false);
-
+        
         tlcontainer.add(chartPanel, JLayeredPane.DEFAULT_LAYER);
         SwingUtilities.invokeLater(new Runnable(){
             public void run() {
@@ -186,7 +204,7 @@ public final class TimelineTopComponent extends TopComponent implements Timeline
             mitemMetrics[i].addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     setMetric(metrics.get(e.getActionCommand()));
-                    setupSparkline();
+                    setupSparkline(true);
                     SwingUtilities.invokeLater(new Runnable(){
                         public void run() {
                             resizeTimeline(tlcontainer.getWidth(), tlcontainer.getHeight());
@@ -213,66 +231,88 @@ public final class TimelineTopComponent extends TopComponent implements Timeline
         });
     }
 
-    private void setupSparkline() {
+    private void setupSparkline(boolean refresh) {
         // change unit formats if needed and refresh data
+        Thread refreshSparkline = new Thread(refreshSparklineData);
         if (model.getUnit() == DateTime.class && dataset instanceof XYSeriesCollection) {
             dataset = new TimeSeriesCollection();
             timelineAxis = new DateAxis();
             plot.setDataset(dataset);
             plot.setDomainAxis(timelineAxis);
+            refreshSparkline.start();
         } else if (model.getUnit() != DateTime.class && dataset instanceof TimeSeriesCollection) {
             dataset = new XYSeriesCollection();
             timelineAxis = new NumberAxis();
             plot.setDataset(dataset);
             plot.setDomainAxis(timelineAxis);
+            refreshSparkline.start();
         }
-        Range range = refreshModelData();
-        timelineAxis.setRange(range);
+        if (refresh) 
+            refreshSparkline.start();
     }
 
-    private Range refreshModelData() {
-        double y, ymax = 0, ymin = Double.POSITIVE_INFINITY; // default positive values
-        if (dataset instanceof TimeSeriesCollection) {
-            TimeSeriesCollection dataSet = (TimeSeriesCollection) dataset;
-            TimeSeries data = new TimeSeries(currentMetric.getName());
+    private Runnable refreshSparklineData = new Runnable() {
 
-            long Min = (long) min; // model.getMinValue();
-            long Max = (long) max; // model.getMaxValue();
+        public void run() {
+            double y, ymax = 0, ymin = Double.POSITIVE_INFINITY; // default positive values
+            
+            Progress.start(progressTicket, samplepoints);
+            
+            if (dataset instanceof TimeSeriesCollection) {
+                TimeSeriesCollection dataSet = (TimeSeriesCollection) dataset;
+                TimeSeries data = new TimeSeries(currentMetric.getName());
 
-            for (long t = Min; t <= Max; t += (Max - Min) / (samplepoints - 1)) {
-                y = currentMetric.measureGraph(model.getSnapshotGraph(t)).doubleValue();
-                if (ymax < y) {
-                    ymax = y;
+                long Min = (long) min; // model.getMinValue();
+                long Max = (long) max; // model.getMaxValue();
+
+                for (long t = Min; t <= Max; t += (Max - Min) / (samplepoints - 1)) {
+                    y = currentMetric.measureGraph(model.getSnapshotGraph(t)).doubleValue();
+                    if (ymax < y) {
+                        ymax = y;
+                    }
+                    if (ymin > y) {
+                        ymin = y;
+                    }
+                    data.add(new Millisecond(new Date(t)), y);
+                    Progress.progress(progressTicket);
                 }
-                if (ymin > y) {
-                    ymin = y;
+                dataSet.removeAllSeries();
+                dataSet.addSeries(data);
+                
+                // update axis
+                timelineAxis.setRange(dataSet.getDomainBounds(false));
+                metricAxis.setTickUnit(new NumberTickUnit(ymax));
+            } else {
+                XYSeriesCollection dataSet = (XYSeriesCollection) dataset;
+                XYSeries data = new XYSeries(currentMetric.getName());
+
+                for (double t = min; t <= max; t += (max - min) / (samplepoints - 1)) {
+                    y = currentMetric.measureGraph(model.getSnapshotGraph(t)).doubleValue();
+                    if (ymax < y) {
+                        ymax = y;
+                    }
+                    if (ymin > y) {
+                        ymin = y;
+                    }
+                    data.add(t, y);
+                    Progress.progress(progressTicket);
                 }
-                data.add(new Millisecond(new Date(t)), y);
+                dataSet.removeAllSeries();
+                dataSet.addSeries(data);
+                
+                // update axis
+                timelineAxis.setRange(dataSet.getDomainBounds(false));
+                metricAxis.setTickUnit(new NumberTickUnit(ymax));
             }
-            dataSet.removeAllSeries();
-            dataSet.addSeries(data);
-            metricAxis.setTickUnit(new NumberTickUnit(ymax));
-            return dataSet.getDomainBounds(false);
-        } else {
-            XYSeriesCollection dataSet = (XYSeriesCollection) dataset;
-            XYSeries data = new XYSeries(currentMetric.getName());
-
-            for (double t = min; t <= max; t += (max - min) / (samplepoints - 1)) {
-                y = currentMetric.measureGraph(model.getSnapshotGraph(t)).doubleValue();
-                if (ymax < y) {
-                    ymax = y;
+            SwingUtilities.invokeLater(new Runnable(){
+                public void run() {
+                    axisoffset = chartPanel.getWidth() - (int) chartPanel.getChartRenderingInfo().getPlotInfo().getDataArea().getWidth();
                 }
-                if (ymin > y) {
-                    ymin = y;
-                }
-                data.add(t, y);
-            }
-            dataSet.removeAllSeries();
-            dataSet.addSeries(data);
-            metricAxis.setTickUnit(new NumberTickUnit(ymax));
-            return dataSet.getDomainBounds(false);
+            });
+            System.out.println(axisoffset);
+            Progress.finish(progressTicket);
         }
-    }
+    };
 
     public GraphMetric getMetric() {
         return currentMetric;
@@ -324,9 +364,8 @@ public final class TimelineTopComponent extends TopComponent implements Timeline
     
     private void resizeTimeline(int width, int height) {
         chartPanel.setBounds(0, 2, width-2, height-6);
-        int datawidth = (int) chartPanel.getChartRenderingInfo().getPlotInfo().getDataArea().getWidth();
-        timelinePanel.setBounds(width-datawidth-2  , 0, datawidth+2,   height); 
-        drawerPanel.setBounds(0, 0, datawidth+2, height);
+        timelinePanel.setBounds(axisoffset-2, 0, width-axisoffset, height); 
+        drawerPanel.setBounds(0, 0, width-axisoffset-2, height);
         // timelinePanel.setSize(new Dimension(width, height));
         // drawerPanel.setBounds(2,0,width-4, height);
     }
@@ -396,12 +435,13 @@ public final class TimelineTopComponent extends TopComponent implements Timeline
             }
         });
 
+        timelinePanel.setBorder(null);
         timelinePanel.setEnabled(false);
         timelinePanel.setInheritsPopupMenu(true);
         timelinePanel.setMinimumSize(new java.awt.Dimension(300, 28));
         timelinePanel.setOpaque(false);
         timelinePanel.setPreferredSize(new java.awt.Dimension(300, 30));
-        timelinePanel.setLayout(new java.awt.BorderLayout());
+        timelinePanel.setLayout(new java.awt.GridBagLayout());
         timelinePanel.setBounds(0, 0, 300, 30);
         tlcontainer.add(timelinePanel, javax.swing.JLayeredPane.MODAL_LAYER);
 
@@ -466,7 +506,7 @@ public final class TimelineTopComponent extends TopComponent implements Timeline
             model.setEnabled(true);
             model.setRangeFromFloat(0.0, 1.0);
             TimelineTopComponent.this.setEnabled(true);
-            setupSparkline();
+            setupSparkline(true);
             SwingUtilities.invokeLater(new Runnable(){
                 public void run() {
                     resizeTimeline(tlcontainer.getWidth(), tlcontainer.getHeight());
@@ -569,5 +609,14 @@ public final class TimelineTopComponent extends TopComponent implements Timeline
         drawerPanel.setEnabled(enable);
         timelinePanel.setEnabled(enable);
         playButton.setEnabled(enable);
+    }
+
+    public boolean cancel() {
+        cancel = true;
+        return true;
+    }
+
+    public void setProgressTicket(ProgressTicket progressTicket) {
+        this.progressTicket = progressTicket;
     }
 }
