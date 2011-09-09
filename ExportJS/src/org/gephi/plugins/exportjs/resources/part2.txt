@@ -1,0 +1,46 @@
+
+    	</script>
+	</head>
+	<body>
+		<div id="zonecentre" class="degrade">
+			<canvas id="carte" width="0" height="0"></canvas>
+			<ul id="ctlzoom">
+				<li>
+					<a href="#" id="btnplus" title="Zoom in"> </a>
+				</li>
+				<li id="zoneslider">
+					<div id="slider"></div>
+				</li>
+				<li>
+					<a href="#" id="btnmoins" title="Zoom out"> </a>
+				</li>
+				<li>
+					<a href="#" id="btnloupe" class="off" title="Turn on magnifier"> </a>
+				</li>
+				<li>
+					<a href="#" id="btnedges" title="Hide edges"> </a>
+				</li>
+			</ul>
+		</div>
+		<div id="zonemini" class="degrade">
+			<canvas id="miniature" width="0" height="0"></canvas>
+		</div>
+		<div id="colonnegauche">
+			<div id="deplie">
+				<a href="#" id="adeplie" class="f-droite"> </a>
+			</div>
+			<div id="contenugauche"></div>
+		</div>
+		<div id="barre">
+			<div id="titre">
+				<h1><a href="http://gephi.org/" target="_blank" title="Made with Gephi">Gephi: Js Exporter</a></h1>
+			</div>
+			<form id="recherche">
+				<input id="inputrecherche" value="Search" class="inputgris" autocomplete="off" />
+				<input id="envoirech" type="submit" />
+			</form>
+		</div>
+		<ul id="autocomplete">
+		</ul>
+	</body>
+</html>
