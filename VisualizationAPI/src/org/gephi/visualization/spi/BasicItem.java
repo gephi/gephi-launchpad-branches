@@ -31,7 +31,7 @@ import org.gephi.visualization.spi.GraphContextMenuItem;
  *
  * @author Eduardo
  */
-public abstract class BasicItem implements GraphContextMenuItem{
+public abstract class BasicItem implements GraphContextMenuItem {
     protected Node[] nodes;
     protected HierarchicalGraph graph;
 

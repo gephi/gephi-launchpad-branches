@@ -35,6 +35,7 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import org.gephi.data.attributes.api.AttributeColumn;
 import org.gephi.graph.api.Node;
 import org.gephi.math.linalg.Vec3;
 import org.gephi.project.api.ProjectController;
@@ -422,6 +423,16 @@ public class VisualizationControllerImpl implements VisualizationController, Key
     @Override
     public void disable() {
         reinit = true;
+    }
+
+    @Override
+    public AttributeColumn[] getNodeTextColumns() {
+        return new AttributeColumn[0];
+    }
+
+    @Override
+    public AttributeColumn[] getEdgeTextColumns() {
+        return new AttributeColumn[0];
     }
     
 }

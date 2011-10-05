@@ -25,6 +25,7 @@ package org.gephi.visualization.api;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Point;
+import org.gephi.data.attributes.api.AttributeColumn;
 import org.gephi.graph.api.Node;
 import org.gephi.visualization.api.event.VizEventManager;
 import org.gephi.visualization.api.rendering.RecordingListener;
@@ -135,5 +136,9 @@ public interface VisualizationController {
      * @param listener          the listener related to the recording that should be stopped.
      */
     public void stopRecording(RecordingListener listener);
+
+    public AttributeColumn[] getNodeTextColumns();
+    
+    public AttributeColumn[] getEdgeTextColumns();
     
 }

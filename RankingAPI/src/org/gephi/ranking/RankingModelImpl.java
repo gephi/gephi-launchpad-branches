@@ -5,18 +5,39 @@ Website : http://www.gephi.org
 
 This file is part of Gephi.
 
-Gephi is free software: you can redistribute it and/or modify
-it under the terms of the GNU Affero General Public License as
-published by the Free Software Foundation, either version 3 of the
-License, or (at your option) any later version.
+DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Gephi is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Affero General Public License for more details.
+Copyright 2011 Gephi Consortium. All rights reserved.
 
-You should have received a copy of the GNU Affero General Public License
-along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
+The contents of this file are subject to the terms of either the GNU
+General Public License Version 3 only ("GPL") or the Common
+Development and Distribution License("CDDL") (collectively, the
+"License"). You may not use this file except in compliance with the
+License. You can obtain a copy of the License at
+http://gephi.org/about/legal/license-notice/
+or /cddl-1.0.txt and /gpl-3.0.txt. See the License for the
+specific language governing permissions and limitations under the
+License.  When distributing the software, include this License Header
+Notice in each file and include the License files at
+/cddl-1.0.txt and /gpl-3.0.txt. If applicable, add the following below the
+License Header, with the fields enclosed by brackets [] replaced by
+your own identifying information:
+"Portions Copyrighted [year] [name of copyright owner]"
+
+If you wish your version of this file to be governed by only the CDDL
+or only the GPL Version 3, indicate your decision by adding
+"[Contributor] elects to include this software in this distribution
+under the [CDDL or GPL Version 3] license." If you do not indicate a
+single choice of license, a recipient has the option to distribute
+your version of this file under either the CDDL, the GPL Version 3 or
+to extend the choice of license to its licensees as provided above.
+However, if you add GPL Version 3 code and therefore, elected the GPL
+Version 3 license, then the option applies only if the new code is
+made subject to such option by the copyright holder.
+
+Contributor(s):
+
+Portions Copyrighted 2011 Gephi Consortium.
  */
 package org.gephi.ranking;
 
@@ -50,22 +71,30 @@ public class RankingModelImpl implements RankingModel, AttributeListener {
 
     private final Workspace workspace;
     private final List<RankingListener> listeners;
+    private final List<AutoRanking> autoRankings;
+    private final RankingAutoTransformer autoTransformer;
     private Interpolator interpolator;
 
     public RankingModelImpl(Workspace workspace) {
         this.workspace = workspace;
         this.listeners = Collections.synchronizedList(new ArrayList<RankingListener>());
+        this.autoRankings = Collections.synchronizedList(new ArrayList<AutoRanking>());
         this.interpolator = Interpolator.LINEAR;
+        this.autoTransformer = new RankingAutoTransformer(this);
     }
 
     public void select() {
         AttributeController attributeController = Lookup.getDefault().lookup(AttributeController.class);
         attributeController.getModel(workspace).addAttributeListener(this);
+        if (!autoRankings.isEmpty()) {
+            autoTransformer.start();
+        }
     }
 
     public void unselect() {
         AttributeController attributeController = Lookup.getDefault().lookup(AttributeController.class);
         attributeController.getModel(workspace).removeAttributeListener(this);
+        autoTransformer.stop();
     }
     private Timer refreshTimer; //hack
 
@@ -157,6 +186,37 @@ public class RankingModelImpl implements RankingModel, AttributeListener {
         this.interpolator = interpolator;
     }
 
+    public void addAutoRanking(Ranking ranking, Transformer transformer) {
+        AutoRanking autoRanking = new AutoRanking(ranking, transformer);
+        removeAutoRanking(transformer);
+        autoRankings.add(autoRanking);
+        autoTransformer.start();
+    }
+
+    public void removeAutoRanking(Transformer transformer) {
+        for (AutoRanking r : autoRankings.toArray(new AutoRanking[0])) {
+            if (r.getTransformer().equals(transformer)) {
+                autoRankings.remove(r);
+            }
+        }
+        if (autoRankings.isEmpty()) {
+            autoTransformer.stop();
+        }
+    }
+
+    public Ranking getAutoTransformerRanking(Transformer transformer) {
+        for (AutoRanking autoRanking : autoRankings) {
+            if (autoRanking.getTransformer().equals(transformer)) {
+                return autoRanking.getRanking();
+            }
+        }
+        return null;
+    }
+
+    public List<AutoRanking> getAutoRankings() {
+        return autoRankings;
+    }
+
     public void addRankingListener(RankingListener listener) {
         if (!listeners.contains(listener)) {
             listeners.add(listener);
@@ -170,6 +230,45 @@ public class RankingModelImpl implements RankingModel, AttributeListener {
     public void fireRankingListener(RankingEvent rankingEvent) {
         for (RankingListener listener : listeners) {
             listener.rankingChanged(rankingEvent);
+        }
+    }
+
+    public class AutoRanking {
+
+        private final RankingBuilder builder;
+        private final Ranking ranking;
+        private final Transformer transformer;
+
+        public AutoRanking(Ranking ranking, Transformer transformer) {
+            this.ranking = ranking;
+            this.transformer = transformer;
+            this.builder = getBuilder(ranking);
+        }
+
+        public Ranking getRanking() {
+            if (builder != null) {
+                return builder.refreshRanking(ranking);
+            }
+            return ranking;
+        }
+
+        public Transformer getTransformer() {
+            return transformer;
+        }
+
+        private RankingBuilder getBuilder(Ranking ranking) {
+            Collection<? extends RankingBuilder> builders = Lookup.getDefault().lookupAll(RankingBuilder.class);
+            for (RankingBuilder b : builders) {
+                Ranking[] builtRankings = b.buildRanking(RankingModelImpl.this);
+                if (builtRankings != null) {
+                    for (Ranking r : builtRankings) {
+                        if (r.getElementType().equals(ranking.getElementType()) && r.getName().equals(ranking.getName())) {
+                            return b;
+                        }
+                    }
+                }
+            }
+            return null;
         }
     }
 }

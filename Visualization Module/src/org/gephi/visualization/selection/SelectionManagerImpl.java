@@ -266,13 +266,12 @@ public class SelectionManagerImpl implements SelectionManager, GraphListener {
             refreshDataStructure();
         }
         switch (event.getEventType()) {
-            case ADD_NODES:
+            case ADD_NODES_AND_EDGES:
                 for (Node node : event.getData().addedNodes()) {
                     nodeStructure.addNode(node);
                 }
                 break;
-            case REMOVE_NODES:
-            case REMOVE_EDGES:
+            case REMOVE_NODES_AND_EDGES:
                 refreshDataStructure();
                 break;
         }

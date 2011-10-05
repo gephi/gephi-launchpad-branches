@@ -5,18 +5,39 @@ Website : http://www.gephi.org
 
 This file is part of Gephi.
 
-Gephi is free software: you can redistribute it and/or modify
-it under the terms of the GNU Affero General Public License as
-published by the Free Software Foundation, either version 3 of the
-License, or (at your option) any later version.
+DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Gephi is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Affero General Public License for more details.
+Copyright 2011 Gephi Consortium. All rights reserved.
 
-You should have received a copy of the GNU Affero General Public License
-along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
+The contents of this file are subject to the terms of either the GNU
+General Public License Version 3 only ("GPL") or the Common
+Development and Distribution License("CDDL") (collectively, the
+"License"). You may not use this file except in compliance with the
+License. You can obtain a copy of the License at
+http://gephi.org/about/legal/license-notice/
+or /cddl-1.0.txt and /gpl-3.0.txt. See the License for the
+specific language governing permissions and limitations under the
+License.  When distributing the software, include this License Header
+Notice in each file and include the License files at
+/cddl-1.0.txt and /gpl-3.0.txt. If applicable, add the following below the
+License Header, with the fields enclosed by brackets [] replaced by
+your own identifying information:
+"Portions Copyrighted [year] [name of copyright owner]"
+
+If you wish your version of this file to be governed by only the CDDL
+or only the GPL Version 3, indicate your decision by adding
+"[Contributor] elects to include this software in this distribution
+under the [CDDL or GPL Version 3] license." If you do not indicate a
+single choice of license, a recipient has the option to distribute
+your version of this file under either the CDDL, the GPL Version 3 or
+to extend the choice of license to its licensees as provided above.
+However, if you add GPL Version 3 code and therefore, elected the GPL
+Version 3 license, then the option applies only if the new code is
+made subject to such option by the copyright holder.
+
+Contributor(s):
+
+Portions Copyrighted 2011 Gephi Consortium.
  */
 package org.gephi.ranking;
 
@@ -33,7 +54,6 @@ import org.gephi.ranking.api.Ranking;
 import org.gephi.ranking.api.RankingController;
 import org.gephi.ranking.api.RankingEvent;
 import org.gephi.ranking.api.RankingModel;
-import org.gephi.ranking.spi.RankingBuilder;
 import org.gephi.ranking.api.Transformer;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.ServiceProvider;
@@ -48,10 +68,8 @@ public class RankingControllerImpl implements RankingController {
 
     private final GraphController graphController;
     private RankingModelImpl model;
-    private RankingBuilder[] rankingBuilders;
 
     public RankingControllerImpl() {
-        rankingBuilders = Lookup.getDefault().lookupAll(RankingBuilder.class).toArray(new RankingBuilder[0]);
         graphController = Lookup.getDefault().lookup(GraphController.class);
 
         //Workspace events
@@ -106,7 +124,7 @@ public class RankingControllerImpl implements RankingController {
     }
 
     public void setInterpolator(Interpolator interpolator) {
-        if(model != null) {
+        if (model != null) {
             model.setInterpolator(interpolator);
         }
     }
@@ -143,8 +161,23 @@ public class RankingControllerImpl implements RankingController {
                 }
             }
         }
-        
+
         //Send Event
         model.fireRankingListener(new RankingEventImpl(RankingEvent.EventType.APPLY_TRANSFORMER, model, ranking, transformer));
+    }
+
+    public void startAutoTransform(Ranking ranking, Transformer transformer) {
+        model.addAutoRanking(ranking, transformer);
+
+        //Send Event
+        model.fireRankingListener(new RankingEventImpl(RankingEvent.EventType.START_AUTO_TRANSFORM, model, ranking, transformer));
+    }
+
+    public void stopAutoTransform(Transformer transformer) {
+        Ranking ranking = model.getAutoTransformerRanking(transformer);
+        model.removeAutoRanking(transformer);
+
+        //Send Event
+        model.fireRankingListener(new RankingEventImpl(RankingEvent.EventType.STOP_AUTO_TRANSFORM, model, ranking, transformer));
     }
 }

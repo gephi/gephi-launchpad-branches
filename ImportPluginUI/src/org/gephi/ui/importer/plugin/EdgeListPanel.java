@@ -5,18 +5,39 @@ Website : http://www.gephi.org
 
 This file is part of Gephi.
 
-Gephi is free software: you can redistribute it and/or modify
-it under the terms of the GNU Affero General Public License as
-published by the Free Software Foundation, either version 3 of the
-License, or (at your option) any later version.
+DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Gephi is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Affero General Public License for more details.
+Copyright 2011 Gephi Consortium. All rights reserved.
 
-You should have received a copy of the GNU Affero General Public License
-along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
+The contents of this file are subject to the terms of either the GNU
+General Public License Version 3 only ("GPL") or the Common
+Development and Distribution License("CDDL") (collectively, the
+"License"). You may not use this file except in compliance with the
+License. You can obtain a copy of the License at
+http://gephi.org/about/legal/license-notice/
+or /cddl-1.0.txt and /gpl-3.0.txt. See the License for the
+specific language governing permissions and limitations under the
+License.  When distributing the software, include this License Header
+Notice in each file and include the License files at
+/cddl-1.0.txt and /gpl-3.0.txt. If applicable, add the following below the
+License Header, with the fields enclosed by brackets [] replaced by
+your own identifying information:
+"Portions Copyrighted [year] [name of copyright owner]"
+
+If you wish your version of this file to be governed by only the CDDL
+or only the GPL Version 3, indicate your decision by adding
+"[Contributor] elects to include this software in this distribution
+under the [CDDL or GPL Version 3] license." If you do not indicate a
+single choice of license, a recipient has the option to distribute
+your version of this file under either the CDDL, the GPL Version 3 or
+to extend the choice of license to its licensees as provided above.
+However, if you add GPL Version 3 code and therefore, elected the GPL
+Version 3 license, then the option applies only if the new code is
+made subject to such option by the copyright holder.
+
+Contributor(s):
+
+Portions Copyrighted 2011 Gephi Consortium.
  */
 package org.gephi.ui.importer.plugin;
 
@@ -201,8 +222,6 @@ public class EdgeListPanel extends javax.swing.JPanel {
         driverComboBox.getModel().setSelectedItem(db.getSQLDriver());
         nodeQueryTextField.setText(db.getNodeQuery());
         edgeQueryTextField.setText(db.getEdgeQuery());
-        nodeAttQueryTextField.setText(db.getNodeAttributesQuery());
-        edgeAttQueryTextField.setText(db.getEdgeAttributesQuery());
 
         initDriverType(db.getSQLDriver());
     }
@@ -218,8 +237,8 @@ public class EdgeListPanel extends javax.swing.JPanel {
         db.setSQLDriver(this.getSelectedSQLDriver());
         db.setNodeQuery(this.nodeQueryTextField.getText());
         db.setEdgeQuery(this.edgeQueryTextField.getText());
-        db.setNodeAttributesQuery(this.nodeAttQueryTextField.getText());
-        db.setEdgeAttributesQuery(this.edgeAttQueryTextField.getText());
+        db.setNodeAttributesQuery("");
+        db.setEdgeAttributesQuery("");
     }
 
     /** This method is called from within the constructor to
@@ -247,11 +266,7 @@ public class EdgeListPanel extends javax.swing.JPanel {
         nodeQueryLabel = new javax.swing.JLabel();
         nodeQueryTextField = new javax.swing.JTextField();
         edgeQueryLabel = new javax.swing.JLabel();
-        nodeAttQueyLabel = new javax.swing.JLabel();
-        edgeAttQueryLabel = new javax.swing.JLabel();
         edgeQueryTextField = new javax.swing.JTextField();
-        nodeAttQueryTextField = new javax.swing.JTextField();
-        edgeAttQueryTextField = new javax.swing.JTextField();
         testConnection = new javax.swing.JButton();
         pwdTextField = new javax.swing.JPasswordField();
         configNameTextField = new javax.swing.JTextField();
@@ -295,15 +310,7 @@ public class EdgeListPanel extends javax.swing.JPanel {
 
         edgeQueryLabel.setText(org.openide.util.NbBundle.getMessage(EdgeListPanel.class, "EdgeListPanel.edgeQueryLabel.text")); // NOI18N
 
-        nodeAttQueyLabel.setText(org.openide.util.NbBundle.getMessage(EdgeListPanel.class, "EdgeListPanel.nodeAttQueyLabel.text")); // NOI18N
-
-        edgeAttQueryLabel.setText(org.openide.util.NbBundle.getMessage(EdgeListPanel.class, "EdgeListPanel.edgeAttQueryLabel.text")); // NOI18N
-
         edgeQueryTextField.setText(org.openide.util.NbBundle.getMessage(EdgeListPanel.class, "EdgeListPanel.edgeQueryTextField.text")); // NOI18N
-
-        nodeAttQueryTextField.setText(org.openide.util.NbBundle.getMessage(EdgeListPanel.class, "EdgeListPanel.nodeAttQueryTextField.text")); // NOI18N
-
-        edgeAttQueryTextField.setText(org.openide.util.NbBundle.getMessage(EdgeListPanel.class, "EdgeListPanel.edgeAttQueryTextField.text")); // NOI18N
 
         testConnection.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/gephi/ui/importer/plugin/resources/test_connection.png"))); // NOI18N
         testConnection.setText(org.openide.util.NbBundle.getMessage(EdgeListPanel.class, "EdgeListPanel.testConnection.text")); // NOI18N
@@ -321,6 +328,7 @@ public class EdgeListPanel extends javax.swing.JPanel {
 
         removeConfigurationButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/gephi/ui/importer/plugin/resources/remove_config.png"))); // NOI18N
         removeConfigurationButton.setToolTipText(org.openide.util.NbBundle.getMessage(EdgeListPanel.class, "EdgeListPanel.removeConfigurationButton.toolTipText")); // NOI18N
+        removeConfigurationButton.setMargin(new java.awt.Insets(0, 4, 0, 2));
         removeConfigurationButton.setPreferredSize(new java.awt.Dimension(65, 29));
         removeConfigurationButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -337,10 +345,12 @@ public class EdgeListPanel extends javax.swing.JPanel {
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jXHeader1, javax.swing.GroupLayout.DEFAULT_SIZE, 655, Short.MAX_VALUE)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                    .addComponent(testConnection)
+                    .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(userLabel)
                             .addComponent(pwdLabel)
@@ -350,19 +360,15 @@ public class EdgeListPanel extends javax.swing.JPanel {
                             .addComponent(dbLabel)
                             .addComponent(nodeQueryLabel)
                             .addComponent(edgeQueryLabel)
-                            .addComponent(nodeAttQueyLabel)
-                            .addComponent(edgeAttQueryLabel)
                             .addComponent(configNameLabel)
                             .addComponent(configurationLabel))
-                        .addGap(22, 22, 22)
+                        .addGap(36, 36, 36)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                                 .addComponent(configurationCombo, 0, 423, Short.MAX_VALUE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(removeConfigurationButton, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addComponent(configNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 448, Short.MAX_VALUE)
-                            .addComponent(edgeAttQueryTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 448, Short.MAX_VALUE)
-                            .addComponent(nodeAttQueryTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 448, Short.MAX_VALUE)
                             .addComponent(edgeQueryTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 448, Short.MAX_VALUE)
                             .addComponent(nodeQueryTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 448, Short.MAX_VALUE)
                             .addComponent(portTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 448, Short.MAX_VALUE)
@@ -373,12 +379,8 @@ public class EdgeListPanel extends javax.swing.JPanel {
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                                 .addComponent(hostTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 351, Short.MAX_VALUE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(browseButton))))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(testConnection)
-                        .addGap(5, 5, 5)))
+                                .addComponent(browseButton)))))
                 .addContainerGap())
-            .addComponent(jXHeader1, javax.swing.GroupLayout.DEFAULT_SIZE, 655, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -426,17 +428,9 @@ public class EdgeListPanel extends javax.swing.JPanel {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(edgeQueryLabel)
                     .addComponent(edgeQueryTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(nodeAttQueyLabel)
-                    .addComponent(nodeAttQueryTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(edgeAttQueryLabel)
-                    .addComponent(edgeAttQueryTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(testConnection)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(53, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -513,15 +507,11 @@ public class EdgeListPanel extends javax.swing.JPanel {
     protected javax.swing.JTextField dbTextField;
     private javax.swing.JComboBox driverComboBox;
     private javax.swing.JLabel driverLabel;
-    private javax.swing.JLabel edgeAttQueryLabel;
-    protected javax.swing.JTextField edgeAttQueryTextField;
     private javax.swing.JLabel edgeQueryLabel;
     protected javax.swing.JTextField edgeQueryTextField;
     private javax.swing.JLabel hostLabel;
     protected javax.swing.JTextField hostTextField;
     private org.jdesktop.swingx.JXHeader jXHeader1;
-    protected javax.swing.JTextField nodeAttQueryTextField;
-    private javax.swing.JLabel nodeAttQueyLabel;
     private javax.swing.JLabel nodeQueryLabel;
     protected javax.swing.JTextField nodeQueryTextField;
     private javax.swing.JLabel portLabel;

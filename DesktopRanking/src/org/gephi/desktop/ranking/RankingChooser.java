@@ -5,18 +5,39 @@ Website : http://www.gephi.org
 
 This file is part of Gephi.
 
-Gephi is free software: you can redistribute it and/or modify
-it under the terms of the GNU Affero General Public License as
-published by the Free Software Foundation, either version 3 of the
-License, or (at your option) any later version.
+DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Gephi is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Affero General Public License for more details.
+Copyright 2011 Gephi Consortium. All rights reserved.
 
-You should have received a copy of the GNU Affero General Public License
-along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
+The contents of this file are subject to the terms of either the GNU
+General Public License Version 3 only ("GPL") or the Common
+Development and Distribution License("CDDL") (collectively, the
+"License"). You may not use this file except in compliance with the
+License. You can obtain a copy of the License at
+http://gephi.org/about/legal/license-notice/
+or /cddl-1.0.txt and /gpl-3.0.txt. See the License for the
+specific language governing permissions and limitations under the
+License.  When distributing the software, include this License Header
+Notice in each file and include the License files at
+/cddl-1.0.txt and /gpl-3.0.txt. If applicable, add the following below the
+License Header, with the fields enclosed by brackets [] replaced by
+your own identifying information:
+"Portions Copyrighted [year] [name of copyright owner]"
+
+If you wish your version of this file to be governed by only the CDDL
+or only the GPL Version 3, indicate your decision by adding
+"[Contributor] elects to include this software in this distribution
+under the [CDDL or GPL Version 3] license." If you do not indicate a
+single choice of license, a recipient has the option to distribute
+your version of this file under either the CDDL, the GPL Version 3 or
+to extend the choice of license to its licensees as provided above.
+However, if you add GPL Version 3 code and therefore, elected the GPL
+Version 3 license, then the option applies only if the new code is
+made subject to such option by the copyright holder.
+
+Contributor(s):
+
+Portions Copyrighted 2011 Gephi Consortium.
  */
 package org.gephi.desktop.ranking;
 
@@ -30,15 +51,23 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
+import org.gephi.ranking.api.Interpolator;
 import org.gephi.ranking.api.Ranking;
 import org.gephi.ranking.api.RankingController;
 import org.gephi.ranking.api.Transformer;
 import org.gephi.ui.components.SplineEditor.SplineEditor;
+import org.openide.util.ImageUtilities;
 import org.openide.util.Lookup;
 import org.openide.util.NbBundle;
 
@@ -55,13 +84,13 @@ public class RankingChooser extends javax.swing.JPanel implements PropertyChange
     private JPanel centerPanel;
     //Spline
     private SplineEditor splineEditor;
-    private org.jdesktop.animation.timing.interpolation.Interpolator interpolator;
+    private Interpolator interpolator;
 
     public RankingChooser(RankingUIController controller) {
         NO_SELECTION = NbBundle.getMessage(RankingChooser.class, "RankingChooser.choose.text");
         this.controller = controller;
         initComponents();
-        initApply();
+        initControls();
 
         rankingItemListener = new ItemListener() {
 
@@ -96,6 +125,8 @@ public class RankingChooser extends javax.swing.JPanel implements PropertyChange
             remove(centerPanel);
         }
         applyButton.setVisible(false);
+        autoApplyButton.setVisible(false);
+        enableAutoButton.setVisible(false);
         splineButton.setVisible(false);
 
         if (model != null) {
@@ -118,16 +149,21 @@ public class RankingChooser extends javax.swing.JPanel implements PropertyChange
         } else if (pce.getPropertyName().equals(RankingUIModel.CURRENT_RANKING)
                 || pce.getPropertyName().equals(RankingUIModel.CURRENT_TRANSFORMER)) {
 
-            Ranking selectedRanking = model.getCurrentRanking();
+            final Ranking selectedRanking = model.getCurrentRanking();
             //CenterPanel
             if (centerPanel != null) {
                 remove(centerPanel);
             }
             applyButton.setVisible(false);
+            autoApplyButton.setVisible(false);
+            enableAutoButton.setVisible(false);
             splineButton.setVisible(false);
 
             if (selectedRanking != null) {
                 refreshTransformerPanel(selectedRanking);
+                if (rankingComboBox.getSelectedItem() != selectedRanking) {
+                    refreshCombo();
+                }
             }
 
             revalidate();
@@ -139,6 +175,7 @@ public class RankingChooser extends javax.swing.JPanel implements PropertyChange
 
     private void refreshTransformerPanel(Ranking selectedRanking) {
         Transformer transformer = model.getCurrentTransformer();
+        boolean autoTransformer = model.isAutoTransformer(transformer);
         TransformerUI transformerUI = controller.getUI(transformer);
         if (!Double.isNaN(selectedRanking.getMinimumValue().doubleValue())
                 && !Double.isNaN(selectedRanking.getMaximumValue().doubleValue())
@@ -151,8 +188,17 @@ public class RankingChooser extends javax.swing.JPanel implements PropertyChange
         centerPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(5, 5, 0, 5), BorderFactory.createEtchedBorder()));
         centerPanel.setOpaque(false);
         add(centerPanel, BorderLayout.CENTER);
-        applyButton.setVisible(true);
         splineButton.setVisible(true);
+        if (autoTransformer) {
+            autoApplyButton.setVisible(true);
+            enableAutoButton.setSelected(true);
+            setAutoApplySelected(true);
+            autoApplyButton.setSelected(true);
+        } else {
+            applyButton.setVisible(true);
+            enableAutoButton.setSelected(false);
+        }
+        enableAutoButton.setVisible(true);
     }
 
     private Ranking refreshCombo() {
@@ -162,7 +208,14 @@ public class RankingChooser extends javax.swing.JPanel implements PropertyChange
         final DefaultComboBoxModel comboBoxModel = new DefaultComboBoxModel();
         comboBoxModel.addElement(NO_SELECTION);
         comboBoxModel.setSelectedItem(NO_SELECTION);
-        for (Ranking r : model.getRankings()) {
+        Ranking[] rankings = model.getRankings();
+        Arrays.sort(rankings, new Comparator() {
+
+            public int compare(Object o1, Object o2) {
+                return ((Ranking) o1).getDisplayName().compareTo(((Ranking) o2).getDisplayName());
+            }
+        });
+        for (Ranking r : rankings) {
             comboBoxModel.addElement(r);
             if (selectedRanking != null && selectedRanking.getName().equals(r.getName())) {
                 comboBoxModel.setSelectedItem(r);
@@ -179,7 +232,7 @@ public class RankingChooser extends javax.swing.JPanel implements PropertyChange
         return selectedRanking;
     }
 
-    private void initApply() {
+    private void initControls() {
         applyButton.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
@@ -209,6 +262,39 @@ public class RankingChooser extends javax.swing.JPanel implements PropertyChange
                 interpolator = splineEditor.getCurrentInterpolator();
             }
         });
+        autoApplyButton.setVisible(false);
+        enableAutoButton.addActionListener(new ActionListener() {
+
+            public void actionPerformed(ActionEvent ae) {
+                if (enableAutoButton.isSelected()) {
+                    autoApplyButton.setVisible(true);
+                    setAutoApplySelected(false);
+                    autoApplyButton.setSelected(false);
+                    applyButton.setVisible(false);
+                } else {
+                    autoApplyButton.setVisible(false);
+                    applyButton.setVisible(true);
+                    model.setAutoTransformer(model.getCurrentTransformer(), false);
+                }
+
+            }
+        });
+        autoApplyButton.addActionListener(new ActionListener() {
+
+            public void actionPerformed(ActionEvent ae) {
+                if (interpolator != null) {
+                    RankingController rankingController = Lookup.getDefault().lookup(RankingController.class);
+                    rankingController.setInterpolator(new org.gephi.ranking.api.Interpolator() {
+
+                        public float interpolate(float x) {
+                            return interpolator.interpolate(x);
+                        }
+                    });
+                }
+                model.setAutoTransformer(model.getCurrentTransformer(), autoApplyButton.isSelected());
+                setAutoApplySelected(autoApplyButton.isSelected());
+            }
+        });
     }
 
     @Override
@@ -216,6 +302,18 @@ public class RankingChooser extends javax.swing.JPanel implements PropertyChange
         applyButton.setEnabled(enabled);
         rankingComboBox.setEnabled(enabled);
         splineButton.setEnabled(enabled);
+        autoApplyButton.setEnabled(enabled);
+        autoApplyToolbar.setEnabled(enabled);
+    }
+
+    private void setAutoApplySelected(boolean selected) {
+        if (!selected) {
+            autoApplyButton.setIcon(ImageUtilities.loadImageIcon("org/gephi/desktop/ranking/resources/apply.gif", false));
+            autoApplyButton.setToolTipText(NbBundle.getMessage(RankingChooser.class, "RankingChooser.autoApplyButton.toolTipText"));
+        } else {
+            autoApplyButton.setIcon(ImageUtilities.loadImageIcon("org/gephi/desktop/layout/resources/stop.png", false));
+            autoApplyButton.setToolTipText(NbBundle.getMessage(RankingChooser.class, "RankingChooser.autoApplyButton.stop.toolTipText"));
+        }
     }
 
     /** This method is called from within the constructor to
@@ -233,6 +331,9 @@ public class RankingChooser extends javax.swing.JPanel implements PropertyChange
         controlPanel = new javax.swing.JPanel();
         applyButton = new javax.swing.JButton();
         splineButton = new org.jdesktop.swingx.JXHyperlink();
+        autoApplyButton = new javax.swing.JToggleButton();
+        autoApplyToolbar = new javax.swing.JToolBar();
+        enableAutoButton = new javax.swing.JToggleButton();
 
         setOpaque(false);
         setLayout(new java.awt.BorderLayout());
@@ -260,11 +361,10 @@ public class RankingChooser extends javax.swing.JPanel implements PropertyChange
         applyButton.setToolTipText(org.openide.util.NbBundle.getMessage(RankingChooser.class, "RankingChooser.applyButton.toolTipText")); // NOI18N
         applyButton.setMargin(new java.awt.Insets(0, 14, 0, 14));
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTHEAST;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 3, 5);
+        gridBagConstraints.insets = new java.awt.Insets(0, 18, 3, 5);
         controlPanel.add(applyButton, gridBagConstraints);
 
         splineButton.setClickedColor(new java.awt.Color(0, 51, 255));
@@ -277,12 +377,48 @@ public class RankingChooser extends javax.swing.JPanel implements PropertyChange
         gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 0);
         controlPanel.add(splineButton, gridBagConstraints);
 
+        autoApplyButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/gephi/desktop/ranking/resources/apply.gif"))); // NOI18N
+        autoApplyButton.setText(org.openide.util.NbBundle.getMessage(RankingChooser.class, "RankingChooser.autoApplyButton.text")); // NOI18N
+        autoApplyButton.setToolTipText(org.openide.util.NbBundle.getMessage(RankingChooser.class, "RankingChooser.autoApplyButton.toolTipText")); // NOI18N
+        autoApplyButton.setFocusable(false);
+        autoApplyButton.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
+        autoApplyButton.setMargin(new java.awt.Insets(0, 7, 0, 7));
+        autoApplyButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTHEAST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 3, 3, 5);
+        controlPanel.add(autoApplyButton, gridBagConstraints);
+
+        autoApplyToolbar.setFloatable(false);
+        autoApplyToolbar.setRollover(true);
+        autoApplyToolbar.setOpaque(false);
+
+        enableAutoButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/gephi/desktop/ranking/resources/chain.png"))); // NOI18N
+        enableAutoButton.setToolTipText(org.openide.util.NbBundle.getMessage(RankingChooser.class, "RankingChooser.enableAutoButton.toolTipText")); // NOI18N
+        enableAutoButton.setFocusable(false);
+        enableAutoButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        enableAutoButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        autoApplyToolbar.add(Box.createHorizontalGlue());
+        autoApplyToolbar.add(enableAutoButton);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        controlPanel.add(autoApplyToolbar, gridBagConstraints);
+
         add(controlPanel, java.awt.BorderLayout.PAGE_END);
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton applyButton;
+    private javax.swing.JToggleButton autoApplyButton;
+    private javax.swing.JToolBar autoApplyToolbar;
     private javax.swing.JPanel chooserPanel;
     private javax.swing.JPanel controlPanel;
+    private javax.swing.JToggleButton enableAutoButton;
     private javax.swing.JComboBox rankingComboBox;
     private org.jdesktop.swingx.JXHyperlink splineButton;
     // End of variables declaration//GEN-END:variables
