@@ -50,22 +50,27 @@ import org.openide.util.Lookup;
  * @author Eduardo Ramos <eduramiba@gmail.com>
  */
 public class CompatibilityUtils {
+
     private static Object dataTablesController;
     private static Method refreshCurrentTableMethod;
-    
-    public static void refreshCurrentTable() throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, IllegalArgumentException, InvocationTargetException{
-        if(dataTablesController==null){
+
+    public static void refreshCurrentTable() throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+        if (dataTablesController == null) {
             Class dataTablesControllerClass;
             try {
-                dataTablesControllerClass=Class.forName("org.gephi.datalab.api.datatables.DataTablesController");
+                dataTablesControllerClass = Class.forName("org.gephi.datalab.api.datatables.DataTablesController");
             } catch (ClassNotFoundException ex) {
-                dataTablesControllerClass=Class.forName("org.gephi.datalab.api.DataTablesController");
+                dataTablesControllerClass = Class.forName("org.gephi.datalab.api.DataTablesController");
             }
-            
-            dataTablesController=Lookup.getDefault().lookup(dataTablesControllerClass);
-            refreshCurrentTableMethod=dataTablesControllerClass.getMethod("refreshCurrentTable", (Class) null);
+
+            dataTablesController = Lookup.getDefault().lookup(dataTablesControllerClass);
+            for (Method m : dataTablesController.getClass().getMethods()) {
+                if (m.getName().equals("refreshCurrentTable")) {
+                    refreshCurrentTableMethod = m;
+                }
+            }
         }
-        
-        refreshCurrentTableMethod.invoke(dataTablesController, (Object) null);
+
+        refreshCurrentTableMethod.invoke(dataTablesController, new Object[0]);
     }
 }
