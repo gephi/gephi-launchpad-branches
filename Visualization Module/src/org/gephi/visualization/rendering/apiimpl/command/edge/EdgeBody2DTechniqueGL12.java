@@ -42,7 +42,7 @@ public class EdgeBody2DTechniqueGL12 extends BufferedTechnique<VizEdge2D> {
     @Override
     public boolean begin(GL gl, Camera camera, RenderArea renderArea, boolean reuseResources) {        
         gl.glDisable(GL.GL_DEPTH_TEST);
-        //gl.glDepthFunc(GL.GL_LESS);
+        gl.glDepthMask(false);
         
         return super.begin(gl, camera, renderArea, reuseResources);
     }
@@ -80,6 +80,7 @@ public class EdgeBody2DTechniqueGL12 extends BufferedTechnique<VizEdge2D> {
     @Override
     public void end(GL gl) {
         super.end(gl);
+        gl.glDepthMask(true);
         
         this.currentPass = -1;
     }

@@ -51,6 +51,7 @@ public class UITechniqueGL12 implements Technique<UIShape> {
         final GLU glu = new GLUgl2();
         
         gl2.glDisable(GL2.GL_DEPTH_TEST);
+        gl2.glDepthMask(false);
         gl2.glEnable(GL2.GL_BLEND);
         gl2.glBlendFunc(GL2.GL_ONE, GL2.GL_ONE_MINUS_SRC_ALPHA);
         
@@ -92,6 +93,7 @@ public class UITechniqueGL12 implements Technique<UIShape> {
         
         gl2.glDisable(GL2.GL_BLEND);
         gl2.glEnable(GL2.GL_DEPTH_TEST);
+        gl2.glDepthMask(true);
         
         gl2.glMatrixMode(GL2.GL_PROJECTION);
 

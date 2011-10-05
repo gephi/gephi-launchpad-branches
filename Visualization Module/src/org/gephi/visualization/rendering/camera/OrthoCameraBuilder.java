@@ -31,22 +31,15 @@ import org.gephi.visualization.data.graph.VizNode2D;
 public class OrthoCameraBuilder {
     private final Vec2 center;
     private final float height;
-    private float near;
     private float far;
 
     public OrthoCameraBuilder(Camera2d camera) {
         this.center = camera.center();
         this.height = camera.height();
-        this.near = Float.POSITIVE_INFINITY;
-        this.far = 0.0f;
+        this.far = 0.1f;
     }
 
-    public void add(VizNode2D node) {
-        final float distNear = node.size * 0.999f;
-        if (distNear < this.near && distNear > 0.0f) {
-            this.near = distNear;
-        }
-        
+    public void add(VizNode2D node) {        
         final float distFar = node.size * 1.001f;
         if (distFar > this.far) {
             this.far = distFar;
@@ -54,6 +47,6 @@ public class OrthoCameraBuilder {
     }
     
     public OrthoCamera create() {
-        return new OrthoCamera(this.center, this.height, this.near, this.far);
+        return new OrthoCamera(this.center, this.height, 0.0f, this.far);
     }
 }

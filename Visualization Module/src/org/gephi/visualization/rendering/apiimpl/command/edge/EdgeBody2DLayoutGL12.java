@@ -83,7 +83,7 @@ public class EdgeBody2DLayoutGL12 extends Layout<VizEdge2D> {
         b.putFloat(e.gradientStart.b);
         b.putFloat(vert.x());
         b.putFloat(vert.y());
-        b.putFloat(-e.sourceSize * 1.001f);
+        b.putFloat(0.0f);
         
         vert.minusEq(2.0f * e.thickness, d_perp);
         b.putFloat(e.gradientStart.r);
@@ -91,7 +91,7 @@ public class EdgeBody2DLayoutGL12 extends Layout<VizEdge2D> {
         b.putFloat(e.gradientStart.b);
         b.putFloat(vert.x());
         b.putFloat(vert.y());
-        b.putFloat(-e.sourceSize * 1.001f);
+        b.putFloat(0.0f);
         
         vert.add(e.destinationPosition, - e.thickness, d_perp);
         b.putFloat(e.gradientEnd.r);
@@ -99,7 +99,7 @@ public class EdgeBody2DLayoutGL12 extends Layout<VizEdge2D> {
         b.putFloat(e.gradientEnd.b);
         b.putFloat(vert.x());
         b.putFloat(vert.y());
-        b.putFloat(-e.destinationSize * 1.001f);
+        b.putFloat(0.0f);
         
         vert.plusEq(2.0f * e.thickness, d_perp);
         b.putFloat(e.gradientEnd.r);
@@ -107,7 +107,7 @@ public class EdgeBody2DLayoutGL12 extends Layout<VizEdge2D> {
         b.putFloat(e.gradientEnd.b);
         b.putFloat(vert.x());
         b.putFloat(vert.y());
-        b.putFloat(-e.destinationSize * 1.001f);
+        b.putFloat(0.0f);
         
         ind.putShort((short)(startIdx));
         ind.putShort((short)(startIdx + 2));
@@ -119,32 +119,32 @@ public class EdgeBody2DLayoutGL12 extends Layout<VizEdge2D> {
         
         switch (e.shape) {
             case STRAIGHT_EDGE_BIDIRECTIONAL:                
-                vert.add(e.sourcePosition, e.sourceSize * 1.1f, d);
+                vert.add(e.sourcePosition, e.sourceSize, d);
                 // TODO: calculate gradient color..
                 b.putFloat(e.gradientStart.r);
                 b.putFloat(e.gradientStart.g);
                 b.putFloat(e.gradientStart.b);
                 b.putFloat(vert.x());
                 b.putFloat(vert.y());
-                b.putFloat(-e.sourceSize * 1.001f);
+                b.putFloat(0.0f);
                 
-                vert.plusEq(e.thickness, d).minusEq(e.thickness, d_perp);
+                vert.plusEq(3.0f * e.thickness, d).minusEq(3.0f * e.thickness, d_perp);
                 // TODO: calculate gradient color..
                 b.putFloat(e.gradientStart.r);
                 b.putFloat(e.gradientStart.g);
                 b.putFloat(e.gradientStart.b);
                 b.putFloat(vert.x());
                 b.putFloat(vert.y());
-                b.putFloat(-e.sourceSize * 1.001f);
+                b.putFloat(0.0f);
                 
-                vert.plusEq(2.0f * e.thickness, d_perp);
+                vert.plusEq(6.0f * e.thickness, d_perp);
                 // TODO: calculate gradient color..
                 b.putFloat(e.gradientStart.r);
                 b.putFloat(e.gradientStart.g);
                 b.putFloat(e.gradientStart.b);
                 b.putFloat(vert.x());
                 b.putFloat(vert.y());
-                b.putFloat(-e.sourceSize * 1.001f);
+                b.putFloat(0.0f);
                 
                 ind.putShort((short)(startIdx + 4));
                 ind.putShort((short)(startIdx + 5));
@@ -153,32 +153,32 @@ public class EdgeBody2DLayoutGL12 extends Layout<VizEdge2D> {
                 startIdx += 3;
                 // continue in the following case
             case STRAIGHT_EDGE_DIRECTIONAL:
-                vert.sub(e.destinationPosition, e.destinationSize * 1.1f, d);
+                vert.sub(e.destinationPosition, e.destinationSize, d);
                 // TODO: calculate gradient color..
                 b.putFloat(e.gradientEnd.r);
                 b.putFloat(e.gradientEnd.g);
                 b.putFloat(e.gradientEnd.b);
                 b.putFloat(vert.x());
                 b.putFloat(vert.y());
-                b.putFloat(-e.destinationSize * 1.001f);
+                b.putFloat(0.0f);
                 
-                vert.minusEq(e.thickness, d).plusEq(e.thickness, d_perp);
+                vert.minusEq(3.0f * e.thickness, d).plusEq(3.0f * e.thickness, d_perp);
                 // TODO: calculate gradient color..
                 b.putFloat(e.gradientEnd.r);
                 b.putFloat(e.gradientEnd.g);
                 b.putFloat(e.gradientEnd.b);
                 b.putFloat(vert.x());
                 b.putFloat(vert.y());
-                b.putFloat(-e.destinationSize * 1.001f);
+                b.putFloat(0.0f);
                 
-                vert.minusEq(2.0f * e.thickness, d_perp);
+                vert.minusEq(6.0f * e.thickness, d_perp);
                 // TODO: calculate gradient color..
                 b.putFloat(e.gradientEnd.r);
                 b.putFloat(e.gradientEnd.g);
                 b.putFloat(e.gradientEnd.b);
                 b.putFloat(vert.x());
                 b.putFloat(vert.y());
-                b.putFloat(-e.destinationSize * 1.001f);
+                b.putFloat(0.0f);
                 
                 ind.putShort((short)(startIdx + 4));
                 ind.putShort((short)(startIdx + 5));

@@ -71,8 +71,7 @@ public class BasicEdgeStyler implements EdgeStyler {
             }
             float edgeScale = vizModel.getEdgeScale() * vizModel.getMetaEdgeScale();
             w = weight;
-            //test..
-            //w = ((w - limits.getMinMetaWeight()) * weightRatio + WEIGHT_MINIMUM) * edgeScale;
+            w = ((w - limits.getMinMetaWeight()) * weightRatio + WEIGHT_MINIMUM) * edgeScale;
         } else {
             float weightRatio;
             if (limits.getMinWeight() == limits.getMaxWeight()) {
@@ -82,8 +81,7 @@ public class BasicEdgeStyler implements EdgeStyler {
             }
             float edgeScale = vizModel.getEdgeScale();
             w = weight;
-            // test..
-            //w = ((w - limits.getMinWeight()) * weightRatio + WEIGHT_MINIMUM) * edgeScale;
+            w = ((w - limits.getMinWeight()) * weightRatio + WEIGHT_MINIMUM) * edgeScale;
         }
 
         if (!selected) {
@@ -169,6 +167,10 @@ public class BasicEdgeStyler implements EdgeStyler {
                 color2 = new Color(r2, g2, b2, 1f);
             }
         }
+        // bidirectional?
+        VizEdgeShape shape = edge.isSelfLoop() ? VizEdgeShape.EDGE_LOOP : 
+                            (!edge.isDirected() ? VizEdgeShape.STRAIGHT_EDGE_NO_DIRECTION :
+                            VizEdgeShape.STRAIGHT_EDGE_DIRECTIONAL);
         return new VizEdge2D(new Vec2(edge.getSource().getNodeData().x(), edge.getSource().getNodeData().y()),
                              edge.getSource().getNodeData().getSize(),
                              edge.getSource().getNodeData().getNodeShape(),
@@ -178,8 +180,7 @@ public class BasicEdgeStyler implements EdgeStyler {
                              w,
                              color1,
                              color2,
-                             // TODO what about bidirectional edges?
-                             edge.isDirected() ? VizEdgeShape.STRAIGHT_EDGE_DIRECTIONAL : VizEdgeShape.STRAIGHT_EDGE_NO_DIRECTION);
+                             shape);
     }
 
     @Override
