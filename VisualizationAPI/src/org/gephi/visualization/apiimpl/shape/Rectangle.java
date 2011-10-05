@@ -22,7 +22,6 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 package org.gephi.visualization.apiimpl.shape;
 
 import org.gephi.math.linalg.Vec2;
-import org.gephi.math.linalg.Vec2Base;
 import org.gephi.math.linalg.Vec2M;
 import org.gephi.visualization.api.selection.SelectionType;
 import org.gephi.visualization.api.selection.Shape;
@@ -38,7 +37,7 @@ class Rectangle extends AbstractShape {
 
     Vec2M origin, opposite;
 
-    Rectangle(Vec2Base origin, Vec2Base opposite) {
+    Rectangle(Vec2 origin, Vec2 opposite) {
         this.origin = origin.copyM();
         this.opposite = opposite.copyM();
     }

@@ -82,8 +82,6 @@ public interface VizConfig {
     String PROPERTIES_BAR = "VizConfig.propertiesBar";
     String RECTANGLE_SELECTION = "VizConfig.rectangleSelection";
     String RECTANGLE_SELECTION_COLOR = "VizConfig.rectangleSelectionColor";
-    String REDUCE_FPS_MOUSE_OUT = "VizConfig.reduceFpsWhenMouseOut";
-    String REDUCE_FPS_MOUSE_OUT_VALUE = "VizConfig.reduceFpsWhenMouseOutValue";
     String NORMAL_FPS = "VizConfig.normalFPS";
     String SELECTEDEDGE_BOTH_COLOR = "VizConfig.edgeBothSelectedColor";
     String SELECTEDEDGE_HAS_COLOR = "VizConfig.edgeSelectionColor";

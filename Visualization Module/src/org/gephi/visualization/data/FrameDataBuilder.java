@@ -34,11 +34,11 @@ import org.gephi.visualization.data.graph.styler.EdgeStyler;
 import org.gephi.visualization.data.graph.styler.NodeStyler;
 import org.gephi.visualization.data.graph.VizNode2D;
 import org.gephi.visualization.data.graph.VizNode3D;
+import org.gephi.visualization.rendering.buffer.MemoryPool;
 import org.gephi.visualization.rendering.camera.Camera;
 import org.gephi.visualization.rendering.camera.OrthoCameraBuilder;
 import org.gephi.visualization.rendering.camera.PerspCameraBuilder;
 import org.gephi.visualization.rendering.command.Command;
-import org.gephi.visualization.rendering.command.CommandList;
 import org.gephi.visualization.rendering.command.CommandListBuilders;
 
 /**
@@ -50,13 +50,13 @@ final class FrameDataBuilder {
     private final Impl impl;
 
     public FrameDataBuilder(org.gephi.visualization.api.Camera camera,
-            NodeStyler nodeStyler, EdgeStyler edgeStyler,
+            MemoryPool memory, NodeStyler nodeStyler, EdgeStyler edgeStyler,
             CommandListBuilders builders) {
         
         if (camera instanceof Camera2d) {
-            this.impl = new Impl2D((Camera2d)camera, nodeStyler, edgeStyler, builders);
+            this.impl = new Impl2D((Camera2d)camera, memory, nodeStyler, edgeStyler, builders);
         } else if (camera instanceof Camera3d) {
-            this.impl = new Impl3D((Camera3d)camera, nodeStyler, edgeStyler, builders);
+            this.impl = new Impl3D((Camera3d)camera, memory, nodeStyler, edgeStyler, builders);
         } else {
             // It should never execute the following code
             assert false;
@@ -81,12 +81,15 @@ final class FrameDataBuilder {
     }
     
     private abstract class Impl {
+        protected final MemoryPool memory;
+        
         protected final NodeStyler nodeStyler;
         protected final EdgeStyler edgeStyler;
     
         protected final CommandListBuilders builders;
 
-        public Impl(NodeStyler nodeStyler, EdgeStyler edgeStyler, CommandListBuilders builders) {
+        public Impl(MemoryPool memory, NodeStyler nodeStyler, EdgeStyler edgeStyler, CommandListBuilders builders) {
+            this.memory = memory;
             this.nodeStyler = nodeStyler;
             this.edgeStyler = edgeStyler;
             this.builders = builders;
@@ -96,18 +99,17 @@ final class FrameDataBuilder {
         public abstract void add(Edge edge);
         
         public final void add(UIShape shape) {
-            this.builders.uiShapeBuilder.add(shape);
+            this.builders.uiShapeBuilder.add(this.memory, shape);
         }
         
         public final FrameData create() {
             final List<Command> edgeCommands = this.getEdgeCommands();
             final List<Command> nodeCommands = this.getNodeCommands();
             final List<Command> uiCommands = this.builders.uiShapeBuilder.create();
-            final CommandList commandList = new CommandList(edgeCommands, nodeCommands, uiCommands);
             
             final Camera camera = this.getCamera();
             
-            return new FrameData(camera, commandList);
+            return new FrameData(camera, this.memory, edgeCommands, nodeCommands, uiCommands);
         }
 
         protected abstract List<Command> getEdgeCommands();
@@ -121,8 +123,8 @@ final class FrameDataBuilder {
         
         private int counter;
 
-        public Impl2D(Camera2d camera, NodeStyler nodeStyler, EdgeStyler edgeStyler, CommandListBuilders builders) {
-            super(nodeStyler, edgeStyler, builders);
+        public Impl2D(Camera2d camera, MemoryPool memory, NodeStyler nodeStyler, EdgeStyler edgeStyler, CommandListBuilders builders) {
+            super(memory, nodeStyler, edgeStyler, builders);
             
             this.cameraBuilder = new OrthoCameraBuilder(camera);
             
@@ -140,13 +142,13 @@ final class FrameDataBuilder {
             final float r = VanDerCorputSequence.get(++this.counter);
             final float z = n.size * (0.999f + r * 0.002f);
             final VizNode2D n2 = new VizNode2D(n.position, z, n.shape, n.color, n.borderColor);
-            this.builders.node2DBuilder.add(n2);            
+            this.builders.node2DBuilder.add(this.memory, n2);            
         }
 
         @Override
         public void add(Edge edge) {
             final VizEdge2D e = this.edgeStyler.toVisual2D(edge);
-            this.builders.edge2DBuilder.add(e);
+            this.builders.edge2DBuilder.add(this.memory, e);
         }
 
         @Override
@@ -168,8 +170,8 @@ final class FrameDataBuilder {
     private final class Impl3D extends Impl {
         private final PerspCameraBuilder cameraBuilder;
 
-        public Impl3D(Camera3d camera, NodeStyler nodeStyler, EdgeStyler edgeStyler, CommandListBuilders builders) {
-            super(nodeStyler, edgeStyler, builders);
+        public Impl3D(Camera3d camera, MemoryPool memory, NodeStyler nodeStyler, EdgeStyler edgeStyler, CommandListBuilders builders) {
+            super(memory, nodeStyler, edgeStyler, builders);
             
             this.cameraBuilder = new PerspCameraBuilder(camera);
             
@@ -182,13 +184,13 @@ final class FrameDataBuilder {
             
             this.cameraBuilder.add(n);
 
-            this.builders.node3DBuilder.add(n); 
+            this.builders.node3DBuilder.add(this.memory, n); 
         }
 
         @Override
         public void add(Edge edge) {
             final VizEdge3D e = this.edgeStyler.toVisual3D(edge);
-            this.builders.edge3DBuilder.add(e);
+            this.builders.edge3DBuilder.add(this.memory, e);
         }
 
         @Override

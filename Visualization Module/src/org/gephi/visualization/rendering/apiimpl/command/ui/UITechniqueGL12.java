@@ -20,7 +20,6 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.gephi.visualization.rendering.apiimpl.command.ui;
 
-import java.util.Collection;
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 import javax.media.opengl.glu.GLU;
@@ -47,7 +46,7 @@ public class UITechniqueGL12 implements Technique<UIShape> {
 
     // TODO: adjust to support general screenshots
     @Override
-    public boolean begin(GL gl, Camera camera, RenderArea renderArea) {
+    public boolean begin(GL gl, Camera camera, RenderArea renderArea, boolean reuseResources) {
         final GL2 gl2 = gl.getGL2();
         final GLU glu = new GLUgl2();
         
@@ -103,11 +102,6 @@ public class UITechniqueGL12 implements Technique<UIShape> {
         gl2.glLoadIdentity();
         
         this.currentPass = -1;
-    }
-
-    @Override
-    public void disposeElements(GL gl, Collection<? extends UIShape> e) {
-        /* EMPTY BLOCK */
     }
 
     @Override

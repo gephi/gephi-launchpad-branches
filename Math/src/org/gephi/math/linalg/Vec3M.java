@@ -29,7 +29,7 @@ import java.nio.ByteBuffer;
  *
  * @author Antonio Patriarca <antoniopatriarca@gmail.com>
  */
-public final class Vec3M extends Vec3Base {
+public class Vec3M extends Vec3 {
 
     /*----------------------------- CONSTRUCTORS -----------------------------*/
 
@@ -56,7 +56,7 @@ public final class Vec3M extends Vec3Base {
      *
      * @param v the 2D vector to copy
      */
-    public Vec3M(Vec3Base v) {
+    public Vec3M(Vec3 v) {
         super(v);
     }
 
@@ -116,7 +116,7 @@ public final class Vec3M extends Vec3Base {
      * @param v the other vector
      * @return this
      */
-    public Vec3M set(Vec3Base v) {
+    public Vec3M set(Vec3 v) {
         return set(v.x, v.y, v.z);
     }
 
@@ -198,7 +198,7 @@ public final class Vec3M extends Vec3Base {
      * @param v the other vector
      * @return <code>this += v</code>
      */
-    public Vec3M plusEq(Vec3Base v) {
+    public Vec3M plusEq(Vec3 v) {
         this.x += v.x;
         this.y += v.y;
         this.z += v.z;
@@ -213,7 +213,7 @@ public final class Vec3M extends Vec3Base {
      * @param v the other vector
      * @return <code>this += s*v</code>
      */
-    public Vec3M plusEq(float s, Vec3Base v) {
+    public Vec3M plusEq(float s, Vec3 v) {
         this.x += s*v.x;
         this.y += s*v.y;
         this.z += s*v.z;
@@ -227,7 +227,7 @@ public final class Vec3M extends Vec3Base {
      * @param v the other vector
      * @return <code>this -= v</code>
      */
-    public Vec3M minusEq(Vec3Base v) {
+    public Vec3M minusEq(Vec3 v) {
         this.x -= v.x;
         this.y -= v.y;
         this.z -= v.z;
@@ -242,7 +242,7 @@ public final class Vec3M extends Vec3Base {
      * @param v the other vector
      * @return <code>this -= s*v</code>
      */
-    public Vec3M minusEq(float s, Vec3Base v) {
+    public Vec3M minusEq(float s, Vec3 v) {
         this.x -= s*v.x;
         this.y -= s*v.y;
         this.z -= s*v.z;
@@ -269,7 +269,7 @@ public final class Vec3M extends Vec3Base {
      * @param v the other vector
      * @return <code>this = cross(this, v)</code>
      */
-    public final Vec3M crossEq(Vec3Base v) {
+    public final Vec3M crossEq(Vec3 v) {
         final float a = this.y * v.z - this.z * v.y;
         final float b = this.z * v.x - this.x * v.z;
         final float c = this.x * v.y - this.y * v.x;
@@ -283,7 +283,7 @@ public final class Vec3M extends Vec3Base {
      * @param w the second vector
      * @return <code>this = v + w</code>
      */
-    public Vec3M add(Vec3Base v, Vec3Base w) {
+    public Vec3M add(Vec3 v, Vec3 w) {
         this.x = v.x + w.x;
         this.y = v.y + w.y;
         this.z = v.z + w.z;
@@ -299,7 +299,7 @@ public final class Vec3M extends Vec3Base {
      * @param w the second vector
      * @return <code>this = v + s*w</code>
      */
-    public Vec3M add(Vec3Base v, float s, Vec3Base w) {
+    public Vec3M add(Vec3 v, float s, Vec3 w) {
         this.x = v.x + s*w.x;
         this.y = v.y + s*w.y;
         this.z = v.z + s*w.z;
@@ -315,7 +315,7 @@ public final class Vec3M extends Vec3Base {
      * @param w the second vector
      * @return <code>this = t*v + s*w</code>
      */
-    public Vec3M add(float t, Vec3Base v, float s, Vec3Base w) {
+    public Vec3M add(float t, Vec3 v, float s, Vec3 w) {
         this.x = t*v.x + s*w.x;
         this.y = t*v.y + s*w.y;
         this.z = t*v.z + s*w.z;
@@ -329,7 +329,7 @@ public final class Vec3M extends Vec3Base {
      * @param w the second vector
      * @return <code>this = v - w</code>
      */
-    public Vec3M sub(Vec3Base v, Vec3Base w) {
+    public Vec3M sub(Vec3 v, Vec3 w) {
         this.x = v.x - w.x;
         this.y = v.y - w.y;
         this.z = v.z - w.z;
@@ -345,7 +345,7 @@ public final class Vec3M extends Vec3Base {
      * @param w the second vector
      * @return <code>this = v - s*w</code>
      */
-    public Vec3M sub(Vec3Base v, float s, Vec3Base w) {
+    public Vec3M sub(Vec3 v, float s, Vec3 w) {
         this.x = v.x - s*w.x;
         this.y = v.y - s*w.y;
         this.z = v.z - s*w.z;
@@ -361,7 +361,7 @@ public final class Vec3M extends Vec3Base {
      * @param w the second vector
      * @return <code>this = t*v - s*w</code>
      */
-    public Vec3M sub(float t, Vec3Base v, float s, Vec3Base w) {
+    public Vec3M sub(float t, Vec3 v, float s, Vec3 w) {
         this.x = t*v.x - s*w.x;
         this.y = t*v.y - s*w.y;
         this.z = t*v.z - s*w.z;
@@ -375,7 +375,7 @@ public final class Vec3M extends Vec3Base {
      * @param v the vector
      * @return <code>this = s*v</code>
      */
-    public Vec3M mul(float s, Vec3Base v) {
+    public Vec3M mul(float s, Vec3 v) {
         this.x = s*v.x;
         this.y = s*v.y;
         this.z = s*v.z;
@@ -390,7 +390,7 @@ public final class Vec3M extends Vec3Base {
      * @param w the second vector
      * @return <code>this = cross(v, w)</code>
      */
-    public final Vec3M toCross(Vec3Base v, Vec3Base w) {
+    public final Vec3M toCross(Vec3 v, Vec3 w) {
         final float a = v.y * w.z - v.z * w.y;
         final float b = v.z * w.x - v.x * w.z;
         final float c = v.x * w.y - v.y * w.x;
@@ -438,7 +438,7 @@ public final class Vec3M extends Vec3Base {
      * @param s scalar factors stored in a vector
      * @return this vector scaled
      */
-    public Vec3M scale(Vec3Base s) {
+    public Vec3M scale(Vec3 s) {
         return this.set(s.x, s.y, s.z);
     }
 }

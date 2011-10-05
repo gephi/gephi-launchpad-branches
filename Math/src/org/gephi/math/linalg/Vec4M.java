@@ -29,7 +29,7 @@ import java.nio.ByteBuffer;
  *
  * @author Antonio Patriarca <antoniopatriarca@gmail.com>
  */
-public final class Vec4M extends Vec4Base {
+public class Vec4M extends Vec4 {
 
     /*----------------------------- CONSTRUCTORS -----------------------------*/
 
@@ -57,7 +57,7 @@ public final class Vec4M extends Vec4Base {
      *
      * @param v the 2D vector to copy
      */
-    public Vec4M(Vec4Base v) {
+    public Vec4M(Vec4 v) {
         super(v);
     }
     
@@ -67,7 +67,7 @@ public final class Vec4M extends Vec4Base {
      * @param v the 3D vector
      * @param w the fourth component
      */
-    public Vec4M(Vec3Base v, float w) {
+    public Vec4M(Vec3 v, float w) {
         super(v.x, v.y, v.z, w);
     }
 
@@ -140,7 +140,7 @@ public final class Vec4M extends Vec4Base {
      * @param v the other vector
      * @return this
      */
-    public Vec4M set(Vec4Base v) {
+    public Vec4M set(Vec4 v) {
         return set(v.x, v.y, v.z, v.w);
     }
     
@@ -152,7 +152,7 @@ public final class Vec4M extends Vec4Base {
      * @param w the new fourth component of the vector
      * @return this
      */
-    public Vec4M set(Vec3Base v, float w) {
+    public Vec4M set(Vec3 v, float w) {
         return set(v.x, v.y, v.z, w);
     }
 
@@ -198,7 +198,7 @@ public final class Vec4M extends Vec4Base {
      * @param v the other vector
      * @return <code>this += v</code>
      */
-    public Vec4M plusEq(Vec4Base v) {
+    public Vec4M plusEq(Vec4 v) {
         this.x += v.x;
         this.y += v.y;
         this.z += v.z;
@@ -214,7 +214,7 @@ public final class Vec4M extends Vec4Base {
      * @param v the other vector
      * @return <code>this += s*v</code>
      */
-    public Vec4M plusEq(float s, Vec4Base v) {
+    public Vec4M plusEq(float s, Vec4 v) {
         this.x += s*v.x;
         this.y += s*v.y;
         this.z += s*v.z;
@@ -229,7 +229,7 @@ public final class Vec4M extends Vec4Base {
      * @param v the other vector
      * @return <code>this -= v</code>
      */
-    public Vec4M minusEq(Vec4Base v) {
+    public Vec4M minusEq(Vec4 v) {
         this.x -= v.x;
         this.y -= v.y;
         this.z -= v.z;
@@ -245,7 +245,7 @@ public final class Vec4M extends Vec4Base {
      * @param v the other vector
      * @return <code>this -= s*v</code>
      */
-    public Vec4M minusEq(float s, Vec4Base v) {
+    public Vec4M minusEq(float s, Vec4 v) {
         this.x -= s*v.x;
         this.y -= s*v.y;
         this.z -= s*v.z;
@@ -274,7 +274,7 @@ public final class Vec4M extends Vec4Base {
      * @param w the second vector
      * @return <code>this = v + w</code>
      */
-    public Vec4M add(Vec4Base v, Vec4Base w) {
+    public Vec4M add(Vec4 v, Vec4 w) {
         this.x = v.x + w.x;
         this.y = v.y + w.y;
         this.z = v.z + w.z;
@@ -291,7 +291,7 @@ public final class Vec4M extends Vec4Base {
      * @param w the second vector
      * @return <code>this = v + s*w</code>
      */
-    public Vec4M add(Vec4Base v, float s, Vec4Base w) {
+    public Vec4M add(Vec4 v, float s, Vec4 w) {
         this.x = v.x + s*w.x;
         this.y = v.y + s*w.y;
         this.z = v.z + s*w.z;
@@ -308,7 +308,7 @@ public final class Vec4M extends Vec4Base {
      * @param w the second vector
      * @return <code>this = t*v + s*w</code>
      */
-    public Vec4M add(float t, Vec4Base v, float s, Vec4Base w) {
+    public Vec4M add(float t, Vec4 v, float s, Vec4 w) {
         this.x = t*v.x + s*w.x;
         this.y = t*v.y + s*w.y;
         this.z = t*v.z + s*w.z;
@@ -323,7 +323,7 @@ public final class Vec4M extends Vec4Base {
      * @param w the second vector
      * @return <code>this = v - w</code>
      */
-    public Vec4M sub(Vec4Base v, Vec4Base w) {
+    public Vec4M sub(Vec4 v, Vec4 w) {
         this.x = v.x - w.x;
         this.y = v.y - w.y;
         this.z = v.z - w.z;
@@ -340,7 +340,7 @@ public final class Vec4M extends Vec4Base {
      * @param w the second vector
      * @return <code>this = v - s*w</code>
      */
-    public Vec4M sub(Vec4Base v, float s, Vec4Base w) {
+    public Vec4M sub(Vec4 v, float s, Vec4 w) {
         this.x = v.x - s*w.x;
         this.y = v.y - s*w.y;
         this.z = v.z - s*w.z;
@@ -357,7 +357,7 @@ public final class Vec4M extends Vec4Base {
      * @param w the second vector
      * @return <code>this = t*v - s*w</code>
      */
-    public Vec4M sub(float t, Vec4Base v, float s, Vec4Base w) {
+    public Vec4M sub(float t, Vec4 v, float s, Vec4 w) {
         this.x = t*v.x - s*w.x;
         this.y = t*v.y - s*w.y;
         this.z = t*v.z - s*w.z;
@@ -372,7 +372,7 @@ public final class Vec4M extends Vec4Base {
      * @param v the vector
      * @return <code>this = s*v</code>
      */
-    public Vec4M mul(float s, Vec4Base v) {
+    public Vec4M mul(float s, Vec4 v) {
         this.x = s*v.x;
         this.y = s*v.y;
         this.z = s*v.z;
@@ -422,7 +422,7 @@ public final class Vec4M extends Vec4Base {
      * @param s scalar factors stored in a vector
      * @return this vector scaled
      */
-    public Vec4M scale(Vec4Base s) {
+    public Vec4M scale(Vec4 s) {
         return this.set(s.x, s.y, s.z, s.w);
     }
 }

@@ -17,27 +17,35 @@ GNU Affero General Public License for more details.
 
 You should have received a copy of the GNU Affero General Public License
 along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
-*/
-package org.gephi.visualization.rendering.command;
+ */
+package org.gephi.visualization.rendering.buffer;
 
-import java.util.List;
 import javax.media.opengl.GL;
-import org.gephi.visualization.rendering.buffer.MemoryPool;
+import org.gephi.visualization.rendering.camera.Camera;
+import org.gephi.visualization.rendering.camera.RenderArea;
 
 /**
- * A command list builder creates a list of rendering commands from a list of
- * graph elements of type E, ie. nodes, edges, labels..
- * 
+ *
  * @author Antonio Patriarca <antoniopatriarca@gmail.com>
  */
-public interface CommandListBuilder<E> {
-    
-    public void begin();
-    
-    public void add(MemoryPool memory, E e);
-    
-    public List<Command> create();
-    
+public interface TechniqueImpl {
+
+    public boolean begin(GL gl, Camera camera, RenderArea renderArea);
+
+    public void enableClientStates(GL gl, int currentPass);
+
+    public void initPass(GL gl, int currentPass);
+
+    public void endPass(GL gl, int currentPass);
+
+    public void disableClientStates(GL gl, int currentPass);
+
+    public int numberOfPasses();
+
+    public void end(GL gl);
+
     public void dispose(GL gl);
+
+    public void setPointers(GL gl, DrawCall e, int currentPass);
     
 }

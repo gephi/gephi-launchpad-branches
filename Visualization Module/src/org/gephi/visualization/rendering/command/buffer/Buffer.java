@@ -22,6 +22,7 @@ package org.gephi.visualization.rendering.command.buffer;
 
 import java.nio.ByteBuffer;
 import javax.media.opengl.GL;
+import org.gephi.visualization.rendering.buffer.MemoryPool;
 
 /**
  * Generic implementation of a Buffer. The behavior is controlled by the Layout
@@ -40,13 +41,13 @@ public final class Buffer<E> {
     boolean isLoaded;
     boolean isDrawable;
     
-    public Buffer(Layout<E> layout, Type type) {
-        this.data = Layout.newByteBuffer();
+    public Buffer(MemoryPool memory, Layout<E> layout, Type type) {
+        this.data = memory.newBuffer();
         this.layout = layout;
         if (this.layout.useStaticBuffer()) {
             this.indexBuffer = this.layout.getStaticIndexBuffer();
         } else {
-            this.indexBuffer = Layout.newByteBuffer();
+            this.indexBuffer = memory.newBuffer();
         }
         this.bufferImpl = this.createBufferImpl(type);
         
@@ -85,18 +86,6 @@ public final class Buffer<E> {
         if (!this.isDrawable) return;
         
         this.bufferImpl.drawBuffer(gl, i);
-    }
-    
-    @Override
-    protected void finalize() throws Throwable {
-        try {
-            Layout.recycle(this.data);
-            if (!this.layout.useStaticBuffer()) {
-                Layout.recycle(this.indexBuffer);
-            }
-        } finally {
-            super.finalize();
-        }
     }
 
     BufferImpl<E> createBufferImpl(Type type) {

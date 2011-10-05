@@ -28,6 +28,7 @@ import java.util.Map;
 import javax.media.opengl.GL;
 import org.gephi.graph.api.NodeShape;
 import org.gephi.visualization.data.graph.VizNode2D;
+import org.gephi.visualization.rendering.buffer.MemoryPool;
 import org.gephi.visualization.rendering.command.Command;
 import org.gephi.visualization.rendering.command.CommandListBuilder;
 import org.gephi.visualization.rendering.command.buffer.Buffer;
@@ -66,10 +67,10 @@ public class Node2DCommandListBuilderGL12 implements CommandListBuilder<VizNode2
     }
 
     @Override
-    public void add(VizNode2D e) {
-        CommandListBuilder<VizNode2D>  c = builders.get(e.shape.value);
+    public void add(MemoryPool memory, VizNode2D e) {
+        CommandListBuilder<VizNode2D> c = builders.get(e.shape.value);
         if (c != null) {
-            c.add(e);
+            c.add(memory, e);
         }
     }
 

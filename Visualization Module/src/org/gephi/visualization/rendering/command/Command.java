@@ -31,9 +31,17 @@ import org.gephi.visualization.rendering.camera.RenderArea;
  * @author Antonio Patriarca <antoniopatriarca@gmail.com>
  */
 public interface Command {    
-    public void draw(GL gl, Camera camera, RenderArea renderArea);
     
-    public void dispose(GL gl);
+    /**
+     * Draws the list of objects on the screen.
+     * 
+     * @param gl the GL object
+     * @param camera the current camera
+     * @param renderArea the screen area where the objects are drawn
+     * @param reuseResources it's <code>true</code> if the technique has already
+     *                          rendered the current batch.
+     */
+    public void draw(GL gl, Camera camera, RenderArea renderArea, 
+            boolean reuseResources);
 
-    public void recycle();
 }

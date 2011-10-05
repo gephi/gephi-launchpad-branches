@@ -23,6 +23,7 @@ package org.gephi.visualization.rendering.apiimpl.command.edge;
 import java.util.List;
 import javax.media.opengl.GL;
 import org.gephi.visualization.data.graph.VizEdge2D;
+import org.gephi.visualization.rendering.buffer.MemoryPool;
 import org.gephi.visualization.rendering.command.Command;
 import org.gephi.visualization.rendering.command.CommandListBuilder;
 import org.gephi.visualization.rendering.command.buffer.Buffer;
@@ -53,11 +54,11 @@ public class EdgeCommandListBuilderGL12 implements CommandListBuilder<VizEdge2D>
     }
 
     @Override
-    public void add(VizEdge2D e) {
+    public void add(MemoryPool memory, VizEdge2D e) {
         if (!this.isBuilding) return;
         
         // TODO: edge loops
-        this.edgeListBuilder.add(e);
+        this.edgeListBuilder.add(memory, e);
     }
 
     @Override

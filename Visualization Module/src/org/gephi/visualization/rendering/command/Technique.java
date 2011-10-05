@@ -20,7 +20,6 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 */
 package org.gephi.visualization.rendering.command;
 
-import java.util.Collection;
 import javax.media.opengl.GL;
 import org.gephi.visualization.rendering.camera.Camera;
 import org.gephi.visualization.rendering.camera.RenderArea;
@@ -38,9 +37,11 @@ public interface Technique<E> {
      * 
      * @param gl the GL object used for rendering
      * @param camera the current camera
+     * @param reuseResources it's <code>true</code> if the technique has already
+     *                          rendered the current batch.
      * @return <code>true</code> if it is possible to initialize this technique.
      */
-    public boolean begin(GL gl, Camera camera, RenderArea renderArea);
+    public boolean begin(GL gl, Camera camera, RenderArea renderArea, boolean reuseResources);
     
     /**
      * Initializes the rendering states for the next pass or returns false if
@@ -69,14 +70,6 @@ public interface Technique<E> {
      * @param gl the GL object used for rendering 
      */
     public void end(GL gl);
-    
-    /**
-     * Disposes the OpenGL resources used for the elements.
-     * 
-     * @param gl the GL object used for rendering
-     * @param e the elements to be disposed
-     */
-    public void disposeElements(GL gl, Collection<? extends E> e);
     
     /**
      * Frees all the graphics resources used by this technique.

@@ -90,8 +90,6 @@ public class VizConfigImpl implements VizConfig {
         initDefault(PROPERTIES_BAR, true);
         initDefault(RECTANGLE_SELECTION, false);
         initDefault(RECTANGLE_SELECTION_COLOR, new Color(0.16F, 0.48F, 0.81F, 0.2F));
-        initDefault(REDUCE_FPS_MOUSE_OUT, true);
-        initDefault(REDUCE_FPS_MOUSE_OUT_VALUE, 15);
         initDefault(NORMAL_FPS, 30);
         initDefault(SELECTEDEDGE_BOTH_COLOR, new Color(248, 215, 83, 255));
         initDefault(SELECTEDEDGE_HAS_COLOR, false);

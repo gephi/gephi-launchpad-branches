@@ -31,44 +31,7 @@ import javax.media.opengl.GL;
  * 
  * @author Antonio Patriarca <antoniopatriarca@gmail.com>
  */
-public abstract class Layout<E> {
- 
-    /**
-     * Queue of old buffer to be reused.
-     */
-    private static final Queue<ByteBuffer> oldBuffers;
-    static {
-        oldBuffers = new ConcurrentLinkedQueue<ByteBuffer>();
-    }
-    
-    /**
-     * Size of the buffer used by the engine.
-     */
-    public static final int BUFFER_SIZE = 1048576;
-    
-    /**
-     * Creates a new buffer or reuses an old one. 
-     * 
-     * @return a ByteBuffer
-     */
-    public static ByteBuffer newByteBuffer() {
-        ByteBuffer result = oldBuffers.poll();
-        if (result == null) {
-            result = Buffers.newDirectByteBuffer(BUFFER_SIZE);
-        }
-        return result;
-    }
-    
-    /**
-     * Inserts the buffer passed as argument in the queue of old buffers.
-     * 
-     * @param b the buffer to recycle
-     */
-    public static void recycle(ByteBuffer b) {
-        b.clear();
-        //oldBuffers.add(b);        
-    }
-    
+public abstract class Layout<E> {    
     /**
      * Queries if the technique owned by this layout use a static index buffer
      * (an index buffer which do not depends on input).

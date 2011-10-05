@@ -27,7 +27,6 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 import org.gephi.graph.api.NodeShape;
-import org.gephi.math.linalg.Vec3;
 import org.gephi.project.api.Workspace;
 import org.gephi.visualization.api.Camera;
 import org.gephi.visualization.api.rendering.background.Background;
@@ -74,11 +73,7 @@ public interface VizModel {
 
     public boolean isUse3d();
     
-    public boolean isReduceFPSWhenMouseOut();
-    
-    public int getReduceFPSWhenMouseOutValue();
-    
-    public int getNormalFPS();
+    public int getFPS();
 
     public VizConfig getConfig();
 
@@ -147,11 +142,7 @@ public interface VizModel {
 
     public void setMetaEdgeScale(float metaEdgeScale);
     
-    public void setReduceFPSWhenMouseOut(boolean reduceFPS);
-    
-    public void setReduceFPSWhenMouseOutValue(int fps);
-    
-    public void setNormalFPS(int fps);
+    public void setFPS(int fps);
 
     public void setGlobalNodeShape(NodeShape nodeShape);
 

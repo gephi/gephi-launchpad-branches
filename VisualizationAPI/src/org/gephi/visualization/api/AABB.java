@@ -22,7 +22,6 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 package org.gephi.visualization.api;
 
 import org.gephi.math.linalg.Vec3;
-import org.gephi.math.linalg.Vec3Base;
 import org.gephi.math.linalg.Vec3M;
 
 /**
@@ -34,12 +33,12 @@ public class AABB {
     final private Vec3M minVec;
     final private Vec3M maxVec;
 
-    public AABB(Vec3Base center) {
+    public AABB(Vec3 center) {
         this.minVec = center.copyM();
         this.maxVec = center.copyM();
     }
 
-    public AABB(Vec3Base center, Vec3Base scale) {
+    public AABB(Vec3 center, Vec3 scale) {
         this.minVec = new Vec3M(center.x() - scale.x(), center.y() - scale.y(), center.z() - scale.z());
         this.maxVec = new Vec3M(center.x() + scale.x(), center.y() + scale.y(), center.z() + scale.z());
     }
@@ -55,9 +54,7 @@ public class AABB {
     }
 
     public Vec3 center() {
-        Vec3M ret = this.minVec.copyM();
-        ret.plusEq(this.maxVec);
-        return ret.times(0.5f);
+        return this.minVec.plusM(this.maxVec).timesEq(0.5f);
     }
 
     public Vec3 scale() {
@@ -65,14 +62,14 @@ public class AABB {
     }
 
     public Vec3 minVec() {
-        return this.minVec.copy();
+        return this.minVec;
     }
 
     public Vec3 maxVec() {
-        return this.maxVec.copy();
+        return this.maxVec;
     }
 
-    public void addPoint(Vec3Base point, Vec3Base scale) {
+    public void addPoint(Vec3 point, Vec3 scale) {
         this.minVec.x(Math.min(this.minVec.x(), point.x() - scale.x()));
         this.minVec.y(Math.min(this.minVec.y(), point.y() - scale.y()));
         this.minVec.z(Math.min(this.minVec.z(), point.z() - scale.z()));

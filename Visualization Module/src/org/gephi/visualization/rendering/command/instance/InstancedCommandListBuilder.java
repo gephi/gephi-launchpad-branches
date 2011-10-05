@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.media.opengl.GL;
+import org.gephi.visualization.rendering.buffer.MemoryPool;
 import org.gephi.visualization.rendering.command.Command;
 import org.gephi.visualization.rendering.command.CommandListBuilder;
 import org.gephi.visualization.rendering.command.GenericCommand;
@@ -54,7 +55,7 @@ public class InstancedCommandListBuilder<E> implements CommandListBuilder<E> {
     }
 
     @Override
-    public void add(E e) {
+    public void add(MemoryPool memory, E e) {
         if (this.list != null) this.list.add(e);
     }
 

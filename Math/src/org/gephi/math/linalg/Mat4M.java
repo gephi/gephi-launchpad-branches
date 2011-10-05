@@ -27,7 +27,7 @@ import java.nio.ByteBuffer;
  *
  * @author Antonio Patriarca <antoniopatriarca@gmail.com>
  */
-public final class Mat4M extends Mat4Base {
+public class Mat4M extends Mat4 {
     
     /*----------------------------- CONSTRUCTORS -----------------------------*/
 
@@ -64,7 +64,7 @@ public final class Mat4M extends Mat4Base {
      *
      * @param v the vector containing the values on the diagonal
      */
-    public Mat4M(Vec4Base v) {
+    public Mat4M(Vec4 v) {
         super(v);
     }
 
@@ -76,7 +76,7 @@ public final class Mat4M extends Mat4Base {
      * @param c2 the third column
      * @param c3 the fourth column
      */
-    public Mat4M(Vec4Base c0, Vec4Base c1, Vec4Base c2, Vec4Base c3) {
+    public Mat4M(Vec4 c0, Vec4 c1, Vec4 c2, Vec4 c3) {
         super(c0, c1, c2, c3);
     }
 
@@ -119,7 +119,7 @@ public final class Mat4M extends Mat4Base {
      *
      * @param m the matrix to copy
      */
-    public Mat4M(Mat4Base m) {
+    public Mat4M(Mat4 m) {
         super(m);
     }
 
@@ -159,7 +159,7 @@ public final class Mat4M extends Mat4Base {
      * @throws IndexOutOfBoundsException if <code>j*4 + 3 &gt;= 16</code>
      * @return <code>this</code>
      */
-    public Mat4M setColumn(int j, Vec4Base v) throws IndexOutOfBoundsException {
+    public Mat4M setColumn(int j, Vec4 v) throws IndexOutOfBoundsException {
         final int s = j*4;
         this.entries[s] = v.x;
         this.entries[s+1] = v.y;
@@ -198,7 +198,7 @@ public final class Mat4M extends Mat4Base {
      * @throws IndexOutOfBoundsException if <code>i &gt;= 4</code>
      * @return <code>this</code>
      */
-    public Mat4M setRow(int i, Vec4Base v) throws IndexOutOfBoundsException {
+    public Mat4M setRow(int i, Vec4 v) throws IndexOutOfBoundsException {
         this.entries[i] = v.x;
         this.entries[4+i] = v.y;
         this.entries[8+i] = v.z;
@@ -287,7 +287,7 @@ public final class Mat4M extends Mat4Base {
      * @param v the vector containing the values on the diagonal
      * @return <code>this</code>
      */
-    public Mat4M set(Vec4Base v) {
+    public Mat4M set(Vec4 v) {
         return this.set(v.x, v.y, v.z, v.w);        
     }
 
@@ -300,7 +300,7 @@ public final class Mat4M extends Mat4Base {
      * @param c3 the fourth column
      * @return <code>this</code>
      */
-    public Mat4M set(Vec4Base c0, Vec4Base c1, Vec4Base c2, Vec4Base c3) {
+    public Mat4M set(Vec4 c0, Vec4 c1, Vec4 c2, Vec4 c3) {
         return this.setColumn(0, c0).setColumn(1, c1).setColumn(2, c2).setColumn(3, c3);
     }
 
@@ -354,7 +354,7 @@ public final class Mat4M extends Mat4Base {
      * @param m the matrix to copy
      * @return <code>this</code>
      */
-    public Mat4M set(Mat4Base m) {
+    public Mat4M set(Mat4 m) {
         System.arraycopy(m.entries, 0, this.entries, 0, 16);
         return this;
     }
@@ -405,7 +405,7 @@ public final class Mat4M extends Mat4Base {
      * @param v the translation vector
      * @return the translation by <code>v</code>
      */
-    public static Mat4M translation(Vec3Base v) {
+    public static Mat4M translation(Vec3 v) {
         return new Mat4M(1.0f, 0.0f, 0.0f, 0.0f,
                         0.0f, 1.0f, 0.0f, 0.0f,
                         0.0f, 0.0f, 1.0f, 0.0f,
@@ -421,7 +421,7 @@ public final class Mat4M extends Mat4Base {
      * @return the rotation by <code>angle</code> radiants about the axis 
      *         <code>v</code>
      */
-    public static Mat4M rotation(Vec3Base v, float angle) {
+    public static Mat4M rotation(Vec3 v, float angle) {
         final float c = (float)Math.cos(angle);
         final float mc = 1.0f - c;
         final float s = (float)Math.sin(angle);
@@ -529,7 +529,7 @@ public final class Mat4M extends Mat4Base {
      * @param up
      * @return the lookAt matrix.
      */
-    public static Mat4M lookAt(Vec3Base eye, Vec3Base center, Vec3Base up) {
+    public static Mat4M lookAt(Vec3 eye, Vec3 center, Vec3 up) {
         Vec3M front = center.minusM(eye).normalize();
         Vec3M right = front.crossM(up).normalize();
         Vec3M newUp = right.crossM(front);
@@ -565,7 +565,7 @@ public final class Mat4M extends Mat4Base {
      * @param b3 the third vector of the basis of the reference frame
      * @return the matrix which represents the change of reference frame
      */
-    public static Mat4M fromReferenceFrame(Vec3Base origin, Vec3Base b1, Vec3Base b2, Vec3Base b3) {
+    public static Mat4M fromReferenceFrame(Vec3 origin, Vec3 b1, Vec3 b2, Vec3 b3) {
         return new Mat4M(
             b1.x, b1.y, b1.z, 0.0f,
             b2.x, b2.y, b2.z, 0.0f,
@@ -584,7 +584,7 @@ public final class Mat4M extends Mat4Base {
      * @param b3 the third vector of the basis of the reference frame
      * @return the matrix which represents the change of reference frame
      */
-    public static Mat4M toReferenceFrame(Vec3Base origin, Vec3Base b1, Vec3Base b2, Vec3Base b3) {
+    public static Mat4M toReferenceFrame(Vec3 origin, Vec3 b1, Vec3 b2, Vec3 b3) {
         return new Mat4M(
             b1.x, b2.x, b3.x, 0.0f,
             b1.y, b2.y, b3.y, 0.0f,
@@ -601,7 +601,7 @@ public final class Mat4M extends Mat4Base {
      * @param m the other matrix
      * @return <code>this += m</code>
      */
-    public Mat4M plusEq(Mat4Base m) {
+    public Mat4M plusEq(Mat4 m) {
         for (int i = 0; i < 16; ++i) {
             this.entries[i] += m.entries[i];
         }
@@ -616,7 +616,7 @@ public final class Mat4M extends Mat4Base {
      * @param m the other matrix
      * @return <code>this += s*m</code>
      */
-    public Mat4M plusEq(float s, Mat4Base m) {
+    public Mat4M plusEq(float s, Mat4 m) {
         for (int i = 0; i < 16; ++i) {
             this.entries[i] += s * m.entries[i];
         }
@@ -629,7 +629,7 @@ public final class Mat4M extends Mat4Base {
      * @param m the other matrix
      * @return <code>this -= m</code>
      */
-    public Mat4M minusEq(Mat4Base m) {
+    public Mat4M minusEq(Mat4 m) {
         for (int i = 0; i < 16; ++i) {
             this.entries[i] -= m.entries[i];
         }
@@ -644,7 +644,7 @@ public final class Mat4M extends Mat4Base {
      * @param m the other matrix
      * @return <code>this -= s*m</code>
      */
-    public Mat4M minusEq(float s, Mat4Base m) {
+    public Mat4M minusEq(float s, Mat4 m) {
         for (int i = 0; i < 16; ++i) {
             this.entries[i] -= s * m.entries[i];
         }
@@ -670,7 +670,7 @@ public final class Mat4M extends Mat4Base {
      * @param m the other matrix
      * @return <code>this *= m</code>
      */
-    public Mat4M timesEq(Mat4Base m) {
+    public Mat4M timesEq(Mat4 m) {
         final float[] e = new float[16];
         for (int j = 0; j < 16; j += 4) {
             for (int k = 0; k < 4; ++k) {
@@ -694,7 +694,7 @@ public final class Mat4M extends Mat4Base {
      * @param n the second matrix
      * @return <code>this = m + n</code>
      */
-    public Mat4M add(Mat4Base m, Mat4Base n) {
+    public Mat4M add(Mat4 m, Mat4 n) {
         for (int i = 0; i < 16; ++i) {
             this.entries[i] = m.entries[i] + n.entries[i];
         }
@@ -709,7 +709,7 @@ public final class Mat4M extends Mat4Base {
      * @param n the second matrix
      * @return <code>this = m + s*n</code>
      */
-    public Mat4M add(Mat4Base m, float s, Mat4Base n) {
+    public Mat4M add(Mat4 m, float s, Mat4 n) {
         for (int i = 0; i < 16; ++i) {
             this.entries[i] = m.entries[i] + s * n.entries[i];
         }
@@ -725,7 +725,7 @@ public final class Mat4M extends Mat4Base {
      * @param n the second matrix
      * @return <code>this = t*m + s*n</code>
      */
-    public Mat4M add(float t, Mat4Base m, float s, Mat4Base n) {
+    public Mat4M add(float t, Mat4 m, float s, Mat4 n) {
         for (int i = 0; i < 16; ++i) {
             this.entries[i] = t * m.entries[i] + s * n.entries[i];
         }
@@ -739,7 +739,7 @@ public final class Mat4M extends Mat4Base {
      * @param n the second matrix
      * @return <code>this = m - n</code>
      */
-    public Mat4M sub(Mat4Base m, Mat4Base n) {
+    public Mat4M sub(Mat4 m, Mat4 n) {
         for (int i = 0; i < 16; ++i) {
             this.entries[i] = m.entries[i] - n.entries[i];
         }
@@ -754,7 +754,7 @@ public final class Mat4M extends Mat4Base {
      * @param n the second matrix
      * @return <code>this = m - s*n</code>
      */
-    public Mat4M sub(Mat4Base m, float s, Mat4Base n) {
+    public Mat4M sub(Mat4 m, float s, Mat4 n) {
         for (int i = 0; i < 16; ++i) {
             this.entries[i] = m.entries[i] - s * n.entries[i];
         }
@@ -770,7 +770,7 @@ public final class Mat4M extends Mat4Base {
      * @param n the second matrix
      * @return <code>this = t*m + s*n</code>
      */
-    public Mat4M sub(float t, Mat4Base m, float s, Mat4Base n) {
+    public Mat4M sub(float t, Mat4 m, float s, Mat4 n) {
         for (int i = 0; i < 16; ++i) {
             this.entries[i] = t * m.entries[i] - s * n.entries[i];
         }
@@ -784,7 +784,7 @@ public final class Mat4M extends Mat4Base {
      * @param m the matrix
      * @return <code>this = s*m</code>
      */
-    public Mat4M mul(float s, Mat4Base m) {
+    public Mat4M mul(float s, Mat4 m) {
         for (int i = 0; i < 16; ++i) {
             this.entries[i] = s * m.entries[i];
         }
@@ -798,7 +798,7 @@ public final class Mat4M extends Mat4Base {
      * @param n the second matrix
      * @return <code>this = m * n</code>
      */
-    public Mat4M mul(Mat4Base m, Mat4Base n) {
+    public Mat4M mul(Mat4 m, Mat4 n) {
         final float[] e = new float[16];
         for (int j = 0; j < 16; j += 4) {
             for (int k = 0; k < 4; ++k) {

@@ -20,6 +20,7 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.gephi.visualization.rendering;
 
+import com.jogamp.opengl.util.FPSAnimator;
 import java.awt.Component;
 import javax.media.opengl.DebugGL2;
 import javax.media.opengl.GL;
@@ -47,7 +48,10 @@ public class RenderingEngine {
     
     private final GLCanvas drawable;
     private final GLEventListener eventListener;
+    private final FPSAnimator animator;
     private final RenderingScheduler scheduler;
+    
+    private final FPSCounter counter;
     
     private final VizModel model;
 
@@ -71,6 +75,8 @@ public class RenderingEngine {
         /* TODO: make pipeline... */
         this.pipeline = new Pipeline(this, this.model);
         
+        this.counter = new FPSCounter();
+        
         this.eventListener = new GLEventListener() {
             private CommandListBuilders commandListBuilders = null;
             
@@ -84,6 +90,8 @@ public class RenderingEngine {
                 this.commandListBuilders = CommandListBuilders.create(gl);
                 bridge.setCommandListBuilders(commandListBuilders);
                 pipeline.init(gl);
+                
+                counter.reset();
             }
 
             @Override
@@ -107,6 +115,8 @@ public class RenderingEngine {
                 pipeline.draw(gl, frameData);
 
                 controller.endRenderFrame();
+                
+                counter.tick();
             }
 
             @Override
@@ -119,8 +129,9 @@ public class RenderingEngine {
             }
         };
         
-        final int fps = this.model.getNormalFPS();
-        this.scheduler = new RenderingScheduler(this.drawable, 30);
+        final int fps = this.model.getFPS();
+        this.scheduler = new RenderingScheduler(this.drawable, fps);
+        this.animator = new FPSAnimator(this.drawable, fps);
         
         this.bridge = new FrameDataBridge();
     }
@@ -149,22 +160,15 @@ public class RenderingEngine {
     public void startRendering() {
         this.drawable.setVisible(true);
         this.drawable.addGLEventListener(this.eventListener);        
+        //this.animator.start();
         this.scheduler.startRendering();
     }
     
     public void stopRendering() {
+        //this.animator.stop();
         this.scheduler.stopRendering();
         this.drawable.removeGLEventListener(this.eventListener);
         this.drawable.setVisible(false);
-    }
-    
-    /**
-     * Changes the rate at which the screen is displayed.
-     * 
-     * @param fps the new frame rate
-     */
-    public void setFPS(int fps) {
-        this.scheduler.setFPS(fps);
     }
     
     /**
@@ -173,6 +177,7 @@ public class RenderingEngine {
      * @return the frame rate
      */
     public double getFPS() {
+        //return this.counter.getFPS();
         return this.scheduler.getFPS();
     }
     

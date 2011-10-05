@@ -27,6 +27,6 @@ import java.awt.Image;
  */
 public interface RecordingListener {
     
-    public void imageRecorded(Image image);
+    public void imageRecorded(Image image, int n);
     
 }

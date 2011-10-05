@@ -24,7 +24,7 @@ package org.gephi.visualization.camera;
 import java.awt.Dimension;
 import org.gephi.math.linalg.Mat4M;
 import org.gephi.math.linalg.Vec3;
-import org.gephi.math.linalg.Vec3Base;
+import org.gephi.math.linalg.Vec3;
 import org.gephi.math.linalg.Vec3M;
 import org.gephi.math.linalg.Vec4;
 import org.gephi.visualization.api.Camera;
@@ -105,7 +105,7 @@ public final class Camera3d implements Camera {
     }
 
     @Override
-    public void lookAt(Vec3Base center, Vec3Base up) {
+    public void lookAt(Vec3 center, Vec3 up) {
         this.front.sub(center, this.position);
         this.front.normalize();
         this.right.toCross(this.front, up);
@@ -114,7 +114,7 @@ public final class Camera3d implements Camera {
         this.up.normalize(); // it should be unnecessary
     }
 
-    public void lookAt(Vec3Base position, Vec3Base center, Vec3Base up) {
+    public void lookAt(Vec3 position, Vec3 center, Vec3 up) {
         this.position.set(position);
         lookAt(center, up);
     }

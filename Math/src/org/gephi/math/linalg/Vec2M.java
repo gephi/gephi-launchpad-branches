@@ -29,7 +29,7 @@ import java.nio.ByteBuffer;
  *
  * @author Antonio Patriarca <antoniopatriarca@gmail.com>
  */
-public final class Vec2M extends Vec2Base {
+public class Vec2M extends Vec2 {
 
     /*----------------------------- CONSTRUCTORS -----------------------------*/
 
@@ -55,7 +55,7 @@ public final class Vec2M extends Vec2Base {
      *
      * @param v the 2D vector to copy
      */
-    public Vec2M(Vec2Base v) {
+    public Vec2M(Vec2 v) {
         super(v);
     }
 
@@ -102,7 +102,7 @@ public final class Vec2M extends Vec2Base {
      * @param v the other vector
      * @return this
      */
-    public Vec2M set(Vec2Base v) {
+    public Vec2M set(Vec2 v) {
         return set(v.x, v.y);
     }
 
@@ -160,7 +160,7 @@ public final class Vec2M extends Vec2Base {
      * @param v the other vector
      * @return <code>this += v</code>
      */
-    public Vec2M plusEq(Vec2Base v) {
+    public Vec2M plusEq(Vec2 v) {
         this.x += v.x;
         this.y += v.y;
         return this;
@@ -174,7 +174,7 @@ public final class Vec2M extends Vec2Base {
      * @param v the other vector
      * @return <code>this += s*v</code>
      */
-    public Vec2M plusEq(float s, Vec2Base v) {
+    public Vec2M plusEq(float s, Vec2 v) {
         this.x += s*v.x;
         this.y += s*v.y;
         return this;
@@ -187,7 +187,7 @@ public final class Vec2M extends Vec2Base {
      * @param v the other vector
      * @return <code>this -= v</code>
      */
-    public Vec2M minusEq(Vec2Base v) {
+    public Vec2M minusEq(Vec2 v) {
         this.x -= v.x;
         this.y -= v.y;
         return this;
@@ -201,7 +201,7 @@ public final class Vec2M extends Vec2Base {
      * @param v the other vector
      * @return <code>this -= s*v</code>
      */
-    public Vec2M minusEq(float s, Vec2Base v) {
+    public Vec2M minusEq(float s, Vec2 v) {
         this.x -= s*v.x;
         this.y -= s*v.y;
         return this;
@@ -226,7 +226,7 @@ public final class Vec2M extends Vec2Base {
      * @param w the second vector
      * @return <code>this = v + w</code>
      */
-    public Vec2M add(Vec2Base v, Vec2Base w) {
+    public Vec2M add(Vec2 v, Vec2 w) {
         this.x = v.x + w.x;
         this.y = v.y + w.y;
         return this;
@@ -241,7 +241,7 @@ public final class Vec2M extends Vec2Base {
      * @param w the second vector
      * @return <code>this = v + s*w</code>
      */
-    public Vec2M add(Vec2Base v, float s, Vec2Base w) {
+    public Vec2M add(Vec2 v, float s, Vec2 w) {
         this.x = v.x + s*w.x;
         this.y = v.y + s*w.y;
         return this;
@@ -256,7 +256,7 @@ public final class Vec2M extends Vec2Base {
      * @param w the second vector
      * @return <code>this = t*v + s*w</code>
      */
-    public Vec2M add(float t, Vec2Base v, float s, Vec2Base w) {
+    public Vec2M add(float t, Vec2 v, float s, Vec2 w) {
         this.x = t*v.x + s*w.x;
         this.y = t*v.y + s*w.y;
         return this;
@@ -269,7 +269,7 @@ public final class Vec2M extends Vec2Base {
      * @param w the second vector
      * @return <code>this = v - w</code>
      */
-    public Vec2M sub(Vec2Base v, Vec2Base w) {
+    public Vec2M sub(Vec2 v, Vec2 w) {
         this.x = v.x - w.x;
         this.y = v.y - w.y;
         return this;
@@ -284,7 +284,7 @@ public final class Vec2M extends Vec2Base {
      * @param w the second vector
      * @return <code>this = v - s*w</code>
      */
-    public Vec2M sub(Vec2Base v, float s, Vec2Base w) {
+    public Vec2M sub(Vec2 v, float s, Vec2 w) {
         this.x = v.x - s*w.x;
         this.y = v.y - s*w.y;
         return this;
@@ -299,7 +299,7 @@ public final class Vec2M extends Vec2Base {
      * @param w the second vector
      * @return <code>this = t*v - s*w</code>
      */
-    public Vec2M sub(float t, Vec2Base v, float s, Vec2Base w) {
+    public Vec2M sub(float t, Vec2 v, float s, Vec2 w) {
         this.x = t*v.x - s*w.x;
         this.y = t*v.y - s*w.y;
         return this;
@@ -312,7 +312,7 @@ public final class Vec2M extends Vec2Base {
      * @param v the vector
      * @return <code>this = s*v</code>
      */
-    public Vec2M mul(float s, Vec2Base v) {
+    public Vec2M mul(float s, Vec2 v) {
         this.x = s*v.x;
         this.y = s*v.y;
         return this;
@@ -379,7 +379,7 @@ public final class Vec2M extends Vec2Base {
      * @param s scalar factors stored in a vector
      * @return this vector scaled
      */
-    public Vec2M scale(Vec2Base s) {
+    public Vec2M scale(Vec2 s) {
         return this.set(s.x, s.y);
     }
 }

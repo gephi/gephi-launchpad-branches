@@ -42,7 +42,6 @@ import org.gephi.visualization.rendering.camera.RenderArea;
  */
 public class Pipeline {
     // Viewport
-    private int screenX, screenY;
     private int screenWidth, screenHeight;
     
     // text renderer used for drawing statistics
@@ -56,8 +55,6 @@ public class Pipeline {
     private final AtomicReference<Color> backgroundColor;
     
     public Pipeline(RenderingEngine engine, VizModel model) {
-        this.screenX = 0;
-        this.screenY = 0;
         this.screenWidth = 1;
         this.screenHeight = 1;
         
@@ -90,8 +87,6 @@ public class Pipeline {
     }
     
     public void reshape(GL gl, int x, int y, int width, int height) {
-        this.screenX = x;
-        this.screenY = y;
         this.screenWidth = width;
         this.screenHeight = height > 0 ? height : 1;
     }
@@ -112,7 +107,7 @@ public class Pipeline {
         // draw graph
         RenderArea renderArea = new RenderArea((float)this.screenWidth / (float)this.screenHeight, new Rectangle(0.0f, 0.0f, 1.0f, 1.0f), this.screenWidth, this.screenHeight);
         
-        frameData.commandList.draw(gl, frameData.camera, renderArea);
+        frameData.draw(gl, renderArea);
      
         if (this.model.isShowFPS()) {
             this.textRenderer.setColor(java.awt.Color.BLACK);

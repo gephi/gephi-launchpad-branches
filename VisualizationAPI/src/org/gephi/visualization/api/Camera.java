@@ -23,7 +23,7 @@ package org.gephi.visualization.api;
 
 import java.awt.Dimension;
 import org.gephi.math.linalg.Vec3;
-import org.gephi.math.linalg.Vec3Base;
+import org.gephi.math.linalg.Vec3;
 import org.gephi.visualization.api.vizmodel.GraphLimits;
 
 /**
@@ -76,7 +76,7 @@ public interface Camera {
      * @param center the new center of the screen
      * @param up the vector used to define the camera up vector in 3D
      */
-    public void lookAt(Vec3Base center, Vec3Base up);
+    public void lookAt(Vec3 center, Vec3 up);
 
     /**
      * Returns the position of the camera.

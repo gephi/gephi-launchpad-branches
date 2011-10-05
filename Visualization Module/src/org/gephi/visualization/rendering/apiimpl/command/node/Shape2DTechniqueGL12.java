@@ -93,7 +93,7 @@ public final class Shape2DTechniqueGL12 extends BufferedTechnique<VizNode2D> {
         
         gl.glEnable(GL2.GL_ALPHA_TEST);
         
-        gl.glAlphaFunc(GL2.GL_GREATER, 0.5f);
+        gl.glAlphaFunc(GL2.GL_GEQUAL, 1.0f);
     }
 
     private void setPass1(GL2 gl) {
@@ -110,13 +110,13 @@ public final class Shape2DTechniqueGL12 extends BufferedTechnique<VizNode2D> {
     }
 
     @Override
-    public boolean begin(GL gl, Camera camera, RenderArea renderArea) {        
+    public boolean begin(GL gl, Camera camera, RenderArea renderArea, boolean reuseResources) {        
         gl.glEnable(GL.GL_TEXTURE_2D);
         
         gl.glEnable(GL.GL_DEPTH_TEST);
         gl.glDepthFunc(GL.GL_LEQUAL);
         
-        return super.begin(gl, camera, renderArea);
+        return super.begin(gl, camera, renderArea, reuseResources);
     }
 
     @Override

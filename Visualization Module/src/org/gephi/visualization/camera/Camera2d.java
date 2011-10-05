@@ -23,10 +23,8 @@ package org.gephi.visualization.camera;
 
 import java.awt.Dimension;
 import org.gephi.math.linalg.Vec2;
-import org.gephi.math.linalg.Vec2Base;
 import org.gephi.math.linalg.Vec2M;
 import org.gephi.math.linalg.Vec3;
-import org.gephi.math.linalg.Vec3Base;
 import org.gephi.visualization.api.Camera;
 import org.gephi.visualization.api.vizmodel.GraphLimits;
 
@@ -93,7 +91,7 @@ public final class Camera2d implements Camera {
      * @param center the center of the screen in world coordinates
      * @param scale the scale factor
      */
-    public Camera2d(int width, int height, Vec2Base center, float scale) {
+    public Camera2d(int width, int height, Vec2 center, float scale) {
         this.screenWidth = width;
         this.screenHeight = height;
         
@@ -177,7 +175,7 @@ public final class Camera2d implements Camera {
      * @param up it is ignored by this method
      */
     @Override
-    public void lookAt(Vec3Base center, Vec3Base up) {
+    public void lookAt(Vec3 center, Vec3 up) {
         this.center.set(center.x(), center.y());        
     }
     

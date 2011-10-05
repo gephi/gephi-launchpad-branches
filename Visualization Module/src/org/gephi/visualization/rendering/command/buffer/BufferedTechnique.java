@@ -20,7 +20,6 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.gephi.visualization.rendering.command.buffer;
 
-import java.util.Collection;
 import javax.media.opengl.GL;
 import org.gephi.visualization.rendering.camera.Camera;
 import org.gephi.visualization.rendering.camera.RenderArea;
@@ -68,14 +67,7 @@ public abstract class BufferedTechnique<E> implements Technique<Buffer<E>> {
     }
 
     @Override
-    public void disposeElements(GL gl, Collection<? extends Buffer<E>> e) {
-        for (Buffer<E> b : e) {
-            b.bufferImpl.dispose(gl);
-        }
-    }
-
-    @Override
-    public boolean begin(GL gl, Camera camera, RenderArea renderArea) {
+    public boolean begin(GL gl, Camera camera, RenderArea renderArea, boolean reuseResources) {
         this.layout.enableClientStates(gl);
         return this.setCamera(gl, camera, renderArea);
     }

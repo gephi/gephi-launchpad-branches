@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.media.opengl.GL;
+import org.gephi.visualization.rendering.buffer.MemoryPool;
 import org.gephi.visualization.rendering.command.Command;
 import org.gephi.visualization.rendering.command.CommandListBuilder;
 import org.gephi.visualization.rendering.command.GenericCommand;
@@ -55,18 +56,18 @@ public class BufferedCommandListBuilder<E> implements CommandListBuilder<E> {
     }
 
     @Override
-    public void add(E e) {
+    public void add(MemoryPool memory, E e) {
         if (!this.isBuilding) return;
         
         if (this.buffers.isEmpty()) {
-            this.buffers.add(new Buffer<E>(this.technique.layout(), this.bufferType));
+            this.buffers.add(new Buffer<E>(memory, this.technique.layout(), this.bufferType));
         }
         
         final Buffer<E> current = this.buffers.get(this.buffers.size() - 1);
         
         if (!current.add(e)) {
             current.makeDrawable();
-            final Buffer<E> newBuffer = new Buffer<E>(this.technique.layout(), this.bufferType);
+            final Buffer<E> newBuffer = new Buffer<E>(memory, this.technique.layout(), this.bufferType);
             newBuffer.add(e);
             this.buffers.add(newBuffer);            
         }

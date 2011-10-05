@@ -21,8 +21,13 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 
 package org.gephi.visualization.data;
 
+import java.util.Collections;
+import java.util.List;
+import javax.media.opengl.GL;
+import org.gephi.visualization.rendering.buffer.MemoryPool;
 import org.gephi.visualization.rendering.camera.Camera;
-import org.gephi.visualization.rendering.command.CommandList;
+import org.gephi.visualization.rendering.camera.RenderArea;
+import org.gephi.visualization.rendering.command.Command;
 
 /**
  * Class used to get the current graph data in View.
@@ -31,12 +36,43 @@ import org.gephi.visualization.rendering.command.CommandList;
  */
 public class FrameData {
 
-    public final Camera camera;
-    public final CommandList commandList;
+    private final Camera camera;
+    
+    private final MemoryPool memory;
+    
+    private final List<Command> edgeCommands;
+    private final List<Command> nodeCommands;
+    private final List<Command> uiCommands;
+    
+    private boolean alreadyDrawn;
 
-    public FrameData(Camera camera, CommandList commandList) {
+    FrameData(Camera camera, MemoryPool memory, List<Command> edgeCommands, 
+            List<Command> nodeCommands, List<Command> uiCommands) {
         this.camera = camera;
-        this.commandList = commandList;
+        this.memory = memory;
+        this.edgeCommands = Collections.unmodifiableList(edgeCommands);
+        this.nodeCommands = Collections.unmodifiableList(nodeCommands);
+        this.uiCommands = Collections.unmodifiableList(uiCommands);
+        this.alreadyDrawn = false;
     }
     
+    public void draw(GL gl, RenderArea renderArea) {        
+        for (Command c : edgeCommands) {
+            c.draw(gl, this.camera, renderArea, this.alreadyDrawn);
+        }
+        
+        for (Command c : nodeCommands) {
+            c.draw(gl, this.camera, renderArea, this.alreadyDrawn);
+        }
+        
+        for (Command c : uiCommands) {
+            c.draw(gl, this.camera, renderArea, this.alreadyDrawn);
+        }
+        
+        this.alreadyDrawn = true;
+    }
+    
+    MemoryPool memory() {
+        return memory;        
+    }
 }

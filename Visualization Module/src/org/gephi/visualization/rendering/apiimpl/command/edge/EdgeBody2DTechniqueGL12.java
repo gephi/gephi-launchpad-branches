@@ -40,11 +40,11 @@ public class EdgeBody2DTechniqueGL12 extends BufferedTechnique<VizEdge2D> {
     }
     
     @Override
-    public boolean begin(GL gl, Camera camera, RenderArea renderArea) {        
+    public boolean begin(GL gl, Camera camera, RenderArea renderArea, boolean reuseResources) {        
         gl.glEnable(GL.GL_DEPTH_TEST);
         gl.glDepthFunc(GL.GL_LESS);
         
-        return super.begin(gl, camera, renderArea);
+        return super.begin(gl, camera, renderArea, reuseResources);
     }
 
     @Override

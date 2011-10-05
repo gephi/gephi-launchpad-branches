@@ -27,23 +27,47 @@ import org.gephi.visualization.rendering.camera.RenderArea;
 
 /**
  * Generic implementation of command. This implementation works equally well
- * for instanced and buffered techniques. It's behaviour is defined by the
- * technique and it is therefore final.
+ * for instanced and buffered techniques. It's behaviour is mainly defined by 
+ * the technique.
  * 
  * @author Antonio Patriarca <antoniopatriarca@gmail.com>
  */
-public final class GenericCommand<E> implements Command {
+public class GenericCommand<E> implements Command {
+    
+    /**
+     * The list of objects to draw.
+     */
     private final List<E> objects;
+    
+    /**
+     * The technique which should be used for rendering the objects.
+     */
     private final Technique<E> technique;
 
+    /**
+     * Creates a new command from the list of objects and the technique which
+     * should be used to draw them.
+     * 
+     * @param objects the list of objects
+     * @param technique the rendering technique
+     */
     public GenericCommand(List<E> objects, Technique<E> technique) {
         this.objects = objects;
         this.technique = technique;
     }
     
+    /**
+     * Draws the list of objects on the screen.
+     * 
+     * @param gl the GL object
+     * @param camera the current camera
+     * @param reuseResources it's <code>true</code> if the technique has already
+     *                          rendered the current batch.
+     * @param renderArea the screen area where the objects are drawn
+     */
     @Override
-    public void draw(GL gl, Camera camera, RenderArea renderArea) {
-        if (!this.technique.begin(gl, camera, renderArea)) return;
+    public void draw(GL gl, Camera camera, RenderArea renderArea, boolean reuseResources) {
+        if (!this.technique.begin(gl, camera, renderArea, reuseResources)) return;
         
         while (this.technique.advanceToNextPass(gl)) {            
             for (E e : objects) {
@@ -53,14 +77,5 @@ public final class GenericCommand<E> implements Command {
         
         this.technique.end(gl);
     }
-
-    @Override
-    public void dispose(GL gl) {
-        this.technique.disposeElements(gl, this.objects);
-    }
-
-    @Override
-    public void recycle() {
-        // do nothing
-    }
+    
 }

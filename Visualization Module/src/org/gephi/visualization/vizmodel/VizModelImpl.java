@@ -345,34 +345,12 @@ public class VizModelImpl implements VizModel {
     }
     
     @Override
-    public boolean isReduceFPSWhenMouseOut() {
-        return config.getBooleanProperty(VizConfig.REDUCE_FPS_MOUSE_OUT);
-    }
-
-    @Override
-    public int getReduceFPSWhenMouseOutValue() {
-        return config.getIntProperty(VizConfig.REDUCE_FPS_MOUSE_OUT_VALUE);
-    }
-
-    @Override
-    public void setReduceFPSWhenMouseOut(boolean reduceFPS) {
-        config.setProperty(VizConfig.REDUCE_FPS_MOUSE_OUT, reduceFPS);
-        // no need to fire an event
-    }
-
-    @Override
-    public void setReduceFPSWhenMouseOutValue(int fps) {
-        config.setProperty(VizConfig.REDUCE_FPS_MOUSE_OUT_VALUE, fps);
-        // no need to fire an event
-    }
-    
-    @Override
-    public int getNormalFPS() {
+    public int getFPS() {
         return config.getIntProperty(VizConfig.NORMAL_FPS);
     }
 
     @Override
-    public void setNormalFPS(int fps) {
+    public void setFPS(int fps) {
         config.setProperty(VizConfig.NORMAL_FPS, fps);
         fireProperyChange(VizConfig.NORMAL_FPS, null, fps);
     }
@@ -472,8 +450,6 @@ public class VizModelImpl implements VizModel {
         writeXmlAttribute(config, writer, VizConfig.PROPERTIES_BAR);
         writeXmlAttribute(config, writer, VizConfig.RECTANGLE_SELECTION);
         writeXmlAttribute(config, writer, VizConfig.RECTANGLE_SELECTION_COLOR);
-        writeXmlAttribute(config, writer, VizConfig.REDUCE_FPS_MOUSE_OUT);
-        writeXmlAttribute(config, writer, VizConfig.REDUCE_FPS_MOUSE_OUT_VALUE);
         writeXmlAttribute(config, writer, VizConfig.SELECTEDEDGE_BOTH_COLOR);
         writeXmlAttribute(config, writer, VizConfig.SELECTEDEDGE_HAS_COLOR);
         writeXmlAttribute(config, writer, VizConfig.SELECTEDEDGE_IN_COLOR);

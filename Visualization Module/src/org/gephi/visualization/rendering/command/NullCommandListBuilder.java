@@ -7,6 +7,7 @@ package org.gephi.visualization.rendering.command;
 import java.util.Collections;
 import java.util.List;
 import javax.media.opengl.GL;
+import org.gephi.visualization.rendering.buffer.MemoryPool;
 
 /**
  *
@@ -20,7 +21,7 @@ public class NullCommandListBuilder<E> implements CommandListBuilder<E> {
     }
 
     @Override
-    public void add(E e) {
+    public void add(MemoryPool memory, E e) {
         /* EMPTY BLOCK */
     }
 

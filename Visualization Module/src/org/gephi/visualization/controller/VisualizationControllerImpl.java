@@ -368,8 +368,6 @@ public class VisualizationControllerImpl implements VisualizationController, Key
 
     @Override
     public void mouseEntered(MouseEvent e) {
-        this.renderingEngine.setFPS(this.vizModel.getNormalFPS());
-        
         if (hasWorkspace) {
             motionManager.mouseEntered(e);
         }
@@ -377,10 +375,6 @@ public class VisualizationControllerImpl implements VisualizationController, Key
 
     @Override
     public void mouseExited(MouseEvent e) {
-        if (this.vizModel.isReduceFPSWhenMouseOut()) {
-            this.renderingEngine.setFPS(this.vizModel.getReduceFPSWhenMouseOutValue());
-        }
-        
         if (hasWorkspace) {
             motionManager.mouseExited(e);
         }

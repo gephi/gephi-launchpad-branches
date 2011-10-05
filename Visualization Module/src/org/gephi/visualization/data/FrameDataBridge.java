@@ -21,12 +21,15 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 
 package org.gephi.visualization.data;
 
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import org.gephi.graph.api.Edge;
 import org.gephi.graph.api.Node;
 import org.gephi.visualization.api.Camera;
 import org.gephi.visualization.api.view.ui.UIShape;
 import org.gephi.visualization.data.graph.styler.EdgeStyler;
 import org.gephi.visualization.data.graph.styler.NodeStyler;
+import org.gephi.visualization.rendering.buffer.MemoryPool;
 import org.gephi.visualization.rendering.command.CommandListBuilders;
 
 /**
@@ -36,6 +39,8 @@ import org.gephi.visualization.rendering.command.CommandListBuilders;
  */
 public class FrameDataBridge implements FrameDataBridgeIn, FrameDataBridgeOut {    
     private CommandListBuilders commandListBuilders;
+    
+    private Queue<MemoryPool> memoryPools;
     
     private NodeStyler nodeStyler;
     private EdgeStyler edgeStyler;
@@ -48,6 +53,8 @@ public class FrameDataBridge implements FrameDataBridgeIn, FrameDataBridgeOut {
     
     public FrameDataBridge() {
         this.commandListBuilders = null;
+        
+        this.memoryPools = new ConcurrentLinkedQueue<MemoryPool>();
         
         this.nodeStyler = null;
         this.edgeStyler = null;
@@ -63,7 +70,12 @@ public class FrameDataBridge implements FrameDataBridgeIn, FrameDataBridgeOut {
     public synchronized void beginFrame(Camera camera) {
         if (!this.isInizialized || this.currentBuilder != null) return;
 
-        this.currentBuilder = new FrameDataBuilder(camera, this.nodeStyler,
+        MemoryPool memory = this.memoryPools.poll();
+        if (memory == null) {
+            memory = new MemoryPool();
+        }
+        
+        this.currentBuilder = new FrameDataBuilder(camera, memory, this.nodeStyler,
                 this.edgeStyler, this.commandListBuilders);
     }
 
@@ -101,6 +113,12 @@ public class FrameDataBridge implements FrameDataBridgeIn, FrameDataBridgeOut {
         if (this.newFrameData == null) {
             return this.oldFrameData;
         } else {
+            if (this.oldFrameData != null) {
+                MemoryPool memory = this.oldFrameData.memory();
+                memory.recycleAll();
+                this.memoryPools.offer(memory);
+            }
+            
             this.oldFrameData = this.newFrameData;
             this.newFrameData = null;
             return this.oldFrameData;
