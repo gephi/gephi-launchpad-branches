@@ -22,6 +22,7 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 package org.gephi.visualization.data;
 
 import java.util.Queue;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import org.gephi.graph.api.Edge;
 import org.gephi.graph.api.Node;
@@ -54,7 +55,7 @@ public class FrameDataBridge implements FrameDataBridgeIn, FrameDataBridgeOut {
     public FrameDataBridge() {
         this.commandListBuilders = null;
         
-        this.memoryPools = new ConcurrentLinkedQueue<MemoryPool>();
+        this.memoryPools = new ArrayBlockingQueue<MemoryPool>(5);
         
         this.nodeStyler = null;
         this.edgeStyler = null;
@@ -138,6 +139,13 @@ public class FrameDataBridge implements FrameDataBridgeIn, FrameDataBridgeOut {
         this.edgeStyler = edgeStyler;
         this.isInizialized = this.commandListBuilders != null && 
                 this.nodeStyler != null && this.edgeStyler != null;
+    }
+
+    @Override
+    public synchronized void reset() {
+        this.memoryPools = new ArrayBlockingQueue<MemoryPool>(5);
+        this.newFrameData = null;
+        this.oldFrameData = null;
     }
 
 }

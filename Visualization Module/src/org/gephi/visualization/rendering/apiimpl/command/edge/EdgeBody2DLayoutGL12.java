@@ -83,7 +83,7 @@ public class EdgeBody2DLayoutGL12 extends Layout<VizEdge2D> {
         b.putFloat(e.gradientStart.b);
         b.putFloat(vert.x());
         b.putFloat(vert.y());
-        b.putFloat(e.sourceSize * 1.001f);
+        b.putFloat(-e.sourceSize * 1.001f);
         
         vert.minusEq(2.0f * e.thickness, d_perp);
         b.putFloat(e.gradientStart.r);
@@ -91,7 +91,7 @@ public class EdgeBody2DLayoutGL12 extends Layout<VizEdge2D> {
         b.putFloat(e.gradientStart.b);
         b.putFloat(vert.x());
         b.putFloat(vert.y());
-        b.putFloat(e.sourceSize * 1.001f);
+        b.putFloat(-e.sourceSize * 1.001f);
         
         vert.add(e.destinationPosition, - e.thickness, d_perp);
         b.putFloat(e.gradientEnd.r);
@@ -99,7 +99,7 @@ public class EdgeBody2DLayoutGL12 extends Layout<VizEdge2D> {
         b.putFloat(e.gradientEnd.b);
         b.putFloat(vert.x());
         b.putFloat(vert.y());
-        b.putFloat(e.destinationSize * 1.001f);
+        b.putFloat(-e.destinationSize * 1.001f);
         
         vert.plusEq(2.0f * e.thickness, d_perp);
         b.putFloat(e.gradientEnd.r);
@@ -107,7 +107,7 @@ public class EdgeBody2DLayoutGL12 extends Layout<VizEdge2D> {
         b.putFloat(e.gradientEnd.b);
         b.putFloat(vert.x());
         b.putFloat(vert.y());
-        b.putFloat(e.destinationSize * 1.001f);
+        b.putFloat(-e.destinationSize * 1.001f);
         
         ind.putShort((short)(startIdx));
         ind.putShort((short)(startIdx + 2));
@@ -126,7 +126,7 @@ public class EdgeBody2DLayoutGL12 extends Layout<VizEdge2D> {
                 b.putFloat(e.gradientStart.b);
                 b.putFloat(vert.x());
                 b.putFloat(vert.y());
-                b.putFloat(e.sourceSize * 1.001f);
+                b.putFloat(-e.sourceSize * 1.001f);
                 
                 vert.plusEq(e.thickness, d).minusEq(e.thickness, d_perp);
                 // TODO: calculate gradient color..
@@ -135,7 +135,7 @@ public class EdgeBody2DLayoutGL12 extends Layout<VizEdge2D> {
                 b.putFloat(e.gradientStart.b);
                 b.putFloat(vert.x());
                 b.putFloat(vert.y());
-                b.putFloat(e.sourceSize * 1.001f);
+                b.putFloat(-e.sourceSize * 1.001f);
                 
                 vert.plusEq(2.0f * e.thickness, d_perp);
                 // TODO: calculate gradient color..
@@ -144,7 +144,7 @@ public class EdgeBody2DLayoutGL12 extends Layout<VizEdge2D> {
                 b.putFloat(e.gradientStart.b);
                 b.putFloat(vert.x());
                 b.putFloat(vert.y());
-                b.putFloat(e.sourceSize * 1.001f);
+                b.putFloat(-e.sourceSize * 1.001f);
                 
                 ind.putShort((short)(startIdx + 4));
                 ind.putShort((short)(startIdx + 5));
@@ -160,7 +160,7 @@ public class EdgeBody2DLayoutGL12 extends Layout<VizEdge2D> {
                 b.putFloat(e.gradientEnd.b);
                 b.putFloat(vert.x());
                 b.putFloat(vert.y());
-                b.putFloat(e.destinationSize * 1.001f);
+                b.putFloat(-e.destinationSize * 1.001f);
                 
                 vert.minusEq(e.thickness, d).plusEq(e.thickness, d_perp);
                 // TODO: calculate gradient color..
@@ -169,7 +169,7 @@ public class EdgeBody2DLayoutGL12 extends Layout<VizEdge2D> {
                 b.putFloat(e.gradientEnd.b);
                 b.putFloat(vert.x());
                 b.putFloat(vert.y());
-                b.putFloat(e.destinationSize * 1.001f);
+                b.putFloat(-e.destinationSize * 1.001f);
                 
                 vert.minusEq(2.0f * e.thickness, d_perp);
                 // TODO: calculate gradient color..
@@ -178,7 +178,7 @@ public class EdgeBody2DLayoutGL12 extends Layout<VizEdge2D> {
                 b.putFloat(e.gradientEnd.b);
                 b.putFloat(vert.x());
                 b.putFloat(vert.y());
-                b.putFloat(e.destinationSize * 1.001f);
+                b.putFloat(-e.destinationSize * 1.001f);
                 
                 ind.putShort((short)(startIdx + 4));
                 ind.putShort((short)(startIdx + 5));

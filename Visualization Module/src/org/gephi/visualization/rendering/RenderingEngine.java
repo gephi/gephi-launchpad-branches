@@ -48,10 +48,7 @@ public class RenderingEngine {
     
     private final GLCanvas drawable;
     private final GLEventListener eventListener;
-    private final FPSAnimator animator;
     private final RenderingScheduler scheduler;
-    
-    private final FPSCounter counter;
     
     private final VizModel model;
 
@@ -75,8 +72,6 @@ public class RenderingEngine {
         /* TODO: make pipeline... */
         this.pipeline = new Pipeline(this, this.model);
         
-        this.counter = new FPSCounter();
-        
         this.eventListener = new GLEventListener() {
             private CommandListBuilders commandListBuilders = null;
             
@@ -90,8 +85,6 @@ public class RenderingEngine {
                 this.commandListBuilders = CommandListBuilders.create(gl);
                 bridge.setCommandListBuilders(commandListBuilders);
                 pipeline.init(gl);
-                
-                counter.reset();
             }
 
             @Override
@@ -107,6 +100,7 @@ public class RenderingEngine {
 
                 // frame data is not currently used by the pipeline
                 if (frameData == null) {
+                    gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
                     return;
                 }
 
@@ -115,8 +109,6 @@ public class RenderingEngine {
                 pipeline.draw(gl, frameData);
 
                 controller.endRenderFrame();
-                
-                counter.tick();
             }
 
             @Override
@@ -131,7 +123,6 @@ public class RenderingEngine {
         
         final int fps = this.model.getFPS();
         this.scheduler = new RenderingScheduler(this.drawable, fps);
-        this.animator = new FPSAnimator(this.drawable, fps);
         
         this.bridge = new FrameDataBridge();
     }
@@ -160,12 +151,10 @@ public class RenderingEngine {
     public void startRendering() {
         this.drawable.setVisible(true);
         this.drawable.addGLEventListener(this.eventListener);        
-        //this.animator.start();
         this.scheduler.startRendering();
     }
     
     public void stopRendering() {
-        //this.animator.stop();
         this.scheduler.stopRendering();
         this.drawable.removeGLEventListener(this.eventListener);
         this.drawable.setVisible(false);
@@ -177,7 +166,6 @@ public class RenderingEngine {
      * @return the frame rate
      */
     public double getFPS() {
-        //return this.counter.getFPS();
         return this.scheduler.getFPS();
     }
     

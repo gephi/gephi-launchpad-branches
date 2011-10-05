@@ -46,5 +46,7 @@ public interface FrameDataBridgeIn {
     public void add(UIShape shape);
 
     public void endFrame();
+    
+    public void reset();
 
 }

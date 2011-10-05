@@ -75,10 +75,7 @@ public class MemoryPool {
      * Clears all the buffers and mark them as unused. The use of one of these
      * buffers after a call to this method is undefined behaviors.
      */
-    public void recycleAll() {
-        // deletes old unused buffers and creares a new queue of unused buffers
-        this.unusedBuffers = new ArrayDeque<ByteBuffer>(this.usedBuffers.size());
-        
+    public void recycleAll() {        
         for (ByteBuffer b : this.usedBuffers) {
             b.clear();
             this.unusedBuffers.add(b);

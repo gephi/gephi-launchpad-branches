@@ -193,6 +193,7 @@ public class Model implements Runnable, WorkspaceListener {
         synchronized(this.graphModelLock) {
             this.workspaceSelected = false;
             this.graphModel = null;
+            this.bridge.reset();
         }
 
         stopUpdate();
@@ -200,7 +201,13 @@ public class Model implements Runnable, WorkspaceListener {
 
     @Override
     public void close(Workspace workspace) {
-        // Empty block
+        synchronized(this.graphModelLock) {
+            this.workspaceSelected = false;
+            this.graphModel = null;
+            this.bridge.reset();
+        }
+
+        stopUpdate();
     }
 
     @Override
