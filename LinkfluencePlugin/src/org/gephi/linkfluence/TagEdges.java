@@ -49,11 +49,11 @@ import org.gephi.data.attributes.api.AttributeColumn;
 import org.gephi.data.attributes.api.AttributeController;
 import org.gephi.data.attributes.api.AttributeTable;
 import org.gephi.datalab.api.AttributeColumnsController;
-import org.gephi.datalab.api.datatables.DataTablesController;
 import org.gephi.datalab.spi.ContextMenuItemManipulator;
 import org.gephi.datalab.spi.ManipulatorUI;
 import org.gephi.datalab.spi.edges.EdgesManipulator;
 import org.gephi.graph.api.Edge;
+import org.openide.util.Exceptions;
 import org.openide.util.ImageUtilities;
 import org.openide.util.Lookup;
 import org.openide.util.NbBundle;
@@ -85,9 +85,13 @@ public class TagEdges implements EdgesManipulator, GeneralColumnAndValueChooser 
 
     public void execute() {
         if (column != null) {
-            AttributeColumnsController ac = Lookup.getDefault().lookup(AttributeColumnsController.class);
-            ac.fillEdgesColumnWithValue(edges, column, value);
-            Lookup.getDefault().lookup(DataTablesController.class).refreshCurrentTable();
+            try {
+                AttributeColumnsController ac = Lookup.getDefault().lookup(AttributeColumnsController.class);
+                ac.fillEdgesColumnWithValue(edges, column, value);
+                CompatibilityUtils.refreshCurrentTable();
+            } catch (Exception ex) {
+                Exceptions.printStackTrace(ex);
+            }
         }
     }
 

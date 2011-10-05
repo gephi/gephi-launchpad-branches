@@ -48,7 +48,6 @@ import org.gephi.data.attributes.api.AttributeColumn;
 import org.gephi.data.attributes.api.AttributeController;
 import org.gephi.data.attributes.api.AttributeTable;
 import org.gephi.datalab.api.AttributeColumnsController;
-import org.gephi.datalab.api.datatables.DataTablesController;
 import org.gephi.datalab.spi.ContextMenuItemManipulator;
 import org.gephi.datalab.spi.ManipulatorUI;
 import org.gephi.datalab.spi.nodes.NodesManipulator;
@@ -57,6 +56,7 @@ import org.gephi.graph.api.Node;
 import org.gephi.linkfluence.ui.GeneralColumnAndValueChooser;
 import org.gephi.linkfluence.ui.GeneralColumnAndValueChooserUI;
 import org.gephi.visualization.spi.GraphContextMenuItem;
+import org.openide.util.Exceptions;
 import org.openide.util.ImageUtilities;
 import org.openide.util.Lookup;
 import org.openide.util.NbBundle;
@@ -97,9 +97,13 @@ public class TagNodes implements NodesManipulator, GeneralColumnAndValueChooser,
 
     public void execute() {
         if (column != null) {
-            AttributeColumnsController ac = Lookup.getDefault().lookup(AttributeColumnsController.class);
-            ac.fillNodesColumnWithValue(nodes, column, value);
-            Lookup.getDefault().lookup(DataTablesController.class).refreshCurrentTable();
+            try {
+                AttributeColumnsController ac = Lookup.getDefault().lookup(AttributeColumnsController.class);
+                ac.fillNodesColumnWithValue(nodes, column, value);
+                CompatibilityUtils.refreshCurrentTable();
+            } catch (Exception ex) {
+                Exceptions.printStackTrace(ex);
+            }
         }
     }
 
