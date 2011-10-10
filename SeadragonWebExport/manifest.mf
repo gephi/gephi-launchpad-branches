@@ -1,5 +1,5 @@
 Manifest-Version: 1.0
 OpenIDE-Module: org.gephi.plugins.seadragonweb
 OpenIDE-Module-Localizing-Bundle: org/gephi/plugins/seadragonweb/Bundle.properties
-OpenIDE-Module-Specification-Version: 0.2
+OpenIDE-Module-Specification-Version: 0.3
 

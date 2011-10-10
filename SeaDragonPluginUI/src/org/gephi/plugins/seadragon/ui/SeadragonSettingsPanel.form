@@ -52,6 +52,7 @@
                               <Component id="labelPx3" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <Component id="labelPx2" min="-2" max="-2" attributes="0"/>
+                          <Component id="jLabel1" alignment="0" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace min="-2" pref="113" max="-2" attributes="0"/>
                   </Group>
@@ -62,10 +63,8 @@
               <EmptySpace max="-2" attributes="0"/>
               <Component id="labelMargins" min="-2" max="-2" attributes="0"/>
               <EmptySpace type="separate" max="-2" attributes="0"/>
-              <Component id="marginTextField" pref="68" max="32767" attributes="0"/>
-              <EmptySpace max="-2" attributes="0"/>
-              <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
-              <EmptySpace min="-2" pref="292" max="-2" attributes="0"/>
+              <Component id="marginTextField" min="-2" pref="82" max="-2" attributes="0"/>
+              <EmptySpace min="-2" pref="347" max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -144,8 +143,9 @@
     <Component class="javax.swing.JTextField" name="tileSizeTextField">
       <Properties>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="org/gephi/plugins/seadragon/ui/Bundle.properties" key="SeadragonSettingsPanel.tileSizeTextField.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+          <ResourceString bundle="org/gephi/plugins/seadragon/ui/Bundle.properties" key="SeadragonSettingsPanel.tile size.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
         </Property>
+        <Property name="name" type="java.lang.String" value="tile size" noResource="true"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="labelPx3">
@@ -158,8 +158,9 @@
     <Component class="javax.swing.JTextField" name="pathTextField">
       <Properties>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="org/gephi/plugins/seadragon/ui/Bundle.properties" key="SeadragonSettingsPanel.pathTextField.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+          <ResourceString bundle="org/gephi/plugins/seadragon/ui/Bundle.properties" key="SeadragonSettingsPanel.path.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
         </Property>
+        <Property name="name" type="java.lang.String" value="path" noResource="true"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="labelWidth">
@@ -172,8 +173,9 @@
     <Component class="javax.swing.JTextField" name="widthTextField">
       <Properties>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="org/gephi/plugins/seadragon/ui/Bundle.properties" key="SeadragonSettingsPanel.widthTextField.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+          <ResourceString bundle="org/gephi/plugins/seadragon/ui/Bundle.properties" key="SeadragonSettingsPanel.width.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
         </Property>
+        <Property name="name" type="java.lang.String" value="width" noResource="true"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="labelHeight">
@@ -186,8 +188,9 @@
     <Component class="javax.swing.JTextField" name="heightTextField">
       <Properties>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="org/gephi/plugins/seadragon/ui/Bundle.properties" key="SeadragonSettingsPanel.heightTextField.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+          <ResourceString bundle="org/gephi/plugins/seadragon/ui/Bundle.properties" key="SeadragonSettingsPanel.height.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
         </Property>
+        <Property name="name" type="java.lang.String" value="height" noResource="true"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="labelPx">
@@ -206,11 +209,6 @@
     </Component>
     <Component class="javax.swing.JLabel" name="labelMargins">
       <Properties>
-        <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
-          <FontInfo relative="true">
-            <Font bold="true" component="labelMargins" property="font" relativeSize="true" size="0"/>
-          </FontInfo>
-        </Property>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
           <ResourceString bundle="org/gephi/plugins/seadragon/ui/Bundle.properties" key="SeadragonSettingsPanel.labelMargins.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
         </Property>
@@ -219,8 +217,9 @@
     <Component class="javax.swing.JTextField" name="marginTextField">
       <Properties>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="org/gephi/plugins/seadragon/ui/Bundle.properties" key="SeadragonSettingsPanel.marginTextField.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+          <ResourceString bundle="org/gephi/plugins/seadragon/ui/Bundle.properties" key="SeadragonSettingsPanel.margin.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
         </Property>
+        <Property name="name" type="java.lang.String" value="margin" noResource="true"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel1">

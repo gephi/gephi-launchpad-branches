@@ -4,7 +4,7 @@
  * Copyright 2010-2011 Gephi
  * Authors : Mathieu Bastian <mathieu.bastian@gephi.org>
  * Website : http://www.gephi.org
- * Licensed under Ms-PL (http://www.opensource.org/licenses/ms-pl.html)
+ * Licensed under Apache 2 License (http://www.apache.org/licenses/LICENSE-2.0)
  */
 package org.gephi.plugins.seadragon.ui;
 
@@ -85,28 +85,32 @@ public class SeadragonSettingsPanel extends javax.swing.JPanel {
 
         labelTileSize.setText(org.openide.util.NbBundle.getMessage(SeadragonSettingsPanel.class, "SeadragonSettingsPanel.labelTileSize.text")); // NOI18N
 
-        tileSizeTextField.setText(org.openide.util.NbBundle.getMessage(SeadragonSettingsPanel.class, "SeadragonSettingsPanel.tileSizeTextField.text")); // NOI18N
+        tileSizeTextField.setText(org.openide.util.NbBundle.getMessage(SeadragonSettingsPanel.class, "SeadragonSettingsPanel.tile size.text")); // NOI18N
+        tileSizeTextField.setName("tile size"); // NOI18N
 
         labelPx3.setText(org.openide.util.NbBundle.getMessage(SeadragonSettingsPanel.class, "SeadragonSettingsPanel.labelPx3.text")); // NOI18N
 
-        pathTextField.setText(org.openide.util.NbBundle.getMessage(SeadragonSettingsPanel.class, "SeadragonSettingsPanel.pathTextField.text")); // NOI18N
+        pathTextField.setText(org.openide.util.NbBundle.getMessage(SeadragonSettingsPanel.class, "SeadragonSettingsPanel.path.text")); // NOI18N
+        pathTextField.setName("path"); // NOI18N
 
         labelWidth.setText(org.openide.util.NbBundle.getMessage(SeadragonSettingsPanel.class, "SeadragonSettingsPanel.labelWidth.text")); // NOI18N
 
-        widthTextField.setText(org.openide.util.NbBundle.getMessage(SeadragonSettingsPanel.class, "SeadragonSettingsPanel.widthTextField.text")); // NOI18N
+        widthTextField.setText(org.openide.util.NbBundle.getMessage(SeadragonSettingsPanel.class, "SeadragonSettingsPanel.width.text")); // NOI18N
+        widthTextField.setName("width"); // NOI18N
 
         labelHeight.setText(org.openide.util.NbBundle.getMessage(SeadragonSettingsPanel.class, "SeadragonSettingsPanel.labelHeight.text")); // NOI18N
 
-        heightTextField.setText(org.openide.util.NbBundle.getMessage(SeadragonSettingsPanel.class, "SeadragonSettingsPanel.heightTextField.text")); // NOI18N
+        heightTextField.setText(org.openide.util.NbBundle.getMessage(SeadragonSettingsPanel.class, "SeadragonSettingsPanel.height.text")); // NOI18N
+        heightTextField.setName("height"); // NOI18N
 
         labelPx.setText(org.openide.util.NbBundle.getMessage(SeadragonSettingsPanel.class, "SeadragonSettingsPanel.labelPx.text")); // NOI18N
 
         labelPx2.setText(org.openide.util.NbBundle.getMessage(SeadragonSettingsPanel.class, "SeadragonSettingsPanel.labelPx2.text")); // NOI18N
 
-        labelMargins.setFont(labelMargins.getFont().deriveFont(labelMargins.getFont().getStyle() | java.awt.Font.BOLD));
         labelMargins.setText(org.openide.util.NbBundle.getMessage(SeadragonSettingsPanel.class, "SeadragonSettingsPanel.labelMargins.text")); // NOI18N
 
-        marginTextField.setText(org.openide.util.NbBundle.getMessage(SeadragonSettingsPanel.class, "SeadragonSettingsPanel.marginTextField.text")); // NOI18N
+        marginTextField.setText(org.openide.util.NbBundle.getMessage(SeadragonSettingsPanel.class, "SeadragonSettingsPanel.margin.text")); // NOI18N
+        marginTextField.setName("margin"); // NOI18N
 
         jLabel1.setText(org.openide.util.NbBundle.getMessage(SeadragonSettingsPanel.class, "SeadragonSettingsPanel.jLabel1.text")); // NOI18N
 
@@ -144,17 +148,16 @@ public class SeadragonSettingsPanel extends javax.swing.JPanel {
                                 .addComponent(tileSizeTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(4, 4, 4)
                                 .addComponent(labelPx3))
-                            .addComponent(labelPx2))
+                            .addComponent(labelPx2)
+                            .addComponent(jLabel1))
                         .addGap(113, 113, 113)))
                 .addContainerGap())
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(labelMargins)
                 .addGap(18, 18, 18)
-                .addComponent(marginTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 68, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel1)
-                .addGap(292, 292, 292))
+                .addComponent(marginTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(347, 347, 347))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)

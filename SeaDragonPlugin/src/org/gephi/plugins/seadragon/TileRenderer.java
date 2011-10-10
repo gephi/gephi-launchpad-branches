@@ -1,10 +1,10 @@
 /*
  * Gephi Seadragon Plugin
  *
- * Copyright 2010 Gephi
+ * Copyright 2010-2011 Gephi
  * Authors : Mathieu Bastian <mathieu.bastian@gephi.org>
  * Website : http://www.gephi.org
- * Licensed under Ms-PL (http://www.opensource.org/licenses/ms-pl.html)
+ * Licensed under Apache 2 License (http://www.apache.org/licenses/LICENSE-2.0)
  */
 package org.gephi.plugins.seadragon;
 
@@ -37,7 +37,7 @@ public class TileRenderer {
     }
 
     public void writeLevel(BufferedImage image, float scale, int level) {
-        BufferedImage scaledImage = Scalr.resize(image, (int) (scale * image.getWidth()), (int) (scale * image.getHeight()));
+        BufferedImage scaledImage = Scalr.resize(image, Scalr.Method.QUALITY, (int) (scale * image.getWidth()), (int) (scale * image.getHeight()), Scalr.OP_ANTIALIAS);
         writeLevel(scaledImage, level);
     }
 
