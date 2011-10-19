@@ -37,7 +37,11 @@ public class TileRenderer {
     }
 
     public void writeLevel(BufferedImage image, float scale, int level) {
-        BufferedImage scaledImage = Scalr.resize(image, Scalr.Method.QUALITY, (int) (scale * image.getWidth()), (int) (scale * image.getHeight()), Scalr.OP_ANTIALIAS);
+        int scaledWidth = (int) (scale * image.getWidth());
+        int scaledHeight = (int) (scale * image.getHeight());
+        scaledWidth = Math.max(scaledWidth, 1);
+        scaledHeight = Math.max(scaledHeight, 1);
+        BufferedImage scaledImage = Scalr.resize(image, Scalr.Method.QUALITY, scaledWidth, scaledHeight, Scalr.OP_ANTIALIAS);
         writeLevel(scaledImage, level);
     }
 

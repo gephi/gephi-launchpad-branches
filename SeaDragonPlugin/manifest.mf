@@ -2,5 +2,5 @@ Manifest-Version: 1.0
 AutoUpdate-Show-In-Client: false
 OpenIDE-Module: org.gephi.plugins.seadragon
 OpenIDE-Module-Localizing-Bundle: org/gephi/plugins/seadragon/Bundle.properties
-OpenIDE-Module-Specification-Version: 0.3
+OpenIDE-Module-Specification-Version: 0.3.1
 
