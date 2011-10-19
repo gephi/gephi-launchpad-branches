@@ -27,7 +27,7 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import org.gephi.math.linalg.Vec2;
+import org.gephi.math.Vec2;
 import org.gephi.visualization.api.selection.SelectionType;
 import org.gephi.visualization.api.selection.Shape;
 import org.gephi.visualization.api.view.ui.UIShape;

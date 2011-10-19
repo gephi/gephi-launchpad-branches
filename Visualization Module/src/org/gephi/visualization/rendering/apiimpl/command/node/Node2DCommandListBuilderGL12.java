@@ -28,7 +28,7 @@ import java.util.Map;
 import javax.media.opengl.GL;
 import org.gephi.graph.api.NodeShape;
 import org.gephi.visualization.data.graph.VizNode2D;
-import org.gephi.visualization.rendering.buffer.MemoryPool;
+import org.gephi.visualization.drawcall.MemoryPool;
 import org.gephi.visualization.rendering.command.Command;
 import org.gephi.visualization.rendering.command.CommandListBuilder;
 import org.gephi.visualization.rendering.command.buffer.Buffer;

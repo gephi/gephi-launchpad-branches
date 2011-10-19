@@ -31,7 +31,7 @@ import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import org.gephi.graph.api.Node;
-import org.gephi.math.linalg.Vec3;
+import org.gephi.math.Vec3;
 import org.gephi.visualization.api.MotionManager;
 import org.gephi.visualization.api.VisualizationController;
 import org.gephi.visualization.api.event.VizEvent;

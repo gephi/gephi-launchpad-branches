@@ -22,8 +22,8 @@ package org.gephi.visualization.rendering.command;
 
 import java.util.List;
 import javax.media.opengl.GL;
-import org.gephi.visualization.rendering.camera.Camera;
-import org.gephi.visualization.rendering.camera.RenderArea;
+import org.gephi.visualization.data.camera.Camera;
+import org.gephi.visualization.data.camera.RenderArea;
 
 /**
  * Generic implementation of command. This implementation works equally well

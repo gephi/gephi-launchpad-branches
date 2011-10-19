@@ -23,7 +23,7 @@ package org.gephi.desktop.visualization.components;
 import javax.swing.InputVerifier;
 import javax.swing.JComponent;
 import javax.swing.JTextField;
-import org.gephi.math.linalg.Vec2;
+import org.gephi.math.Vec2;
 
 /**
  * @author Vojtech Bardiovsky

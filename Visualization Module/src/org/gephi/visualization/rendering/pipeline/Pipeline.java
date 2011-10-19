@@ -32,8 +32,8 @@ import org.gephi.visualization.api.vizmodel.VizConfig;
 import org.gephi.visualization.api.vizmodel.VizModel;
 import org.gephi.visualization.data.FrameData;
 import org.gephi.visualization.rendering.RenderingEngine;
-import org.gephi.visualization.rendering.camera.Rectangle;
-import org.gephi.visualization.rendering.camera.RenderArea;
+import org.gephi.visualization.data.camera.Rectangle;
+import org.gephi.visualization.data.camera.RenderArea;
 
 /**
  * 

@@ -20,7 +20,7 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.gephi.visualization.api.rendering.background;
 
-import org.gephi.math.linalg.Vec2;
+import org.gephi.math.Vec2;
 
 /**
  * Defines how the background image is positioned on the screen or world. 

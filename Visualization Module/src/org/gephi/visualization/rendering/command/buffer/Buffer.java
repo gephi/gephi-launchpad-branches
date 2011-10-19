@@ -22,7 +22,7 @@ package org.gephi.visualization.rendering.command.buffer;
 
 import java.nio.ByteBuffer;
 import javax.media.opengl.GL;
-import org.gephi.visualization.rendering.buffer.MemoryPool;
+import org.gephi.visualization.drawcall.MemoryPool;
 
 /**
  * Generic implementation of a Buffer. The behavior is controlled by the Layout

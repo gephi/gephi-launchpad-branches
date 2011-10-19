@@ -37,7 +37,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import org.gephi.data.attributes.api.AttributeColumn;
 import org.gephi.graph.api.Node;
-import org.gephi.math.linalg.Vec3;
+import org.gephi.math.Vec3;
 import org.gephi.project.api.ProjectController;
 import org.gephi.project.api.Workspace;
 import org.gephi.project.api.WorkspaceListener;

@@ -23,7 +23,7 @@ package org.gephi.visualization.rendering.apiimpl.command.edge;
 import java.nio.ByteBuffer;
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
-import org.gephi.math.linalg.Vec2M;
+import org.gephi.math.Vec2M;
 import org.gephi.visualization.data.graph.VizEdge2D;
 import org.gephi.visualization.data.graph.VizEdgeShape;
 import org.gephi.visualization.rendering.command.buffer.Layout;

@@ -22,8 +22,8 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 package org.gephi.visualization.api;
 
 import java.awt.Dimension;
-import org.gephi.math.linalg.Vec3;
-import org.gephi.math.linalg.Vec3;
+import org.gephi.math.Vec3;
+import org.gephi.math.Vec3;
 import org.gephi.visualization.api.vizmodel.GraphLimits;
 
 /**

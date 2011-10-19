@@ -26,7 +26,7 @@ import org.gephi.visualization.data.graph.styler.EdgeStyler;
 import org.gephi.graph.api.MetaEdge;
 import org.gephi.graph.api.Node;
 import org.gephi.graph.api.NodeData;
-import org.gephi.math.linalg.Vec2;
+import org.gephi.math.Vec2;
 import org.gephi.visualization.api.Color;
 import org.gephi.visualization.api.vizmodel.VizConfig;
 import org.gephi.visualization.api.vizmodel.VizModel;

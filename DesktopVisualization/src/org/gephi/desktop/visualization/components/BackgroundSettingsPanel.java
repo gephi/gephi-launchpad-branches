@@ -30,7 +30,7 @@ import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JFileChooser;
 import javax.swing.JTextField;
-import org.gephi.math.linalg.Vec2;
+import org.gephi.math.Vec2;
 import org.gephi.ui.components.JColorButton;
 import org.gephi.visualization.api.VisualizationController;
 import org.gephi.visualization.api.rendering.background.Background;

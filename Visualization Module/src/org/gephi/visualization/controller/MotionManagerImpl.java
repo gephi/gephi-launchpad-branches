@@ -27,7 +27,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import javax.swing.SwingUtilities;
 import org.gephi.graph.api.Node;
-import org.gephi.math.linalg.Vec3;
+import org.gephi.math.Vec3;
 import org.gephi.visualization.api.MotionManager;
 import org.gephi.visualization.api.VisualizationController;
 import org.gephi.visualization.api.vizmodel.VizConfig;

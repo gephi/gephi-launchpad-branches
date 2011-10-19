@@ -20,7 +20,7 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.gephi.visualization.rendering.apiimpl.command.node.texture;
 
-import org.gephi.math.linalg.Vec3;
+import org.gephi.math.Vec3;
 
 /**
  * Creates a regular polygon texture.

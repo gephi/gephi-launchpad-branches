@@ -22,11 +22,11 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 package org.gephi.visualization.camera;
 
 import java.awt.Dimension;
-import org.gephi.math.linalg.Mat4M;
-import org.gephi.math.linalg.Vec3;
-import org.gephi.math.linalg.Vec3;
-import org.gephi.math.linalg.Vec3M;
-import org.gephi.math.linalg.Vec4;
+import org.gephi.math.Mat4M;
+import org.gephi.math.Vec3;
+import org.gephi.math.Vec3;
+import org.gephi.math.Vec3M;
+import org.gephi.math.Vec4;
 import org.gephi.visualization.api.Camera;
 import org.gephi.visualization.api.vizmodel.GraphLimits;
 

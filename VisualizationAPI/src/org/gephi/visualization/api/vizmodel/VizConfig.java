@@ -22,8 +22,8 @@ package org.gephi.visualization.api.vizmodel;
 
 import java.awt.Color;
 import java.awt.Font;
-import org.gephi.math.linalg.Vec2;
-import org.gephi.math.linalg.Vec3;
+import org.gephi.math.Vec2;
+import org.gephi.math.Vec3;
 
 /**
  * Visualization configuration interface that holds every visualization property

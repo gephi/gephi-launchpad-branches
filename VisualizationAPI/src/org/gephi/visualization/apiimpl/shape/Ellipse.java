@@ -21,7 +21,7 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 
 package org.gephi.visualization.apiimpl.shape;
 
-import org.gephi.math.linalg.Vec2;
+import org.gephi.math.Vec2;
 import org.gephi.visualization.api.selection.SelectionType;
 import org.gephi.visualization.api.selection.Shape;
 import org.gephi.visualization.api.view.ui.UIShape;

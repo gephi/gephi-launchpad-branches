@@ -30,7 +30,7 @@ import org.gephi.visualization.api.Camera;
 import org.gephi.visualization.api.view.ui.UIShape;
 import org.gephi.visualization.data.graph.styler.EdgeStyler;
 import org.gephi.visualization.data.graph.styler.NodeStyler;
-import org.gephi.visualization.rendering.buffer.MemoryPool;
+import org.gephi.visualization.drawcall.MemoryPool;
 import org.gephi.visualization.rendering.command.CommandListBuilders;
 
 /**

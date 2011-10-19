@@ -24,13 +24,13 @@ import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 import javax.media.opengl.glu.GLU;
 import javax.media.opengl.glu.gl2.GLUgl2;
-import org.gephi.math.linalg.Vec2M;
+import org.gephi.math.Vec2M;
 import org.gephi.visualization.api.view.ui.UIShape;
 import org.gephi.visualization.api.view.ui.UIShape.UIConvexPolygon;
 import org.gephi.visualization.api.view.ui.UIShape.UIEllipse;
 import org.gephi.visualization.api.view.ui.UIStyle;
-import org.gephi.visualization.rendering.camera.Camera;
-import org.gephi.visualization.rendering.camera.RenderArea;
+import org.gephi.visualization.data.camera.Camera;
+import org.gephi.visualization.data.camera.RenderArea;
 import org.gephi.visualization.rendering.command.Technique;
 
 /**

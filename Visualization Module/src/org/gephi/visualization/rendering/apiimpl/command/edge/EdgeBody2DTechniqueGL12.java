@@ -23,9 +23,8 @@ package org.gephi.visualization.rendering.apiimpl.command.edge;
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 import org.gephi.visualization.data.graph.VizEdge2D;
-import org.gephi.visualization.rendering.camera.Camera;
-import org.gephi.visualization.rendering.camera.OrthoCamera;
-import org.gephi.visualization.rendering.camera.RenderArea;
+import org.gephi.visualization.data.camera.Camera;
+import org.gephi.visualization.data.camera.RenderArea;
 import org.gephi.visualization.rendering.command.buffer.Buffer.Type;
 import org.gephi.visualization.rendering.command.buffer.BufferedTechnique;
 
@@ -50,7 +49,7 @@ public class EdgeBody2DTechniqueGL12 extends BufferedTechnique<VizEdge2D> {
     @Override
     protected boolean setCamera(GL gl, Camera camera, RenderArea renderArea) {
         GL2 gl2 = gl.getGL2();
-        if (gl2 == null || !(camera instanceof OrthoCamera)) return false;
+        if (gl2 == null) return false;
         
         gl2.glMatrixMode(GL2.GL_PROJECTION);
         

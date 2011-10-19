@@ -27,9 +27,8 @@ import javax.media.opengl.GL2;
 import org.gephi.graph.api.NodeShape;
 import org.gephi.visualization.data.graph.VizNode2D;
 import org.gephi.visualization.rendering.apiimpl.command.node.texture.Node2DTextureBuilder;
-import org.gephi.visualization.rendering.camera.Camera;
-import org.gephi.visualization.rendering.camera.OrthoCamera;
-import org.gephi.visualization.rendering.camera.RenderArea;
+import org.gephi.visualization.data.camera.Camera;
+import org.gephi.visualization.data.camera.RenderArea;
 import org.gephi.visualization.rendering.command.buffer.Buffer;
 import org.gephi.visualization.rendering.command.buffer.BufferedTechnique;
 
@@ -141,7 +140,7 @@ public final class Shape2DTechniqueGL12 extends BufferedTechnique<VizNode2D> {
     @Override
     protected boolean setCamera(GL gl, Camera camera, RenderArea renderArea) {
         GL2 gl2 = gl.getGL2();
-        if (gl2 == null || !(camera instanceof OrthoCamera)) return false;
+        if (gl2 == null) return false;
         
         gl2.glMatrixMode(GL2.GL_PROJECTION);
         

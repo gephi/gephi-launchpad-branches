@@ -23,7 +23,7 @@ package org.gephi.visualization.api;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
-import org.gephi.math.linalg.Vec3;
+import org.gephi.math.Vec3;
 import org.gephi.visualization.api.selection.Shape;
 
 /**

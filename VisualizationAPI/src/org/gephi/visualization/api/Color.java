@@ -258,6 +258,11 @@ public final class Color {
     public Color clamp() {
         return clamp(0.0f, 1.0f);
     }
+    
+    public static Color lerp(float s, Color c0, float t, Color c1) {
+        return new Color(s*c0.r + t*c1.r, s*c0.g + t*c1.g, s*c0.b + t*c1.b,
+                s*c0.a + t*c1.a);
+    }
 
     /*
      * Static methods.

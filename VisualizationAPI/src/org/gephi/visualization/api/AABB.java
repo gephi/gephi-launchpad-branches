@@ -21,8 +21,8 @@ along with Gephi.  If not, see <http://www.gnu.org/licenses/>.
 
 package org.gephi.visualization.api;
 
-import org.gephi.math.linalg.Vec3;
-import org.gephi.math.linalg.Vec3M;
+import org.gephi.math.Vec3;
+import org.gephi.math.Vec3M;
 
 /**
  *
@@ -62,11 +62,11 @@ public class AABB {
     }
 
     public Vec3 minVec() {
-        return this.minVec;
+        return this.minVec.copy();
     }
 
     public Vec3 maxVec() {
-        return this.maxVec;
+        return this.maxVec.copy();
     }
 
     public void addPoint(Vec3 point, Vec3 scale) {

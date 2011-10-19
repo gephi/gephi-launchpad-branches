@@ -7,7 +7,7 @@ package org.gephi.visualization.rendering.command;
 import java.util.Collections;
 import java.util.List;
 import javax.media.opengl.GL;
-import org.gephi.visualization.rendering.buffer.MemoryPool;
+import org.gephi.visualization.drawcall.MemoryPool;
 
 /**
  *
