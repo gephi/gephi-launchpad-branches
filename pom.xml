@@ -77,9 +77,7 @@
         </plugins>
     </build>
 
-    <modules>
-        <module>branding</module>
-        <module>application</module>        
+    <modules>                
         <module>batik</module>
         <module>beansbinding</module>
         <module>CommonsCompress</module>
@@ -106,9 +104,9 @@
     <module>attributes</module>
     <module>clustering.api</module>
     <module>clustering.plugin</module>
-    <module>collection</module>
-    <module>datalab.api</module>
+    <module>collection</module>    
     <module>utils</module>
+	<module>datalab.api</module>
 <!--   <module>datalab.plugin</module>-->
     <module>tools.api</module>
     <module>validation</module>
@@ -135,22 +133,24 @@
     <module>ExportPluginUI</module>
     <module>filters</module>
     <module>generator.plugin</module>
-    <module>GeneratorPluginUI</module>
+ <!--   <module>GeneratorPluginUI</module>-->
     <module>Gleem</module>
     <module>importer.plugin</module>
-    <module>ImportPluginUI</module>
+<!--    <module>ImportPluginUI</module>-->
     <module>layout.plugin</module>
     <module>partition.plugin</module>
 <!--    <module>PartitionPluginUI</module>-->
     <module>PreviewExport</module>
-    <module>PreviewExportUI</module>
+<!--    <module>PreviewExportUI</module>-->
     <module>preview</module>
     <module>processor.plugin</module>
-    <module>ProcessorPluginUI</module>
+<!--    <module>ProcessorPluginUI</module>-->
     <module>project</module>
     <module>spigot.plugin</module>
     <module>SplineEditor</module>
     <module>StatisticsPluginUI</module>
+	<module>branding</module>
+        <module>application</module>
   </modules>
     <reporting>
         <plugins>

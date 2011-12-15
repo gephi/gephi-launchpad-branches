@@ -34,7 +34,7 @@
         </repository>
         <repository>
             <id>thirdparty</id>
-            <url>http://localhost:8081/nexus/content/repositories/thirdparty</url>
+            <url>http://nexus.gephi.org/content/repositories/thirdparty/</url>
         </repository>
     </repositories>
 
